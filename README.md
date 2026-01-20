@@ -2,6 +2,10 @@
 
 **MedSoft** is a modern, comprehensive desktop application designed for medical appointments and practice management. Built with robust web technologies and wrapped in Electron, it offers a seamless experience for doctors and secretaries to manage patient data, consultations, prescriptions, and billing.
 
+## Download
+
+You can download the latest version of MedSoft from the [Releases Page](https://github.com/Amir-Benhadid/MedSoft/releases/latest).
+
 ## Features
 
 *   **Patient Management**: Complete patient records, history, and contact details.
