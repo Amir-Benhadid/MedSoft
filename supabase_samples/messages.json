@@ -1,0 +1,1602 @@
+[
+  {
+    "id": "674a7f23-6e3b-42a5-9be4-4a69ebe1b337",
+    "text": "Dossier envoyé: @[c98e52af-6fec-4871-865e-38ddddc18904]",
+    "sender": "secretary",
+    "timestamp": "2025-09-30T06:20:01.598+00:00",
+    "is_read": true,
+    "created_at": "2025-09-30T06:20:03.318317+00:00"
+  },
+  {
+    "id": "38e24894-4d90-467d-be8e-7be2221e4dae",
+    "text": "bendjamaa",
+    "sender": "doctor",
+    "timestamp": "2025-09-30T09:13:40.972+00:00",
+    "is_read": false,
+    "created_at": "2025-09-30T09:13:40.062392+00:00"
+  },
+  {
+    "id": "12186521-8a7e-4717-92e1-66c982652501",
+    "text": "just pour la mere",
+    "sender": "doctor",
+    "timestamp": "2025-09-30T10:43:10.887+00:00",
+    "is_read": false,
+    "created_at": "2025-09-30T10:43:10.043671+00:00"
+  },
+  {
+    "id": "6501e108-c817-4138-923e-0a1ce29c8278",
+    "text": "ca a marche",
+    "sender": "doctor",
+    "timestamp": "2025-09-07T09:28:49.896+00:00",
+    "is_read": false,
+    "created_at": "2025-09-07T09:28:50.142176+00:00"
+  },
+  {
+    "id": "fc4c2829-f106-4a06-b67d-0d5e438a7957",
+    "text": "sqlut",
+    "sender": "doctor",
+    "timestamp": "2025-09-07T12:27:59.914+00:00",
+    "is_read": false,
+    "created_at": "2025-09-07T12:27:58.696285+00:00"
+  },
+  {
+    "id": "012df1cf-4d50-45b7-a22b-efd245cc6924",
+    "text": "le dossier",
+    "sender": "doctor",
+    "timestamp": "2025-09-08T12:04:39.847+00:00",
+    "is_read": false,
+    "created_at": "2025-09-08T12:04:38.107238+00:00"
+  },
+  {
+    "id": "dd31f751-a19c-4c0c-8259-994382f356c6",
+    "text": "Dossier envoyé: @[28b69f66-0f5b-4a21-9c88-30db4c9cec9c]",
+    "sender": "secretary",
+    "timestamp": "2025-09-30T11:34:33.259+00:00",
+    "is_read": true,
+    "created_at": "2025-09-30T11:34:33.553464+00:00"
+  },
+  {
+    "id": "f864b14b-8448-4c61-9e5d-889a77b468d2",
+    "text": "Dossier envoyé: @[28b69f66-0f5b-4a21-9c88-30db4c9cec9c]",
+    "sender": "secretary",
+    "timestamp": "2025-09-30T11:35:57.013+00:00",
+    "is_read": true,
+    "created_at": "2025-09-30T11:35:57.315929+00:00"
+  },
+  {
+    "id": "7f77f58a-c4eb-4441-999f-09b28730d7c8",
+    "text": "Dossier envoyé: @[28b69f66-0f5b-4a21-9c88-30db4c9cec9c]",
+    "sender": "secretary",
+    "timestamp": "2025-09-30T11:37:44.476+00:00",
+    "is_read": true,
+    "created_at": "2025-09-30T11:37:45.353323+00:00"
+  },
+  {
+    "id": "9197b970-210b-488c-8600-8b801901da70",
+    "text": "stop",
+    "sender": "doctor",
+    "timestamp": "2025-09-16T11:09:22.571+00:00",
+    "is_read": false,
+    "created_at": "2025-09-16T11:09:14.131186+00:00"
+  },
+  {
+    "id": "ef57ec23-9500-41b5-b2ee-1594459a7943",
+    "text": "grqtuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-16T12:06:43.66+00:00",
+    "is_read": false,
+    "created_at": "2025-09-16T12:06:35.328903+00:00"
+  },
+  {
+    "id": "0b7f14cd-67f0-4928-b619-0a8733793ed7",
+    "text": "consultqtion  N",
+    "sender": "doctor",
+    "timestamp": "2025-09-17T09:06:42.746+00:00",
+    "is_read": false,
+    "created_at": "2025-09-17T09:06:33.032119+00:00"
+  },
+  {
+    "id": "77e6ac2d-850a-46bb-a793-72760de79eaa",
+    "text": "envoyer le nom de la mere de rracha",
+    "sender": "doctor",
+    "timestamp": "2025-09-17T11:55:40.597+00:00",
+    "is_read": false,
+    "created_at": "2025-09-17T11:55:31.02561+00:00"
+  },
+  {
+    "id": "d9d4ea97-7817-4160-8571-5dd27f2a31f4",
+    "text": "gratuits",
+    "sender": "doctor",
+    "timestamp": "2025-09-17T13:06:21.788+00:00",
+    "is_read": false,
+    "created_at": "2025-09-17T13:06:12.275938+00:00"
+  },
+  {
+    "id": "42451d48-28ab-4186-93eb-6c5cfd646ffc",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-17T13:06:48.566+00:00",
+    "is_read": false,
+    "created_at": "2025-09-17T13:06:39.046353+00:00"
+  },
+  {
+    "id": "4b32d00d-00a1-46b6-9dea-c743fb110fb1",
+    "text": "djoud",
+    "sender": "doctor",
+    "timestamp": "2025-09-18T10:03:05.417+00:00",
+    "is_read": false,
+    "created_at": "2025-09-18T10:02:54.934714+00:00"
+  },
+  {
+    "id": "6386a714-40ea-4e3b-8cac-aaed3f328466",
+    "text": "dilqtqtion sqns mesures",
+    "sender": "doctor",
+    "timestamp": "2025-09-21T08:35:45.036+00:00",
+    "is_read": false,
+    "created_at": "2025-09-21T08:35:45.298907+00:00"
+  },
+  {
+    "id": "75ee8128-6e56-48f2-b3f7-4ca10c2aa9bb",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-21T09:57:43.481+00:00",
+    "is_read": false,
+    "created_at": "2025-09-21T09:57:43.835959+00:00"
+  },
+  {
+    "id": "98fa350e-4eb0-4dc7-a3b5-d827b9e4bea5",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-30T13:33:27.759+00:00",
+    "is_read": false,
+    "created_at": "2025-09-30T13:33:27.083061+00:00"
+  },
+  {
+    "id": "a9b128b6-2ef8-46c2-b3dd-512754a876ec",
+    "text": "ctrl PIO ds 1 mois",
+    "sender": "doctor",
+    "timestamp": "2025-09-30T14:04:50.845+00:00",
+    "is_read": false,
+    "created_at": "2025-09-30T14:04:50.282105+00:00"
+  },
+  {
+    "id": "b8257e73-75e1-4228-a584-7833be2ef9aa",
+    "text": "stop",
+    "sender": "doctor",
+    "timestamp": "2025-10-01T08:51:37.524+00:00",
+    "is_read": false,
+    "created_at": "2025-10-01T08:51:35.964391+00:00"
+  },
+  {
+    "id": "f26dcf7b-44b0-4937-af67-9bc9ea7771b8",
+    "text": "📋 Dossier patient envoyé: @[b1c9c462-7705-4c45-af66-4ca6122d6a94] - WALID BENHADID",
+    "sender": "secretary",
+    "timestamp": "2025-09-22T04:17:42.422+00:00",
+    "is_read": true,
+    "created_at": "2025-09-22T04:17:43.130901+00:00"
+  },
+  {
+    "id": "75258481-a06e-41cd-a2f1-6b7a6130a18c",
+    "text": "agee 66",
+    "sender": "doctor",
+    "timestamp": "2025-09-22T08:57:24.555+00:00",
+    "is_read": false,
+    "created_at": "2025-09-22T08:57:24.389529+00:00"
+  },
+  {
+    "id": "8a70fd6b-19d8-456f-a026-f4529997cdc4",
+    "text": "6 ,ois",
+    "sender": "doctor",
+    "timestamp": "2025-09-22T09:06:27.544+00:00",
+    "is_read": false,
+    "created_at": "2025-09-22T09:06:27.378042+00:00"
+  },
+  {
+    "id": "3ba8d8d9-8357-45b1-a522-b5c082dffe6e",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-23T11:00:04.393+00:00",
+    "is_read": false,
+    "created_at": "2025-09-23T11:00:04.763204+00:00"
+  },
+  {
+    "id": "1ba525d0-55f5-4447-8c1b-d31e9b7ceffd",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-23T11:23:48.704+00:00",
+    "is_read": false,
+    "created_at": "2025-09-23T11:23:49.103001+00:00"
+  },
+  {
+    "id": "02830d81-cbd3-4fb3-a399-bfec9004b668",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-09-23T11:02:01.359+00:00",
+    "is_read": true,
+    "created_at": "2025-09-23T11:02:01.629276+00:00"
+  },
+  {
+    "id": "85ceafbf-0d1a-49a1-b598-67300223e682",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-09-23T11:24:49.422+00:00",
+    "is_read": false,
+    "created_at": "2025-09-23T11:24:49.602706+00:00"
+  },
+  {
+    "id": "f766ccea-c774-4f81-b89d-d32ab1deaa2d",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-09-23T13:07:57.019+00:00",
+    "is_read": false,
+    "created_at": "2025-09-23T13:07:57.215387+00:00"
+  },
+  {
+    "id": "e646e517-3b40-49ce-9923-600dff340fa0",
+    "text": "📋 Dossier envoyé: @[94eb77ea-6cdb-4363-9537-0098806c7542]",
+    "sender": "secretary",
+    "timestamp": "2025-09-23T15:04:17.226+00:00",
+    "is_read": true,
+    "created_at": "2025-09-23T15:04:18.848952+00:00"
+  },
+  {
+    "id": "372d902f-99fb-42e2-ab40-d7a786239b42",
+    "text": "Dossier envoyé: @[SIHEM BOULILA]",
+    "sender": "secretary",
+    "timestamp": "2025-09-24T09:39:44.305+00:00",
+    "is_read": false,
+    "created_at": "2025-09-24T09:39:44.722117+00:00"
+  },
+  {
+    "id": "7bcb4848-faa4-451d-bfc0-badd8b26c91f",
+    "text": "stop",
+    "sender": "doctor",
+    "timestamp": "2025-09-25T08:48:00.889+00:00",
+    "is_read": false,
+    "created_at": "2025-09-25T08:48:00.212276+00:00"
+  },
+  {
+    "id": "07ae4222-0e33-46a7-a24b-6be4950ef3f2",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-25T10:38:27.049+00:00",
+    "is_read": false,
+    "created_at": "2025-09-25T10:38:26.355331+00:00"
+  },
+  {
+    "id": "3f4f2588-5a77-4892-be86-86d86b8568dd",
+    "text": "Dossier envoyé: @[CHOUAIB CHELLI]",
+    "sender": "secretary",
+    "timestamp": "2025-09-25T11:01:00.595+00:00",
+    "is_read": false,
+    "created_at": "2025-09-25T11:01:00.984378+00:00"
+  },
+  {
+    "id": "1e7bafba-d88e-4ac7-9cd2-273c37ce34b5",
+    "text": "Dossier envoyé: @[YAMINA TRIFA]",
+    "sender": "secretary",
+    "timestamp": "2025-09-25T11:02:38.306+00:00",
+    "is_read": false,
+    "created_at": "2025-09-25T11:02:38.663934+00:00"
+  },
+  {
+    "id": "3203c80e-a206-48ae-975b-5dd481e5beea",
+    "text": "OKI",
+    "sender": "secretary",
+    "timestamp": "2025-09-25T10:38:58.772+00:00",
+    "is_read": true,
+    "created_at": "2025-09-25T10:38:59.249937+00:00"
+  },
+  {
+    "id": "7abfbc83-4131-4ad2-9cc1-c3691522b282",
+    "text": "Dossier envoyé: @[e14cd904-e7a6-4197-9ba1-86ba049d029d]",
+    "sender": "secretary",
+    "timestamp": "2025-09-28T04:23:43.127+00:00",
+    "is_read": true,
+    "created_at": "2025-09-28T04:23:44.017238+00:00"
+  },
+  {
+    "id": "b4bebfa8-7ad5-4c8c-9484-4ea0f169846d",
+    "text": "envoyer SAMIA",
+    "sender": "doctor",
+    "timestamp": "2025-09-28T09:14:09.519+00:00",
+    "is_read": false,
+    "created_at": "2025-09-28T09:14:09.799538+00:00"
+  },
+  {
+    "id": "9a7b2956-5668-4f49-aac2-6927eceb46ea",
+    "text": "LASER YAG SAMEDI",
+    "sender": "doctor",
+    "timestamp": "2025-09-28T11:43:29.657+00:00",
+    "is_read": false,
+    "created_at": "2025-09-28T11:43:30.148105+00:00"
+  },
+  {
+    "id": "faba5a28-f7d1-4271-9679-076f1ad36c8d",
+    "text": "GRATUIT",
+    "sender": "doctor",
+    "timestamp": "2025-09-28T12:16:58.412+00:00",
+    "is_read": false,
+    "created_at": "2025-09-28T12:16:58.849924+00:00"
+  },
+  {
+    "id": "0ed21f7d-0e86-45b9-9a7b-bc1f75c03f7d",
+    "text": "grqtuit",
+    "sender": "doctor",
+    "timestamp": "2025-09-29T12:07:12.086+00:00",
+    "is_read": false,
+    "created_at": "2025-09-29T12:07:11.7563+00:00"
+  },
+  {
+    "id": "1a7ca4ea-6e5a-40da-96e6-95a5042b25f9",
+    "text": "Dossier envoyé: @[b1c9c462-7705-4c45-af66-4ca6122d6a94]",
+    "sender": "secretary",
+    "timestamp": "2025-09-30T05:57:37.214+00:00",
+    "is_read": true,
+    "created_at": "2025-09-30T05:57:38.80744+00:00"
+  },
+  {
+    "id": "66d82b60-4870-4e01-b7d5-2177381a0df1",
+    "text": "Dossier envoyé: @[d1da71ba-da8b-410b-81d5-0aad225b8059]",
+    "sender": "secretary",
+    "timestamp": "2025-10-01T09:07:24.915+00:00",
+    "is_read": true,
+    "created_at": "2025-10-01T09:07:26.071502+00:00"
+  },
+  {
+    "id": "a2f004d4-5ac0-4b1d-b847-cc7ccae7cf3a",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-01T12:24:57.438+00:00",
+    "is_read": true,
+    "created_at": "2025-10-01T12:24:58.982282+00:00"
+  },
+  {
+    "id": "9c88158b-c725-4eff-ab3c-e15331c191cc",
+    "text": "Dossier envoyé: @[ea4c55dd-c49f-468a-8d4f-6e88e9653648]",
+    "sender": "secretary",
+    "timestamp": "2025-10-02T09:04:52.418+00:00",
+    "is_read": true,
+    "created_at": "2025-10-02T09:04:54.177715+00:00"
+  },
+  {
+    "id": "ebd00d01-e0f2-45d9-87a8-3c9e9630a8a0",
+    "text": "me renvoyer Boughida consultation",
+    "sender": "doctor",
+    "timestamp": "2025-10-02T11:49:47.939+00:00",
+    "is_read": false,
+    "created_at": "2025-10-02T11:49:47.614565+00:00"
+  },
+  {
+    "id": "329604cd-d80a-49f0-979c-3b8c4e811796",
+    "text": "Dossier envoyé: @[ec404c22-7b34-4c76-8ff6-e2e4f0f51669]",
+    "sender": "secretary",
+    "timestamp": "2025-10-02T11:53:24.086+00:00",
+    "is_read": true,
+    "created_at": "2025-10-02T11:53:26.02395+00:00"
+  },
+  {
+    "id": "88da6554-2f69-4db6-ac43-8902d8eeff1b",
+    "text": "1000",
+    "sender": "doctor",
+    "timestamp": "2025-10-07T09:19:12.885+00:00",
+    "is_read": false,
+    "created_at": "2025-10-07T09:19:08.754452+00:00"
+  },
+  {
+    "id": "b8b933f3-e56d-49d0-9bb0-c75e69bd24b5",
+    "text": "6 ,ois ctrl PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-07T09:19:59.385+00:00",
+    "is_read": false,
+    "created_at": "2025-10-07T09:19:55.129973+00:00"
+  },
+  {
+    "id": "536a3806-7770-4e2e-9c85-f2dde0913c55",
+    "text": "Dossier envoyé: @[e2224b2d-082b-4840-aed4-fbc577ae350d]",
+    "sender": "secretary",
+    "timestamp": "2025-10-07T07:48:35.217+00:00",
+    "is_read": true,
+    "created_at": "2025-10-07T07:48:40.002394+00:00"
+  },
+  {
+    "id": "2a476cb5-092a-460b-b3a6-dd34dec3d1ca",
+    "text": "Dossier envoyé: @[5a555aee-213e-4fcf-8c28-b17c2c420584]",
+    "sender": "secretary",
+    "timestamp": "2025-10-07T10:37:06.521+00:00",
+    "is_read": true,
+    "created_at": "2025-10-07T10:37:11.255984+00:00"
+  },
+  {
+    "id": "fb4747ad-f6d3-4198-b617-19b6ed650eaa",
+    "text": "Dossier envoyé: @[90abf716-6207-4cb6-8de7-d2b69bc42125]",
+    "sender": "secretary",
+    "timestamp": "2025-10-07T08:47:02.293+00:00",
+    "is_read": true,
+    "created_at": "2025-10-07T08:47:07.284669+00:00"
+  },
+  {
+    "id": "3ca37f38-3740-4dc9-8603-81d28ffc4c62",
+    "text": "ctl PIO ds 3 mois",
+    "sender": "doctor",
+    "timestamp": "2025-10-07T11:15:47.823+00:00",
+    "is_read": false,
+    "created_at": "2025-10-07T11:15:43.567171+00:00"
+  },
+  {
+    "id": "82244920-a0ce-4a49-a166-85911bb3b63e",
+    "text": "laser  OG",
+    "sender": "doctor",
+    "timestamp": "2025-10-07T12:44:31.364+00:00",
+    "is_read": false,
+    "created_at": "2025-10-07T12:44:31.582037+00:00"
+  },
+  {
+    "id": "1c29af67-dc15-45a0-8846-e7e2b48811bf",
+    "text": "OCT pap",
+    "sender": "doctor",
+    "timestamp": "2025-10-08T12:32:53.849+00:00",
+    "is_read": false,
+    "created_at": "2025-10-08T12:32:54.604911+00:00"
+  },
+  {
+    "id": "5a01385c-633d-4757-860f-a928f4151944",
+    "text": "Dossier envoyé: @[b32b6f32-bea7-4fda-8b54-31167c01c5d7]",
+    "sender": "secretary",
+    "timestamp": "2025-10-08T11:26:35.486+00:00",
+    "is_read": true,
+    "created_at": "2025-10-08T11:26:41.613722+00:00"
+  },
+  {
+    "id": "48958e13-59de-48c7-8041-995a703a8062",
+    "text": "Dossier envoyé: @[90abf716-6207-4cb6-8de7-d2b69bc42125]",
+    "sender": "secretary",
+    "timestamp": "2025-10-09T08:36:20.906+00:00",
+    "is_read": true,
+    "created_at": "2025-10-09T08:36:27.366977+00:00"
+  },
+  {
+    "id": "eba6ee66-87d8-4c2d-882d-4d6cb17f5863",
+    "text": "Dossier envoyé: @[9e9510c3-3910-4412-89f9-8f43f4ad0a71]",
+    "sender": "secretary",
+    "timestamp": "2025-10-09T10:26:39.967+00:00",
+    "is_read": true,
+    "created_at": "2025-10-09T10:26:46.734243+00:00"
+  },
+  {
+    "id": "8554837f-d4de-4b8b-a84c-80a6dcf15a4c",
+    "text": "dATE DE NAISSANCE    29/05/1991",
+    "sender": "doctor",
+    "timestamp": "2025-10-09T10:40:53.179+00:00",
+    "is_read": false,
+    "created_at": "2025-10-09T10:40:53.563983+00:00"
+  },
+  {
+    "id": "287cabdc-4011-409d-b109-17708a91f7ec",
+    "text": "1000",
+    "sender": "doctor",
+    "timestamp": "2025-10-09T11:30:14.3+00:00",
+    "is_read": false,
+    "created_at": "2025-10-09T11:30:14.746413+00:00"
+  },
+  {
+    "id": "563c52d0-c194-4733-9e92-63d242587fdc",
+    "text": "c modifier",
+    "sender": "secretary",
+    "timestamp": "2025-10-09T10:42:50.375+00:00",
+    "is_read": true,
+    "created_at": "2025-10-09T10:42:56.81219+00:00"
+  },
+  {
+    "id": "a3eb6cae-c620-4ef2-98f7-5af590e9c15c",
+    "text": "Dossier envoyé: @[1087216d-fb44-4b8a-9ea2-78a0d18ae413]",
+    "sender": "secretary",
+    "timestamp": "2025-10-09T11:45:56.062+00:00",
+    "is_read": true,
+    "created_at": "2025-10-09T11:46:03.003076+00:00"
+  },
+  {
+    "id": "9d1f94ec-4f7e-4113-9ea9-4ef1b3677b15",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-09T12:46:01.721+00:00",
+    "is_read": true,
+    "created_at": "2025-10-09T12:46:01.880812+00:00"
+  },
+  {
+    "id": "073d3aa6-b7c6-4c45-9a9a-321fb6598b24",
+    "text": "Dossier envoyé: @[8d3ade70-22ca-437c-8de7-af076d25f34e]",
+    "sender": "secretary",
+    "timestamp": "2025-10-11T18:49:31.921+00:00",
+    "is_read": true,
+    "created_at": "2025-10-11T18:49:33.203916+00:00"
+  },
+  {
+    "id": "3e85fb8c-851f-4b59-82d5-2b54cb8d64bb",
+    "text": "PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-12T09:09:56.203+00:00",
+    "is_read": false,
+    "created_at": "2025-10-12T09:09:56.570629+00:00"
+  },
+  {
+    "id": "606a24b4-d290-4b03-b139-b82b2ca57388",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-12T09:19:45.815+00:00",
+    "is_read": true,
+    "created_at": "2025-10-12T09:19:46.058841+00:00"
+  },
+  {
+    "id": "ea876f57-73a6-410a-a48e-70608b65859b",
+    "text": "Dossier envoyé: @[c9c1c569-d8ca-4ae8-9160-108cb9ff9d48]",
+    "sender": "secretary",
+    "timestamp": "2025-10-12T09:32:57.051+00:00",
+    "is_read": true,
+    "created_at": "2025-10-12T09:32:57.208474+00:00"
+  },
+  {
+    "id": "c562ef34-ffd5-4518-8599-62b38707af3a",
+    "text": "Dossier envoyé: @[5a555aee-213e-4fcf-8c28-b17c2c420584]",
+    "sender": "secretary",
+    "timestamp": "2025-10-12T10:50:19.907+00:00",
+    "is_read": true,
+    "created_at": "2025-10-12T10:50:20.084973+00:00"
+  },
+  {
+    "id": "a8546a2d-1a95-4dd4-ac31-124c460f8162",
+    "text": "arret reception",
+    "sender": "doctor",
+    "timestamp": "2025-10-12T12:52:38.752+00:00",
+    "is_read": false,
+    "created_at": "2025-10-12T12:52:39.174799+00:00"
+  },
+  {
+    "id": "596f8210-144a-48c9-8586-7fb515d5fc30",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-12T13:25:24.361+00:00",
+    "is_read": false,
+    "created_at": "2025-10-12T13:25:24.844776+00:00"
+  },
+  {
+    "id": "c41348a2-ca24-4e69-b1ad-6456e9716399",
+    "text": "Dossier envoyé: @[830c622f-1f3f-4c48-853d-22492c5c3b73]",
+    "sender": "secretary",
+    "timestamp": "2025-10-13T07:45:49.364+00:00",
+    "is_read": true,
+    "created_at": "2025-10-13T07:45:51.238633+00:00"
+  },
+  {
+    "id": "2ea14871-0c90-43e1-a942-10d817a044cd",
+    "text": "Dossier envoyé: @[272aba3b-87c6-43f3-873c-648c0ac91783]",
+    "sender": "secretary",
+    "timestamp": "2025-10-13T07:46:20.828+00:00",
+    "is_read": true,
+    "created_at": "2025-10-13T07:46:22.529606+00:00"
+  },
+  {
+    "id": "e7d49edf-e2ec-4ee9-85ab-07b625bd76f7",
+    "text": "Dossier envoyé: @[b5fef558-7798-478c-af7c-c296d9211dbd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-13T08:59:16.054+00:00",
+    "is_read": true,
+    "created_at": "2025-10-13T08:59:17.770008+00:00"
+  },
+  {
+    "id": "6afc173c-333c-4a24-b9b6-d820f407238f",
+    "text": "OCT mac",
+    "sender": "doctor",
+    "timestamp": "2025-10-13T09:47:13.292+00:00",
+    "is_read": false,
+    "created_at": "2025-10-13T09:47:12.971339+00:00"
+  },
+  {
+    "id": "8923b2fc-5976-4426-a205-00f3ef192961",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-13T10:05:37.273+00:00",
+    "is_read": true,
+    "created_at": "2025-10-13T10:05:38.980329+00:00"
+  },
+  {
+    "id": "48ef57c2-47f7-49f0-815d-24a972ecbc9c",
+    "text": "G",
+    "sender": "doctor",
+    "timestamp": "2025-10-13T10:12:54.948+00:00",
+    "is_read": false,
+    "created_at": "2025-10-13T10:12:54.702672+00:00"
+  },
+  {
+    "id": "1f3579d1-a013-4133-9906-936cf1451100",
+    "text": "MARS",
+    "sender": "doctor",
+    "timestamp": "2025-10-13T10:50:33.828+00:00",
+    "is_read": false,
+    "created_at": "2025-10-13T10:50:33.655433+00:00"
+  },
+  {
+    "id": "d0e4dd46-9525-408c-8d2f-db8f3f7eba96",
+    "text": "OCT mardi",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T09:09:07.147+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T09:09:06.316091+00:00"
+  },
+  {
+    "id": "9079c3bc-537b-4ff5-a1a3-081d083859da",
+    "text": "OCT  mardi matin",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T09:11:45.315+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T09:11:44.329175+00:00"
+  },
+  {
+    "id": "9c054625-3e52-48df-b732-0b6b7d98b59a",
+    "text": "RDV laser",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T10:23:17.443+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T10:23:16.800983+00:00"
+  },
+  {
+    "id": "84ffc258-fd5d-4eb3-aad6-9566d80fa63b",
+    "text": "PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T10:34:25.251+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T10:34:24.334623+00:00"
+  },
+  {
+    "id": "33676ccc-81c2-4a09-b868-43cd1444f7c7",
+    "text": "OCT pap",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T11:33:27.612+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T11:33:28.019381+00:00"
+  },
+  {
+    "id": "a31d13fe-2f9e-4954-8978-19db4d36adcf",
+    "text": "Dossier envoyé: @[843b56bd-ae46-424e-8cfe-e9c1eb483e1d]",
+    "sender": "secretary",
+    "timestamp": "2025-10-14T10:21:34.551+00:00",
+    "is_read": true,
+    "created_at": "2025-10-14T10:21:36.443317+00:00"
+  },
+  {
+    "id": "747460d5-ebbd-44d4-b96e-b1a5198fcf6a",
+    "text": "Dossier envoyé: @[acad0f2b-c630-4f97-9906-ce3ec81a56eb]",
+    "sender": "secretary",
+    "timestamp": "2025-10-14T10:56:28.674+00:00",
+    "is_read": true,
+    "created_at": "2025-10-14T10:56:30.617307+00:00"
+  },
+  {
+    "id": "4e4e797b-38a6-4adc-85c8-a964dab575a5",
+    "text": "desinfecter",
+    "sender": "doctor",
+    "timestamp": "2025-10-14T12:33:08.605+00:00",
+    "is_read": false,
+    "created_at": "2025-10-14T12:33:09.012969+00:00"
+  },
+  {
+    "id": "2eaf3e15-1e35-401e-86d5-c6591a2db08f",
+    "text": "hola",
+    "sender": "doctor",
+    "timestamp": "2025-10-17T22:25:18.256+00:00",
+    "is_read": false,
+    "created_at": "2025-10-17T22:25:18.987765+00:00"
+  },
+  {
+    "id": "3b4c713e-4fb6-4e67-83d3-2b70d2723743",
+    "text": "saalut",
+    "sender": "secretary",
+    "timestamp": "2025-10-17T22:24:42.958+00:00",
+    "is_read": true,
+    "created_at": "2025-10-17T22:24:43.691218+00:00"
+  },
+  {
+    "id": "a3b76900-70b5-4daf-9e4f-79ab1f372380",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-18T08:33:54.406+00:00",
+    "is_read": false,
+    "created_at": "2025-10-18T08:33:54.75878+00:00"
+  },
+  {
+    "id": "9ab7798a-3020-4ca6-9a6a-7d5c8c3ab140",
+    "text": "6 mois",
+    "sender": "doctor",
+    "timestamp": "2025-10-18T09:40:21.376+00:00",
+    "is_read": false,
+    "created_at": "2025-10-18T09:40:21.658055+00:00"
+  },
+  {
+    "id": "d78684bc-059d-4fb4-9739-1073c529cc9c",
+    "text": "envoyer e dossier",
+    "sender": "doctor",
+    "timestamp": "2025-10-18T10:14:58.001+00:00",
+    "is_read": false,
+    "created_at": "2025-10-18T10:14:58.287714+00:00"
+  },
+  {
+    "id": "882598d9-c870-4f32-8b83-44de13318111",
+    "text": "j ai pas sonné",
+    "sender": "doctor",
+    "timestamp": "2025-10-18T10:35:10.77+00:00",
+    "is_read": false,
+    "created_at": "2025-10-18T10:35:11.083574+00:00"
+  },
+  {
+    "id": "af4a9f56-15dc-4fd5-8ea6-cb3d0e2665ff",
+    "text": "Désolé",
+    "sender": "secretary",
+    "timestamp": "2025-10-18T10:35:35.037+00:00",
+    "is_read": true,
+    "created_at": "2025-10-18T10:35:35.212012+00:00"
+  },
+  {
+    "id": "4f0d4a41-2705-47c3-bc53-0c1be8387dd6",
+    "text": "Dossier envoyé: @[42509148-1c6d-45ab-b427-18fdcb024bd8]",
+    "sender": "secretary",
+    "timestamp": "2025-10-18T09:43:28.505+00:00",
+    "is_read": true,
+    "created_at": "2025-10-18T09:43:28.7125+00:00"
+  },
+  {
+    "id": "9cf206fd-f27c-4563-8aaa-1426566ebc1f",
+    "text": "1500",
+    "sender": "doctor",
+    "timestamp": "2025-10-18T10:59:12.003+00:00",
+    "is_read": false,
+    "created_at": "2025-10-18T10:59:12.314923+00:00"
+  },
+  {
+    "id": "313ad74f-b571-4a36-a130-45b0815b0f46",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-18T10:59:04.525+00:00",
+    "is_read": true,
+    "created_at": "2025-10-18T10:59:04.68674+00:00"
+  },
+  {
+    "id": "5a0c0b8f-4afb-4a92-a462-420f7ff9651f",
+    "text": "Dossier envoyé: @[15d12e09-c4e5-4552-8134-e1e148b43e8e]",
+    "sender": "secretary",
+    "timestamp": "2025-10-18T11:31:53.752+00:00",
+    "is_read": true,
+    "created_at": "2025-10-18T11:31:53.981282+00:00"
+  },
+  {
+    "id": "cec3e1bb-7475-400d-aa0c-aae812cb2a33",
+    "text": "G",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T08:29:19.999+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T08:29:20.026548+00:00"
+  },
+  {
+    "id": "e71cc2ee-7215-4c3e-b103-3e73ca135bb2",
+    "text": "Dossier envoyé: @[93cea026-3454-425d-baa8-cdd6441f08c9]",
+    "sender": "secretary",
+    "timestamp": "2025-10-19T08:46:50.458+00:00",
+    "is_read": true,
+    "created_at": "2025-10-19T08:46:51.735457+00:00"
+  },
+  {
+    "id": "e9329b8e-a409-4f97-9d31-b61ce0c3441b",
+    "text": "ctrl jeudi",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T09:08:58.224+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T09:08:58.267239+00:00"
+  },
+  {
+    "id": "ebcfab18-5046-4182-812e-b54bdc227692",
+    "text": "Dossier envoyé: @[93cea026-3454-425d-baa8-cdd6441f08c9]",
+    "sender": "secretary",
+    "timestamp": "2025-10-19T09:10:11.606+00:00",
+    "is_read": true,
+    "created_at": "2025-10-19T09:10:12.886407+00:00"
+  },
+  {
+    "id": "434906b7-21af-420f-9016-e505592d5338",
+    "text": "fadila",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T09:35:15.745+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T09:35:15.698627+00:00"
+  },
+  {
+    "id": "d3a5329a-4c89-4cc5-911c-71a4ecd56d38",
+    "text": "Dossier envoyé: @[d7378d2b-390f-46e4-b4c4-c97c43e5986d]",
+    "sender": "secretary",
+    "timestamp": "2025-10-19T09:50:34.544+00:00",
+    "is_read": true,
+    "created_at": "2025-10-19T09:50:35.844529+00:00"
+  },
+  {
+    "id": "1ee214d6-2362-41ed-9a6e-4c166772fc24",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T11:26:40.102+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T11:26:40.145395+00:00"
+  },
+  {
+    "id": "4802acf9-5873-432c-9918-9c27242f77e8",
+    "text": "Dossier envoyé: @[5ba1546a-2b26-42e0-9e8b-5e57f0ba634f]",
+    "sender": "secretary",
+    "timestamp": "2025-10-19T10:05:15.431+00:00",
+    "is_read": true,
+    "created_at": "2025-10-19T10:05:16.695078+00:00"
+  },
+  {
+    "id": "24118493-bfa2-426f-8b5c-e6261cb812a6",
+    "text": "G",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T12:38:42.921+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T12:38:43.050418+00:00"
+  },
+  {
+    "id": "f8245dd0-9410-40fe-b436-f9673430b531",
+    "text": "COUSIN  G OU 2.000.00",
+    "sender": "secretary",
+    "timestamp": "2025-10-19T12:38:24.218+00:00",
+    "is_read": true,
+    "created_at": "2025-10-19T12:38:25.53738+00:00"
+  },
+  {
+    "id": "4ac1b329-a7c4-465f-a878-11e397a87119",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-19T12:50:48.922+00:00",
+    "is_read": false,
+    "created_at": "2025-10-19T12:50:49.037366+00:00"
+  },
+  {
+    "id": "f243ed86-5d72-483e-bc44-ce844b561915",
+    "text": "age 69 ans",
+    "sender": "doctor",
+    "timestamp": "2025-10-20T09:50:15.282+00:00",
+    "is_read": false,
+    "created_at": "2025-10-20T09:50:15.827857+00:00"
+  },
+  {
+    "id": "bc283e79-fdc3-4bb2-a834-b4bb57d16244",
+    "text": "F5",
+    "sender": "secretary",
+    "timestamp": "2025-10-20T09:35:37.585+00:00",
+    "is_read": true,
+    "created_at": "2025-10-20T09:35:37.805682+00:00"
+  },
+  {
+    "id": "29cfedbe-0cd7-44ba-b2a2-201d8b28c1e8",
+    "text": "C MODIFIER",
+    "sender": "secretary",
+    "timestamp": "2025-10-20T09:51:07.361+00:00",
+    "is_read": true,
+    "created_at": "2025-10-20T09:51:07.511315+00:00"
+  },
+  {
+    "id": "6936e3c7-5eac-40f3-9d50-db8133401bb7",
+    "text": "Dossier envoyé: @[f89f907d-62fe-4675-9731-ac2985dd85b7]",
+    "sender": "secretary",
+    "timestamp": "2025-10-20T09:38:08.68+00:00",
+    "is_read": true,
+    "created_at": "2025-10-20T09:38:08.87034+00:00"
+  },
+  {
+    "id": "7a884bb4-cbe9-4eae-ab91-425902b6dd78",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-20T11:21:38.317+00:00",
+    "is_read": false,
+    "created_at": "2025-10-20T11:21:38.735067+00:00"
+  },
+  {
+    "id": "42162381-2d68-4e5e-a693-2c31248de014",
+    "text": "3 fois tous les 5 mn",
+    "sender": "doctor",
+    "timestamp": "2025-10-20T11:25:07.317+00:00",
+    "is_read": false,
+    "created_at": "2025-10-20T11:25:07.604764+00:00"
+  },
+  {
+    "id": "43dc420c-cdb6-4954-81fd-536cb691b435",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-10-20T11:25:22.556+00:00",
+    "is_read": true,
+    "created_at": "2025-10-20T11:25:22.726687+00:00"
+  },
+  {
+    "id": "4177ebc6-68a9-46da-a207-022a41cbbf7f",
+    "text": "Dossier envoyé: @[7e621e45-725a-4bc3-af7f-c03e19edd44e]",
+    "sender": "secretary",
+    "timestamp": "2025-10-21T10:13:45.376+00:00",
+    "is_read": true,
+    "created_at": "2025-10-21T10:13:46.054895+00:00"
+  },
+  {
+    "id": "ffe17d3f-6c2a-4909-91c2-6895f4bddf05",
+    "text": "CTRL PIO 6 MOIS",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T10:20:55.652+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T10:20:55.406899+00:00"
+  },
+  {
+    "id": "8bf066f3-aa3d-4d44-be16-6ddac7f6bd3c",
+    "text": "correction",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T11:29:43.875+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T11:29:43.698323+00:00"
+  },
+  {
+    "id": "a1ae5e4b-80d3-46b2-912b-fd599fb9e2f3",
+    "text": "Dossier envoyé: @[cb87541c-44a3-428f-829e-f2b7ad5e26cc]",
+    "sender": "secretary",
+    "timestamp": "2025-10-21T11:35:32.325+00:00",
+    "is_read": true,
+    "created_at": "2025-10-21T11:35:33.011832+00:00"
+  },
+  {
+    "id": "12a5d4b8-0ced-461f-9a56-fae3aaca1959",
+    "text": "1000",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T11:56:27.833+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T11:56:27.666519+00:00"
+  },
+  {
+    "id": "215a260c-a92c-4b11-a7e8-42b8149b417f",
+    "text": "djihane",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T12:04:38.394+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T12:04:38.248599+00:00"
+  },
+  {
+    "id": "b3dbdf91-f0c7-47ee-95e6-12ad28b9ee7b",
+    "text": "lazhar envoyer dossier",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T13:06:38.001+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T13:06:37.887855+00:00"
+  },
+  {
+    "id": "80811283-8a2a-4d39-85de-266736960861",
+    "text": "stop",
+    "sender": "doctor",
+    "timestamp": "2025-10-21T13:40:11.487+00:00",
+    "is_read": false,
+    "created_at": "2025-10-21T13:40:11.510084+00:00"
+  },
+  {
+    "id": "bd04bfad-997e-4825-820e-08b73f3d0543",
+    "text": "Dossier envoyé: @[8081b99d-07d1-45e5-8285-7f0e77fbd490]",
+    "sender": "secretary",
+    "timestamp": "2025-10-21T13:06:51.887+00:00",
+    "is_read": true,
+    "created_at": "2025-10-21T13:06:52.624206+00:00"
+  },
+  {
+    "id": "aaf3c294-df0a-4934-9dc4-dc73e4e783e8",
+    "text": "Dossier envoyé: @[52fc8d88-6048-4719-919c-374237def626]",
+    "sender": "secretary",
+    "timestamp": "2025-10-22T08:42:19.136+00:00",
+    "is_read": true,
+    "created_at": "2025-10-22T08:42:19.342054+00:00"
+  },
+  {
+    "id": "580c5da0-678e-46f8-b7c2-c8f4b6fa1e16",
+    "text": "Dossier envoyé: @[cd100295-cbd8-4da8-b821-0a56a2e49440]",
+    "sender": "secretary",
+    "timestamp": "2025-10-22T07:37:24.733+00:00",
+    "is_read": true,
+    "created_at": "2025-10-22T07:37:25.130903+00:00"
+  },
+  {
+    "id": "0d72fff7-73ea-4ab1-914a-5c9f9178a7c0",
+    "text": "boubakeur",
+    "sender": "doctor",
+    "timestamp": "2025-10-22T09:15:22.12+00:00",
+    "is_read": false,
+    "created_at": "2025-10-22T09:15:21.583864+00:00"
+  },
+  {
+    "id": "16a044eb-fd6a-481b-b0fb-74a13d81dadd",
+    "text": "Dossier envoyé: @[205e400d-fd05-49fe-a04d-c5d4cee55ef9]",
+    "sender": "secretary",
+    "timestamp": "2025-10-22T09:53:46.309+00:00",
+    "is_read": false,
+    "created_at": "2025-10-22T09:53:46.543513+00:00"
+  },
+  {
+    "id": "28de6a0c-ecea-48c4-a786-efbd9d45737c",
+    "text": "OCT mac",
+    "sender": "doctor",
+    "timestamp": "2025-10-22T10:58:16.985+00:00",
+    "is_read": false,
+    "created_at": "2025-10-22T10:58:16.700469+00:00"
+  },
+  {
+    "id": "fd9df158-49b0-4b52-b0ce-e8bdb1466649",
+    "text": "Dossier envoyé: @[7b4dd6d6-0e9a-41c0-9c31-6ff0d9aa9d27]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T08:12:18.281+00:00",
+    "is_read": true,
+    "created_at": "2025-10-23T08:12:18.748809+00:00"
+  },
+  {
+    "id": "b6001b66-7355-4628-97eb-1d59e47f4e8b",
+    "text": "1er decembre ctrl PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-23T08:56:00.705+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T08:55:59.635766+00:00"
+  },
+  {
+    "id": "96f09bac-7c23-452e-87f8-beae083afa1a",
+    "text": "Dossier envoyé: @[7111d77e-7c18-4b94-a165-a40dcdca0c11]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T09:49:02.865+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T09:49:03.363731+00:00"
+  },
+  {
+    "id": "937b2800-5bc9-4cfa-9c07-864e8516c6a0",
+    "text": "ctrl 6 mois  PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-23T10:20:29.367+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T10:20:28.302374+00:00"
+  },
+  {
+    "id": "9ae6b8bd-14f7-4eca-96d2-348586f36577",
+    "text": "stop",
+    "sender": "doctor",
+    "timestamp": "2025-10-23T10:33:47.303+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T10:33:46.20661+00:00"
+  },
+  {
+    "id": "5854ab9e-f068-4ab6-b72e-00adf0a1f9fe",
+    "text": "Dossier envoyé: @[20ed089f-d982-45f2-871d-c8d52ed30dae]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T10:41:27.672+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T10:41:28.163264+00:00"
+  },
+  {
+    "id": "100fd643-7a26-4b7b-808d-20de6358425c",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T10:33:51.047+00:00",
+    "is_read": true,
+    "created_at": "2025-10-23T10:33:51.546341+00:00"
+  },
+  {
+    "id": "6fed1118-e106-4b22-b46a-b527e12ea25d",
+    "text": "Dossier envoyé: @[d8566b3b-05c9-40ca-ad79-81e8f313d181]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T10:44:17.649+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T10:44:18.115366+00:00"
+  },
+  {
+    "id": "65ebec21-7fc2-4fea-9330-c0b45fc4db31",
+    "text": "Dossier envoyé: @[7e51adf8-2ca8-46f7-9f8f-06cd90d57ecd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T08:15:36.502+00:00",
+    "is_read": true,
+    "created_at": "2025-10-23T08:15:36.954359+00:00"
+  },
+  {
+    "id": "bcab5fc1-80fa-46c5-a7d7-8aacee09de54",
+    "text": "topo",
+    "sender": "doctor",
+    "timestamp": "2025-10-23T11:15:23.862+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T11:15:24.039572+00:00"
+  },
+  {
+    "id": "e77cbd67-c4c8-467d-8296-8e3832b49259",
+    "text": "1 mois ctrl PIO",
+    "sender": "doctor",
+    "timestamp": "2025-10-23T11:58:10.621+00:00",
+    "is_read": false,
+    "created_at": "2025-10-23T11:58:11.004791+00:00"
+  },
+  {
+    "id": "cc024d65-9471-4c06-a981-43507a8da062",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T11:16:16.061+00:00",
+    "is_read": true,
+    "created_at": "2025-10-23T11:16:16.557943+00:00"
+  },
+  {
+    "id": "932bb45d-6858-4137-a119-cfa0da6f6c10",
+    "text": "Dossier envoyé: @[b5fef558-7798-478c-af7c-c296d9211dbd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-23T10:43:43.831+00:00",
+    "is_read": true,
+    "created_at": "2025-10-23T10:43:44.325319+00:00"
+  },
+  {
+    "id": "add7b3f9-d5f0-4670-a20d-3335a7254424",
+    "text": "Dossier envoyé: @[52fc8d88-6048-4719-919c-374237def626]",
+    "sender": "secretary",
+    "timestamp": "2025-10-26T07:27:44.375+00:00",
+    "is_read": true,
+    "created_at": "2025-10-26T07:27:47.243548+00:00"
+  },
+  {
+    "id": "9180523f-7636-480e-898a-f9abd84276c9",
+    "text": "Dossier envoyé: @[7e51adf8-2ca8-46f7-9f8f-06cd90d57ecd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-26T10:35:51.899+00:00",
+    "is_read": true,
+    "created_at": "2025-10-26T10:35:54.809757+00:00"
+  },
+  {
+    "id": "4a240c10-1799-4ee4-a446-ab0ad3402af7",
+    "text": "RDV",
+    "sender": "secretary",
+    "timestamp": "2025-10-26T11:06:04.366+00:00",
+    "is_read": true,
+    "created_at": "2025-10-26T11:06:07.318674+00:00"
+  },
+  {
+    "id": "dcb3d703-e2d7-4268-9e07-e6876258adde",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-27T10:38:06.435+00:00",
+    "is_read": false,
+    "created_at": "2025-10-27T10:38:04.98517+00:00"
+  },
+  {
+    "id": "bd16e85d-dea1-4b53-a9fb-9a5886f50a3e",
+    "text": "Dossier envoyé: @[da55d54e-2e63-4776-9dd3-1a888bd04802]",
+    "sender": "secretary",
+    "timestamp": "2025-10-27T10:32:28.65+00:00",
+    "is_read": true,
+    "created_at": "2025-10-27T10:32:31.545305+00:00"
+  },
+  {
+    "id": "284d6677-0a8e-408e-ad99-7d5e440d6f11",
+    "text": "mardi  SLT",
+    "sender": "doctor",
+    "timestamp": "2025-10-28T11:41:50.585+00:00",
+    "is_read": false,
+    "created_at": "2025-10-28T11:41:50.938853+00:00"
+  },
+  {
+    "id": "cd667f6b-390a-488e-9b5e-2aad175f3290",
+    "text": "OCT avec sa femme",
+    "sender": "doctor",
+    "timestamp": "2025-10-28T11:51:51.649+00:00",
+    "is_read": false,
+    "created_at": "2025-10-28T11:51:52.386253+00:00"
+  },
+  {
+    "id": "590b7c7a-91aa-4310-852d-fa12b62fc282",
+    "text": "OK",
+    "sender": "secretary",
+    "timestamp": "2025-10-28T11:42:18.489+00:00",
+    "is_read": true,
+    "created_at": "2025-10-28T11:42:22.610531+00:00"
+  },
+  {
+    "id": "82f1623a-8bd2-4e75-9e81-66ee4e9e0fb2",
+    "text": "djihane",
+    "sender": "doctor",
+    "timestamp": "2025-10-28T11:55:13.104+00:00",
+    "is_read": false,
+    "created_at": "2025-10-28T11:55:13.425882+00:00"
+  },
+  {
+    "id": "5bb2e11f-ff2e-4c6d-a046-a129aa3ebbd5",
+    "text": "benhamada",
+    "sender": "doctor",
+    "timestamp": "2025-10-28T12:03:23.456+00:00",
+    "is_read": false,
+    "created_at": "2025-10-28T12:03:23.742156+00:00"
+  },
+  {
+    "id": "5b1699c9-e4eb-43e5-90b5-4a140bf6e758",
+    "text": "Dossier envoyé: @[738e3e1b-5920-44d6-9555-d81225710803]",
+    "sender": "secretary",
+    "timestamp": "2025-10-28T13:48:36.62+00:00",
+    "is_read": true,
+    "created_at": "2025-10-28T13:48:40.754922+00:00"
+  },
+  {
+    "id": "2d8fbb13-f969-4e23-b37e-21ab4b74f558",
+    "text": "dossier mihoub",
+    "sender": "doctor",
+    "timestamp": "2025-10-28T13:50:11.239+00:00",
+    "is_read": false,
+    "created_at": "2025-10-28T13:50:11.648937+00:00"
+  },
+  {
+    "id": "e6b624b0-adf3-44dd-994c-2dda18c880ed",
+    "text": "consultation",
+    "sender": "doctor",
+    "timestamp": "2025-10-29T09:14:04.299+00:00",
+    "is_read": false,
+    "created_at": "2025-10-29T09:14:04.156904+00:00"
+  },
+  {
+    "id": "961e0465-a4e6-4d62-83a9-0a23581ac077",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-29T09:34:16.269+00:00",
+    "is_read": false,
+    "created_at": "2025-10-29T09:34:16.132728+00:00"
+  },
+  {
+    "id": "4786948d-3d52-4106-a8b5-1cf039fd72c4",
+    "text": "Dossier envoyé: @[cd100295-cbd8-4da8-b821-0a56a2e49440]",
+    "sender": "secretary",
+    "timestamp": "2025-10-29T09:18:13.765+00:00",
+    "is_read": true,
+    "created_at": "2025-10-29T09:18:18.862578+00:00"
+  },
+  {
+    "id": "12169ab6-3e65-4d71-88a8-3bb412c50a5b",
+    "text": "Dossier envoyé: @[11cf63f1-8f3c-458c-8900-33030ec07ccd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-29T10:16:22.514+00:00",
+    "is_read": true,
+    "created_at": "2025-10-29T10:16:27.902393+00:00"
+  },
+  {
+    "id": "f36fde20-5520-468a-b500-fe68688146d9",
+    "text": "Dossier envoyé: @[b02aba95-6964-4f00-a428-f3be3c62afce]",
+    "sender": "secretary",
+    "timestamp": "2025-10-29T11:14:41.209+00:00",
+    "is_read": true,
+    "created_at": "2025-10-29T11:14:46.271299+00:00"
+  },
+  {
+    "id": "5d06e155-6851-4348-8ca0-65f68d2f7a5d",
+    "text": "Dossier envoyé: @[11cf63f1-8f3c-458c-8900-33030ec07ccd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-29T10:16:28.443+00:00",
+    "is_read": true,
+    "created_at": "2025-10-29T10:16:33.857695+00:00"
+  },
+  {
+    "id": "dfa5f2bf-dc7a-4334-9ff7-2825fff367f1",
+    "text": "mars 2026",
+    "sender": "doctor",
+    "timestamp": "2025-10-29T12:00:53.822+00:00",
+    "is_read": false,
+    "created_at": "2025-10-29T12:00:53.811357+00:00"
+  },
+  {
+    "id": "ccbd6a08-02f6-4cd6-af30-8f9203b6c833",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-30T08:42:34.285+00:00",
+    "is_read": false,
+    "created_at": "2025-10-30T08:42:33.46319+00:00"
+  },
+  {
+    "id": "c4c23f32-ad92-4e0a-afce-25a70cd99690",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-10-30T10:20:19.636+00:00",
+    "is_read": false,
+    "created_at": "2025-10-30T10:20:19.11251+00:00"
+  },
+  {
+    "id": "4d9a5103-2341-4d04-bf7f-8599d40ffe27",
+    "text": "Dossier envoyé: @[535b0448-cf04-4395-97fc-7da6ad314814]",
+    "sender": "secretary",
+    "timestamp": "2025-10-30T10:40:18.433+00:00",
+    "is_read": true,
+    "created_at": "2025-10-30T10:40:18.591572+00:00"
+  },
+  {
+    "id": "cf1cb6f7-d75d-4598-934d-a3b8d71a4ec9",
+    "text": "Dossier envoyé: @[21275d21-2f61-429e-883c-2aace59101c8]",
+    "sender": "secretary",
+    "timestamp": "2025-10-30T11:11:30.017+00:00",
+    "is_read": true,
+    "created_at": "2025-10-30T11:11:30.473409+00:00"
+  },
+  {
+    "id": "b666e04d-92d1-4b67-b769-dd7222ffc252",
+    "text": "Dossier envoyé: @[11cf63f1-8f3c-458c-8900-33030ec07ccd]",
+    "sender": "secretary",
+    "timestamp": "2025-10-30T11:11:50.491+00:00",
+    "is_read": true,
+    "created_at": "2025-10-30T11:11:50.986507+00:00"
+  },
+  {
+    "id": "62a21029-61c4-4b6a-a47b-89e963d8bec7",
+    "text": "Dossier envoyé: @[a9c29af2-ae61-4bf9-9793-6aa41a8e82b5]",
+    "sender": "secretary",
+    "timestamp": "2025-10-30T11:12:28.659+00:00",
+    "is_read": true,
+    "created_at": "2025-10-30T11:12:29.169062+00:00"
+  },
+  {
+    "id": "0fe58f4a-c5e9-4952-ba43-5b306baece94",
+    "text": "Dossier envoyé: @[52afe34f-3699-4a33-9e19-6617d0397243]",
+    "sender": "secretary",
+    "timestamp": "2025-11-02T07:35:51.978+00:00",
+    "is_read": false,
+    "created_at": "2025-11-02T07:35:54.389507+00:00"
+  },
+  {
+    "id": "9124ad1a-6aa3-444b-8817-067e74c66046",
+    "text": "ctrl PIO 3 mois",
+    "sender": "doctor",
+    "timestamp": "2025-11-02T08:54:26.741+00:00",
+    "is_read": false,
+    "created_at": "2025-11-02T08:54:26.970845+00:00"
+  },
+  {
+    "id": "f0b4db23-6356-4f2e-9e95-d1d1ec5c1bf2",
+    "text": "1 SEULE GRATUITE",
+    "sender": "doctor",
+    "timestamp": "2025-11-02T09:50:46.413+00:00",
+    "is_read": false,
+    "created_at": "2025-11-02T09:50:46.685597+00:00"
+  },
+  {
+    "id": "31bf0cd9-e188-4020-9888-0ff0961f4dcf",
+    "text": "Dossier envoyé: @[f5aa2ae1-2b17-4a7c-8916-41fc13231fae]",
+    "sender": "secretary",
+    "timestamp": "2025-11-02T08:43:20.051+00:00",
+    "is_read": true,
+    "created_at": "2025-11-02T08:43:22.375746+00:00"
+  },
+  {
+    "id": "350ae0e3-d7b5-42c9-ae94-18f57912ee25",
+    "text": "Dossier envoyé: @[49c6c793-d3d5-45b6-9e3d-044764b33ffd]",
+    "sender": "secretary",
+    "timestamp": "2025-11-03T06:49:02.394+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T06:49:05.57886+00:00"
+  },
+  {
+    "id": "25294482-e9c6-406d-8319-3929f32640a9",
+    "text": "PIO",
+    "sender": "doctor",
+    "timestamp": "2025-11-03T08:27:14.913+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T08:27:15.274862+00:00"
+  },
+  {
+    "id": "e5e0ce40-787e-492e-b3c0-5197e9b208ef",
+    "text": "mandi",
+    "sender": "doctor",
+    "timestamp": "2025-11-03T08:27:34.473+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T08:27:34.832294+00:00"
+  },
+  {
+    "id": "6af5f75f-4626-41b7-812f-a85e05ad81af",
+    "text": "ctrl PIO  6 mois",
+    "sender": "doctor",
+    "timestamp": "2025-11-03T08:33:29.968+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T08:33:30.323874+00:00"
+  },
+  {
+    "id": "f0148f5f-0291-4b0f-a431-91d9c896fdb0",
+    "text": "djihane",
+    "sender": "doctor",
+    "timestamp": "2025-11-03T09:01:20.033+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T09:01:20.425687+00:00"
+  },
+  {
+    "id": "07465535-8824-4536-b456-8c4b0f47acb6",
+    "text": "Dossier envoyé: @[535b0448-cf04-4395-97fc-7da6ad314814]",
+    "sender": "secretary",
+    "timestamp": "2025-11-03T09:49:28.982+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T09:49:32.16451+00:00"
+  },
+  {
+    "id": "adf22b79-92e2-4802-b0ef-8d3a7558d1d7",
+    "text": "gratuit",
+    "sender": "doctor",
+    "timestamp": "2025-11-03T11:01:22.836+00:00",
+    "is_read": false,
+    "created_at": "2025-11-03T11:01:23.342105+00:00"
+  },
+  {
+    "id": "9253ca4a-b137-4ddd-b754-64d7bb9387cb",
+    "text": "Dossier envoyé: @[075c9d8e-4744-4f5d-83d0-da384e540dcb]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T12:05:36.378+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T12:05:37.365054+00:00"
+  },
+  {
+    "id": "d7453507-5284-41d1-809a-90be63985d34",
+    "text": "consultation tot 20j",
+    "sender": "doctor",
+    "timestamp": "2025-11-05T12:41:01.304+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T12:41:01.648652+00:00"
+  },
+  {
+    "id": "ea9fd2ba-99e1-4d5d-9862-a11b54db3aa9",
+    "text": "Dossier envoyé: @[e543901f-1408-48d4-bbc9-9afef6b4e31d]",
+    "sender": "secretary",
+    "timestamp": "2025-11-03T09:03:59.721+00:00",
+    "is_read": true,
+    "created_at": "2025-11-03T09:04:02.893908+00:00"
+  },
+  {
+    "id": "135ab0b9-92d1-48d0-8a69-133776693c05",
+    "text": "Dossier envoyé: @[5878ec44-aade-42d5-8293-421373cb7c3d]",
+    "sender": "secretary",
+    "timestamp": "2025-11-03T07:57:59.621+00:00",
+    "is_read": true,
+    "created_at": "2025-11-03T07:58:02.814037+00:00"
+  },
+  {
+    "id": "a501d575-c4b1-4883-ac72-635032f7dbaf",
+    "text": "Dossier envoyé: @[49c6c793-d3d5-45b6-9e3d-044764b33ffd]",
+    "sender": "secretary",
+    "timestamp": "2025-11-03T08:27:01.701+00:00",
+    "is_read": true,
+    "created_at": "2025-11-03T08:27:04.869765+00:00"
+  },
+  {
+    "id": "8650d70c-ff95-4c46-9d37-01eaf0cbea15",
+    "text": "Dossier envoyé: @[73023e44-710a-4816-a2df-91e44bfe5e3d]",
+    "sender": "secretary",
+    "timestamp": "2025-11-04T10:23:33.725+00:00",
+    "is_read": true,
+    "created_at": "2025-11-04T10:23:33.589428+00:00"
+  },
+  {
+    "id": "ff73c17d-63ad-4a24-9349-d4dad9cc8d4e",
+    "text": "Dossier envoyé: @[54e4a4ea-458b-4d08-a594-375e48f7a9e8]",
+    "sender": "secretary",
+    "timestamp": "2025-11-04T13:04:27.656+00:00",
+    "is_read": true,
+    "created_at": "2025-11-04T13:04:27.450289+00:00"
+  },
+  {
+    "id": "3d44e135-cf1f-406d-942a-e04a154312b6",
+    "text": "3000",
+    "sender": "doctor",
+    "timestamp": "2025-11-04T13:30:58.63+00:00",
+    "is_read": false,
+    "created_at": "2025-11-04T13:30:58.890374+00:00"
+  },
+  {
+    "id": "33ffd408-8946-411c-8aca-56f503fe2642",
+    "text": "Dossier envoyé: @[205e400d-fd05-49fe-a04d-c5d4cee55ef9]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T08:53:38.532+00:00",
+    "is_read": true,
+    "created_at": "2025-11-05T08:53:39.79584+00:00"
+  },
+  {
+    "id": "42ae8984-da94-45eb-9f7b-088ba945d134",
+    "text": "Dossier envoyé: @[0f50a4a6-bd36-4562-b3be-e3ee2fa2e232]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T09:31:22.293+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T09:31:23.375572+00:00"
+  },
+  {
+    "id": "463c4a6f-0c15-475f-8829-9a34fcdb5ebc",
+    "text": "Dossier envoyé: @[dbca1e60-b98a-4b13-9947-fba50ae6f1bd]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T09:01:40.73+00:00",
+    "is_read": true,
+    "created_at": "2025-11-05T09:01:41.697339+00:00"
+  },
+  {
+    "id": "33890dbf-e69e-4472-951f-64de086e7631",
+    "text": "Dossier envoyé: @[b2a699a2-6235-4061-b483-c153cd82003b]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T09:45:04.585+00:00",
+    "is_read": true,
+    "created_at": "2025-11-05T09:45:05.570534+00:00"
+  },
+  {
+    "id": "9f3872bd-f038-48d7-bbc2-f969235304ee",
+    "text": "Dossier envoyé: @[32c27ece-f3de-4834-ab6c-7567b2cb682a]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T11:43:47.166+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T11:43:48.158935+00:00"
+  },
+  {
+    "id": "7b1fb142-b66e-41d9-891a-fa74356b18e0",
+    "text": "djihane",
+    "sender": "doctor",
+    "timestamp": "2025-11-05T11:57:16.201+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T11:57:16.038659+00:00"
+  },
+  {
+    "id": "24a09c7d-936f-41d4-964e-5e4f67b5c432",
+    "text": "Dossier envoyé: @[075c9d8e-4744-4f5d-83d0-da384e540dcb]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T12:59:55.806+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T12:59:56.880777+00:00"
+  },
+  {
+    "id": "fe6478c5-edf8-47b0-afff-9b0253b3cbab",
+    "text": "Dossier envoyé: @[24db1032-7526-4a2b-8ad5-2fe9367d43c0]",
+    "sender": "secretary",
+    "timestamp": "2025-11-05T13:03:40.039+00:00",
+    "is_read": false,
+    "created_at": "2025-11-05T13:03:41.143352+00:00"
+  },
+  {
+    "id": "2fa4385e-7e5f-47b3-8292-f6f60cd5ad7d",
+    "text": "1000",
+    "sender": "doctor",
+    "timestamp": "2025-11-06T08:28:08.818+00:00",
+    "is_read": false,
+    "created_at": "2025-11-06T08:28:07.491675+00:00"
+  },
+  {
+    "id": "58c3216f-b0bc-426b-9058-f64ab46b7377",
+    "text": "Dossier envoyé: @[f518745b-be27-4987-aa02-4558a685d99e]",
+    "sender": "secretary",
+    "timestamp": "2025-11-06T08:44:41.486+00:00",
+    "is_read": true,
+    "created_at": "2025-11-06T08:44:43.417167+00:00"
+  },
+  {
+    "id": "39fa8402-63ff-4b5c-ac07-90ab9faf263e",
+    "text": "Dossier envoyé: @[164ff646-623d-451d-ac5e-d09cf5e7ef6e]",
+    "sender": "secretary",
+    "timestamp": "2025-11-06T09:22:42.68+00:00",
+    "is_read": true,
+    "created_at": "2025-11-06T09:22:44.588295+00:00"
+  },
+  {
+    "id": "33ef0d31-af09-4a80-bdc8-fe1c30d4fae1",
+    "text": "Dossier envoyé: @[535b0448-cf04-4395-97fc-7da6ad314814]",
+    "sender": "secretary",
+    "timestamp": "2025-11-06T09:38:24.577+00:00",
+    "is_read": true,
+    "created_at": "2025-11-06T09:38:26.510626+00:00"
+  },
+  {
+    "id": "145a008c-aff2-4c36-9787-a03922104095",
+    "text": "Dossier envoyé: @[90a5b389-d78e-4413-9b39-d593e8527672]",
+    "sender": "secretary",
+    "timestamp": "2025-11-06T08:59:30.954+00:00",
+    "is_read": true,
+    "created_at": "2025-11-06T08:59:32.87972+00:00"
+  },
+  {
+    "id": "c59dacba-cff5-4cfe-9bb4-d54f208e68f1",
+    "text": "Dossier envoyé: @[f6bc85d2-7df8-416c-affd-d173a7559f88]",
+    "sender": "secretary",
+    "timestamp": "2025-11-06T10:20:16.808+00:00",
+    "is_read": true,
+    "created_at": "2025-11-06T10:20:18.771402+00:00"
+  },
+  {
+    "id": "057ee91c-4655-4d1c-8deb-690cfb74f560",
+    "text": "Dossier envoyé: @[dfd81933-fef4-473d-9680-93219ddb777e]",
+    "sender": "secretary",
+    "timestamp": "2025-11-09T10:58:51.34+00:00",
+    "is_read": true,
+    "created_at": "2025-11-09T10:58:51.499977+00:00"
+  }
+]

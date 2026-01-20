@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "type": "doctor",
+    "name": "Dr. Ahmed BENALI",
+    "specialization": "Ophtalmologue",
+    "organization": "Cabinet d'Ophtalmologie Moderne",
+    "phone": "+213 21 456 789",
+    "mobile": "+213 555 123 456",
+    "fax": null,
+    "email": "dr.benali@cabinet-ophtalmologie.dz",
+    "website": null,
+    "emergency_phone": null,
+    "address": {
+      "city": "Alger Centre",
+      "street": "15 Rue Didouche Mourad",
+      "wilaya": "Alger",
+      "country": "Algeria",
+      "postal_code": "16000"
+    },
+    "schedule": {
+      "sunday": "Fermé",
+      "morning": "08:00 - 12:00",
+      "saturday": "08:00 - 13:00",
+      "afternoon": "14:00 - 18:00"
+    },
+    "services": [
+      "Consultation Ophtalmologique",
+      "Fond d'œil",
+      "Mesure de la pression intraoculaire"
+    ],
+    "notes": "Spécialiste en ophtalmologie avec 15 ans d'expérience",
+    "is_active": true,
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-06T17:19:47.448096+00:00"
+  },
+  {
+    "id": 2,
+    "type": "hospital",
+    "name": "Cabinet d'Ophtalmologie Moderne",
+    "specialization": null,
+    "organization": "Cabinet Privé",
+    "phone": "+213 21 654 321",
+    "mobile": null,
+    "fax": null,
+    "email": "contact@cabinet-ophtalmologie.dz",
+    "website": null,
+    "emergency_phone": null,
+    "address": {
+      "city": "Alger Centre",
+      "street": "15 Rue Didouche Mourad",
+      "wilaya": "Alger",
+      "country": "Algeria",
+      "postal_code": "16000"
+    },
+    "schedule": {
+      "sunday": "Fermé",
+      "morning": "08:00 - 12:00",
+      "saturday": "08:00 - 13:00",
+      "afternoon": "14:00 - 18:00"
+    },
+    "services": [
+      "Consultation Ophtalmologique",
+      "Chirurgie de la Cataracte",
+      "Traitement du Glaucome",
+      "Chirurgie Réfractive",
+      "Injection Intravitréenne",
+      "OCT et Angiographie"
+    ],
+    "notes": "Cabinet moderne équipé des dernières technologies",
+    "is_active": true,
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-06T17:19:47.448096+00:00"
+  }
+]

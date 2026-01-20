@@ -1,0 +1,6258 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "title": "standard public schema",
+    "version": "13.0.4"
+  },
+  "host": "oouzzscntdsqqhfsbnli.supabase.co:443",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json",
+    "application/vnd.pgrst.object+json;nulls=stripped",
+    "application/vnd.pgrst.object+json",
+    "text/csv"
+  ],
+  "produces": [
+    "application/json",
+    "application/vnd.pgrst.object+json;nulls=stripped",
+    "application/vnd.pgrst.object+json",
+    "text/csv"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "produces": [
+          "application/openapi+json",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "summary": "OpenAPI description (this document)",
+        "tags": [
+          "Introspection"
+        ]
+      }
+    },
+    "/images": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.images.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/images"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "images"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.images"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "images"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.images.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "images"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.images.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.images.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.images"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "images"
+        ]
+      }
+    },
+    "/consultations": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.consultations.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.prescription"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.dilatation_required"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.detailed_clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_needed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_note"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.follow_up"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_reason"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.inspection_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.general_medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.ophthalmological_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.gonioscopy_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.treatment_plan_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.anterior_segment_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.fundus_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.next_appointment"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.contact_lens_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.documents_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.type"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/consultations"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "consultations"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.consultations"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "consultations"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.consultations.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.prescription"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.dilatation_required"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.detailed_clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_needed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_note"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.follow_up"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_reason"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.inspection_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.general_medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.ophthalmological_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.gonioscopy_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.treatment_plan_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.anterior_segment_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.fundus_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.next_appointment"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.contact_lens_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.documents_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.type"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "consultations"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.consultations.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.prescription"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.dilatation_required"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.detailed_clinical_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_needed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.secretary_note"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.follow_up"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.consultation_reason"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.inspection_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.diagnosis_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.general_medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.ophthalmological_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.gonioscopy_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.motility_exam_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.treatment_plan_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.anterior_segment_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.fundus_od_og"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.next_appointment"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.contact_lens_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.medical_imaging_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_left_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.tonometrie_right_eye"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.documents_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.consultations.type"
+          },
+          {
+            "$ref": "#/parameters/body.consultations"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/contacts": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.contacts.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.specialization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.organization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.mobile"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.fax"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.website"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.emergency_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.schedule"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.services"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/contacts"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "contacts"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.contacts"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "contacts"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.contacts.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.specialization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.organization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.mobile"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.fax"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.website"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.emergency_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.schedule"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.services"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "contacts"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.contacts.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.specialization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.organization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.mobile"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.fax"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.website"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.emergency_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.schedule"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.services"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.contacts.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.contacts"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "contacts"
+        ]
+      }
+    },
+    "/medicines": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.medicines.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.medication_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.strength"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.packaging"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.instructions"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/medicines"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Table storing medicine information for prescription management",
+        "tags": [
+          "medicines"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.medicines"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Table storing medicine information for prescription management",
+        "tags": [
+          "medicines"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.medicines.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.medication_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.strength"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.packaging"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.instructions"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Table storing medicine information for prescription management",
+        "tags": [
+          "medicines"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.medicines.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.medication_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.strength"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.packaging"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.instructions"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.medicines.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.medicines"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Table storing medicine information for prescription management",
+        "tags": [
+          "medicines"
+        ]
+      }
+    },
+    "/tarifs": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.code"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/tarifs"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "tarifs"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.tarifs"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "tarifs"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.code"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "tarifs"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.category"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.is_active"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.duration"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.code"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tarifs.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.tarifs"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "tarifs"
+        ]
+      }
+    },
+    "/appointments": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.appointments.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.start_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.end_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_group"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.group_patient_ids"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.type"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/appointments"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "appointments"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.appointments"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "appointments"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.appointments.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.start_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.end_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_group"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.group_patient_ids"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.type"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "appointments"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.appointments.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.start_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.end_time"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.patient_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_group"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.group_patient_ids"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.appointments.type"
+          },
+          {
+            "$ref": "#/parameters/body.appointments"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "appointments"
+        ]
+      }
+    },
+    "/antecedents": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/antecedents"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "antecedents"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.antecedents"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "antecedents"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "antecedents"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.antecedents.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.antecedents"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "antecedents"
+        ]
+      }
+    },
+    "/workflow_events": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.event_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.appointment_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.metadata"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.timestamp"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/workflow_events"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "workflow_events"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.workflow_events"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "workflow_events"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.event_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.appointment_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.metadata"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.timestamp"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "workflow_events"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.event_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.appointment_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.metadata"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.workflow_events.timestamp"
+          },
+          {
+            "$ref": "#/parameters/body.workflow_events"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "workflow_events"
+        ]
+      }
+    },
+    "/lentille_conv": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.num_enr"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.idtab_conversion"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lunettes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_plus"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_moins"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/lentille_conv"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "lentille_conv"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.lentille_conv"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "lentille_conv"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.num_enr"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.idtab_conversion"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lunettes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_plus"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_moins"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "lentille_conv"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.num_enr"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.idtab_conversion"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lunettes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_plus"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.lentille_conv.lun_moins"
+          },
+          {
+            "$ref": "#/parameters/body.lentille_conv"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "lentille_conv"
+        ]
+      }
+    },
+    "/todo_items": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.is_completed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/todo_items"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "todo_items"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.todo_items"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "todo_items"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.is_completed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "todo_items"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.is_completed"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.todo_items.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.todo_items"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "todo_items"
+        ]
+      }
+    },
+    "/invoices": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.invoices.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.base_price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.discount"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.is_free"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.total"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.paid"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/invoices"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.invoices"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.invoices.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.base_price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.discount"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.is_free"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.total"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.paid"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.invoices.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.base_price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.discount"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.is_free"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.total"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.paid"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.invoices.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.invoices"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/waitlist_entries": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_finished"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/waitlist_entries"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "waitlist_entries"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.waitlist_entries"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "waitlist_entries"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_finished"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "waitlist_entries"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.arrived_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.patient_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.state"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.is_finished"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.waitlist_entries.dilation_type"
+          },
+          {
+            "$ref": "#/parameters/body.waitlist_entries"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "waitlist_entries"
+        ]
+      }
+    },
+    "/messages": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.messages.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.sender"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.timestamp"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.is_read"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/messages"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "messages"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.messages"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "messages"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.messages.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.sender"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.timestamp"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.is_read"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "messages"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.messages.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.text"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.sender"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.timestamp"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.is_read"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.messages.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.messages"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "messages"
+        ]
+      }
+    },
+    "/documents": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.documents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.file_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/documents"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "documents"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.documents"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "documents"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.documents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.file_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "documents"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.documents.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.file_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.consultation_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.documents.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.documents"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/patients": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.patients.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.surname"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dob"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone_number"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phoneNumber"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.blood_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.personne"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/patients"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "patients"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.patients"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "patients"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.patients.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.surname"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dob"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone_number"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phoneNumber"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.blood_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.personne"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "patients"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.patients.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.surname"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dob"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone_number"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phoneNumber"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.blood_type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_start"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.medical_history"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.needs_dilation"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.is_dilated"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_status"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.dilation_completed_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.consultation_data"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.payment_info"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.notes"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.patients.personne"
+          },
+          {
+            "$ref": "#/parameters/body.patients"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "tags": [
+          "patients"
+        ]
+      }
+    },
+    "/rpc/daitch_mokotoff": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) daitch_mokotoff"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) daitch_mokotoff"
+        ]
+      }
+    },
+    "/rpc/text_soundex": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) text_soundex"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) text_soundex"
+        ]
+      }
+    },
+    "/rpc/soundex": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) soundex"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) soundex"
+        ]
+      }
+    },
+    "/rpc/show_trgm": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) show_trgm"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) show_trgm"
+        ]
+      }
+    },
+    "/rpc/show_limit": {
+      "get": {
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) show_limit"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) show_limit"
+        ]
+      }
+    },
+    "/rpc/dmetaphone_alt": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) dmetaphone_alt"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) dmetaphone_alt"
+        ]
+      }
+    },
+    "/rpc/search_patients": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "search",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) search_patients"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "search": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "search"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) search_patients"
+        ]
+      }
+    },
+    "/rpc/dmetaphone": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) dmetaphone"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                ""
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) dmetaphone"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "images": {
+      "required": [
+        "id",
+        "type",
+        "url",
+        "date",
+        "consultation_id",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "url": {
+          "format": "text",
+          "type": "string"
+        },
+        "title": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "description": {
+          "format": "text",
+          "type": "string"
+        },
+        "date": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "consultation_id": {
+          "description": "Note:\nThis is a Foreign Key to `consultations.id`.<fk table='consultations' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "consultations": {
+      "required": [
+        "id",
+        "date",
+        "created_at",
+        "updated_at",
+        "patient_id",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "date": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "notes": {
+          "format": "text",
+          "type": "string"
+        },
+        "diagnosis": {
+          "format": "text",
+          "type": "string"
+        },
+        "prescription": {
+          "format": "text",
+          "type": "string"
+        },
+        "duration": {
+          "default": 30,
+          "format": "integer",
+          "type": "integer"
+        },
+        "clinical_exam": {
+          "format": "text",
+          "type": "string"
+        },
+        "dilatation_required": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "left_eye": {
+          "format": "jsonb"
+        },
+        "right_eye": {
+          "format": "jsonb"
+        },
+        "detailed_clinical_exam": {
+          "format": "jsonb"
+        },
+        "secretary_needed": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "secretary_note": {
+          "format": "text",
+          "type": "string"
+        },
+        "follow_up": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "consultation_type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "patient_id": {
+          "description": "Note:\nThis is a Foreign Key to `patients.id`.<fk table='patients' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "tonometrie_data": {
+          "description": "Tonometry measurements for both eyes: {\"left_eye\": {...}, \"right_eye\": {...}}",
+          "format": "jsonb"
+        },
+        "consultation_reason": {
+          "description": "Reason for consultation (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "inspection_od_og": {
+          "description": "Inspection findings for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "diagnosis_od_og": {
+          "description": "Diagnosis for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "general_medical_history": {
+          "description": "General medical history (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "ophthalmological_history": {
+          "description": "Ophthalmological history (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "motility_exam": {
+          "description": "General motility examination notes (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "gonioscopy_notes": {
+          "description": "Gonioscopy examination notes (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "medical_imaging_notes": {
+          "description": "Medical imaging general notes (mono field)",
+          "format": "text",
+          "type": "string"
+        },
+        "motility_exam_od_og": {
+          "description": "Motility exam for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "treatment_plan_od_og": {
+          "description": "Treatment plan for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "anterior_segment_od_og": {
+          "description": "Anterior segment exam for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "fundus_od_og": {
+          "description": "Fundus examination for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+          "format": "jsonb"
+        },
+        "next_appointment": {
+          "description": "Next appointment data: {\"timeframe\": \"\", \"reason\": \"\", \"date\": \"\"}",
+          "format": "jsonb"
+        },
+        "contact_lens_data": {
+          "description": "Contact lens data for both eyes: {\"right\": {...}, \"left\": {...}}",
+          "format": "jsonb"
+        },
+        "medical_imaging_data": {
+          "description": "Medical imaging data: {\"radiography\": [], \"bilans\": [], \"notes\": \"\"}",
+          "format": "jsonb"
+        },
+        "tonometrie_left_eye": {
+          "format": "jsonb"
+        },
+        "tonometrie_right_eye": {
+          "format": "jsonb"
+        },
+        "documents_data": {
+          "description": "Stores DocumentsSection data including bilan fields, report data, absence data, work stop data, and other document-related information",
+          "format": "jsonb"
+        },
+        "type": {
+          "default": 1,
+          "description": "Note:\nThis is a Foreign Key to `tarifs.id`.<fk table='tarifs' column='id'/>",
+          "format": "integer",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "contacts": {
+      "required": [
+        "id",
+        "type",
+        "name",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "integer",
+          "type": "integer"
+        },
+        "type": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "specialization": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "organization": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "phone": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "mobile": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "fax": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "email": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "website": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "emergency_phone": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "address": {
+          "format": "jsonb"
+        },
+        "schedule": {
+          "format": "jsonb"
+        },
+        "services": {
+          "format": "text[]",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "format": "text",
+          "type": "string"
+        },
+        "is_active": {
+          "default": true,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "medicines": {
+      "description": "Table storing medicine information for prescription management",
+      "required": [
+        "id",
+        "medication_name"
+      ],
+      "properties": {
+        "id": {
+          "default": "gen_random_uuid()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "medication_name": {
+          "description": "Name of the medication",
+          "format": "text",
+          "type": "string"
+        },
+        "strength": {
+          "description": "Dosage or concentration (e.g., \"35mg\", \"1%\")",
+          "format": "text",
+          "type": "string"
+        },
+        "type": {
+          "description": "Form of medication (e.g., \"collyre\", \"cp\", \"injection\")",
+          "format": "text",
+          "type": "string"
+        },
+        "packaging": {
+          "description": "Packaging information (e.g., \"01 fl\", \"02 btes\")",
+          "format": "text",
+          "type": "string"
+        },
+        "instructions": {
+          "description": "Default administration instructions",
+          "format": "text",
+          "type": "string"
+        },
+        "category": {
+          "description": "Medicine category (Ophthalmic, Tablet/Capsule, Injectable, etc.)",
+          "format": "text",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "now()",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "now()",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "tarifs": {
+      "required": [
+        "id",
+        "name",
+        "price",
+        "category",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "integer",
+          "type": "integer"
+        },
+        "name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "description": {
+          "format": "text",
+          "type": "string"
+        },
+        "price": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "category": {
+          "format": "character varying",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "is_active": {
+          "default": true,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "duration": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "code": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "appointments": {
+      "required": [
+        "id",
+        "title",
+        "start_time",
+        "end_time",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "title": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "start_time": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "end_time": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "patient_id": {
+          "description": "Note:\nThis is a Foreign Key to `patients.id`.<fk table='patients' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "patient_name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "notes": {
+          "format": "text",
+          "type": "string"
+        },
+        "status": {
+          "default": "SCHEDULED",
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "state": {
+          "default": "booked",
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "is_group": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "group_patient_ids": {
+          "default": "",
+          "format": "text",
+          "type": "string"
+        },
+        "consultation_type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "needs_dilation": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "is_dilated": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "dilation_status": {
+          "default": "non dilate",
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "dilation_completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "arrived_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "consultation_start": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "payment_info": {
+          "format": "jsonb"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "dilation_type": {
+          "description": "Type of dilation medication used",
+          "format": "text",
+          "type": "string"
+        },
+        "type": {
+          "description": "Note:\nThis is a Foreign Key to `tarifs.id`.<fk table='tarifs' column='id'/>",
+          "format": "integer",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "antecedents": {
+      "required": [
+        "id",
+        "description",
+        "date",
+        "type",
+        "patient_id",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "description": {
+          "format": "text",
+          "type": "string"
+        },
+        "date": {
+          "format": "date",
+          "type": "string"
+        },
+        "type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "patient_id": {
+          "description": "Note:\nThis is a Foreign Key to `patients.id`.<fk table='patients' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "workflow_events": {
+      "required": [
+        "id",
+        "event_type",
+        "timestamp"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "event_type": {
+          "format": "character varying",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "patient_id": {
+          "description": "Note:\nThis is a Foreign Key to `patients.id`.<fk table='patients' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "appointment_id": {
+          "description": "Note:\nThis is a Foreign Key to `appointments.id`.<fk table='appointments' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "consultation_id": {
+          "description": "Note:\nThis is a Foreign Key to `consultations.id`.<fk table='consultations' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "metadata": {
+          "format": "jsonb"
+        },
+        "timestamp": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "lentille_conv": {
+      "required": [
+        "id",
+        "num_enr",
+        "idtab_conversion",
+        "lunettes"
+      ],
+      "properties": {
+        "id": {
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "integer",
+          "type": "integer"
+        },
+        "num_enr": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "idtab_conversion": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "lunettes": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "lun_plus": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "lun_moins": {
+          "format": "numeric",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "todo_items": {
+      "required": [
+        "id",
+        "text",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "text": {
+          "format": "text",
+          "type": "string"
+        },
+        "is_completed": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "date": {
+          "default": "CURRENT_DATE",
+          "format": "date",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "invoices": {
+      "required": [
+        "id",
+        "base_price",
+        "total",
+        "date",
+        "consultation_id",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "base_price": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "discount": {
+          "default": 0,
+          "format": "numeric",
+          "type": "number"
+        },
+        "is_free": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "total": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "paid": {
+          "default": 0,
+          "format": "numeric",
+          "type": "number"
+        },
+        "date": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "consultation_id": {
+          "description": "Note:\nThis is a Foreign Key to `consultations.id`.<fk table='consultations' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "waitlist_entries": {
+      "required": [
+        "id",
+        "arrived_at",
+        "patient_id",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "arrived_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "date": {
+          "default": "CURRENT_DATE",
+          "format": "date",
+          "type": "string"
+        },
+        "patient_id": {
+          "description": "Note:\nThis is a Foreign Key to `patients.id`.<fk table='patients' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "needs_dilation": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "is_dilated": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "dilation_completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "dilation_status": {
+          "default": "non dilate",
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "state": {
+          "default": "waiting",
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "consultation_start": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "is_finished": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "notes": {
+          "format": "text",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "dilation_type": {
+          "description": "Type of dilation medication used",
+          "format": "text",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "messages": {
+      "required": [
+        "id",
+        "text",
+        "sender",
+        "timestamp",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "text": {
+          "format": "text",
+          "type": "string"
+        },
+        "sender": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "timestamp": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "is_read": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "documents": {
+      "required": [
+        "id",
+        "title",
+        "file_url",
+        "type",
+        "date",
+        "consultation_id",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "title": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "file_url": {
+          "format": "text",
+          "type": "string"
+        },
+        "type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "date": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "consultation_id": {
+          "description": "Note:\nThis is a Foreign Key to `consultations.id`.<fk table='consultations' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "patients": {
+      "required": [
+        "id",
+        "name",
+        "surname",
+        "dob",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "surname": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "dob": {
+          "format": "date",
+          "type": "string"
+        },
+        "address": {
+          "format": "jsonb"
+        },
+        "phone_number": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "phoneNumber": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "phone": {
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "email": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "blood_type": {
+          "format": "character varying",
+          "maxLength": 10,
+          "type": "string"
+        },
+        "consultation_start": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "medical_history": {
+          "format": "text",
+          "type": "string"
+        },
+        "needs_dilation": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "is_dilated": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "dilation_status": {
+          "default": "non dilate",
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "dilation_completed_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "consultation_data": {
+          "format": "jsonb"
+        },
+        "payment_info": {
+          "format": "jsonb"
+        },
+        "notes": {
+          "format": "text",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "timezone('utc'::text, now())",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "personne": {
+          "description": "Personne field for patient information",
+          "format": "text",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "parameters": {
+    "preferParams": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [],
+      "in": "header",
+      "type": "string"
+    },
+    "preferReturn": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "return=representation",
+        "return=minimal",
+        "return=none"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "preferCount": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "count=none"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "preferPost": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "return=representation",
+        "return=minimal",
+        "return=none",
+        "resolution=ignore-duplicates",
+        "resolution=merge-duplicates"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "select": {
+      "name": "select",
+      "description": "Filtering Columns",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "on_conflict": {
+      "name": "on_conflict",
+      "description": "On Conflict",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "order": {
+      "name": "order",
+      "description": "Ordering",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "range": {
+      "name": "Range",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "header",
+      "type": "string"
+    },
+    "rangeUnit": {
+      "name": "Range-Unit",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "default": "items",
+      "in": "header",
+      "type": "string"
+    },
+    "offset": {
+      "name": "offset",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "limit": {
+      "name": "limit",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.images": {
+      "name": "images",
+      "description": "images",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/images"
+      }
+    },
+    "rowFilter.images.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.url": {
+      "name": "url",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.title": {
+      "name": "title",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.description": {
+      "name": "description",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.consultation_id": {
+      "name": "consultation_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.images.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.consultations": {
+      "name": "consultations",
+      "description": "consultations",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/consultations"
+      }
+    },
+    "rowFilter.consultations.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.notes": {
+      "name": "notes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.diagnosis": {
+      "name": "diagnosis",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.prescription": {
+      "name": "prescription",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.duration": {
+      "name": "duration",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.clinical_exam": {
+      "name": "clinical_exam",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.dilatation_required": {
+      "name": "dilatation_required",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.left_eye": {
+      "name": "left_eye",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.right_eye": {
+      "name": "right_eye",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.detailed_clinical_exam": {
+      "name": "detailed_clinical_exam",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.secretary_needed": {
+      "name": "secretary_needed",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.secretary_note": {
+      "name": "secretary_note",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.follow_up": {
+      "name": "follow_up",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.consultation_type": {
+      "name": "consultation_type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.patient_id": {
+      "name": "patient_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.tonometrie_data": {
+      "name": "tonometrie_data",
+      "description": "Tonometry measurements for both eyes: {\"left_eye\": {...}, \"right_eye\": {...}}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.consultation_reason": {
+      "name": "consultation_reason",
+      "description": "Reason for consultation (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.inspection_od_og": {
+      "name": "inspection_od_og",
+      "description": "Inspection findings for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.diagnosis_od_og": {
+      "name": "diagnosis_od_og",
+      "description": "Diagnosis for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.general_medical_history": {
+      "name": "general_medical_history",
+      "description": "General medical history (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.ophthalmological_history": {
+      "name": "ophthalmological_history",
+      "description": "Ophthalmological history (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.motility_exam": {
+      "name": "motility_exam",
+      "description": "General motility examination notes (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.gonioscopy_notes": {
+      "name": "gonioscopy_notes",
+      "description": "Gonioscopy examination notes (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.medical_imaging_notes": {
+      "name": "medical_imaging_notes",
+      "description": "Medical imaging general notes (mono field)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.motility_exam_od_og": {
+      "name": "motility_exam_od_og",
+      "description": "Motility exam for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.treatment_plan_od_og": {
+      "name": "treatment_plan_od_og",
+      "description": "Treatment plan for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.anterior_segment_od_og": {
+      "name": "anterior_segment_od_og",
+      "description": "Anterior segment exam for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.fundus_od_og": {
+      "name": "fundus_od_og",
+      "description": "Fundus examination for both eyes: {\"od\": \"...\", \"og\": \"...\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.next_appointment": {
+      "name": "next_appointment",
+      "description": "Next appointment data: {\"timeframe\": \"\", \"reason\": \"\", \"date\": \"\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.contact_lens_data": {
+      "name": "contact_lens_data",
+      "description": "Contact lens data for both eyes: {\"right\": {...}, \"left\": {...}}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.medical_imaging_data": {
+      "name": "medical_imaging_data",
+      "description": "Medical imaging data: {\"radiography\": [], \"bilans\": [], \"notes\": \"\"}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.tonometrie_left_eye": {
+      "name": "tonometrie_left_eye",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.tonometrie_right_eye": {
+      "name": "tonometrie_right_eye",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.documents_data": {
+      "name": "documents_data",
+      "description": "Stores DocumentsSection data including bilan fields, report data, absence data, work stop data, and other document-related information",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.consultations.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.contacts": {
+      "name": "contacts",
+      "description": "contacts",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/contacts"
+      }
+    },
+    "rowFilter.contacts.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.name": {
+      "name": "name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.specialization": {
+      "name": "specialization",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.organization": {
+      "name": "organization",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.phone": {
+      "name": "phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.mobile": {
+      "name": "mobile",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.fax": {
+      "name": "fax",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.email": {
+      "name": "email",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.website": {
+      "name": "website",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.emergency_phone": {
+      "name": "emergency_phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.address": {
+      "name": "address",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.schedule": {
+      "name": "schedule",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.services": {
+      "name": "services",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.notes": {
+      "name": "notes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.is_active": {
+      "name": "is_active",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.contacts.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.medicines": {
+      "name": "medicines",
+      "description": "medicines",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/medicines"
+      }
+    },
+    "rowFilter.medicines.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.medication_name": {
+      "name": "medication_name",
+      "description": "Name of the medication",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.strength": {
+      "name": "strength",
+      "description": "Dosage or concentration (e.g., \"35mg\", \"1%\")",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.type": {
+      "name": "type",
+      "description": "Form of medication (e.g., \"collyre\", \"cp\", \"injection\")",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.packaging": {
+      "name": "packaging",
+      "description": "Packaging information (e.g., \"01 fl\", \"02 btes\")",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.instructions": {
+      "name": "instructions",
+      "description": "Default administration instructions",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.category": {
+      "name": "category",
+      "description": "Medicine category (Ophthalmic, Tablet/Capsule, Injectable, etc.)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.medicines.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.tarifs": {
+      "name": "tarifs",
+      "description": "tarifs",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/tarifs"
+      }
+    },
+    "rowFilter.tarifs.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.name": {
+      "name": "name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.description": {
+      "name": "description",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.price": {
+      "name": "price",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.category": {
+      "name": "category",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.is_active": {
+      "name": "is_active",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.duration": {
+      "name": "duration",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.code": {
+      "name": "code",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tarifs.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.appointments": {
+      "name": "appointments",
+      "description": "appointments",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/appointments"
+      }
+    },
+    "rowFilter.appointments.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.title": {
+      "name": "title",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.start_time": {
+      "name": "start_time",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.end_time": {
+      "name": "end_time",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.patient_id": {
+      "name": "patient_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.patient_name": {
+      "name": "patient_name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.notes": {
+      "name": "notes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.status": {
+      "name": "status",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.state": {
+      "name": "state",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.is_group": {
+      "name": "is_group",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.group_patient_ids": {
+      "name": "group_patient_ids",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.consultation_type": {
+      "name": "consultation_type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.needs_dilation": {
+      "name": "needs_dilation",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.is_dilated": {
+      "name": "is_dilated",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.dilation_status": {
+      "name": "dilation_status",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.dilation_completed_at": {
+      "name": "dilation_completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.arrived_at": {
+      "name": "arrived_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.consultation_start": {
+      "name": "consultation_start",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.completed_at": {
+      "name": "completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.payment_info": {
+      "name": "payment_info",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.dilation_type": {
+      "name": "dilation_type",
+      "description": "Type of dilation medication used",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.appointments.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.antecedents": {
+      "name": "antecedents",
+      "description": "antecedents",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/antecedents"
+      }
+    },
+    "rowFilter.antecedents.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.antecedents.description": {
+      "name": "description",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.antecedents.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.antecedents.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.antecedents.patient_id": {
+      "name": "patient_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.antecedents.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.workflow_events": {
+      "name": "workflow_events",
+      "description": "workflow_events",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/workflow_events"
+      }
+    },
+    "rowFilter.workflow_events.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.event_type": {
+      "name": "event_type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.patient_id": {
+      "name": "patient_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.appointment_id": {
+      "name": "appointment_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.consultation_id": {
+      "name": "consultation_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.metadata": {
+      "name": "metadata",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.workflow_events.timestamp": {
+      "name": "timestamp",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.lentille_conv": {
+      "name": "lentille_conv",
+      "description": "lentille_conv",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/lentille_conv"
+      }
+    },
+    "rowFilter.lentille_conv.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.lentille_conv.num_enr": {
+      "name": "num_enr",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.lentille_conv.idtab_conversion": {
+      "name": "idtab_conversion",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.lentille_conv.lunettes": {
+      "name": "lunettes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.lentille_conv.lun_plus": {
+      "name": "lun_plus",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.lentille_conv.lun_moins": {
+      "name": "lun_moins",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.todo_items": {
+      "name": "todo_items",
+      "description": "todo_items",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/todo_items"
+      }
+    },
+    "rowFilter.todo_items.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.text": {
+      "name": "text",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.is_completed": {
+      "name": "is_completed",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.completed_at": {
+      "name": "completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.todo_items.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.invoices": {
+      "name": "invoices",
+      "description": "invoices",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/invoices"
+      }
+    },
+    "rowFilter.invoices.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.base_price": {
+      "name": "base_price",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.discount": {
+      "name": "discount",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.is_free": {
+      "name": "is_free",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.total": {
+      "name": "total",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.paid": {
+      "name": "paid",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.consultation_id": {
+      "name": "consultation_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.invoices.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.waitlist_entries": {
+      "name": "waitlist_entries",
+      "description": "waitlist_entries",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/waitlist_entries"
+      }
+    },
+    "rowFilter.waitlist_entries.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.arrived_at": {
+      "name": "arrived_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.patient_id": {
+      "name": "patient_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.needs_dilation": {
+      "name": "needs_dilation",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.is_dilated": {
+      "name": "is_dilated",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.dilation_completed_at": {
+      "name": "dilation_completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.dilation_status": {
+      "name": "dilation_status",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.state": {
+      "name": "state",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.consultation_start": {
+      "name": "consultation_start",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.completed_at": {
+      "name": "completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.is_finished": {
+      "name": "is_finished",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.notes": {
+      "name": "notes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.waitlist_entries.dilation_type": {
+      "name": "dilation_type",
+      "description": "Type of dilation medication used",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.messages": {
+      "name": "messages",
+      "description": "messages",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/messages"
+      }
+    },
+    "rowFilter.messages.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.messages.text": {
+      "name": "text",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.messages.sender": {
+      "name": "sender",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.messages.timestamp": {
+      "name": "timestamp",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.messages.is_read": {
+      "name": "is_read",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.messages.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.documents": {
+      "name": "documents",
+      "description": "documents",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/documents"
+      }
+    },
+    "rowFilter.documents.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.title": {
+      "name": "title",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.file_url": {
+      "name": "file_url",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.date": {
+      "name": "date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.consultation_id": {
+      "name": "consultation_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.documents.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.patients": {
+      "name": "patients",
+      "description": "patients",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/patients"
+      }
+    },
+    "rowFilter.patients.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.name": {
+      "name": "name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.surname": {
+      "name": "surname",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.dob": {
+      "name": "dob",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.address": {
+      "name": "address",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.phone_number": {
+      "name": "phone_number",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.phoneNumber": {
+      "name": "phoneNumber",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.phone": {
+      "name": "phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.email": {
+      "name": "email",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.blood_type": {
+      "name": "blood_type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.consultation_start": {
+      "name": "consultation_start",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.medical_history": {
+      "name": "medical_history",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.needs_dilation": {
+      "name": "needs_dilation",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.is_dilated": {
+      "name": "is_dilated",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.dilation_status": {
+      "name": "dilation_status",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.dilation_completed_at": {
+      "name": "dilation_completed_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.consultation_data": {
+      "name": "consultation_data",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.payment_info": {
+      "name": "payment_info",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.notes": {
+      "name": "notes",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.patients.personne": {
+      "name": "personne",
+      "description": "Personne field for patient information",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    }
+  },
+  "externalDocs": {
+    "description": "PostgREST Documentation",
+    "url": "https://postgrest.org/en/v\"13\"/references/api.html"
+  }
+}

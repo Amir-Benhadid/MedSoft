@@ -1,0 +1,2737 @@
+[
+  {
+    "id": "a954488d-2cb1-4311-a49b-973f863e8472",
+    "event_type": "consultation_started",
+    "patient_id": "d75c8f41-99a5-4957-85ae-e2268adc9152",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-d75c8f41-99a5-4957-85ae-e2268adc9152-2025-09-07"
+    },
+    "timestamp": "2025-09-07T09:25:16.019552+00:00"
+  },
+  {
+    "id": "7e580027-4223-46f0-949b-1daebf56467e",
+    "event_type": "consultation_completed",
+    "patient_id": "d75c8f41-99a5-4957-85ae-e2268adc9152",
+    "appointment_id": null,
+    "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2",
+    "metadata": {
+      "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2"
+    },
+    "timestamp": "2025-09-07T09:25:21.162771+00:00"
+  },
+  {
+    "id": "94e46c5d-1e1f-4180-b0a3-3f40876a8860",
+    "event_type": "payment_completed",
+    "patient_id": "d75c8f41-99a5-4957-85ae-e2268adc9152",
+    "appointment_id": null,
+    "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-07T09:25:29.998Z",
+      "partialAmount": 0,
+      "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2"
+    },
+    "timestamp": "2025-09-07T09:25:29.925881+00:00"
+  },
+  {
+    "id": "ebc7309e-cbcc-4473-8ce5-bdcdcff10ec8",
+    "event_type": "consultation_started",
+    "patient_id": "d75c8f41-99a5-4957-85ae-e2268adc9152",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-d75c8f41-99a5-4957-85ae-e2268adc9152-2025-09-07"
+    },
+    "timestamp": "2025-09-07T09:27:17.659436+00:00"
+  },
+  {
+    "id": "cc3c82e8-9d57-43cc-a238-def005011b79",
+    "event_type": "payment_completed",
+    "patient_id": "d75c8f41-99a5-4957-85ae-e2268adc9152",
+    "appointment_id": null,
+    "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-07T09:28:30.914Z",
+      "partialAmount": 0,
+      "consultation_id": "c37cb0d7-50a8-4822-8f93-30ffedeac5b2"
+    },
+    "timestamp": "2025-09-07T09:28:30.71825+00:00"
+  },
+  {
+    "id": "c978e269-36e8-4027-ad11-62e49f3b4571",
+    "event_type": "consultation_started",
+    "patient_id": "61297755-d12e-4385-be13-f25e6c72c56c",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-61297755-d12e-4385-be13-f25e6c72c56c-2025-09-07"
+    },
+    "timestamp": "2025-09-07T09:28:37.132129+00:00"
+  },
+  {
+    "id": "8473152f-6475-4b29-a08e-83121810b56d",
+    "event_type": "consultation_started",
+    "patient_id": "ff1b59cf-cc15-4dfd-8e61-c27e3a7294f9",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-ff1b59cf-cc15-4dfd-8e61-c27e3a7294f9-2025-09-07"
+    },
+    "timestamp": "2025-09-07T12:30:47.588666+00:00"
+  },
+  {
+    "id": "814f110d-8693-4ad0-8484-7758ca6cdecf",
+    "event_type": "consultation_started",
+    "patient_id": "c1b06c71-5d65-4f6b-a130-38bde8d100d6",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-c1b06c71-5d65-4f6b-a130-38bde8d100d6-2025-09-07"
+    },
+    "timestamp": "2025-09-07T13:18:55.731999+00:00"
+  },
+  {
+    "id": "f65b7add-ddec-4b72-9a7f-647b2c7fca9f",
+    "event_type": "consultation_started",
+    "patient_id": "6a635666-b3b8-44ac-b36d-9576ca7bee84",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-6a635666-b3b8-44ac-b36d-9576ca7bee84-2025-09-07"
+    },
+    "timestamp": "2025-09-07T13:28:21.967243+00:00"
+  },
+  {
+    "id": "44df6f97-9e09-4ad6-a0e6-ef7719b79b80",
+    "event_type": "payment_completed",
+    "patient_id": "c1b06c71-5d65-4f6b-a130-38bde8d100d6",
+    "appointment_id": null,
+    "consultation_id": "cf8610a3-48ee-4a0f-80cc-127875673949",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-07T13:31:04.276Z",
+      "partialAmount": 0,
+      "consultation_id": "cf8610a3-48ee-4a0f-80cc-127875673949"
+    },
+    "timestamp": "2025-09-07T13:31:05.908979+00:00"
+  },
+  {
+    "id": "68c4e91f-a311-4d52-8c74-4e165c3a8fe2",
+    "event_type": "payment_completed",
+    "patient_id": "6a635666-b3b8-44ac-b36d-9576ca7bee84",
+    "appointment_id": null,
+    "consultation_id": "483e0836-6ce5-4387-9cbd-077534abc3fe",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-07T13:36:26.101Z",
+      "partialAmount": 0,
+      "consultation_id": "483e0836-6ce5-4387-9cbd-077534abc3fe"
+    },
+    "timestamp": "2025-09-07T13:36:27.735868+00:00"
+  },
+  {
+    "id": "330fc5ae-d075-417e-8f4b-47af8dada46e",
+    "event_type": "consultation_started",
+    "patient_id": "8e9b7a71-39ce-457f-9a9e-c7ed1db7a167",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-8e9b7a71-39ce-457f-9a9e-c7ed1db7a167-2025-09-08"
+    },
+    "timestamp": "2025-09-08T08:24:52.595904+00:00"
+  },
+  {
+    "id": "3c034a8e-06d1-42fe-9987-4cf3b5cc9c6b",
+    "event_type": "payment_completed",
+    "patient_id": "8e9b7a71-39ce-457f-9a9e-c7ed1db7a167",
+    "appointment_id": null,
+    "consultation_id": "11c4c88d-ac7b-4c7c-bd20-d39f2b903d23",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T08:30:37.598Z",
+      "partialAmount": 0,
+      "consultation_id": "11c4c88d-ac7b-4c7c-bd20-d39f2b903d23"
+    },
+    "timestamp": "2025-09-08T08:30:38.947725+00:00"
+  },
+  {
+    "id": "9d4060f1-30ff-4168-b18a-3c3ca1546aee",
+    "event_type": "consultation_started",
+    "patient_id": "5320c78e-a922-488d-a5c4-606ab7fc7588",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-5320c78e-a922-488d-a5c4-606ab7fc7588-2025-09-08"
+    },
+    "timestamp": "2025-09-08T08:30:45.606232+00:00"
+  },
+  {
+    "id": "e5e9b58d-7c15-488d-a05c-2a35994066d1",
+    "event_type": "payment_completed",
+    "patient_id": "5320c78e-a922-488d-a5c4-606ab7fc7588",
+    "appointment_id": null,
+    "consultation_id": "10397759-a2c6-494b-8f2f-0e75bd9c4cd7",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T08:38:42.513Z",
+      "partialAmount": 0,
+      "consultation_id": "10397759-a2c6-494b-8f2f-0e75bd9c4cd7"
+    },
+    "timestamp": "2025-09-08T08:38:43.870875+00:00"
+  },
+  {
+    "id": "909aaa2d-27b2-47e9-b634-abd89d0941ef",
+    "event_type": "consultation_started",
+    "patient_id": "74fd9bc4-daed-4ff9-972c-7b9d5832f7a1",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-74fd9bc4-daed-4ff9-972c-7b9d5832f7a1-2025-09-08"
+    },
+    "timestamp": "2025-09-08T08:38:47.914862+00:00"
+  },
+  {
+    "id": "c62e927b-ca85-433d-a542-c00e19a4efd5",
+    "event_type": "consultation_started",
+    "patient_id": "5b09cdfd-64ff-46b5-9f42-f29723e3da3d",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-5b09cdfd-64ff-46b5-9f42-f29723e3da3d-2025-09-08"
+    },
+    "timestamp": "2025-09-08T08:54:39.518409+00:00"
+  },
+  {
+    "id": "d1000c2e-fe03-4d76-8388-96930cee69d1",
+    "event_type": "payment_completed",
+    "patient_id": "74fd9bc4-daed-4ff9-972c-7b9d5832f7a1",
+    "appointment_id": null,
+    "consultation_id": "edf3c2b2-57e6-433d-9d23-808966e7acee",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T08:56:04.907Z",
+      "partialAmount": 0,
+      "consultation_id": "edf3c2b2-57e6-433d-9d23-808966e7acee"
+    },
+    "timestamp": "2025-09-08T08:56:06.200973+00:00"
+  },
+  {
+    "id": "8a0addfd-c87d-43cd-addb-c2dc5ae96b20",
+    "event_type": "consultation_started",
+    "patient_id": "23d60c34-fad0-47be-a4a1-e64855a79339",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-23d60c34-fad0-47be-a4a1-e64855a79339-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:06:08.333829+00:00"
+  },
+  {
+    "id": "a102d489-d77c-4b17-be24-e7bbdb9ca423",
+    "event_type": "consultation_started",
+    "patient_id": "49c00f6a-6daf-44bd-ac0f-e06d60255371",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-49c00f6a-6daf-44bd-ac0f-e06d60255371-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:06:28.546845+00:00"
+  },
+  {
+    "id": "e89aac5f-b4c1-4b2d-af1d-c07523e484e2",
+    "event_type": "payment_completed",
+    "patient_id": "5b09cdfd-64ff-46b5-9f42-f29723e3da3d",
+    "appointment_id": null,
+    "consultation_id": "baca5a6b-c9e7-403d-996e-9867ca287f14",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:07:31.471Z",
+      "partialAmount": 0,
+      "consultation_id": "baca5a6b-c9e7-403d-996e-9867ca287f14"
+    },
+    "timestamp": "2025-09-08T09:07:33.091864+00:00"
+  },
+  {
+    "id": "adf29bbf-5c77-4802-aceb-44e2050d7095",
+    "event_type": "payment_completed",
+    "patient_id": "23d60c34-fad0-47be-a4a1-e64855a79339",
+    "appointment_id": null,
+    "consultation_id": "b78dd1a2-400f-44f9-9ea6-400e9afb0774",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:24:35.503Z",
+      "partialAmount": 0,
+      "consultation_id": "b78dd1a2-400f-44f9-9ea6-400e9afb0774"
+    },
+    "timestamp": "2025-09-08T09:24:36.861261+00:00"
+  },
+  {
+    "id": "79464c54-1b63-4b2e-96fa-60157cbdbf01",
+    "event_type": "payment_completed",
+    "patient_id": "49c00f6a-6daf-44bd-ac0f-e06d60255371",
+    "appointment_id": null,
+    "consultation_id": "71aa34c5-00c1-4c76-8e24-acf09681c386",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:24:43.007Z",
+      "partialAmount": 0,
+      "consultation_id": "71aa34c5-00c1-4c76-8e24-acf09681c386"
+    },
+    "timestamp": "2025-09-08T09:24:44.349675+00:00"
+  },
+  {
+    "id": "2739be63-9fef-499a-9d5e-9ff6d8f0e6b8",
+    "event_type": "consultation_started",
+    "patient_id": "9d102fdc-152b-41fa-af7c-d9a862444a97",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-9d102fdc-152b-41fa-af7c-d9a862444a97-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:24:58.680035+00:00"
+  },
+  {
+    "id": "f33031a9-60be-47fe-b10b-db5ed1681832",
+    "event_type": "payment_completed",
+    "patient_id": "9d102fdc-152b-41fa-af7c-d9a862444a97",
+    "appointment_id": null,
+    "consultation_id": "6527cc40-cc22-45ca-9df9-3774b21220b9",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:40:11.130Z",
+      "partialAmount": 0,
+      "consultation_id": "6527cc40-cc22-45ca-9df9-3774b21220b9"
+    },
+    "timestamp": "2025-09-08T09:40:12.492206+00:00"
+  },
+  {
+    "id": "23e9c378-4b28-4322-bcd6-aec00a409cf7",
+    "event_type": "consultation_started",
+    "patient_id": "1194f1f6-175e-4e35-ba4a-9ea41b4b52fe",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-1194f1f6-175e-4e35-ba4a-9ea41b4b52fe-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:40:21.091684+00:00"
+  },
+  {
+    "id": "557a795c-527b-45cd-b170-a57868afb38a",
+    "event_type": "payment_completed",
+    "patient_id": "1194f1f6-175e-4e35-ba4a-9ea41b4b52fe",
+    "appointment_id": null,
+    "consultation_id": "1e122e7b-a011-451d-8e5a-9d8f36356e9c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:53:47.253Z",
+      "partialAmount": 0,
+      "consultation_id": "1e122e7b-a011-451d-8e5a-9d8f36356e9c"
+    },
+    "timestamp": "2025-09-08T09:53:49.305682+00:00"
+  },
+  {
+    "id": "77ec82ea-6c70-455c-9fe1-15f05d27d5d6",
+    "event_type": "consultation_started",
+    "patient_id": "938dd7de-7477-42b3-b704-edbd359b4295",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-938dd7de-7477-42b3-b704-edbd359b4295-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:54:21.871167+00:00"
+  },
+  {
+    "id": "2d2b1f5c-8e7b-45f8-bdfc-acdb46256b19",
+    "event_type": "consultation_completed",
+    "patient_id": "938dd7de-7477-42b3-b704-edbd359b4295",
+    "appointment_id": null,
+    "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004",
+    "metadata": {
+      "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004"
+    },
+    "timestamp": "2025-09-08T09:57:01.361433+00:00"
+  },
+  {
+    "id": "e2af90c9-8a51-41a2-9f91-a2f0750283ff",
+    "event_type": "payment_completed",
+    "patient_id": "938dd7de-7477-42b3-b704-edbd359b4295",
+    "appointment_id": null,
+    "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:57:03.781Z",
+      "partialAmount": 0,
+      "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004"
+    },
+    "timestamp": "2025-09-08T09:57:05.166539+00:00"
+  },
+  {
+    "id": "a5b21ee0-267d-4de3-b5b9-e8a7a091ab90",
+    "event_type": "consultation_started",
+    "patient_id": "f3aee32d-051d-4afe-ae63-2a2b11cf6905",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-f3aee32d-051d-4afe-ae63-2a2b11cf6905-2025-09-08"
+    },
+    "timestamp": "2025-09-08T09:57:50.661753+00:00"
+  },
+  {
+    "id": "2faa8222-92c9-45e8-a874-1da74473a7a4",
+    "event_type": "payment_completed",
+    "patient_id": "938dd7de-7477-42b3-b704-edbd359b4295",
+    "appointment_id": null,
+    "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T09:57:58.511Z",
+      "partialAmount": 0,
+      "consultation_id": "ea96f3ae-b25e-4796-8e19-3c0de74fc004"
+    },
+    "timestamp": "2025-09-08T09:57:59.934637+00:00"
+  },
+  {
+    "id": "d6ab0ceb-0ce2-4ac9-9a1e-79630f2fac85",
+    "event_type": "payment_completed",
+    "patient_id": "f3aee32d-051d-4afe-ae63-2a2b11cf6905",
+    "appointment_id": null,
+    "consultation_id": "ca63d8aa-abe1-40b4-8a5c-06ef362d6978",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T10:08:31.889Z",
+      "partialAmount": 0,
+      "consultation_id": "ca63d8aa-abe1-40b4-8a5c-06ef362d6978"
+    },
+    "timestamp": "2025-09-08T10:08:33.669874+00:00"
+  },
+  {
+    "id": "c0bfba8e-d0e7-4ada-bfd6-94c6b8fe2ecb",
+    "event_type": "consultation_started",
+    "patient_id": "adca6993-d3a5-4223-8bb3-56f67f559c6b",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-adca6993-d3a5-4223-8bb3-56f67f559c6b-2025-09-08"
+    },
+    "timestamp": "2025-09-08T10:08:38.994065+00:00"
+  },
+  {
+    "id": "6934bb27-d2c0-420c-9de4-c24f916f52f5",
+    "event_type": "payment_completed",
+    "patient_id": "adca6993-d3a5-4223-8bb3-56f67f559c6b",
+    "appointment_id": null,
+    "consultation_id": "3b6d1d0f-14c1-461e-8caf-af790be95f16",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T10:17:27.029Z",
+      "partialAmount": 0,
+      "consultation_id": "3b6d1d0f-14c1-461e-8caf-af790be95f16"
+    },
+    "timestamp": "2025-09-08T10:17:28.521107+00:00"
+  },
+  {
+    "id": "e78d7990-98c5-4440-af71-23ccf5540fa5",
+    "event_type": "consultation_started",
+    "patient_id": "60b50e90-9a84-42bc-8b26-8ef71d8a2b42",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-60b50e90-9a84-42bc-8b26-8ef71d8a2b42-2025-09-08"
+    },
+    "timestamp": "2025-09-08T10:19:39.90236+00:00"
+  },
+  {
+    "id": "e431fcbe-987a-4fe2-a75b-0fe2c50df2fe",
+    "event_type": "payment_completed",
+    "patient_id": "60b50e90-9a84-42bc-8b26-8ef71d8a2b42",
+    "appointment_id": null,
+    "consultation_id": "e94ed716-7415-4456-82ee-1ffae73e87af",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T10:33:45.264Z",
+      "partialAmount": 0,
+      "consultation_id": "e94ed716-7415-4456-82ee-1ffae73e87af"
+    },
+    "timestamp": "2025-09-08T10:33:47.214861+00:00"
+  },
+  {
+    "id": "a85a9909-e4e8-414f-bdf8-0a3d1f4134af",
+    "event_type": "consultation_started",
+    "patient_id": "9df57921-9250-4492-985b-dd7c593f9a2f",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-9df57921-9250-4492-985b-dd7c593f9a2f-2025-09-08"
+    },
+    "timestamp": "2025-09-08T10:33:47.579573+00:00"
+  },
+  {
+    "id": "089144f3-f670-487c-b64b-9bf1d18caa20",
+    "event_type": "consultation_started",
+    "patient_id": "3a53d097-f1cf-433d-9521-601db0bdfacf",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-3a53d097-f1cf-433d-9521-601db0bdfacf-2025-09-08"
+    },
+    "timestamp": "2025-09-08T10:45:09.000353+00:00"
+  },
+  {
+    "id": "01106dcf-7495-4764-a4f8-9c799e184704",
+    "event_type": "payment_completed",
+    "patient_id": "9df57921-9250-4492-985b-dd7c593f9a2f",
+    "appointment_id": null,
+    "consultation_id": "f36f842c-3e03-4b43-ae46-1b027792e903",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T10:46:12.437Z",
+      "partialAmount": 0,
+      "consultation_id": "f36f842c-3e03-4b43-ae46-1b027792e903"
+    },
+    "timestamp": "2025-09-08T10:46:13.927443+00:00"
+  },
+  {
+    "id": "77aa298b-e787-4fa3-b3c1-ff5228ed56cb",
+    "event_type": "payment_completed",
+    "patient_id": "3a53d097-f1cf-433d-9521-601db0bdfacf",
+    "appointment_id": null,
+    "consultation_id": "66668dca-25e2-415e-b4de-51da888119bc",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-08T10:53:15.928Z",
+      "partialAmount": 0,
+      "consultation_id": "66668dca-25e2-415e-b4de-51da888119bc"
+    },
+    "timestamp": "2025-09-08T10:53:17.377928+00:00"
+  },
+  {
+    "id": "fdf8ddb9-652d-4563-82a9-74e2e2555476",
+    "event_type": "consultation_started",
+    "patient_id": "59d78496-157c-4621-befd-649a7c364740",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-59d78496-157c-4621-befd-649a7c364740-2025-09-08"
+    },
+    "timestamp": "2025-09-08T11:00:58.852304+00:00"
+  },
+  {
+    "id": "035f9309-8bf4-4d80-8159-8daa76bb3659",
+    "event_type": "consultation_started",
+    "patient_id": "87499683-660f-4c2f-b75e-0f31be7b4c0b",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-87499683-660f-4c2f-b75e-0f31be7b4c0b-2025-09-08"
+    },
+    "timestamp": "2025-09-08T11:07:01.071512+00:00"
+  },
+  {
+    "id": "dfaf31cc-cdfe-4e1a-8df7-122f46430c8f",
+    "event_type": "payment_completed",
+    "patient_id": "59d78496-157c-4621-befd-649a7c364740",
+    "appointment_id": null,
+    "consultation_id": "063aa3ab-8956-4d83-bcb5-7a1f5646fe26",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T11:07:03.752Z",
+      "partialAmount": 0,
+      "consultation_id": "063aa3ab-8956-4d83-bcb5-7a1f5646fe26"
+    },
+    "timestamp": "2025-09-08T11:07:05.16761+00:00"
+  },
+  {
+    "id": "0db821f6-5aa3-49e8-ae9d-e0d5dca9c7f8",
+    "event_type": "consultation_started",
+    "patient_id": "3a3d27e3-0ae4-46d4-b65f-806b58699786",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-3a3d27e3-0ae4-46d4-b65f-806b58699786-2025-09-08"
+    },
+    "timestamp": "2025-09-08T11:16:43.369274+00:00"
+  },
+  {
+    "id": "88129d79-259f-4aa6-83a9-9020f4d487a8",
+    "event_type": "payment_completed",
+    "patient_id": "87499683-660f-4c2f-b75e-0f31be7b4c0b",
+    "appointment_id": null,
+    "consultation_id": "627da4a2-a469-49bf-a267-40e73a1429ac",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T11:16:45.539Z",
+      "partialAmount": 0,
+      "consultation_id": "627da4a2-a469-49bf-a267-40e73a1429ac"
+    },
+    "timestamp": "2025-09-08T11:16:47.021167+00:00"
+  },
+  {
+    "id": "eb883105-7425-41f3-b905-7abb0b04cbc6",
+    "event_type": "consultation_started",
+    "patient_id": "f467e50e-1572-446d-ae3c-8339ca66fdae",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-f467e50e-1572-446d-ae3c-8339ca66fdae-2025-09-08"
+    },
+    "timestamp": "2025-09-08T11:24:59.979808+00:00"
+  },
+  {
+    "id": "86c987c3-413d-48a9-ae04-6a6351ca483c",
+    "event_type": "payment_completed",
+    "patient_id": "3a3d27e3-0ae4-46d4-b65f-806b58699786",
+    "appointment_id": null,
+    "consultation_id": "9244fe78-03f3-4294-b5ef-9eeb5f1ea409",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T11:28:16.810Z",
+      "partialAmount": 0,
+      "consultation_id": "9244fe78-03f3-4294-b5ef-9eeb5f1ea409"
+    },
+    "timestamp": "2025-09-08T11:28:18.432798+00:00"
+  },
+  {
+    "id": "8a2385e5-0496-474a-b2f5-e5a8db83d0f7",
+    "event_type": "consultation_started",
+    "patient_id": "7bf03cfa-5c12-4ec2-b178-ec6e1af34ead",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-7bf03cfa-5c12-4ec2-b178-ec6e1af34ead-2025-09-08"
+    },
+    "timestamp": "2025-09-08T11:40:04.618178+00:00"
+  },
+  {
+    "id": "b1232f1e-c926-45ce-be92-e778ee0bb0ad",
+    "event_type": "payment_completed",
+    "patient_id": "ba0d0543-56f7-4d7c-bb8d-f1b657cdfbdb",
+    "appointment_id": null,
+    "consultation_id": "2a5f6fe7-1c27-4ffd-ba78-5182a7741c76",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T11:50:35.877Z",
+      "partialAmount": 0,
+      "consultation_id": "2a5f6fe7-1c27-4ffd-ba78-5182a7741c76"
+    },
+    "timestamp": "2025-09-08T11:50:37.211712+00:00"
+  },
+  {
+    "id": "a6ae5f58-949e-4e0f-ac5b-d952d74f21be",
+    "event_type": "payment_completed",
+    "patient_id": "f467e50e-1572-446d-ae3c-8339ca66fdae",
+    "appointment_id": null,
+    "consultation_id": "b32d30fc-f029-4cf9-a60a-f9daff3dbe41",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T11:50:39.239Z",
+      "partialAmount": 0,
+      "consultation_id": "b32d30fc-f029-4cf9-a60a-f9daff3dbe41"
+    },
+    "timestamp": "2025-09-08T11:50:40.63184+00:00"
+  },
+  {
+    "id": "b1a58aed-a4b3-4bf2-81fc-acbc95ba6b9e",
+    "event_type": "payment_completed",
+    "patient_id": "7bf03cfa-5c12-4ec2-b178-ec6e1af34ead",
+    "appointment_id": null,
+    "consultation_id": "262540c8-5ccc-4d9f-ae91-bb89979765b7",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T12:10:53.202Z",
+      "partialAmount": 0,
+      "consultation_id": "262540c8-5ccc-4d9f-ae91-bb89979765b7"
+    },
+    "timestamp": "2025-09-08T12:10:54.689702+00:00"
+  },
+  {
+    "id": "12444a58-8328-4ec7-b5b6-ee93bbdb1f31",
+    "event_type": "payment_completed",
+    "patient_id": "835a1be0-bdcf-4199-8edf-1f2080851349",
+    "appointment_id": null,
+    "consultation_id": "c36bd82e-0080-41b1-8da3-a2fe10307c8c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T12:19:34.233Z",
+      "partialAmount": 0,
+      "consultation_id": "c36bd82e-0080-41b1-8da3-a2fe10307c8c"
+    },
+    "timestamp": "2025-09-08T12:19:35.689342+00:00"
+  },
+  {
+    "id": "e49e6ca7-b3e3-4275-a09d-5fdbc45723bf",
+    "event_type": "payment_completed",
+    "patient_id": "45bc1315-9f37-487e-97f9-aa2aec81d65a",
+    "appointment_id": null,
+    "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T12:28:48.029Z",
+      "partialAmount": 0,
+      "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc"
+    },
+    "timestamp": "2025-09-08T12:28:49.723365+00:00"
+  },
+  {
+    "id": "e5494e6e-3258-420b-9203-264232b4a7a4",
+    "event_type": "payment_completed",
+    "patient_id": "45bc1315-9f37-487e-97f9-aa2aec81d65a",
+    "appointment_id": null,
+    "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T12:48:23.325Z",
+      "partialAmount": 0,
+      "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc"
+    },
+    "timestamp": "2025-09-08T12:48:24.816924+00:00"
+  },
+  {
+    "id": "b628f849-2df0-4ffe-b16d-34d7ae50e241",
+    "event_type": "consultation_started",
+    "patient_id": "05bd20c5-0035-4e53-92cf-585bafd8e176",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-05bd20c5-0035-4e53-92cf-585bafd8e176-2025-09-08"
+    },
+    "timestamp": "2025-09-08T12:52:00.22061+00:00"
+  },
+  {
+    "id": "63b9eff4-e7d1-4eff-860c-0dc328002a5e",
+    "event_type": "consultation_started",
+    "patient_id": "132234b0-cde7-4f1f-b4b6-6ca67cb3afcf",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-132234b0-cde7-4f1f-b4b6-6ca67cb3afcf-2025-09-08"
+    },
+    "timestamp": "2025-09-08T13:10:05.632456+00:00"
+  },
+  {
+    "id": "fcf2fe3b-46c0-4d7e-a1cc-ab5c5824170f",
+    "event_type": "payment_completed",
+    "patient_id": "05bd20c5-0035-4e53-92cf-585bafd8e176",
+    "appointment_id": null,
+    "consultation_id": "3131f429-ae28-4f74-a709-606c6a4ddfa5",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T13:10:07.579Z",
+      "partialAmount": 0,
+      "consultation_id": "3131f429-ae28-4f74-a709-606c6a4ddfa5"
+    },
+    "timestamp": "2025-09-08T13:10:09.000293+00:00"
+  },
+  {
+    "id": "b4c55c3f-c5c7-41e2-ab35-2097961df66a",
+    "event_type": "payment_completed",
+    "patient_id": "132234b0-cde7-4f1f-b4b6-6ca67cb3afcf",
+    "appointment_id": null,
+    "consultation_id": "3fab3499-b858-4a19-84ca-ee353f233823",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T13:24:33.071Z",
+      "partialAmount": 0,
+      "consultation_id": "3fab3499-b858-4a19-84ca-ee353f233823"
+    },
+    "timestamp": "2025-09-08T13:24:34.501663+00:00"
+  },
+  {
+    "id": "baa07da5-7235-402f-bf64-89cf504cf7fd",
+    "event_type": "payment_completed",
+    "patient_id": "45bc1315-9f37-487e-97f9-aa2aec81d65a",
+    "appointment_id": null,
+    "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T13:40:08.514Z",
+      "partialAmount": 0,
+      "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc"
+    },
+    "timestamp": "2025-09-08T13:40:10.159021+00:00"
+  },
+  {
+    "id": "f5f88000-0195-478a-bac0-5bb093f612ce",
+    "event_type": "payment_completed",
+    "patient_id": "45bc1315-9f37-487e-97f9-aa2aec81d65a",
+    "appointment_id": null,
+    "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-08T14:31:13.419Z",
+      "partialAmount": 0,
+      "consultation_id": "b3926410-7a39-4df6-b466-c2912ee54dbc"
+    },
+    "timestamp": "2025-09-08T14:31:15.341506+00:00"
+  },
+  {
+    "id": "a7ca9970-7e18-46a9-a5da-698ed834c2e4",
+    "event_type": "consultation_started",
+    "patient_id": "34195db3-9bda-40e5-94d5-3f01b58c7049",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-34195db3-9bda-40e5-94d5-3f01b58c7049-2025-09-08"
+    },
+    "timestamp": "2025-09-08T14:32:07.36442+00:00"
+  },
+  {
+    "id": "3ea4deeb-1f44-473f-a0e4-7bf429178dc3",
+    "event_type": "dilation_initiated_from_consultation",
+    "patient_id": "34195db3-9bda-40e5-94d5-3f01b58c7049",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "needsDilation": true,
+      "waitlistEntryId": "e70573e3-ad00-426f-bcb9-7754aeb819d9",
+      "dilationMedicine": "Mydriaticum"
+    },
+    "timestamp": "2025-09-08T14:32:20.196338+00:00"
+  },
+  {
+    "id": "f28e5b7d-15f4-43db-8e6f-94736421e055",
+    "event_type": "consultation_started",
+    "patient_id": "38a42c56-ef0e-420b-8c61-e015065ee8d1",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-38a42c56-ef0e-420b-8c61-e015065ee8d1-2025-09-09"
+    },
+    "timestamp": "2025-09-09T08:28:24.040147+00:00"
+  },
+  {
+    "id": "57a1a82a-4677-4ad0-81a6-5cb3632d3603",
+    "event_type": "payment_completed",
+    "patient_id": "38a42c56-ef0e-420b-8c61-e015065ee8d1",
+    "appointment_id": null,
+    "consultation_id": "0bc60739-fccc-4ca4-a496-2c74fdd41077",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T08:33:59.207Z",
+      "partialAmount": 0,
+      "consultation_id": "0bc60739-fccc-4ca4-a496-2c74fdd41077"
+    },
+    "timestamp": "2025-09-09T08:34:01.085341+00:00"
+  },
+  {
+    "id": "4bc0a353-4e2e-4d35-a443-0e0bc1a5881e",
+    "event_type": "consultation_started",
+    "patient_id": "89423694-a1f0-4f3d-b7ae-d2c5e6da8440",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-89423694-a1f0-4f3d-b7ae-d2c5e6da8440-2025-09-09"
+    },
+    "timestamp": "2025-09-09T08:40:44.503189+00:00"
+  },
+  {
+    "id": "153acd33-0d15-4703-95c5-9543ff15873b",
+    "event_type": "consultation_started",
+    "patient_id": "888cdc59-952e-46d7-97fe-c8c2294b85de",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-888cdc59-952e-46d7-97fe-c8c2294b85de-2025-09-09"
+    },
+    "timestamp": "2025-09-09T08:41:57.149676+00:00"
+  },
+  {
+    "id": "d0cdb569-6d35-4e61-900f-590251b560d4",
+    "event_type": "payment_completed",
+    "patient_id": "89423694-a1f0-4f3d-b7ae-d2c5e6da8440",
+    "appointment_id": null,
+    "consultation_id": "c6b154b2-b31c-49d0-bb18-c7e1c0e5306c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T08:54:00.215Z",
+      "partialAmount": 0,
+      "consultation_id": "c6b154b2-b31c-49d0-bb18-c7e1c0e5306c"
+    },
+    "timestamp": "2025-09-09T08:54:02.075577+00:00"
+  },
+  {
+    "id": "e76ed663-450c-4b18-b6c1-f4dcaf5f5346",
+    "event_type": "consultation_started",
+    "patient_id": "f43f18c1-483d-45a8-a775-12cadcf4e1f8",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-f43f18c1-483d-45a8-a775-12cadcf4e1f8-2025-09-09"
+    },
+    "timestamp": "2025-09-09T08:54:06.863954+00:00"
+  },
+  {
+    "id": "647737a4-c2db-4677-bcba-360506ef733c",
+    "event_type": "payment_completed",
+    "patient_id": "89423694-a1f0-4f3d-b7ae-d2c5e6da8440",
+    "appointment_id": null,
+    "consultation_id": "c6b154b2-b31c-49d0-bb18-c7e1c0e5306c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:02:10.783Z",
+      "partialAmount": 0,
+      "consultation_id": "c6b154b2-b31c-49d0-bb18-c7e1c0e5306c"
+    },
+    "timestamp": "2025-09-09T09:02:12.279593+00:00"
+  },
+  {
+    "id": "ca93859a-ee6d-41a9-8665-fa0bc2d1e48c",
+    "event_type": "consultation_started",
+    "patient_id": "31641384-80f2-4231-9aa1-8b2642500a23",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-31641384-80f2-4231-9aa1-8b2642500a23-2025-09-09"
+    },
+    "timestamp": "2025-09-09T09:02:15.700264+00:00"
+  },
+  {
+    "id": "2ac64a7d-71ad-4b22-a2a9-ff8afbb0c31c",
+    "event_type": "payment_completed",
+    "patient_id": "888cdc59-952e-46d7-97fe-c8c2294b85de",
+    "appointment_id": null,
+    "consultation_id": "716a4c46-c824-4005-8fff-9cee4eec1c87",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:02:17.621Z",
+      "partialAmount": 0,
+      "consultation_id": "716a4c46-c824-4005-8fff-9cee4eec1c87"
+    },
+    "timestamp": "2025-09-09T09:02:19.17321+00:00"
+  },
+  {
+    "id": "f632e720-57fa-439d-b513-bff763640174",
+    "event_type": "payment_completed",
+    "patient_id": "f43f18c1-483d-45a8-a775-12cadcf4e1f8",
+    "appointment_id": null,
+    "consultation_id": "3a905d31-700a-48e6-85bf-bfa1ebacf331",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:12:59.183Z",
+      "partialAmount": 0,
+      "consultation_id": "3a905d31-700a-48e6-85bf-bfa1ebacf331"
+    },
+    "timestamp": "2025-09-09T09:13:00.638735+00:00"
+  },
+  {
+    "id": "ac8c6f8b-2ba4-4d65-917f-b17ca9e0064c",
+    "event_type": "consultation_started",
+    "patient_id": "3c2ce60b-8b97-40b1-87c2-003cf4da80f6",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-3c2ce60b-8b97-40b1-87c2-003cf4da80f6-2025-09-09"
+    },
+    "timestamp": "2025-09-09T09:17:36.85445+00:00"
+  },
+  {
+    "id": "ba7ba603-76d5-4a9c-b5c4-5e2ef3801e56",
+    "event_type": "payment_completed",
+    "patient_id": "31641384-80f2-4231-9aa1-8b2642500a23",
+    "appointment_id": null,
+    "consultation_id": "38e65785-a60b-422d-a6c1-7179ee103da6",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:19:50.310Z",
+      "partialAmount": 0,
+      "consultation_id": "38e65785-a60b-422d-a6c1-7179ee103da6"
+    },
+    "timestamp": "2025-09-09T09:19:51.857725+00:00"
+  },
+  {
+    "id": "7c4b8b22-8201-4042-944f-d95140348abd",
+    "event_type": "consultation_started",
+    "patient_id": "d46d8df7-3267-4580-ad0d-06c54676e575",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-d46d8df7-3267-4580-ad0d-06c54676e575-2025-09-09"
+    },
+    "timestamp": "2025-09-09T09:34:37.087683+00:00"
+  },
+  {
+    "id": "4481558c-e555-4e7d-bbfd-e7e811f924b0",
+    "event_type": "payment_completed",
+    "patient_id": "3c2ce60b-8b97-40b1-87c2-003cf4da80f6",
+    "appointment_id": null,
+    "consultation_id": "a1bea3d6-7f84-4d7d-b4c1-f9ef671d62bb",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:36:12.454Z",
+      "partialAmount": 0,
+      "consultation_id": "a1bea3d6-7f84-4d7d-b4c1-f9ef671d62bb"
+    },
+    "timestamp": "2025-09-09T09:36:13.973536+00:00"
+  },
+  {
+    "id": "a0bdeb73-765c-469e-8d4a-291b1d662f6c",
+    "event_type": "consultation_started",
+    "patient_id": "403f307d-4e6d-40e6-b2f5-9cbd0fdfffc3",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-403f307d-4e6d-40e6-b2f5-9cbd0fdfffc3-2025-09-09"
+    },
+    "timestamp": "2025-09-09T09:43:12.923008+00:00"
+  },
+  {
+    "id": "09dc7be8-840a-4139-860f-626df2f06bf4",
+    "event_type": "payment_completed",
+    "patient_id": "d46d8df7-3267-4580-ad0d-06c54676e575",
+    "appointment_id": null,
+    "consultation_id": "539f8a5f-fba9-4afe-ad14-b0f4f81d774b",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:43:39.426Z",
+      "partialAmount": 0,
+      "consultation_id": "539f8a5f-fba9-4afe-ad14-b0f4f81d774b"
+    },
+    "timestamp": "2025-09-09T09:43:40.94409+00:00"
+  },
+  {
+    "id": "b715d7e3-8528-4c55-8eae-59af171f60ef",
+    "event_type": "consultation_started",
+    "patient_id": "b3ce86e9-c83e-4bcd-84d2-cf2c0e359a43",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-b3ce86e9-c83e-4bcd-84d2-cf2c0e359a43-2025-09-09"
+    },
+    "timestamp": "2025-09-09T09:52:55.350049+00:00"
+  },
+  {
+    "id": "7424943f-3eb4-4168-9188-b4adf9c091ca",
+    "event_type": "payment_completed",
+    "patient_id": "403f307d-4e6d-40e6-b2f5-9cbd0fdfffc3",
+    "appointment_id": null,
+    "consultation_id": "67974c2f-fca7-43f3-89de-8e82653ea271",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T09:53:56.677Z",
+      "partialAmount": 0,
+      "consultation_id": "67974c2f-fca7-43f3-89de-8e82653ea271"
+    },
+    "timestamp": "2025-09-09T09:53:58.234305+00:00"
+  },
+  {
+    "id": "bfed278d-ed4e-4770-80b3-9b4b0ddad1e8",
+    "event_type": "consultation_started",
+    "patient_id": "b2a745f8-3dbd-458f-9d24-225a531b9d23",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-b2a745f8-3dbd-458f-9d24-225a531b9d23-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:06:46.558809+00:00"
+  },
+  {
+    "id": "a4083258-ba80-4e64-97c3-317b27f7d72f",
+    "event_type": "consultation_started",
+    "patient_id": "b2a745f8-3dbd-458f-9d24-225a531b9d23",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-b2a745f8-3dbd-458f-9d24-225a531b9d23-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:06:57.129279+00:00"
+  },
+  {
+    "id": "5edd8214-eb11-4030-9f59-14600bbcf03e",
+    "event_type": "consultation_started",
+    "patient_id": "08bbe9ba-86c6-4869-810a-9c990f745ebf",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-08bbe9ba-86c6-4869-810a-9c990f745ebf-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:07:05.293245+00:00"
+  },
+  {
+    "id": "66f90e10-8387-4936-a1d2-de1fa3b64f44",
+    "event_type": "consultation_started",
+    "patient_id": "90abf716-6207-4cb6-8de7-d2b69bc42125",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-90abf716-6207-4cb6-8de7-d2b69bc42125-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:07:18.384257+00:00"
+  },
+  {
+    "id": "2ad06179-a197-4343-8b98-7109e0ceeffb",
+    "event_type": "payment_completed",
+    "patient_id": "b3ce86e9-c83e-4bcd-84d2-cf2c0e359a43",
+    "appointment_id": null,
+    "consultation_id": "c35c3fe2-e540-439b-ab0d-9a0fe6c5079e",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T10:07:45.951Z",
+      "partialAmount": 0,
+      "consultation_id": "c35c3fe2-e540-439b-ab0d-9a0fe6c5079e"
+    },
+    "timestamp": "2025-09-09T10:07:47.423869+00:00"
+  },
+  {
+    "id": "97cf70d3-29f8-4d03-8d13-22d4819f821a",
+    "event_type": "payment_completed",
+    "patient_id": "08bbe9ba-86c6-4869-810a-9c990f745ebf",
+    "appointment_id": null,
+    "consultation_id": "9e336b87-5832-459f-a23d-bd00d0b75007",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T10:20:56.521Z",
+      "partialAmount": 0,
+      "consultation_id": "9e336b87-5832-459f-a23d-bd00d0b75007"
+    },
+    "timestamp": "2025-09-09T10:20:58.029345+00:00"
+  },
+  {
+    "id": "23808fd3-c37f-44be-89a1-f1c74eb02c0d",
+    "event_type": "payment_completed",
+    "patient_id": "b2a745f8-3dbd-458f-9d24-225a531b9d23",
+    "appointment_id": null,
+    "consultation_id": "51738939-b2a4-4d72-8b76-f308bebed5b2",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T10:28:30.517Z",
+      "partialAmount": 0,
+      "consultation_id": "51738939-b2a4-4d72-8b76-f308bebed5b2"
+    },
+    "timestamp": "2025-09-09T10:28:31.94931+00:00"
+  },
+  {
+    "id": "f4a07562-07e2-4d45-a9fb-3d45ad3f9891",
+    "event_type": "consultation_started",
+    "patient_id": "893572e4-e3b4-4ee1-9e08-efe755b3d0ea",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-893572e4-e3b4-4ee1-9e08-efe755b3d0ea-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:39:15.534462+00:00"
+  },
+  {
+    "id": "f725dc46-5341-4cb5-b3ab-a0be78eb5f90",
+    "event_type": "consultation_started",
+    "patient_id": "87e144a2-ab8e-46a2-a87c-85bc6f590829",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-87e144a2-ab8e-46a2-a87c-85bc6f590829-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:39:21.133201+00:00"
+  },
+  {
+    "id": "293ce0a1-3e0f-46af-9cdb-28fe05f82bd0",
+    "event_type": "payment_completed",
+    "patient_id": "90abf716-6207-4cb6-8de7-d2b69bc42125",
+    "appointment_id": null,
+    "consultation_id": "287c7229-0639-44d8-ae08-8428daada898",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T10:42:03.185Z",
+      "partialAmount": 0,
+      "consultation_id": "287c7229-0639-44d8-ae08-8428daada898"
+    },
+    "timestamp": "2025-09-09T10:42:05.069055+00:00"
+  },
+  {
+    "id": "9d846d56-7ce8-467b-a15f-70de1aea1f1f",
+    "event_type": "payment_completed",
+    "patient_id": "87e144a2-ab8e-46a2-a87c-85bc6f590829",
+    "appointment_id": null,
+    "consultation_id": "26567bcd-8d51-49ba-8e68-c74bba4967b6",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T10:51:10.278Z",
+      "partialAmount": 0,
+      "consultation_id": "26567bcd-8d51-49ba-8e68-c74bba4967b6"
+    },
+    "timestamp": "2025-09-09T10:51:11.841053+00:00"
+  },
+  {
+    "id": "986a813d-2afa-4ca4-9c38-b5da39874836",
+    "event_type": "consultation_started",
+    "patient_id": "60c32c41-7dc3-4b54-8fdb-a03b3054835b",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-60c32c41-7dc3-4b54-8fdb-a03b3054835b-2025-09-09"
+    },
+    "timestamp": "2025-09-09T10:58:12.308147+00:00"
+  },
+  {
+    "id": "139fc93d-7872-423a-a6c6-d18070e619a0",
+    "event_type": "payment_completed",
+    "patient_id": "893572e4-e3b4-4ee1-9e08-efe755b3d0ea",
+    "appointment_id": null,
+    "consultation_id": "3aa8889c-328a-4d58-adc2-c5fc2b1c1238",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:01:55.530Z",
+      "partialAmount": 0,
+      "consultation_id": "3aa8889c-328a-4d58-adc2-c5fc2b1c1238"
+    },
+    "timestamp": "2025-09-09T11:01:57.209471+00:00"
+  },
+  {
+    "id": "ee6dee48-0c55-4532-8b9b-3ace727eb6ba",
+    "event_type": "consultation_started",
+    "patient_id": "e6396a4d-af0e-43d2-b8b6-42ee5dcbb995",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-e6396a4d-af0e-43d2-b8b6-42ee5dcbb995-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:04:57.552726+00:00"
+  },
+  {
+    "id": "6cce51cd-4098-456e-9448-30effa45296c",
+    "event_type": "payment_completed",
+    "patient_id": "60c32c41-7dc3-4b54-8fdb-a03b3054835b",
+    "appointment_id": null,
+    "consultation_id": "f2417375-f567-4273-88fa-a8a8839b2bad",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:10:18.465Z",
+      "partialAmount": 0,
+      "consultation_id": "f2417375-f567-4273-88fa-a8a8839b2bad"
+    },
+    "timestamp": "2025-09-09T11:10:20.020852+00:00"
+  },
+  {
+    "id": "d0dfeed6-28cb-4092-b048-76f8f553a559",
+    "event_type": "consultation_started",
+    "patient_id": "8e8c980c-44c1-460c-89c9-cf86e5b03079",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-8e8c980c-44c1-460c-89c9-cf86e5b03079-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:16:27.53392+00:00"
+  },
+  {
+    "id": "0b09570b-8b16-4635-8921-f5f2b7214c56",
+    "event_type": "consultation_started",
+    "patient_id": "8d7fa5dd-8ca6-414d-a045-bad7c4c4261e",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-8d7fa5dd-8ca6-414d-a045-bad7c4c4261e-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:16:33.259527+00:00"
+  },
+  {
+    "id": "cc9659b2-5d4b-49d1-94b0-f0e152aec603",
+    "event_type": "payment_completed",
+    "patient_id": "e6396a4d-af0e-43d2-b8b6-42ee5dcbb995",
+    "appointment_id": null,
+    "consultation_id": "1d13fbab-abbb-4b86-8b49-9112dd5ce83c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:18:13.638Z",
+      "partialAmount": 0,
+      "consultation_id": "1d13fbab-abbb-4b86-8b49-9112dd5ce83c"
+    },
+    "timestamp": "2025-09-09T11:18:15.12054+00:00"
+  },
+  {
+    "id": "c9cd2761-f556-4c5f-8cdf-244942ae9063",
+    "event_type": "payment_completed",
+    "patient_id": "8e8c980c-44c1-460c-89c9-cf86e5b03079",
+    "appointment_id": null,
+    "consultation_id": "80c7e04f-9ea2-40cf-9319-d7e0744cde89",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:24:39.801Z",
+      "partialAmount": 0,
+      "consultation_id": "80c7e04f-9ea2-40cf-9319-d7e0744cde89"
+    },
+    "timestamp": "2025-09-09T11:24:41.505095+00:00"
+  },
+  {
+    "id": "b855ddf4-b55b-4b47-a57d-0ee2f91e06f8",
+    "event_type": "consultation_started",
+    "patient_id": "c00a8eab-a3ad-40d4-81ec-de9402b41b7a",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-c00a8eab-a3ad-40d4-81ec-de9402b41b7a-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:30:49.365145+00:00"
+  },
+  {
+    "id": "1e3a7bd5-7eef-4ce4-8927-64261e84efa7",
+    "event_type": "consultation_started",
+    "patient_id": "789d5e8a-c095-449e-8b91-dbfa5a40dd9f",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-789d5e8a-c095-449e-8b91-dbfa5a40dd9f-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:30:53.784641+00:00"
+  },
+  {
+    "id": "eb9543ee-f7be-4755-8f0e-7f99fa30b7b0",
+    "event_type": "consultation_started",
+    "patient_id": "60f8a566-cdc5-423d-b009-1a9b5ceaaf0b",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-60f8a566-cdc5-423d-b009-1a9b5ceaaf0b-2025-09-11"
+    },
+    "timestamp": "2025-09-11T09:06:56.779738+00:00"
+  },
+  {
+    "id": "a768ef52-204c-46f6-b851-6a3a14679680",
+    "event_type": "payment_completed",
+    "patient_id": "8d7fa5dd-8ca6-414d-a045-bad7c4c4261e",
+    "appointment_id": null,
+    "consultation_id": "78b335b7-3110-436c-adc6-4beb45247518",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:34:57.525Z",
+      "partialAmount": 0,
+      "consultation_id": "78b335b7-3110-436c-adc6-4beb45247518"
+    },
+    "timestamp": "2025-09-09T11:34:58.99306+00:00"
+  },
+  {
+    "id": "18c270b1-e7d6-4533-a1e2-1b2444153224",
+    "event_type": "payment_completed",
+    "patient_id": "789d5e8a-c095-449e-8b91-dbfa5a40dd9f",
+    "appointment_id": null,
+    "consultation_id": "69f1b460-8ba8-480a-8db9-9905f82729bb",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:49:38.640Z",
+      "partialAmount": 0,
+      "consultation_id": "69f1b460-8ba8-480a-8db9-9905f82729bb"
+    },
+    "timestamp": "2025-09-09T11:49:40.169546+00:00"
+  },
+  {
+    "id": "ae9129e3-a4d8-46c1-81ca-b63458eeb85f",
+    "event_type": "consultation_started",
+    "patient_id": "72f1f215-21a8-4ddc-baba-dcadade9d99e",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-72f1f215-21a8-4ddc-baba-dcadade9d99e-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:49:54.131627+00:00"
+  },
+  {
+    "id": "3e967a94-2c86-4ad2-8955-84307bb915dd",
+    "event_type": "consultation_started",
+    "patient_id": "261ad093-b66b-43e1-97da-438d57d4f8a2",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-261ad093-b66b-43e1-97da-438d57d4f8a2-2025-09-09"
+    },
+    "timestamp": "2025-09-09T11:50:10.108388+00:00"
+  },
+  {
+    "id": "3c249929-eace-4031-8f16-86492f1e5651",
+    "event_type": "payment_completed",
+    "patient_id": "c00a8eab-a3ad-40d4-81ec-de9402b41b7a",
+    "appointment_id": null,
+    "consultation_id": "bc1d227f-2a8b-487f-b372-dc447707de3d",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T11:55:53.625Z",
+      "partialAmount": 0,
+      "consultation_id": "bc1d227f-2a8b-487f-b372-dc447707de3d"
+    },
+    "timestamp": "2025-09-09T11:55:55.123871+00:00"
+  },
+  {
+    "id": "92114f53-cdf1-4c20-837f-5af4a08c2792",
+    "event_type": "payment_completed",
+    "patient_id": "72f1f215-21a8-4ddc-baba-dcadade9d99e",
+    "appointment_id": null,
+    "consultation_id": "6738f02b-9039-4fc1-a0c4-0caf06579129",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:04:49.793Z",
+      "partialAmount": 0,
+      "consultation_id": "6738f02b-9039-4fc1-a0c4-0caf06579129"
+    },
+    "timestamp": "2025-09-09T12:04:51.320133+00:00"
+  },
+  {
+    "id": "dac61502-8570-4d4c-b4cd-2dc63c43c739",
+    "event_type": "payment_completed",
+    "patient_id": "261ad093-b66b-43e1-97da-438d57d4f8a2",
+    "appointment_id": null,
+    "consultation_id": "07d25f3a-bb65-4b81-9f38-743d204398c1",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:09:48.127Z",
+      "partialAmount": 0,
+      "consultation_id": "07d25f3a-bb65-4b81-9f38-743d204398c1"
+    },
+    "timestamp": "2025-09-09T12:09:49.70333+00:00"
+  },
+  {
+    "id": "35d20f4e-e258-4d7f-ab3d-c1b4bf2301f1",
+    "event_type": "consultation_started",
+    "patient_id": "69d274a0-92d0-4298-a0bb-9fc9ab7ca292",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-69d274a0-92d0-4298-a0bb-9fc9ab7ca292-2025-09-09"
+    },
+    "timestamp": "2025-09-09T12:10:51.667448+00:00"
+  },
+  {
+    "id": "7cce62b9-b17b-481b-b7e7-ed69b709ae6f",
+    "event_type": "consultation_started",
+    "patient_id": "75fe89eb-6b0c-42ab-b1b9-5929141cbdb2",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-75fe89eb-6b0c-42ab-b1b9-5929141cbdb2-2025-09-09"
+    },
+    "timestamp": "2025-09-09T12:19:49.75171+00:00"
+  },
+  {
+    "id": "c7828b78-0e5d-470e-bba3-93d8b941b6ab",
+    "event_type": "payment_completed",
+    "patient_id": "75fe89eb-6b0c-42ab-b1b9-5929141cbdb2",
+    "appointment_id": null,
+    "consultation_id": "ab01d511-1e4d-4c49-b403-24c8e44d4dbd",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:29:59.754Z",
+      "partialAmount": 0,
+      "consultation_id": "ab01d511-1e4d-4c49-b403-24c8e44d4dbd"
+    },
+    "timestamp": "2025-09-09T12:30:01.312738+00:00"
+  },
+  {
+    "id": "aea9eaf7-083b-460d-9de8-a290395117e4",
+    "event_type": "consultation_started",
+    "patient_id": "1ff3220c-4faa-4cd0-83c0-52a963c579b6",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-1ff3220c-4faa-4cd0-83c0-52a963c579b6-2025-09-09"
+    },
+    "timestamp": "2025-09-09T12:30:06.877025+00:00"
+  },
+  {
+    "id": "3c2342e9-2e6d-48da-b053-645507036750",
+    "event_type": "consultation_started",
+    "patient_id": "f3aaf579-5b5b-4124-8e7b-0bc3a3f8bbde",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-f3aaf579-5b5b-4124-8e7b-0bc3a3f8bbde-2025-09-09"
+    },
+    "timestamp": "2025-09-09T12:30:12.497726+00:00"
+  },
+  {
+    "id": "e1fd23f6-b599-42e7-ae6c-4abea77afe04",
+    "event_type": "payment_completed",
+    "patient_id": "69d274a0-92d0-4298-a0bb-9fc9ab7ca292",
+    "appointment_id": null,
+    "consultation_id": "1d4d9c3a-fbb4-45f8-a3a1-bedd19cb8347",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:30:14.563Z",
+      "partialAmount": 0,
+      "consultation_id": "1d4d9c3a-fbb4-45f8-a3a1-bedd19cb8347"
+    },
+    "timestamp": "2025-09-09T12:30:16.045907+00:00"
+  },
+  {
+    "id": "9e908f01-f5ea-4169-bff3-e422b8591368",
+    "event_type": "payment_completed",
+    "patient_id": "1ff3220c-4faa-4cd0-83c0-52a963c579b6",
+    "appointment_id": null,
+    "consultation_id": "d1c63bcb-873f-4cb1-9c1c-3684f658afd8",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:40:44.677Z",
+      "partialAmount": 0,
+      "consultation_id": "d1c63bcb-873f-4cb1-9c1c-3684f658afd8"
+    },
+    "timestamp": "2025-09-09T12:40:46.243524+00:00"
+  },
+  {
+    "id": "57254051-b333-4a8d-a989-9f7f0926a0cf",
+    "event_type": "payment_completed",
+    "patient_id": "f3aaf579-5b5b-4124-8e7b-0bc3a3f8bbde",
+    "appointment_id": null,
+    "consultation_id": "39aa3695-9ca1-4ab6-a039-c3148a06231a",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T12:49:17.571Z",
+      "partialAmount": 0,
+      "consultation_id": "39aa3695-9ca1-4ab6-a039-c3148a06231a"
+    },
+    "timestamp": "2025-09-09T12:49:19.117775+00:00"
+  },
+  {
+    "id": "8be8d69d-e1a3-48d4-990a-05627993d0a3",
+    "event_type": "payment_completed",
+    "patient_id": "e33c65cf-e971-425c-bc0a-3f021a6bc449",
+    "appointment_id": null,
+    "consultation_id": "6283a6e7-4122-489a-a9d5-ecae2fe4a84e",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T13:07:38.706Z",
+      "partialAmount": 0,
+      "consultation_id": "6283a6e7-4122-489a-a9d5-ecae2fe4a84e"
+    },
+    "timestamp": "2025-09-09T13:07:40.216226+00:00"
+  },
+  {
+    "id": "e9499f96-03ca-4ab7-b7b6-681d5085f809",
+    "event_type": "consultation_started",
+    "patient_id": "cf92a47a-c04e-4833-bb25-19760c2a5a87",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-cf92a47a-c04e-4833-bb25-19760c2a5a87-2025-09-09"
+    },
+    "timestamp": "2025-09-09T13:08:06.533083+00:00"
+  },
+  {
+    "id": "baffa8cb-cb67-4be4-9887-a63f41a6c549",
+    "event_type": "consultation_started",
+    "patient_id": "e63dda3e-d10a-4453-b926-0ebed5bf632d",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-e63dda3e-d10a-4453-b926-0ebed5bf632d-2025-09-09"
+    },
+    "timestamp": "2025-09-09T13:10:05.00822+00:00"
+  },
+  {
+    "id": "c36e95ac-519f-4bc3-9ab8-b580eb467eca",
+    "event_type": "payment_completed",
+    "patient_id": "cf92a47a-c04e-4833-bb25-19760c2a5a87",
+    "appointment_id": null,
+    "consultation_id": "8eb06a6a-22a1-4caa-95af-86006b7dcf74",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T13:19:42.713Z",
+      "partialAmount": 0,
+      "consultation_id": "8eb06a6a-22a1-4caa-95af-86006b7dcf74"
+    },
+    "timestamp": "2025-09-09T13:19:44.522374+00:00"
+  },
+  {
+    "id": "b3d9c545-57f5-4aa0-878f-df99f96b914d",
+    "event_type": "consultation_started",
+    "patient_id": "e33c65cf-e971-425c-bc0a-3f021a6bc449",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-e33c65cf-e971-425c-bc0a-3f021a6bc449-2025-09-09"
+    },
+    "timestamp": "2025-09-09T13:19:45.133952+00:00"
+  },
+  {
+    "id": "89d76d0a-5075-409b-84fa-dc3c2c06525f",
+    "event_type": "payment_completed",
+    "patient_id": "e63dda3e-d10a-4453-b926-0ebed5bf632d",
+    "appointment_id": null,
+    "consultation_id": "4a6d69fd-f933-4aaa-820c-03bf0f8a43b8",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T13:34:46.742Z",
+      "partialAmount": 0,
+      "consultation_id": "4a6d69fd-f933-4aaa-820c-03bf0f8a43b8"
+    },
+    "timestamp": "2025-09-09T13:34:48.200843+00:00"
+  },
+  {
+    "id": "07573c6a-bdf9-4d25-9999-c0555bbe2ecb",
+    "event_type": "payment_completed",
+    "patient_id": "e33c65cf-e971-425c-bc0a-3f021a6bc449",
+    "appointment_id": null,
+    "consultation_id": "6283a6e7-4122-489a-a9d5-ecae2fe4a84e",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-09T13:47:18.621Z",
+      "partialAmount": 0,
+      "consultation_id": "6283a6e7-4122-489a-a9d5-ecae2fe4a84e"
+    },
+    "timestamp": "2025-09-09T13:47:20.339805+00:00"
+  },
+  {
+    "id": "2fc48f4d-5275-480b-b302-fd2b5a9c5e30",
+    "event_type": "consultation_started",
+    "patient_id": "33d9fd87-72ab-4a51-9e9d-e89b7dd4fc66",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-33d9fd87-72ab-4a51-9e9d-e89b7dd4fc66-2025-09-09"
+    },
+    "timestamp": "2025-09-09T15:30:50.971688+00:00"
+  },
+  {
+    "id": "4295f3cf-36e4-4e0b-b6c1-b8ccd7e59001",
+    "event_type": "dilation_initiated_from_consultation",
+    "patient_id": "7c2d49b2-f5b0-4792-ad41-c99b56dd3060",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "needsDilation": true,
+      "waitlistEntryId": "156bec00-d5ac-4e0e-a37e-2a23f32c1c35",
+      "dilationMedicine": "Mydriaticum"
+    },
+    "timestamp": "2025-09-09T15:39:31.38191+00:00"
+  },
+  {
+    "id": "b7f4d733-c7fb-4ab1-8ca2-6a190876cf8d",
+    "event_type": "dilation_initiated_from_consultation",
+    "patient_id": "7c2d49b2-f5b0-4792-ad41-c99b56dd3060",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "needsDilation": true,
+      "waitlistEntryId": "156bec00-d5ac-4e0e-a37e-2a23f32c1c35",
+      "dilationMedicine": "Mydriaticum"
+    },
+    "timestamp": "2025-09-09T15:39:33.817239+00:00"
+  },
+  {
+    "id": "cf361225-991a-42ee-96e3-28cc5e55e72e",
+    "event_type": "dilation_initiated_from_consultation",
+    "patient_id": "7c2d49b2-f5b0-4792-ad41-c99b56dd3060",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "needsDilation": true,
+      "waitlistEntryId": "156bec00-d5ac-4e0e-a37e-2a23f32c1c35",
+      "dilationMedicine": "Mydriaticum"
+    },
+    "timestamp": "2025-09-09T15:39:36.828968+00:00"
+  },
+  {
+    "id": "a9032022-57a0-4b07-b887-cefa2de446d9",
+    "event_type": "consultation_started",
+    "patient_id": "d63fee95-27dd-47c2-a072-6107da954bfc",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-d63fee95-27dd-47c2-a072-6107da954bfc-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:13:33.440178+00:00"
+  },
+  {
+    "id": "2f32f5f9-cd3b-4114-b580-d7611612f6ed",
+    "event_type": "payment_completed",
+    "patient_id": "f467e50e-1572-446d-ae3c-8339ca66fdae",
+    "appointment_id": null,
+    "consultation_id": "041f10a1-79a3-4686-bee4-2260bb40fb77",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-10T08:14:07.258Z",
+      "partialAmount": 0,
+      "consultation_id": "041f10a1-79a3-4686-bee4-2260bb40fb77"
+    },
+    "timestamp": "2025-09-10T08:14:09.409308+00:00"
+  },
+  {
+    "id": "eec18da4-739f-4ac3-8db4-9e97618d5ee7",
+    "event_type": "consultation_started",
+    "patient_id": "73f46620-cee3-4316-a50b-fe0a779f177a",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-73f46620-cee3-4316-a50b-fe0a779f177a-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:18:52.538407+00:00"
+  },
+  {
+    "id": "a751a18c-c2e5-4630-b24f-0393e0dd9bfe",
+    "event_type": "consultation_started",
+    "patient_id": "e2ddc538-b7ff-4598-94fc-60ee7ab36008",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-e2ddc538-b7ff-4598-94fc-60ee7ab36008-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:27:58.130227+00:00"
+  },
+  {
+    "id": "0f973503-f8c2-4175-9644-d631162ed6a3",
+    "event_type": "consultation_started",
+    "patient_id": "5bf379a6-1e4b-4f9a-809f-26b130508884",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-5bf379a6-1e4b-4f9a-809f-26b130508884-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:28:10.402703+00:00"
+  },
+  {
+    "id": "d95376fc-679a-4dde-8292-f9f334373075",
+    "event_type": "consultation_started",
+    "patient_id": "79efad49-2b65-4e4a-b025-4fd5a1e3bd0b",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-79efad49-2b65-4e4a-b025-4fd5a1e3bd0b-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:28:22.328412+00:00"
+  },
+  {
+    "id": "dbc3fbf1-1c31-4420-85d4-694db5287a57",
+    "event_type": "consultation_started",
+    "patient_id": "2fc917a3-aba7-419f-bf92-5239ad761355",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-2fc917a3-aba7-419f-bf92-5239ad761355-2025-09-10"
+    },
+    "timestamp": "2025-09-10T08:30:26.779406+00:00"
+  },
+  {
+    "id": "a7d1fe8d-c6a6-4a4e-b579-b32c113a49e8",
+    "event_type": "payment_completed",
+    "patient_id": "5bf379a6-1e4b-4f9a-809f-26b130508884",
+    "appointment_id": null,
+    "consultation_id": "d37aedee-3dcc-45f8-83f0-c3e66a64ca1d",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T08:37:00.183Z",
+      "partialAmount": 0,
+      "consultation_id": "d37aedee-3dcc-45f8-83f0-c3e66a64ca1d"
+    },
+    "timestamp": "2025-09-10T08:37:01.997335+00:00"
+  },
+  {
+    "id": "a9294cb8-ef20-4760-a439-8a2822326b02",
+    "event_type": "consultation_started",
+    "patient_id": "1abac5e9-1fae-4631-92ce-72d83318ffc8",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-1abac5e9-1fae-4631-92ce-72d83318ffc8-2025-09-11"
+    },
+    "timestamp": "2025-09-11T09:07:00.964813+00:00"
+  },
+  {
+    "id": "0fba52bf-a252-4911-977b-03ea017661ee",
+    "event_type": "payment_completed",
+    "patient_id": "2fc917a3-aba7-419f-bf92-5239ad761355",
+    "appointment_id": null,
+    "consultation_id": "c83449e8-b9bb-4bdc-b4cd-8ba41cbced45",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T08:46:56.843Z",
+      "partialAmount": 0,
+      "consultation_id": "c83449e8-b9bb-4bdc-b4cd-8ba41cbced45"
+    },
+    "timestamp": "2025-09-10T08:46:58.595944+00:00"
+  },
+  {
+    "id": "cad9d23b-3335-4d05-b370-d65ef658c0fd",
+    "event_type": "payment_completed",
+    "patient_id": "e2ddc538-b7ff-4598-94fc-60ee7ab36008",
+    "appointment_id": null,
+    "consultation_id": "7ce791f7-5566-4dee-98b0-4d105b1e9c83",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T08:52:00.256Z",
+      "partialAmount": 0,
+      "consultation_id": "7ce791f7-5566-4dee-98b0-4d105b1e9c83"
+    },
+    "timestamp": "2025-09-10T08:52:02.172726+00:00"
+  },
+  {
+    "id": "f7d1a225-b98d-4d23-9d4d-d1f7256c99b6",
+    "event_type": "payment_completed",
+    "patient_id": "79efad49-2b65-4e4a-b025-4fd5a1e3bd0b",
+    "appointment_id": null,
+    "consultation_id": "08e1db3d-b5dd-415e-b3b4-d11adb4a8c4b",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:06:56.575Z",
+      "partialAmount": 0,
+      "consultation_id": "08e1db3d-b5dd-415e-b3b4-d11adb4a8c4b"
+    },
+    "timestamp": "2025-09-10T09:06:58.325358+00:00"
+  },
+  {
+    "id": "91041ab4-28a2-42b4-8a57-014ad584a438",
+    "event_type": "consultation_started",
+    "patient_id": "4d299009-8026-4fce-8652-7e09bb79d5fd",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-4d299009-8026-4fce-8652-7e09bb79d5fd-2025-09-10"
+    },
+    "timestamp": "2025-09-10T09:14:41.499011+00:00"
+  },
+  {
+    "id": "2c63ce4f-a6a5-4855-80ed-7ba0736ab6b0",
+    "event_type": "payment_completed",
+    "patient_id": "d63fee95-27dd-47c2-a072-6107da954bfc",
+    "appointment_id": null,
+    "consultation_id": "df0f20bc-2693-40f2-bc9e-e9cf37f7a475",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:15:23.902Z",
+      "partialAmount": 0,
+      "consultation_id": "df0f20bc-2693-40f2-bc9e-e9cf37f7a475"
+    },
+    "timestamp": "2025-09-10T09:15:25.645904+00:00"
+  },
+  {
+    "id": "2bd6a10f-5b6f-42aa-b393-958ca1a4c108",
+    "event_type": "payment_completed",
+    "patient_id": "4d299009-8026-4fce-8652-7e09bb79d5fd",
+    "appointment_id": null,
+    "consultation_id": "a6681f7b-a71b-4c24-bc4f-fc851be74b66",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:32:23.762Z",
+      "partialAmount": 0,
+      "consultation_id": "a6681f7b-a71b-4c24-bc4f-fc851be74b66"
+    },
+    "timestamp": "2025-09-10T09:32:25.45887+00:00"
+  },
+  {
+    "id": "0d9c6f36-da3e-426d-8e2a-93bbcbbd359b",
+    "event_type": "consultation_started",
+    "patient_id": "9aca5c3c-12ea-4ce8-aec4-0a2fb004d75c",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-9aca5c3c-12ea-4ce8-aec4-0a2fb004d75c-2025-09-10"
+    },
+    "timestamp": "2025-09-10T09:36:21.474891+00:00"
+  },
+  {
+    "id": "67d37dff-aa6f-4d4b-8d16-002012a15b9b",
+    "event_type": "payment_completed",
+    "patient_id": "73f46620-cee3-4316-a50b-fe0a779f177a",
+    "appointment_id": null,
+    "consultation_id": "f17bfeb4-9fa7-4881-9436-bd55736d082d",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:36:56.187Z",
+      "partialAmount": 0,
+      "consultation_id": "f17bfeb4-9fa7-4881-9436-bd55736d082d"
+    },
+    "timestamp": "2025-09-10T09:36:57.909629+00:00"
+  },
+  {
+    "id": "a47b1392-55d3-4abe-a088-1e7bfeead3f9",
+    "event_type": "consultation_started",
+    "patient_id": "8fa3a7c7-455d-4466-968a-209f898cc0fd",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-8fa3a7c7-455d-4466-968a-209f898cc0fd-2025-09-10"
+    },
+    "timestamp": "2025-09-10T09:43:20.455074+00:00"
+  },
+  {
+    "id": "056f097a-1402-4fe5-b2e3-f0af11e1bddf",
+    "event_type": "payment_completed",
+    "patient_id": "9aca5c3c-12ea-4ce8-aec4-0a2fb004d75c",
+    "appointment_id": null,
+    "consultation_id": "50cc7e47-3df1-4ded-ac36-97e4742efa9d",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:43:26.558Z",
+      "partialAmount": 0,
+      "consultation_id": "50cc7e47-3df1-4ded-ac36-97e4742efa9d"
+    },
+    "timestamp": "2025-09-10T09:43:28.238988+00:00"
+  },
+  {
+    "id": "363bf227-86d1-49ae-9b2a-cec7eb60651f",
+    "event_type": "consultation_started",
+    "patient_id": "297dee55-39d4-47ed-b442-be9b6fd66487",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-297dee55-39d4-47ed-b442-be9b6fd66487-2025-09-10"
+    },
+    "timestamp": "2025-09-10T09:55:45.336868+00:00"
+  },
+  {
+    "id": "f7469f75-3115-4631-8d17-9f9338a8429e",
+    "event_type": "payment_completed",
+    "patient_id": "8fa3a7c7-455d-4466-968a-209f898cc0fd",
+    "appointment_id": null,
+    "consultation_id": "89b0cf4c-997f-4e47-82cb-d47595e3972b",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T09:56:20.583Z",
+      "partialAmount": 0,
+      "consultation_id": "89b0cf4c-997f-4e47-82cb-d47595e3972b"
+    },
+    "timestamp": "2025-09-10T09:56:22.42375+00:00"
+  },
+  {
+    "id": "71af41b8-9624-4b83-a5df-76ede42a597e",
+    "event_type": "consultation_started",
+    "patient_id": "34ccbe05-a431-4f19-bbe1-f62ca2108a24",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-34ccbe05-a431-4f19-bbe1-f62ca2108a24-2025-09-10"
+    },
+    "timestamp": "2025-09-10T10:08:39.106154+00:00"
+  },
+  {
+    "id": "86390f2f-88a1-4c85-af23-88b22bc74c43",
+    "event_type": "payment_completed",
+    "patient_id": "297dee55-39d4-47ed-b442-be9b6fd66487",
+    "appointment_id": null,
+    "consultation_id": "c0dd2a18-b9b0-4bf1-9aff-204476635588",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T10:10:18.362Z",
+      "partialAmount": 0,
+      "consultation_id": "c0dd2a18-b9b0-4bf1-9aff-204476635588"
+    },
+    "timestamp": "2025-09-10T10:10:20.184369+00:00"
+  },
+  {
+    "id": "ce6ab642-1299-40c6-8c02-a638b179ebec",
+    "event_type": "consultation_started",
+    "patient_id": "6f8ff83b-f2f6-4ece-a86f-b25636f091e6",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-6f8ff83b-f2f6-4ece-a86f-b25636f091e6-2025-09-10"
+    },
+    "timestamp": "2025-09-10T10:25:15.456761+00:00"
+  },
+  {
+    "id": "577566e8-a36d-4c54-afc4-416c81b1fcc0",
+    "event_type": "payment_completed",
+    "patient_id": "34ccbe05-a431-4f19-bbe1-f62ca2108a24",
+    "appointment_id": null,
+    "consultation_id": "df0c4d4d-5233-4994-b633-fb486a2b9b37",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T10:26:29.509Z",
+      "partialAmount": 0,
+      "consultation_id": "df0c4d4d-5233-4994-b633-fb486a2b9b37"
+    },
+    "timestamp": "2025-09-10T10:26:31.342333+00:00"
+  },
+  {
+    "id": "06839b4c-e85c-4cce-880c-7879d25fbb9c",
+    "event_type": "consultation_started",
+    "patient_id": "765da657-9d74-4bb9-af33-3748c0459368",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-765da657-9d74-4bb9-af33-3748c0459368-2025-09-10"
+    },
+    "timestamp": "2025-09-10T10:41:31.798178+00:00"
+  },
+  {
+    "id": "79bc9831-aa7b-45e2-b9b2-91544ce0cbe0",
+    "event_type": "payment_completed",
+    "patient_id": "6f8ff83b-f2f6-4ece-a86f-b25636f091e6",
+    "appointment_id": null,
+    "consultation_id": "d4e0bca7-c2c1-4cd4-85da-1a152f4292a5",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T10:41:36.213Z",
+      "partialAmount": 0,
+      "consultation_id": "d4e0bca7-c2c1-4cd4-85da-1a152f4292a5"
+    },
+    "timestamp": "2025-09-10T10:41:38.140422+00:00"
+  },
+  {
+    "id": "818e808d-b020-4f9d-aae0-4dc48f0df061",
+    "event_type": "consultation_started",
+    "patient_id": "05166067-5ac5-419b-85c3-c90a4c63f487",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-05166067-5ac5-419b-85c3-c90a4c63f487-2025-09-10"
+    },
+    "timestamp": "2025-09-10T10:52:12.093989+00:00"
+  },
+  {
+    "id": "9e1d0498-6065-4847-8862-4461545d22a4",
+    "event_type": "payment_completed",
+    "patient_id": "765da657-9d74-4bb9-af33-3748c0459368",
+    "appointment_id": null,
+    "consultation_id": "9774fdd5-f28a-461a-8183-689e0666f54c",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T10:55:11.671Z",
+      "partialAmount": 0,
+      "consultation_id": "9774fdd5-f28a-461a-8183-689e0666f54c"
+    },
+    "timestamp": "2025-09-10T10:55:13.545802+00:00"
+  },
+  {
+    "id": "238de199-803d-469b-bd68-b6f17b5fb432",
+    "event_type": "consultation_started",
+    "patient_id": "9146fe81-db1e-425b-a5f7-e985ba3a8738",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-9146fe81-db1e-425b-a5f7-e985ba3a8738-2025-09-10"
+    },
+    "timestamp": "2025-09-10T11:05:18.810015+00:00"
+  },
+  {
+    "id": "f750ce2f-26c5-4a89-99e8-d1ce09795732",
+    "event_type": "payment_completed",
+    "patient_id": "05166067-5ac5-419b-85c3-c90a4c63f487",
+    "appointment_id": null,
+    "consultation_id": "aec3139d-4df8-4ca9-8ee7-a6b3855bf3c5",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T11:05:26.737Z",
+      "partialAmount": 0,
+      "consultation_id": "aec3139d-4df8-4ca9-8ee7-a6b3855bf3c5"
+    },
+    "timestamp": "2025-09-10T11:05:28.517024+00:00"
+  },
+  {
+    "id": "02e1c906-a01c-442c-8152-626c9adc8db0",
+    "event_type": "consultation_started",
+    "patient_id": "9c527d5a-4729-468e-9282-264d817afafa",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-9c527d5a-4729-468e-9282-264d817afafa-2025-09-10"
+    },
+    "timestamp": "2025-09-10T11:23:46.348748+00:00"
+  },
+  {
+    "id": "d18755e9-7f95-47d9-98b2-e01909c39ede",
+    "event_type": "payment_completed",
+    "patient_id": "9146fe81-db1e-425b-a5f7-e985ba3a8738",
+    "appointment_id": null,
+    "consultation_id": "742ef675-b8e7-4a5f-809a-3eb4eec8a8ac",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T11:24:55.499Z",
+      "partialAmount": 0,
+      "consultation_id": "742ef675-b8e7-4a5f-809a-3eb4eec8a8ac"
+    },
+    "timestamp": "2025-09-10T11:24:57.291944+00:00"
+  },
+  {
+    "id": "f8807bd4-5b92-4f11-9283-8a1be372fbbb",
+    "event_type": "payment_completed",
+    "patient_id": "9c527d5a-4729-468e-9282-264d817afafa",
+    "appointment_id": null,
+    "consultation_id": "db06065d-5ff8-4634-84b1-ac2810e35505",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T11:46:38.030Z",
+      "partialAmount": 0,
+      "consultation_id": "db06065d-5ff8-4634-84b1-ac2810e35505"
+    },
+    "timestamp": "2025-09-10T11:46:39.759337+00:00"
+  },
+  {
+    "id": "eaed5924-656d-4c8e-9138-5cda20d6ff6e",
+    "event_type": "consultation_started",
+    "patient_id": "25a2c1e1-80ce-4e39-ba69-035d97098b01",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-25a2c1e1-80ce-4e39-ba69-035d97098b01-2025-09-10"
+    },
+    "timestamp": "2025-09-10T11:49:22.318843+00:00"
+  },
+  {
+    "id": "62381e03-81bd-4bb2-8ae9-2b1bc3e97aa8",
+    "event_type": "payment_completed",
+    "patient_id": "25a2c1e1-80ce-4e39-ba69-035d97098b01",
+    "appointment_id": null,
+    "consultation_id": "e9070d7e-0c7b-4321-90c4-c0c7526514fb",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T12:00:20.482Z",
+      "partialAmount": 0,
+      "consultation_id": "e9070d7e-0c7b-4321-90c4-c0c7526514fb"
+    },
+    "timestamp": "2025-09-10T12:00:22.449743+00:00"
+  },
+  {
+    "id": "62f97b61-0231-4a57-b777-7f744692574a",
+    "event_type": "consultation_started",
+    "patient_id": "4c258a66-5cab-433b-b5d9-3799f9be3f45",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-4c258a66-5cab-433b-b5d9-3799f9be3f45-2025-09-10"
+    },
+    "timestamp": "2025-09-10T12:09:31.028921+00:00"
+  },
+  {
+    "id": "9ed44380-9c5d-4bc3-be47-79be7164839b",
+    "event_type": "consultation_started",
+    "patient_id": "26113434-05f0-4066-853b-cda4194855f6",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-26113434-05f0-4066-853b-cda4194855f6-2025-09-10"
+    },
+    "timestamp": "2025-09-10T12:23:49.572559+00:00"
+  },
+  {
+    "id": "c3fd340a-146a-44c7-8344-ed7c83feb9db",
+    "event_type": "payment_completed",
+    "patient_id": "4c258a66-5cab-433b-b5d9-3799f9be3f45",
+    "appointment_id": null,
+    "consultation_id": "83a7c848-ff34-471e-88f1-211f441d7954",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T12:25:57.121Z",
+      "partialAmount": 0,
+      "consultation_id": "83a7c848-ff34-471e-88f1-211f441d7954"
+    },
+    "timestamp": "2025-09-10T12:25:59.087649+00:00"
+  },
+  {
+    "id": "e0830345-ec25-4654-b795-a4a234265c29",
+    "event_type": "payment_completed",
+    "patient_id": "26113434-05f0-4066-853b-cda4194855f6",
+    "appointment_id": null,
+    "consultation_id": "657dd856-84a5-40b1-a3f4-a1805b010be8",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T12:45:05.539Z",
+      "partialAmount": 0,
+      "consultation_id": "657dd856-84a5-40b1-a3f4-a1805b010be8"
+    },
+    "timestamp": "2025-09-10T12:45:07.495422+00:00"
+  },
+  {
+    "id": "03053530-b9af-4ced-a8be-7053da473f15",
+    "event_type": "consultation_started",
+    "patient_id": "a589f959-3e7d-42e4-95ef-049275623d03",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-a589f959-3e7d-42e4-95ef-049275623d03-2025-09-10"
+    },
+    "timestamp": "2025-09-10T13:22:31.152956+00:00"
+  },
+  {
+    "id": "62365715-6858-4ce0-807c-e71b4ce7d27a",
+    "event_type": "payment_completed",
+    "patient_id": "a589f959-3e7d-42e4-95ef-049275623d03",
+    "appointment_id": null,
+    "consultation_id": "9aba6d61-e0ec-49b3-a8a8-d5f911dcfd1a",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-10T13:31:01.642Z",
+      "partialAmount": 0,
+      "consultation_id": "9aba6d61-e0ec-49b3-a8a8-d5f911dcfd1a"
+    },
+    "timestamp": "2025-09-10T13:31:03.388493+00:00"
+  },
+  {
+    "id": "e67944bc-424a-4bee-a34a-c7a5ac0585c7",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:05:22.713Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:05:24.222039+00:00"
+  },
+  {
+    "id": "e56a4e5e-7eca-4f62-a597-7c11b3aac2b3",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:05:32.697Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:05:34.00789+00:00"
+  },
+  {
+    "id": "c5f3ded5-2785-4989-9354-e86449a1378f",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:06:27.148Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:06:28.503966+00:00"
+  },
+  {
+    "id": "bdd3a168-bdd1-45b6-b1c4-bd23c91b07bc",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:11:55.508Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:11:56.835934+00:00"
+  },
+  {
+    "id": "a5a44851-1143-464c-b4cb-8992edfedf99",
+    "event_type": "consultation_started",
+    "patient_id": "146cd8a4-09d3-4d16-b67b-43d1600d8a00",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-146cd8a4-09d3-4d16-b67b-43d1600d8a00-2025-09-11"
+    },
+    "timestamp": "2025-09-11T07:13:04.634245+00:00"
+  },
+  {
+    "id": "832c3b3c-2e45-462e-90de-ebb95d06603b",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:14:30.476Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:14:31.826708+00:00"
+  },
+  {
+    "id": "0c678fba-003f-4be2-ad71-f9e998f445bb",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:14:39.490Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:14:40.84493+00:00"
+  },
+  {
+    "id": "1cbb9db1-1360-4421-b5b4-6895e02d735a",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:16:42.226Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:16:43.628736+00:00"
+  },
+  {
+    "id": "3a4f2d2d-14d3-4f49-9e75-be22a31f2238",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:16:55.773Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:16:57.194474+00:00"
+  },
+  {
+    "id": "05a6945f-a936-42aa-9f2b-f7749d9e86fe",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:17:43.767Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:17:45.07246+00:00"
+  },
+  {
+    "id": "49152df9-76d0-4a6f-8aca-50258bdd5528",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:19:31.083Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:19:32.514462+00:00"
+  },
+  {
+    "id": "848516a2-dac0-4744-820b-148e3d4f5602",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:23:12.657Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:23:14.142644+00:00"
+  },
+  {
+    "id": "e4f21336-e1fe-423b-9cbf-9a5d3fb5d3df",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:27:08.625Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:27:10.857044+00:00"
+  },
+  {
+    "id": "45eb8e08-d3b5-4c67-998f-4591f1cc2e0f",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:28:56.647Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:28:58.985599+00:00"
+  },
+  {
+    "id": "c0af8ec7-0e60-467c-8972-bc688b3d08d6",
+    "event_type": "dilation_initiated_from_consultation",
+    "patient_id": "3cfec5f5-6c8a-4b44-9e80-21b3dc39dd02",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "needsDilation": true,
+      "waitlistEntryId": "a652d414-5cf1-43f2-a101-5a62d61fedd9",
+      "dilationMedicine": "Mydriaticum"
+    },
+    "timestamp": "2025-09-11T07:34:15.300042+00:00"
+  },
+  {
+    "id": "7046f158-ce50-469b-84ec-06fde6ea1a0b",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:40:10.880Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:40:12.373618+00:00"
+  },
+  {
+    "id": "267e06c9-ce87-4579-bdce-65df051328d7",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "free",
+      "processedAt": "2025-09-11T07:41:17.909Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:41:19.329326+00:00"
+  },
+  {
+    "id": "f93f0dd0-8a21-416b-96a2-88c528742a11",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T07:53:14.735Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T07:53:16.464283+00:00"
+  },
+  {
+    "id": "2998a2c2-6178-4c93-b42b-68e9b9d18724",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T08:01:51.533Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T08:01:52.942016+00:00"
+  },
+  {
+    "id": "177dd8cd-80f8-41c5-9464-1c3ce4071dae",
+    "event_type": "consultation_started",
+    "patient_id": "92480209-87c1-4809-a921-5a7c032954e2",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-92480209-87c1-4809-a921-5a7c032954e2-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:23:41.25784+00:00"
+  },
+  {
+    "id": "775fb78d-18b9-46be-ada0-82fe8e53643d",
+    "event_type": "consultation_started",
+    "patient_id": "deb5cc93-1c26-45ce-bd33-5ece05a994e0",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-deb5cc93-1c26-45ce-bd33-5ece05a994e0-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:23:45.708502+00:00"
+  },
+  {
+    "id": "c1076b46-8abc-443c-a3fa-96c0f713d0e5",
+    "event_type": "consultation_started",
+    "patient_id": "6ff6fb9e-dc8c-4162-b5c2-b8dd201ce2d3",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-6ff6fb9e-dc8c-4162-b5c2-b8dd201ce2d3-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:23:50.607831+00:00"
+  },
+  {
+    "id": "78918c97-1430-4fd0-a7b4-89720ad6c62a",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T08:24:00.834Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T08:24:02.292535+00:00"
+  },
+  {
+    "id": "c3230a1f-3572-4ad2-a38f-c84a74cd38b9",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T08:29:26.804Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T08:29:28.157635+00:00"
+  },
+  {
+    "id": "aeb66972-0ac2-473d-b066-d9b57a52dcb6",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T08:41:33.283Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T08:41:34.633384+00:00"
+  },
+  {
+    "id": "0fc5fd9c-3fb1-4e4c-ab02-e04d7237598a",
+    "event_type": "consultation_started",
+    "patient_id": "addd1965-89a5-4858-8b3b-f196bbd0f3a2",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-addd1965-89a5-4858-8b3b-f196bbd0f3a2-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:44:11.536155+00:00"
+  },
+  {
+    "id": "9c05711a-594d-46aa-8210-84e841630853",
+    "event_type": "payment_completed",
+    "patient_id": "77c3e1b5-0be5-4d4b-88c6-ed92f2e3bef2",
+    "appointment_id": null,
+    "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39",
+    "metadata": {
+      "type": "cash",
+      "amount": 2000,
+      "status": "paid",
+      "processedAt": "2025-09-11T08:49:33.060Z",
+      "partialAmount": 0,
+      "consultation_id": "989d0411-83b1-486c-8508-84e70d8acd39"
+    },
+    "timestamp": "2025-09-11T08:49:34.508954+00:00"
+  },
+  {
+    "id": "19c9fcb6-1fb7-4129-a78d-204effeecfc0",
+    "event_type": "consultation_started",
+    "patient_id": "552e506e-97ea-4b3a-ba87-fc11e404f0b4",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-552e506e-97ea-4b3a-ba87-fc11e404f0b4-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:53:28.152717+00:00"
+  },
+  {
+    "id": "2ef0c070-9ae7-4a4d-aa89-02aa1d3bc0ae",
+    "event_type": "consultation_started",
+    "patient_id": "c641c254-98c8-46cf-9b4b-274dd53f42e4",
+    "appointment_id": null,
+    "consultation_id": null,
+    "metadata": {
+      "consultation_id": "temp-c641c254-98c8-46cf-9b4b-274dd53f42e4-2025-09-11"
+    },
+    "timestamp": "2025-09-11T08:53:37.278628+00:00"
+  }
+]

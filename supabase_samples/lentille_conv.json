@@ -1,0 +1,714 @@
+[
+  {
+    "id": 1,
+    "num_enr": 1,
+    "idtab_conversion": 1,
+    "lunettes": 4,
+    "lun_plus": 4.25,
+    "lun_moins": -3.75
+  },
+  {
+    "id": 2,
+    "num_enr": 2,
+    "idtab_conversion": 2,
+    "lunettes": 4.5,
+    "lun_plus": 4.75,
+    "lun_moins": -4.25
+  },
+  {
+    "id": 3,
+    "num_enr": 3,
+    "idtab_conversion": 3,
+    "lunettes": 5,
+    "lun_plus": 5.25,
+    "lun_moins": -4.75
+  },
+  {
+    "id": 4,
+    "num_enr": 4,
+    "idtab_conversion": 4,
+    "lunettes": 6,
+    "lun_plus": 6.5,
+    "lun_moins": -5.5
+  },
+  {
+    "id": 5,
+    "num_enr": 5,
+    "idtab_conversion": 5,
+    "lunettes": 6.5,
+    "lun_plus": 7,
+    "lun_moins": -6
+  },
+  {
+    "id": 6,
+    "num_enr": 6,
+    "idtab_conversion": 6,
+    "lunettes": 7,
+    "lun_plus": 7.5,
+    "lun_moins": -6.5
+  },
+  {
+    "id": 7,
+    "num_enr": 7,
+    "idtab_conversion": 7,
+    "lunettes": 7.5,
+    "lun_plus": 8.25,
+    "lun_moins": -7
+  },
+  {
+    "id": 8,
+    "num_enr": 8,
+    "idtab_conversion": 8,
+    "lunettes": 8,
+    "lun_plus": 9,
+    "lun_moins": -7.25
+  },
+  {
+    "id": 9,
+    "num_enr": 9,
+    "idtab_conversion": 9,
+    "lunettes": 8.5,
+    "lun_plus": 9.5,
+    "lun_moins": -7.75
+  },
+  {
+    "id": 10,
+    "num_enr": 10,
+    "idtab_conversion": 10,
+    "lunettes": 9,
+    "lun_plus": 10,
+    "lun_moins": -8
+  },
+  {
+    "id": 11,
+    "num_enr": 11,
+    "idtab_conversion": 11,
+    "lunettes": 9.5,
+    "lun_plus": 10.75,
+    "lun_moins": -8.5
+  },
+  {
+    "id": 12,
+    "num_enr": 12,
+    "idtab_conversion": 12,
+    "lunettes": 10,
+    "lun_plus": 11.5,
+    "lun_moins": -9
+  },
+  {
+    "id": 13,
+    "num_enr": 13,
+    "idtab_conversion": 13,
+    "lunettes": 10.5,
+    "lun_plus": 12,
+    "lun_moins": -9.25
+  },
+  {
+    "id": 14,
+    "num_enr": 14,
+    "idtab_conversion": 14,
+    "lunettes": 11,
+    "lun_plus": 12.75,
+    "lun_moins": -9.75
+  },
+  {
+    "id": 15,
+    "num_enr": 15,
+    "idtab_conversion": 15,
+    "lunettes": 11.5,
+    "lun_plus": 13.5,
+    "lun_moins": -10
+  },
+  {
+    "id": 16,
+    "num_enr": 16,
+    "idtab_conversion": 16,
+    "lunettes": 12,
+    "lun_plus": 14,
+    "lun_moins": -10.5
+  },
+  {
+    "id": 17,
+    "num_enr": 17,
+    "idtab_conversion": 17,
+    "lunettes": 12.5,
+    "lun_plus": 14.75,
+    "lun_moins": -10.75
+  },
+  {
+    "id": 18,
+    "num_enr": 18,
+    "idtab_conversion": 18,
+    "lunettes": 13,
+    "lun_plus": 15.5,
+    "lun_moins": -11.25
+  },
+  {
+    "id": 19,
+    "num_enr": 19,
+    "idtab_conversion": 19,
+    "lunettes": 13.5,
+    "lun_plus": 16,
+    "lun_moins": -11.5
+  },
+  {
+    "id": 20,
+    "num_enr": 20,
+    "idtab_conversion": 20,
+    "lunettes": 14,
+    "lun_plus": 16.75,
+    "lun_moins": -12
+  },
+  {
+    "id": 21,
+    "num_enr": 21,
+    "idtab_conversion": 21,
+    "lunettes": 14.5,
+    "lun_plus": 17.5,
+    "lun_moins": -12.25
+  },
+  {
+    "id": 22,
+    "num_enr": 22,
+    "idtab_conversion": 22,
+    "lunettes": 15,
+    "lun_plus": 18.25,
+    "lun_moins": -12.75
+  },
+  {
+    "id": 23,
+    "num_enr": 23,
+    "idtab_conversion": 23,
+    "lunettes": 15.5,
+    "lun_plus": 19,
+    "lun_moins": -13
+  },
+  {
+    "id": 24,
+    "num_enr": 24,
+    "idtab_conversion": 24,
+    "lunettes": 5.5,
+    "lun_plus": 6,
+    "lun_moins": -5.25
+  },
+  {
+    "id": 25,
+    "num_enr": 25,
+    "idtab_conversion": 25,
+    "lunettes": 16,
+    "lun_plus": 19.75,
+    "lun_moins": -13.5
+  },
+  {
+    "id": 26,
+    "num_enr": 26,
+    "idtab_conversion": 26,
+    "lunettes": 16.5,
+    "lun_plus": 20.5,
+    "lun_moins": -13.75
+  },
+  {
+    "id": 27,
+    "num_enr": 27,
+    "idtab_conversion": 27,
+    "lunettes": 17,
+    "lun_plus": 21.5,
+    "lun_moins": -14
+  },
+  {
+    "id": 28,
+    "num_enr": 28,
+    "idtab_conversion": 28,
+    "lunettes": 17.5,
+    "lun_plus": 22.25,
+    "lun_moins": -14.5
+  },
+  {
+    "id": 29,
+    "num_enr": 29,
+    "idtab_conversion": 29,
+    "lunettes": 18,
+    "lun_plus": 23,
+    "lun_moins": -14.75
+  },
+  {
+    "id": 30,
+    "num_enr": 30,
+    "idtab_conversion": 30,
+    "lunettes": 18.5,
+    "lun_plus": 23.75,
+    "lun_moins": -15.25
+  },
+  {
+    "id": 31,
+    "num_enr": 31,
+    "idtab_conversion": 31,
+    "lunettes": 19,
+    "lun_plus": 24.5,
+    "lun_moins": -15.5
+  },
+  {
+    "id": 32,
+    "num_enr": 32,
+    "idtab_conversion": 32,
+    "lunettes": 19.5,
+    "lun_plus": 25.5,
+    "lun_moins": -15.75
+  },
+  {
+    "id": 33,
+    "num_enr": 33,
+    "idtab_conversion": 33,
+    "lunettes": 20,
+    "lun_plus": 26,
+    "lun_moins": -16.25
+  },
+  {
+    "id": 34,
+    "num_enr": 34,
+    "idtab_conversion": 34,
+    "lunettes": 21,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 35,
+    "num_enr": 35,
+    "idtab_conversion": 35,
+    "lunettes": 22,
+    "lun_plus": null,
+    "lun_moins": -17.25
+  },
+  {
+    "id": 36,
+    "num_enr": 36,
+    "idtab_conversion": 36,
+    "lunettes": 23,
+    "lun_plus": null,
+    "lun_moins": -18
+  },
+  {
+    "id": 37,
+    "num_enr": 37,
+    "idtab_conversion": 37,
+    "lunettes": 24,
+    "lun_plus": null,
+    "lun_moins": -18.75
+  },
+  {
+    "id": 38,
+    "num_enr": 38,
+    "idtab_conversion": 38,
+    "lunettes": 25,
+    "lun_plus": null,
+    "lun_moins": -19
+  },
+  {
+    "id": 39,
+    "num_enr": 39,
+    "idtab_conversion": 39,
+    "lunettes": 26,
+    "lun_plus": null,
+    "lun_moins": -19.5
+  },
+  {
+    "id": 40,
+    "num_enr": 40,
+    "idtab_conversion": 40,
+    "lunettes": 27,
+    "lun_plus": null,
+    "lun_moins": -20.5
+  },
+  {
+    "id": 41,
+    "num_enr": 41,
+    "idtab_conversion": 41,
+    "lunettes": 28,
+    "lun_plus": null,
+    "lun_moins": -21.5
+  },
+  {
+    "id": 42,
+    "num_enr": 42,
+    "idtab_conversion": 42,
+    "lunettes": 29,
+    "lun_plus": null,
+    "lun_moins": -22.5
+  },
+  {
+    "id": 43,
+    "num_enr": 43,
+    "idtab_conversion": 43,
+    "lunettes": 30,
+    "lun_plus": null,
+    "lun_moins": -23.5
+  },
+  {
+    "id": 44,
+    "num_enr": 44,
+    "idtab_conversion": 44,
+    "lunettes": 4.25,
+    "lun_plus": 4.5,
+    "lun_moins": -4
+  },
+  {
+    "id": 45,
+    "num_enr": 45,
+    "idtab_conversion": 45,
+    "lunettes": 4.75,
+    "lun_plus": 5,
+    "lun_moins": -4.5
+  },
+  {
+    "id": 46,
+    "num_enr": 46,
+    "idtab_conversion": 46,
+    "lunettes": 5.25,
+    "lun_plus": 5.5,
+    "lun_moins": -5
+  },
+  {
+    "id": 47,
+    "num_enr": 47,
+    "idtab_conversion": 47,
+    "lunettes": 5.75,
+    "lun_plus": 6.25,
+    "lun_moins": -5.5
+  },
+  {
+    "id": 48,
+    "num_enr": 48,
+    "idtab_conversion": 48,
+    "lunettes": 6.25,
+    "lun_plus": 6.75,
+    "lun_moins": -5.75
+  },
+  {
+    "id": 49,
+    "num_enr": 49,
+    "idtab_conversion": 49,
+    "lunettes": 6.75,
+    "lun_plus": 7.25,
+    "lun_moins": -6.25
+  },
+  {
+    "id": 50,
+    "num_enr": 50,
+    "idtab_conversion": 50,
+    "lunettes": 7.25,
+    "lun_plus": 8,
+    "lun_moins": -6.75
+  },
+  {
+    "id": 51,
+    "num_enr": 51,
+    "idtab_conversion": 51,
+    "lunettes": 7.75,
+    "lun_plus": 8.5,
+    "lun_moins": -7
+  },
+  {
+    "id": 52,
+    "num_enr": 52,
+    "idtab_conversion": 52,
+    "lunettes": 8.25,
+    "lun_plus": 9.25,
+    "lun_moins": -7.5
+  },
+  {
+    "id": 53,
+    "num_enr": 53,
+    "idtab_conversion": 53,
+    "lunettes": 8.75,
+    "lun_plus": 9.75,
+    "lun_moins": -8
+  },
+  {
+    "id": 54,
+    "num_enr": 54,
+    "idtab_conversion": 54,
+    "lunettes": 9.25,
+    "lun_plus": 10.5,
+    "lun_moins": -8.25
+  },
+  {
+    "id": 55,
+    "num_enr": 55,
+    "idtab_conversion": 55,
+    "lunettes": 9.75,
+    "lun_plus": 11,
+    "lun_moins": -8.75
+  },
+  {
+    "id": 56,
+    "num_enr": 56,
+    "idtab_conversion": 56,
+    "lunettes": 10.25,
+    "lun_plus": 11.75,
+    "lun_moins": -9.25
+  },
+  {
+    "id": 57,
+    "num_enr": 57,
+    "idtab_conversion": 57,
+    "lunettes": 10.75,
+    "lun_plus": 12.25,
+    "lun_moins": -9.5
+  },
+  {
+    "id": 58,
+    "num_enr": 58,
+    "idtab_conversion": 58,
+    "lunettes": 11.25,
+    "lun_plus": 13,
+    "lun_moins": -10
+  },
+  {
+    "id": 59,
+    "num_enr": 59,
+    "idtab_conversion": 59,
+    "lunettes": 11.75,
+    "lun_plus": 13.75,
+    "lun_moins": -10.25
+  },
+  {
+    "id": 60,
+    "num_enr": 60,
+    "idtab_conversion": 60,
+    "lunettes": 12.25,
+    "lun_plus": 14.25,
+    "lun_moins": -10.75
+  },
+  {
+    "id": 61,
+    "num_enr": 61,
+    "idtab_conversion": 61,
+    "lunettes": 12.75,
+    "lun_plus": 15,
+    "lun_moins": -11
+  },
+  {
+    "id": 62,
+    "num_enr": 62,
+    "idtab_conversion": 62,
+    "lunettes": 13.25,
+    "lun_plus": 15.75,
+    "lun_moins": -11.5
+  },
+  {
+    "id": 63,
+    "num_enr": 63,
+    "idtab_conversion": 63,
+    "lunettes": 13.75,
+    "lun_plus": 16.5,
+    "lun_moins": -11.75
+  },
+  {
+    "id": 64,
+    "num_enr": 64,
+    "idtab_conversion": 64,
+    "lunettes": 14.25,
+    "lun_plus": 17.25,
+    "lun_moins": -12.25
+  },
+  {
+    "id": 65,
+    "num_enr": 65,
+    "idtab_conversion": 65,
+    "lunettes": 14.75,
+    "lun_plus": 18,
+    "lun_moins": -12.5
+  },
+  {
+    "id": 66,
+    "num_enr": 66,
+    "idtab_conversion": 66,
+    "lunettes": 15.25,
+    "lun_plus": 18.75,
+    "lun_moins": -13
+  },
+  {
+    "id": 67,
+    "num_enr": 67,
+    "idtab_conversion": 67,
+    "lunettes": 15.75,
+    "lun_plus": 19.5,
+    "lun_moins": -13.25
+  },
+  {
+    "id": 68,
+    "num_enr": 68,
+    "idtab_conversion": 68,
+    "lunettes": 16.25,
+    "lun_plus": 20.25,
+    "lun_moins": -13.5
+  },
+  {
+    "id": 69,
+    "num_enr": 69,
+    "idtab_conversion": 69,
+    "lunettes": 16.75,
+    "lun_plus": 20.5,
+    "lun_moins": -13.75
+  },
+  {
+    "id": 70,
+    "num_enr": 70,
+    "idtab_conversion": 70,
+    "lunettes": 17.25,
+    "lun_plus": 21.5,
+    "lun_moins": -14
+  },
+  {
+    "id": 71,
+    "num_enr": 71,
+    "idtab_conversion": 71,
+    "lunettes": 17.75,
+    "lun_plus": 22.5,
+    "lun_moins": -14.5
+  },
+  {
+    "id": 72,
+    "num_enr": 72,
+    "idtab_conversion": 72,
+    "lunettes": 18.25,
+    "lun_plus": 23,
+    "lun_moins": -14.75
+  },
+  {
+    "id": 73,
+    "num_enr": 73,
+    "idtab_conversion": 73,
+    "lunettes": 18.75,
+    "lun_plus": 23.75,
+    "lun_moins": -15.25
+  },
+  {
+    "id": 74,
+    "num_enr": 74,
+    "idtab_conversion": 74,
+    "lunettes": 19.75,
+    "lun_plus": 25.5,
+    "lun_moins": -16
+  },
+  {
+    "id": 75,
+    "num_enr": 75,
+    "idtab_conversion": 75,
+    "lunettes": 20.25,
+    "lun_plus": 26.25,
+    "lun_moins": -16.25
+  },
+  {
+    "id": 76,
+    "num_enr": 76,
+    "idtab_conversion": 76,
+    "lunettes": 21.25,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 77,
+    "num_enr": 77,
+    "idtab_conversion": 77,
+    "lunettes": 21.5,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 78,
+    "num_enr": 78,
+    "idtab_conversion": 78,
+    "lunettes": 22.25,
+    "lun_plus": null,
+    "lun_moins": -17.25
+  },
+  {
+    "id": 79,
+    "num_enr": 79,
+    "idtab_conversion": 79,
+    "lunettes": 22.5,
+    "lun_plus": null,
+    "lun_moins": -17.25
+  },
+  {
+    "id": 80,
+    "num_enr": 80,
+    "idtab_conversion": 80,
+    "lunettes": 23.25,
+    "lun_plus": null,
+    "lun_moins": -18
+  },
+  {
+    "id": 81,
+    "num_enr": 81,
+    "idtab_conversion": 81,
+    "lunettes": 23.5,
+    "lun_plus": null,
+    "lun_moins": -18
+  },
+  {
+    "id": 82,
+    "num_enr": 82,
+    "idtab_conversion": 82,
+    "lunettes": 24.5,
+    "lun_plus": null,
+    "lun_moins": -18.75
+  },
+  {
+    "id": 83,
+    "num_enr": 84,
+    "idtab_conversion": 84,
+    "lunettes": 20.5,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 84,
+    "num_enr": 85,
+    "idtab_conversion": 85,
+    "lunettes": 20.75,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 85,
+    "num_enr": 86,
+    "idtab_conversion": 86,
+    "lunettes": 21.75,
+    "lun_plus": null,
+    "lun_moins": -16.5
+  },
+  {
+    "id": 86,
+    "num_enr": 87,
+    "idtab_conversion": 87,
+    "lunettes": 22.75,
+    "lun_plus": 17.25,
+    "lun_moins": null
+  },
+  {
+    "id": 87,
+    "num_enr": 83,
+    "idtab_conversion": 88,
+    "lunettes": 19.25,
+    "lun_plus": 24.5,
+    "lun_moins": -15.5
+  },
+  {
+    "id": 88,
+    "num_enr": 88,
+    "idtab_conversion": 89,
+    "lunettes": 24.700001,
+    "lun_plus": null,
+    "lun_moins": -18.75
+  },
+  {
+    "id": 89,
+    "num_enr": 89,
+    "idtab_conversion": 90,
+    "lunettes": 23.75,
+    "lun_plus": null,
+    "lun_moins": -18
+  }
+]

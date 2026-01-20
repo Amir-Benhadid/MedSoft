@@ -1,0 +1,34 @@
+.waitlist-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+}
+
+.waitlist-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.waitlist-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.waitlist-scroll-area {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.waitlist-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.waitlist-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.waitlist-scroll-area::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+}

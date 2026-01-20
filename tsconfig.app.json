@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"types": ["./types"],
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"allowJs": false,
+		"skipLibCheck": true,
+		"esModuleInterop": false,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"allowImportingTsExtensions": true
+	},
+	"include": ["src"],
+	"exclude": ["src/electron", "src/server"],
+	"references": [{ "path": "./tsconfig.node.json" }]
+}

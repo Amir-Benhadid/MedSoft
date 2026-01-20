@@ -1,0 +1,29 @@
+# Build outputs
+dist/
+dist-electron/
+dist-react/
+node_modules/
+
+# Generated files - specific patterns for Prisma
+src/generated/**/*
+**/prisma/index.d.ts
+**/prisma/runtime/**/*
+prisma/migrations/
+
+# Cache and temp files
+*.cache
+.cache/
+temp/
+.temp/
+
+# Environment files
+.env
+.env.*
+
+# Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db 

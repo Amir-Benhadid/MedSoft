@@ -1,0 +1,55 @@
+{
+	"appId": "com.ngf.cabinet",
+	"files": [
+		"dist-react/**/*",
+		"dist-electron/**/*",
+		"package.json"
+	],
+	"asar": true,
+	"asarUnpack": [
+		"**/node_modules/better-sqlite3/**/*"
+	],
+	"npmRebuild": true,
+	"npmArgs": [
+		"--no-optional"
+	],
+	"icon": "./desktopIcon.png",
+	"directories": {
+		"output": "dist-build"
+	},
+	"removePackageKeywords": true,
+	"buildVersion": "1.0.0",
+	"mac": {
+		"target": "dmg"
+	},
+	"linux": {
+		"target": "AppImage",
+		"category": "Utility"
+	},
+	"win": {
+		"target": [
+			{
+				"target": "portable",
+				"arch": [
+					"x64"
+				]
+			},
+			{
+				"target": "nsis",
+				"arch": [
+					"x64"
+				]
+			}
+		],
+		"artifactName": "${productName}-${version}-${arch}.${ext}",
+		"verifyUpdateCodeSignature": false,
+		"requestedExecutionLevel": "asInvoker",
+		"publisherName": "Amir Benhadid",
+		"sign": null
+	},
+	"publish": {
+		"provider": "github",
+		"owner": "Amir-Benhadid",
+		"repo": "medsoft"
+	}
+}

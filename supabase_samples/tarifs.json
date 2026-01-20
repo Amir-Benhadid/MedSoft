@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Consultation Générale",
+    "description": "Examen ophtalmologique complet avec fond d'œil",
+    "price": 2000,
+    "category": "consultation",
+    "is_active": true,
+    "duration": 30,
+    "code": "CONS_GEN",
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-28T22:26:45.35734+00:00"
+  },
+  {
+    "id": 2,
+    "name": "Consultation de Contrôle",
+    "description": "Visite de suivi post-traitement",
+    "price": 2000,
+    "category": "consultation",
+    "is_active": true,
+    "duration": 20,
+    "code": "CONS_CTRL",
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-28T22:26:48.779087+00:00"
+  },
+  {
+    "id": 3,
+    "name": "Consultation Urgente",
+    "description": "Consultation en urgence ophtalmologique",
+    "price": 2000,
+    "category": "consultation",
+    "is_active": true,
+    "duration": 25,
+    "code": "CONS_URG",
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-28T22:26:52.40169+00:00"
+  },
+  {
+    "id": 4,
+    "name": "Traitement Laser YAG",
+    "description": "Capsulotomie au laser YAG",
+    "price": 5000,
+    "category": "laser",
+    "is_active": true,
+    "duration": 45,
+    "code": "LASER_YAG",
+    "created_at": "2025-09-06T17:19:47.448096+00:00",
+    "updated_at": "2025-09-28T22:26:56.371804+00:00"
+  }
+]

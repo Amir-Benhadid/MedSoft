@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String
+  password     String
+  role         String     @default("DOCTOR") // DOCTOR, ADMIN, RECEPTIONIST
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  patients     Patient[]
+  sentMessages Message[]  @relation("SentMessages")
+  createdTodos TodoItem[] @relation("CreatedTodos")
+}
+
+model Patient {
+  id                String          @id @default(uuid())
+  name              String
+  surname           String
+  dob               String
+  address           Json
+  phoneNumber       String?
+  phone             String?
+  email             String?
+  bloodType         String?
+  status            String          @default("WAITING") // WAITING, IN_CONSULTATION, FINISHED, SERVED, PAID
+  consultationStart DateTime?
+  medicalHistory    String? // Add medical history field
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  doctor            User            @relation(fields: [doctorId], references: [id])
+  doctorId          String
+  consultations     Consultation[]
+  antecedents       Antecedent[]
+  appointments      Appointment[]
+  waitlistEntries   WaitlistEntry[]
+}
+
+model Consultation {
+  id                 String     @id @default(uuid())
+  date               DateTime
+  type               String     @default("general") // general, follow-up, specialist, emergency
+  notes              String?
+  diagnosis          String?
+  prescription       String?
+  duration           Int        @default(30) // in minutes
+  clinicalExam       String?
+  dilatationRequired Boolean    @default(false)
+  leftEye            Json? // Will store visual acuity, refraction, etc.
+  rightEye           Json? // Will store visual acuity, refraction, etc.
+  secretaryNeeded    Boolean    @default(false)
+  secretaryNote      String?
+  followUp           Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  patient            Patient    @relation(fields: [patientId], references: [id])
+  patientId          String
+  images             Image[]
+  documents          Document[]
+  invoice            Invoice?
+}
+
+model Invoice {
+  id             String       @id @default(uuid())
+  basePrice      Float
+  discount       Float        @default(0)
+  isFree         Boolean      @default(false)
+  total          Float
+  paid           Float        @default(0)
+  date           DateTime     @default(now())
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+  consultationId String       @unique
+}
+
+model Image {
+  id             String       @id @default(uuid())
+  type           String // "rightEye", "leftEye", "other"
+  url            String
+  title          String?
+  description    String?
+  date           DateTime     @default(now())
+  consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  consultationId String
+}
+
+model Document {
+  id             String       @id @default(uuid())
+  title          String
+  fileUrl        String
+  type           String // prescription, referral, etc.
+  date           DateTime     @default(now())
+  consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  consultationId String
+}
+
+model Appointment {
+  id                  String    @id @default(uuid())
+  title               String
+  start               DateTime
+  end                 DateTime
+  patientId           String?
+  patientName         String?
+  notes               String?
+  status              String    @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  state               String    @default("booked") // booked, present, absent, completed, paid, creance
+  isGroup             Boolean   @default(false)
+  groupPatientIds     String    @default("")
+  consultationType    String? // general, follow-up, specialist, emergency
+  needsDilation       Boolean   @default(false) // Whether dilation is programmed for this appointment
+  isDilated           Boolean   @default(false) // Whether dilation has been completed
+  dilationCompletedAt DateTime? // When dilation was completed
+  arrivedAt           DateTime? // When patient arrived
+  completedAt         DateTime? // When appointment was completed
+  paymentInfo         Json? // Payment information for paid/creance states
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  patient             Patient?  @relation(fields: [patientId], references: [id])
+}
+
+model Antecedent {
+  id          String  @id @default(uuid())
+  description String
+  date        String
+  type        String // medical, surgical, family, other
+  patientId   String
+  patient     Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model WaitlistEntry {
+  id                  String    @id @default(uuid())
+  arrivedAt           DateTime  @default(now())
+  date                DateTime  @default(now()) // Date for day-specific filtering
+  patientId           String
+  patient             Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  needsDilation       Boolean   @default(false) // Whether dilation is programmed for this entry
+  isDilated           Boolean   @default(false) // Whether dilation has been completed
+  dilationCompletedAt DateTime? // When dilation was completed
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  text      String
+  sender    String // "doctor" or "secretary"
+  timestamp DateTime @default(now())
+  isRead    Boolean  @default(false)
+  sentBy    User?    @relation("SentMessages", fields: [sentById], references: [id])
+  sentById  String?
+  createdAt DateTime @default(now())
+}
+
+model TodoItem {
+  id          String    @id @default(uuid())
+  text        String // Single line of text
+  isCompleted Boolean   @default(false)
+  completedAt DateTime? // Time when task was completed
+  date        DateTime  @default(now()) // Date for grouping todos by day
+  createdBy   User      @relation("CreatedTodos", fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Agenda {
+  id               Int      @id @default(autoincrement())
+  date             DateTime
+  timeSlot         String // e.g., "08:00-09:00"
+  isAvailable      Boolean  @default(true)
+  patientId        Int?
+  patientName      String?
+  consultationType String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("agenda")
+}
+
+model Tarif {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  category    String // "general", "laser", "surgery", "injection", "other"
+  isActive    Boolean  @default(true)
+  duration    Int? // duration in minutes
+  code        String? // internal code
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tarifs")
+}

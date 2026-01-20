@@ -1,0 +1,12 @@
+{
+    "watch": [
+        "dist-electron",
+        "package.json"
+    ],
+    "ext": "js,json",
+    "ignore": [
+        "src",
+        "dist-react",
+        "node_modules"
+    ]
+}
