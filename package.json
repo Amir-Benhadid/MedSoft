@@ -12,7 +12,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Amir-Benhadid/medsoft"
+		"url": "https://github.com/Amir-Benhadid/MedSoft"
 	},
 	"scripts": {
 		"launch": "npm run build && npm run dev",

@@ -50,6 +50,6 @@
 	"publish": {
 		"provider": "github",
 		"owner": "Amir-Benhadid",
-		"repo": "medsoft"
+		"repo": "MedSoft"
 	}
 }
