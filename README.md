@@ -79,4 +79,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-[MIT](LICENSE) © [Amir Benhadid](https://github.com/Amir-Benhadid)
+© [Amir Benhadid](https://github.com/Amir-Benhadid)
