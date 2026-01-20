@@ -26,6 +26,14 @@
 		"target": "AppImage",
 		"category": "Utility"
 	},
+	"nsis": {
+		"oneClick": false,
+		"allowToChangeInstallationDirectory": true,
+		"deleteAppDataOnUninstall": true,
+		"createDesktopShortcut": true,
+		"createStartMenuShortcut": true,
+		"shortcutName": "MedSoft"
+	},
 	"win": {
 		"target": [
 			{
