@@ -4,7 +4,8 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { setupORPCServer } from './orpc/server.js';
 import { closeDatabase } from './db/database.js';
-import { autoUpdater } from 'electron-updater';
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 
 console.log('---------------------------------------------------');
 console.log('[DEBUG] Starting Electron Main Process');
