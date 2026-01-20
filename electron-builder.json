@@ -32,7 +32,8 @@
 		"deleteAppDataOnUninstall": true,
 		"createDesktopShortcut": true,
 		"createStartMenuShortcut": true,
-		"shortcutName": "MedSoft"
+		"shortcutName": "MedSoft",
+		"warningsAsErrors": false
 	},
 	"win": {
 		"target": [
@@ -49,7 +50,7 @@
 				]
 			}
 		],
-		"artifactName": "${productName}-${version}-${arch}.${ext}",
+		"artifactName": "${productName} Setup ${version}.${ext}",
 		"verifyUpdateCodeSignature": false,
 		"requestedExecutionLevel": "asInvoker",
 		"publisherName": "Amir Benhadid",
