@@ -25,7 +25,11 @@
 		"target": "AppImage",
 		"category": "Utility"
 	},
+	"portable": {
+		"artifactName": "${productName} ${version} Portable.${ext}"
+	},
 	"nsis": {
+		"artifactName": "${productName} Setup ${version}.${ext}",
 		"oneClick": false,
 		"allowToChangeInstallationDirectory": true,
 		"deleteAppDataOnUninstall": true,
@@ -49,7 +53,6 @@
 				]
 			}
 		],
-		"artifactName": "${productName} Setup ${version} (${target}).${ext}",
 		"verifyUpdateCodeSignature": false,
 		"requestedExecutionLevel": "asInvoker",
 		"publisherName": "Amir Benhadid",
