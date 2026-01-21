@@ -18,7 +18,6 @@
 		"output": "dist-build"
 	},
 	"removePackageKeywords": true,
-	"buildVersion": "1.0.0",
 	"mac": {
 		"target": "dmg"
 	},
@@ -50,7 +49,7 @@
 				]
 			}
 		],
-		"artifactName": "${productName} Setup ${version}.${ext}",
+		"artifactName": "${productName} Setup ${version} (${target}).${ext}",
 		"verifyUpdateCodeSignature": false,
 		"requestedExecutionLevel": "asInvoker",
 		"publisherName": "Amir Benhadid",
