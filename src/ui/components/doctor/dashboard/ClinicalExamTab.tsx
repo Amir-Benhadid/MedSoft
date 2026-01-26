@@ -69,9 +69,9 @@ function ClinicalExamTab({
                 </ExamSection>
             </div>
 
-            {/* 2. Detailed Eye Exam - Reduced Height */}
-            <div className="flex-1 min-h-0 flex flex-col gap-2">
-                <ExamSection title="Segment Antérieur" icon={ScanEye} className="flex-1 flex flex-col min-h-0">
+            {/* 2. Detailed Eye Exam - Side by Side Grid */}
+            <div className="flex-1 min-h-0 grid grid-cols-2 gap-2">
+                <ExamSection title="Segment Antérieur" icon={ScanEye} className="flex flex-col min-h-0 h-full">
                     <SmartMultiSelectInput
                         category="anterior_segment"
                         value={data.anteriorSegment?.slit_lamp_exam || ""}
@@ -81,7 +81,7 @@ function ClinicalExamTab({
                     />
                 </ExamSection>
 
-                <ExamSection title="Fond d'œil" icon={ScanEye} className={cn("flex-1 flex flex-col min-h-0", dilatationRequired ? "ring-2 ring-amber-400 ring-offset-2" : "")}>
+                <ExamSection title="Fond d'œil" icon={ScanEye} className={cn("flex flex-col min-h-0 h-full", dilatationRequired ? "ring-2 ring-amber-400 ring-offset-2" : "")}>
                     <OptimizedTextarea
                         value={data.fundus?.fundus_exam || ""}
                         onChange={handleNestedChange("fundus", "fundus_exam")}

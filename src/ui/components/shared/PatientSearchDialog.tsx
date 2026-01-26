@@ -10,7 +10,7 @@ import {
 } from '@/ui/components/ui/command';
 import { orpcClient } from '@/ui/lib/orpc/client';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, Phone, MapPin, Loader2, History, Calendar, PlusCircle, FolderOpen, ArrowLeft, User } from 'lucide-react';
+import { FileText, Phone, MapPin, Loader2, History, Calendar, PlusCircle, FolderOpen, ArrowLeft, User, Send } from 'lucide-react';
 import { useDebounce } from '@/ui/hooks/use-debounce';
 import { format } from 'date-fns';
 import { useConfig } from '@/ui/contexts/ConfigContext';
@@ -40,6 +40,9 @@ export function PatientSearchDialog({
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [recentSearches, setRecentSearches] = useState<Patient[]>([]);
     const { appMode } = useConfig();
+
+    // Robust check for secretary mode (including URL check for dev/mixed environments)
+    const isSecretary = appMode === 'secretary' || (typeof window !== 'undefined' && window.location.hash.includes('secretary'));
 
     // Load recents from local storage on mount
     useEffect(() => {
@@ -81,9 +84,27 @@ export function PatientSearchDialog({
     };
 
     // Handle action selection (Step 2)
-    const handleAction = (action: 'file' | 'consultation' | 'agenda') => {
+    const handleAction = async (action: 'file' | 'consultation' | 'agenda' | 'send_to_doctor' | 'send_to_secretary') => {
         if (!selectedPatient) return;
-        onPatientSelect(selectedPatient.id, action);
+
+        if (action === 'send_to_doctor' || action === 'send_to_secretary') {
+            try {
+                const receiver = action === 'send_to_doctor' ? 'DOCTOR' : 'SECRETARY';
+                const sender = action === 'send_to_doctor' ? 'SECRETARY' : 'DOCTOR';
+
+                await orpcClient.sharedRecords.create({
+                    patientId: selectedPatient.id,
+                    sender: sender,
+                    receiver: receiver
+                });
+            } catch (error) {
+                console.error("Failed to send patient file", error);
+            }
+            onOpenChange(false);
+            return;
+        }
+
+        onPatientSelect(selectedPatient.id, action as any);
         onOpenChange(false);
     };
 
@@ -193,7 +214,7 @@ export function PatientSearchDialog({
                                 </div>
                             </CommandItem>
 
-                            {appMode !== 'secretary' && (
+                            {!isSecretary && (
                                 <CommandItem value="new_consultation" onSelect={() => handleAction('consultation')} className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100">
                                     <PlusCircle className="w-5 h-5 text-emerald-600" />
                                     <div className="flex flex-col">
@@ -208,6 +229,18 @@ export function PatientSearchDialog({
                                 <div className="flex flex-col">
                                     <span className="font-semibold text-slate-900">Voir les Rendez-vous</span>
                                     <span className="text-xs text-slate-500">Consulter l'agenda du patient</span>
+                                </div>
+                            </CommandItem>
+
+                            <CommandItem
+                                value={isSecretary ? "send_to_doctor" : "send_to_secretary"}
+                                onSelect={() => handleAction(isSecretary ? 'send_to_doctor' : 'send_to_secretary')}
+                                className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100"
+                            >
+                                <Send className="w-5 h-5 text-blue-600" />
+                                <div className="flex flex-col">
+                                    <span className="font-semibold text-slate-900">{isSecretary ? 'Envoyer au médecin' : 'Envoyer au secrétariat'}</span>
+                                    <span className="text-xs text-slate-500">Transférer le dossier dans la liste d'attente</span>
                                 </div>
                             </CommandItem>
                         </CommandGroup>

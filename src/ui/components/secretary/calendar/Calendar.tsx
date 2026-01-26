@@ -231,49 +231,28 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 __html: `
                 /* Main Container */
                 .appointment-calendar-container {
-                    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+                    font-family: var(--font-sans) !important;
                 }
 
-                /* Toolbar Styles - Modern & Spacious */
+                /* Toolbar Styles - Clean & Minimal */
                 .appointment-calendar-container .fc-toolbar {
-                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-                    border-radius: 12px !important;
-                    padding: 10px 12px !important;
-                    margin-bottom: 12px !important;
-                    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1) !important;
-                    backdrop-filter: blur(12px) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+                    background: transparent !important;
+                    padding: 0 0 16px 0 !important;
+                    margin-bottom: 0 !important;
                     display: flex !important;
                     align-items: center !important;
-                    gap: 8px !important;
+                    gap: 12px !important;
                     flex-wrap: wrap !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-toolbar {
-                        border-radius: 16px !important;
-                        padding: 14px 20px !important;
-                        margin-bottom: 16px !important;
-                        gap: 12px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-toolbar {
-                        border-radius: 20px !important;
-                        padding: 16px 24px !important;
-                        margin-bottom: 20px !important;
-                        gap: 16px !important;
-                    }
+                    border: none !important;
+                    box-shadow: none !important;
                 }
                 
                 .appointment-calendar-container .fc-toolbar-title {
-                    color: white !important;
+                    color: hsl(var(--foreground)) !important;
                     font-weight: 800 !important;
-                    font-size: 1.1rem !important;
-                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+                    font-size: 1.5rem !important;
                     letter-spacing: -0.025em !important;
-                    margin: 0 !important;
+                    margin-left: 4px !important;
                 }
 
                 @media (min-width: 640px) {
@@ -287,223 +266,69 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                         font-size: 1.5rem !important;
                     }
                 }
-
-                .appointment-calendar-container .fc-toolbar-chunk {
-                    display: flex !important;
-                    align-items: center !important;
-                    gap: 6px !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-toolbar-chunk {
-                        gap: 10px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-toolbar-chunk {
-                        gap: 12px !important;
-                    }
-                }
                 
-                /* Button Styles - Refined */
+                /* Button Styles - Clean */
                 .appointment-calendar-container .fc-button {
-                    background: rgba(255, 255, 255, 0.1) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-                    color: white !important;
+                    background: hsl(var(--card)) !important;
+                    border: 1px solid hsl(var(--border)) !important;
+                    color: hsl(var(--foreground)) !important;
                     font-weight: 600 !important;
                     border-radius: 8px !important;
                     text-transform: none !important;
-                    font-size: 0.7rem !important;
-                    padding: 6px 10px !important;
+                    font-size: 0.8rem !important;
+                    padding: 8px 12px !important;
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
                     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
                 }
 
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-button {
-                        border-radius: 10px !important;
-                        font-size: 0.75rem !important;
-                        padding: 7px 14px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-button {
-                        font-size: 0.8125rem !important;
-                        padding: 8px 16px !important;
-                    }
-                }
-                
                 .appointment-calendar-container .fc-button:hover {
-                    background: rgba(255, 255, 255, 0.2) !important;
-                    border-color: rgba(255, 255, 255, 0.4) !important;
+                    background: hsl(var(--secondary)) !important;
+                    border-color: hsl(var(--border)) !important;
                     transform: translateY(-1px) !important;
-                }
-
-                .appointment-calendar-container .fc-button:active {
-                    transform: translateY(0px) !important;
                 }
                 
                 .appointment-calendar-container .fc-button-active {
-                    background: white !important;
-                    color: #4f46e5 !important;
-                    border-color: white !important;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+                    background: hsl(var(--primary)) !important;
+                    color: hsl(var(--primary-foreground)) !important;
+                    border-color: hsl(var(--primary)) !important;
+                    box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.2) !important;
                 }
 
-                .appointment-calendar-container .fc-button-group {
-                    gap: 3px !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-button-group {
-                        gap: 4px !important;
-                    }
-                }
-
-                .appointment-calendar-container .fc-today-button {
-                    background: #ffffff !important;
-                    color: #4f46e5 !important;
-                    font-weight: 700 !important;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-                }
-
-                .appointment-calendar-container .fc-today-button:disabled {
-                    background: rgba(255, 255, 255, 0.15) !important;
-                    color: rgba(255, 255, 255, 0.8) !important;
-                    opacity: 1 !important;
-                }
-
-                .appointment-calendar-container .fc-button-group .fc-button {
-                    border-radius: 8px !important;
-                    margin-left: 0 !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-button-group .fc-button {
-                        border-radius: 10px !important;
-                    }
-                }
-                
-                /* Column Header Styles - Cleaner */
-                .appointment-calendar-container .fc-col-header {
-                    background-color: #f8fafc !important;
-                }
-
-                .appointment-calendar-container .fc-col-header-cell {
-                    padding: 8px 0 !important;
-                    border-bottom: 2px solid #e2e8f0 !important;
-                    vertical-align: middle !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-col-header-cell {
-                        padding: 10px 0 !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-col-header-cell {
-                        padding: 12px 0 !important;
-                    }
-                }
-                
-                .appointment-calendar-container .fc-col-header-cell-cushion {
-                    font-weight: 700 !important;
-                    color: #475569 !important;
-                    text-decoration: none !important;
-                    padding: 3px 6px !important;
-                    font-size: 0.75rem !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.05em !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-col-header-cell-cushion {
-                        padding: 4px 8px !important;
-                        font-size: 0.8125rem !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-col-header-cell-cushion {
-                        font-size: 0.875rem !important;
-                    }
-                }
-                
-                .appointment-calendar-container .fc-col-header-cell-cushion:hover {
-                    color: #4f46e5 !important;
-                }
-                
                 /* Time Grid Slots */
                 .appointment-calendar-container .fc-timegrid-slot {
                     height: 50px !important;
-                    border-bottom: 1px solid #f1f5f9 !important;
+                    border-bottom: 1px solid hsl(var(--border)) !important;
                 }
 
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-timegrid-slot {
-                        height: 60px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-timegrid-slot {
-                        height: 70px !important;
-                    }
+                /* Alternating rows for readability */
+                .appointment-calendar-container tr:nth-child(even) .fc-timegrid-slot-lane {
+                    background-color: hsl(var(--muted) / 0.3) !important;
                 }
                 
                 .appointment-calendar-container .fc-timegrid-slot-label {
-                    font-size: 0.65rem !important;
-                    color: #94a3b8 !important;
-                    font-weight: 600 !important;
-                    padding-right: 8px !important;
+                    font-size: 0.75rem !important;
+                    color: hsl(var(--muted-foreground)) !important;
+                    font-weight: 700 !important;
+                    padding-right: 12px !important;
                 }
 
                 @media (min-width: 640px) {
                     .appointment-calendar-container .fc-timegrid-slot-label {
-                        font-size: 0.7rem !important;
-                        padding-right: 10px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-timegrid-slot-label {
-                        font-size: 0.75rem !important;
-                        padding-right: 12px !important;
+                        font-size: 0.8rem !important;
                     }
                 }
                 
                 .appointment-calendar-container .fc-timegrid-axis {
-                    background: #f8fafc !important;
+                    background: transparent !important;
                 }
                 
-                /* Event Styles - Day/Week View */
+                .appointment-calendar-container .fc-timegrid-event,
                 .appointment-calendar-container .fc-v-event {
                     background: transparent !important;
                     border: none !important;
                     box-shadow: none !important;
-                }
-
-                .appointment-calendar-container .fc-timegrid-event {
-                    margin: 1px 2px !important;
-                    border-radius: 8px !important;
+                    margin: 1px 4px !important;
                     overflow: visible !important;
-                }
-
-                @media (min-width: 640px) {
-                    .appointment-calendar-container .fc-timegrid-event {
-                        margin: 2px 3px !important;
-                        border-radius: 10px !important;
-                    }
-                }
-
-                @media (min-width: 1024px) {
-                    .appointment-calendar-container .fc-timegrid-event {
-                        margin: 2px 4px !important;
-                        border-radius: 12px !important;
-                    }
                 }
                 
                 /* Month View (Day Grid) Design */
@@ -514,7 +339,7 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 .appointment-calendar-container .fc-daygrid-day-frame {
                     min-height: 80px !important;
                     padding: 6px !important;
-                    background: #ffffff !important;
+                    background: hsl(var(--card)) !important;
                     border-radius: 0 !important;
                     margin: 0 !important;
                     transition: all 0.2s ease !important;
@@ -537,7 +362,7 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 }
                 
                 .appointment-calendar-container .fc-daygrid-day:hover {
-                    background-color: #f1f5f9 !important;
+                    background-color: hsl(var(--muted)) !important;
                 }
                 
                 .appointment-calendar-container .fc-daygrid-day-top {
@@ -562,7 +387,7 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                     font-weight: 700 !important;
                     font-size: 0.85rem !important;
                     padding: 4px !important;
-                    color: #64748b !important;
+                    color: hsl(var(--muted-foreground)) !important;
                     text-decoration: none !important;
                     min-width: 24px !important;
                     min-height: 24px !important;
@@ -617,23 +442,23 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 
                 /* Today Highlight - Refined */
                 .appointment-calendar-container .fc-day-today {
-                    background-color: rgba(79, 70, 229, 0.04) !important;
+                    background-color: hsl(var(--primary) / 0.04) !important;
                 }
                 
                 .appointment-calendar-container .fc-day-today .fc-daygrid-day-number {
-                    background-color: #ef4444 !important;
-                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-                    color: white !important;
-                    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3) !important;
+                    background-color: hsl(var(--destructive)) !important;
+                    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%) !important;
+                    color: hsl(var(--primary-foreground)) !important;
+                    box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.3) !important;
                 }
 
                 .appointment-calendar-container .fc-day-today .fc-col-header-cell-cushion {
-                    color: #4f46e5 !important;
+                    color: hsl(var(--primary)) !important;
                 }
                 
                 /* Now Indicator */
                 .appointment-calendar-container .fc-timegrid-now-indicator-line {
-                    border-color: #ef4444 !important;
+                    border-color: hsl(var(--destructive)) !important;
                     border-width: 2px !important;
                     z-index: 10 !important;
                 }
@@ -645,20 +470,20 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                     top: -5px !important;
                     width: 10px !important;
                     height: 10px !important;
-                    background-color: #ef4444 !important;
+                    background-color: hsl(var(--destructive)) !important;
                     border-radius: 50% !important;
                 }
                 
                 /* Grid Lines */
                 .appointment-calendar-container .fc-theme-standard td, 
                 .appointment-calendar-container .fc-theme-standard th {
-                    border-color: #f1f5f9 !important;
+                    border-color: hsl(var(--muted)) !important;
                 }
 
                 .appointment-calendar-container .fc-theme-standard .fc-scrollgrid {
                     border-radius: 8px !important;
                     overflow: hidden !important;
-                    border: 1px solid #e2e8f0 !important;
+                    border: 1px solid hsl(var(--border)) !important;
                 }
 
                 @media (min-width: 640px) {
@@ -687,14 +512,14 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 }
 
                 .appointment-calendar-container .fc-scroller::-webkit-scrollbar-track {
-                    background: #f8fafc !important;
+                    background: hsl(var(--muted)) !important;
                 }
                 .appointment-calendar-container .fc-scroller::-webkit-scrollbar-thumb {
-                    background: #cbd5e1 !important;
+                    background: hsl(var(--border)) !important;
                     border-radius: 4px !important;
                 }
                 .appointment-calendar-container .fc-scroller::-webkit-scrollbar-thumb:hover {
-                    background: #94a3b8 !important;
+                    background: hsl(var(--muted-foreground)) !important;
                 }
 
                 /* Mobile-specific optimizations */
@@ -714,7 +539,7 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 }
             `}} />
 
-            <div className="flex-1 bg-background rounded-lg sm:rounded-xl border shadow-lg p-2 sm:p-3 lg:p-4 h-[600px] sm:h-[700px] lg:h-[850px]">
+            <div className="flex-1 h-full min-h-0 relative px-4 pb-4">
                 <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

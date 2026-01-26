@@ -16,7 +16,8 @@ import { createRoot } from 'react-dom/client';
 import { queryClient } from './lib/query-client';
 import { router } from './lib/router';
 import { Toaster } from './components/ui/toaster';
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import { createTheme, ThemeProvider as MuiThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider } from "./components/theme-provider"
 import './index.css';
 import { useRealtime } from './hooks/useRealtime';
 
@@ -33,6 +34,8 @@ const theme = createTheme({
 		},
 	},
 });
+
+import { UpdateNotification } from './components/UpdateNotification';
 
 /**
  * Root DOM element where the React application will be mounted
@@ -54,11 +57,14 @@ if (!rootElement) {
 createRoot(rootElement).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<RealtimeWatcher />
-			<ThemeProvider theme={theme}>
-				<CssBaseline />
-				<RouterProvider router={router} />
-				<Toaster />
+			<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+				<RealtimeWatcher />
+				<UpdateNotification />
+				<MuiThemeProvider theme={theme}>
+					<CssBaseline />
+					<RouterProvider router={router} />
+					<Toaster />
+				</MuiThemeProvider>
 			</ThemeProvider>
 		</QueryClientProvider>
 	</StrictMode>

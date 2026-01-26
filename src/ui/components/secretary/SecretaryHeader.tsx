@@ -1,4 +1,5 @@
 import { Button } from "@/ui/components/ui/button";
+import { ModeToggle } from "@/ui/components/mode-toggle";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,7 +24,9 @@ import {
     Settings,
     LogOut,
     Users,
-    X
+    X,
+    Menu,
+    List
 } from "lucide-react";
 import { cn } from "@/ui/lib/utils";
 import { useNavigation } from "@/ui/hooks/useNavigation";
@@ -73,27 +76,37 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
     };
 
     return (
-        <header className="h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 z-20 shadow-sm" style={{ WebkitAppRegion: 'drag' } as any}>
+        <header className="h-14 sm:h-16 bg-card/80 backdrop-blur-md border-b border-border/60 px-3 sm:px-6 flex items-center justify-between shrink-0 z-20 sticky top-0" style={{ WebkitAppRegion: 'drag' } as any}>
             {/* Logo Section */}
             <div className="flex items-center gap-3">
                 {logoPath ? (
-                    <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl border-2 border-white shadow-sm bg-white">
+                    <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl border-2 border-card shadow-sm bg-card">
                         <img src={`local-resource:///${logoPath.replace(/\\/g, '/')}`} alt="Logo" className="w-full h-full object-contain" />
                     </div>
                 ) : (
-                    <div className="w-10 h-10 bg-blue-50 border-2 border-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-                        <Activity className="h-5 w-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-primary/10 border-2 border-primary rounded-xl flex items-center justify-center shadow-sm">
+                        <Activity className="h-5 w-5 text-primary" />
                     </div>
                 )}
                 <div>
-                    <h1 className="text-lg font-bold text-slate-900 leading-tight">Secrétaire Médical</h1>
-                    <p className="text-xs text-slate-500 font-medium">{businessName || 'Cabinet Médical'}</p>
+                    <h1 className="text-lg font-bold text-foreground leading-tight">Secrétaire Médical</h1>
+                    <p className="text-xs text-muted-foreground font-medium">{businessName || 'Cabinet Médical'}</p>
                 </div>
             </div>
 
             {/* Navigation Tabs - Centered with Search */}
-            <div className="flex-1 flex items-center justify-center gap-4" style={{ WebkitAppRegion: 'no-drag' } as any}>
-                <nav className="flex items-center gap-1 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200/50">
+            <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4" style={{ WebkitAppRegion: 'no-drag' } as any}>
+                {/* Mobile Menu Toggle */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="lg:hidden text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    onClick={() => onTabChange?.('toggle-sidebar')}
+                >
+                    <Menu className="h-5 w-5" />
+                </Button>
+
+                <nav className="flex items-center gap-1 bg-secondary/30 sm:bg-secondary/50 p-1 rounded-xl border border-border/30 sm:border-border/50 overflow-x-auto scrollbar-hide max-w-[50vw] sm:max-w-none">
                     {tabs.map((tab) => (
                         <TabButton
                             key={tab.id}
@@ -106,7 +119,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
 
                 <Button
                     variant="outline"
-                    className="w-64 justify-start text-muted-foreground bg-slate-50/50 border-slate-200 hover:bg-white hover:text-slate-700 hover:border-blue-200 transition-all shadow-sm"
+                    className="hidden md:flex w-64 justify-start text-muted-foreground bg-secondary/30 border-border hover:bg-card hover:text-foreground hover:border-primary/50 transition-all shadow-sm"
                     onClick={() => setIsSearchOpen(true)}
                 >
                     <Search className="mr-2 h-4 w-4" />
@@ -115,12 +128,35 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                         <span className="text-xs">⌘</span>K
                     </kbd>
                 </Button>
+
+                {/* Mobile Search Toggle */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    onClick={() => setIsSearchOpen(true)}
+                >
+                    <Search className="h-5 w-5" />
+                </Button>
+
+                {/* Mobile Waitlist Toggle (Agenda Only) */}
+                {currentTab === 'agenda' && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="lg:hidden text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        onClick={() => onTabChange?.('toggle-waitlist')}
+                    >
+                        <List className="h-5 w-5" />
+                    </Button>
+                )}
             </div>
 
             {/* Right Actions */}
             <div className="flex items-center gap-3" style={{ WebkitAppRegion: 'no-drag' } as any}>
-                <div className="flex items-center gap-1 pr-3 border-r border-slate-200">
-                    {false && <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-1 pr-3 border-r border-border">
+                    <ModeToggle />
+                    {false && <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg">
                         <RefreshCw className="h-4 w-4" />
                     </Button>}
                     {false && appMode === 'secretary' && <MessageNotificationButton />}
@@ -130,7 +166,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 gap-2 h-9 px-3 rounded-lg"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2 h-9 px-3 rounded-lg"
                         onClick={goToLanding}
                     >
                         <LogOut className="h-4 w-4" />
@@ -142,7 +178,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-9 w-9 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                            className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
                         >
                             <X className="h-5 w-5" />
                         </Button>
@@ -156,7 +192,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700" onClick={() => window.electronAPI.closeWindow()}>
+                            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => window.electronAPI.closeWindow()}>
                                 Quitter
                             </AlertDialogAction>
                         </AlertDialogFooter>
@@ -217,16 +253,16 @@ function TabButton({ tab, isActive, onClick }: { tab: any, isActive: boolean, on
         <button
             onClick={onClick}
             className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative",
+                "flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 relative whitespace-nowrap",
                 isActive
-                    ? "bg-white text-blue-600 shadow-sm ring-1 ring-black/5"
-                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                    ? "bg-card text-primary shadow-sm ring-1 ring-border"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
             )}
         >
-            <tab.icon className={cn("h-4 w-4", isActive ? "text-blue-600" : "text-slate-400")} />
+            <tab.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
             {tab.label}
             {pendingCount > 0 && (
-                <span className="ml-1 bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                <span className="ml-1 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                     {pendingCount}
                 </span>
             )}

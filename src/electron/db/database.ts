@@ -586,6 +586,38 @@ function runMigrations(db: Database.Database, config: AppConfig) {
 	addConsultationTypeToScheduling(db);
 	addNatureToConsultationTypes(db);
 	addRadiographyDocumentSchema(db, config);
+	addSharedRecordsSchema(db);
+}
+
+function addSharedRecordsSchema(db: Database.Database) {
+	const migrationName = '006_add_shared_records';
+	const exists = db.prepare('SELECT 1 FROM migrations WHERE name = ?').get(migrationName);
+
+	if (!exists) {
+		console.log(`🚀 Running migration: ${migrationName}`);
+		try {
+			db.transaction(() => {
+				db.exec(`
+					CREATE TABLE IF NOT EXISTS shared_records (
+						id TEXT PRIMARY KEY,
+						patient_id TEXT NOT NULL,
+						sender TEXT NOT NULL, -- 'SECRETARY' or 'DOCTOR'
+						receiver TEXT NOT NULL, -- 'DOCTOR' or 'SECRETARY'
+						status TEXT DEFAULT 'unread', -- 'unread', 'read', 'archived'
+						created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+						updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+						FOREIGN KEY (patient_id) REFERENCES patients(id)
+					);
+					CREATE INDEX IF NOT EXISTS idx_shared_records_receiver ON shared_records(receiver);
+					CREATE INDEX IF NOT EXISTS idx_shared_records_patient ON shared_records(patient_id);
+				`);
+				db.prepare('INSERT INTO migrations (name) VALUES (?)').run(migrationName);
+			})();
+			console.log(`✅ Migration ${migrationName} completed successfully`);
+		} catch (error) {
+			console.error(`❌ Migration ${migrationName} failed:`, error);
+		}
+	}
 }
 
 function addRadiographyDocumentSchema(db: Database.Database, config: AppConfig) {

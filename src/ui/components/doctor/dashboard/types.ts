@@ -65,31 +65,63 @@ export const VISUAL_ACUITY_OPTIONS_NEAR: OptionType[] = [
 ];
 
 export const SPHERE_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }]; // Includes blank
-    for (let i = -25; i <= 25; i += 0.25) {
-        // Format to handle floating point errors and signs
-        // Remove .00 if present to match typical optical notation preferences if needed, 
-        // but standard is often 2 decimals. Let's keep it simple.
-        // Actually, usually it's -0.50, +1.00 etc.
-        const formatted = i > 0 ? `+${i.toFixed(2)}` : i === 0 ? '0.00' : i.toFixed(2);
+    const values: OptionType[] = [];
+
+    // Large negative values: -25 to -21 (1.0 increments)
+    for (let i = -25; i < -21; i += 1) {
+        const formatted = i.toFixed(2);
         values.push({ value: formatted, label: formatted });
     }
+
+    // Medium negative values: -21 to 0 (0.25 increments)
+    for (let i = -21; i < 0; i += 0.25) {
+        const formatted = i.toFixed(2);
+        values.push({ value: formatted, label: formatted });
+    }
+
+    // Empty option in the middle (between negatives and zero)
+    values.push({ value: '__EMPTY__', label: ' ' });
+
+    // Zero
+    values.push({ value: '0.00', label: '0.00' });
+
+    // Medium positive values: 0.25 to 21 (0.25 increments)
+    for (let i = 0.25; i < 21; i += 0.25) {
+        const formatted = `+${i.toFixed(2)}`;
+        values.push({ value: formatted, label: formatted });
+    }
+
+    // Large positive values: 21 to 25 (1.0 increments)
+    for (let i = 21; i <= 25; i += 1) {
+        const formatted = `+${i.toFixed(2)}`;
+        values.push({ value: formatted, label: formatted });
+    }
+
     return values;
 })();
 
 export const CYLINDER_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }];
-    for (let i = -10; i <= 0; i += 0.25) {
-        const formatted = i === 0 ? '0.00' : i.toFixed(2);
+    const values: OptionType[] = [];
+
+    // Medium negative values: -6 to 0 (0.25 increments)
+    for (let i = -6; i < 0; i += 0.25) {
+        const formatted = i.toFixed(2);
         values.push({ value: formatted, label: formatted });
     }
-    // Some prefer positive cylinder too, but typically minus cylinder is used in ophthalmology
-    // Let's add positive just in case
-    for (let i = 0.25; i <= 10; i += 0.25) {
+
+    // Empty option in the middle
+    values.push({ value: '__EMPTY__', label: ' ' });
+
+    // Zero
+    values.push({ value: '0.00', label: '0.00' });
+
+    // Medium positive values: 0.25 to 6 (0.25 increments)
+    for (let i = 0.25; i < 6; i += 0.25) {
         const formatted = `+${i.toFixed(2)}`;
         values.push({ value: formatted, label: formatted });
     }
-    return values.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
+
+    return values;
 })();
 
 export const AXIS_VALUES = (() => {

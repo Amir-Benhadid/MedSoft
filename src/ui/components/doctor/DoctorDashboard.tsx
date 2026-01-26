@@ -62,17 +62,16 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
 
             {/* Main Content - No Tabs, just Consultation View */}
             <div className="flex-1 flex overflow-hidden">
-                {/* LEFT PANE: Examinations (50%) */}
                 <div className="flex-1 flex flex-col border-r bg-slate-50 h-full overflow-hidden">
                     {/* Top Section: Refraction */}
-                    <div className="h-[50%] overflow-hidden border-b bg-white relative flex flex-col">
-                        <div className="p-3 border-b bg-blue-50/30 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm bg-white/90">
+                    <div className="flex-none max-h-[60%] border-b bg-white relative flex flex-col">
+                        <div className="p-2 border-b bg-blue-50/30 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm bg-white/90">
                             <div className="flex items-center gap-2">
                                 <Eye className="w-4 h-4 text-blue-600" />
-                                <h3 className="font-medium text-slate-900">Réfraction</h3>
+                                <h3 className="font-medium text-sm text-slate-800">Réfraction</h3>
                             </div>
                         </div>
-                        <div className="flex-1 p-4 overflow-y-auto">
+                        <div className="p-3 overflow-y-auto">
                             <RefractionTab />
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Card, CardContent } from "@/ui/components/ui/card";
 import { Badge } from "@/ui/components/ui/badge";
 import { Button } from "@/ui/components/ui/button";
-import { Eye, Trash2, Edit2, Play, Circle, CheckCircle2 } from "lucide-react";
+import { Eye, Trash2, Edit2, Play, Circle, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/ui/lib/utils";
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -41,112 +41,107 @@ export const WaitlistCard = memo(({ entry, onRemove, onToggleDilation, onUpdateS
 
     const getStatusColor = (state: string) => {
         switch (state) {
-            case 'in_consultation': return 'bg-blue-50 border-blue-200';
-            case 'completed': return 'bg-orange-50 border-orange-200';
-            case 'paid': return 'bg-green-50 border-green-200';
-            case 'creance': return 'bg-pink-50 border-pink-200';
-            default: return 'bg-white hover:bg-slate-50';
+            case 'in_consultation': return 'bg-primary/5 border-primary/20';
+            case 'completed': return 'bg-orange-500/5 border-orange-500/20';
+            case 'paid': return 'bg-emerald-500/5 border-emerald-500/20';
+            case 'creance': return 'bg-red-500/5 border-red-500/20';
+            default: return 'bg-secondary/30 hover:bg-secondary/50 border-transparent';
         }
     };
 
     const getStatusBadge = (state: string) => {
         switch (state) {
-            case 'in_consultation': return <Badge variant="secondary" className="bg-blue-100 text-blue-700">En cours</Badge>;
-            case 'completed': return <Badge variant="secondary" className="bg-orange-100 text-orange-700">Terminé</Badge>;
-            case 'paid': return <Badge variant="secondary" className="bg-green-100 text-green-700">Payé</Badge>;
-            default: return <Badge variant="outline" className="text-slate-500">En attente</Badge>;
+            case 'in_consultation': return <Badge variant="secondary" className="bg-primary/15 text-primary hover:bg-primary/20">En cours</Badge>;
+            case 'completed': return <Badge variant="secondary" className="bg-orange-500/15 text-orange-700 dark:text-orange-400 hover:bg-orange-500/20">Terminé</Badge>;
+            case 'paid': return <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20">Payé</Badge>;
+            default: return <Badge variant="outline" className="text-muted-foreground border-border">En attente</Badge>;
         }
     };
 
     return (
-        <Card
+        <div
             className={cn(
-                "cursor-pointer mb-2 waitlist-card group relative overflow-hidden",
-                getStatusColor(entry.state)
+                "group relative bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden",
+                entry.state === 'waiting' && "hover:border-blue-300"
             )}
             onClick={() => onClick(entry)}
         >
+            {/* Status Strip - Thinner and more subtle */}
             <div className={cn(
-                "absolute left-0 top-0 bottom-0 w-1",
+                "absolute left-0 top-0 bottom-0 w-1 transition-colors",
                 entry.state === 'waiting' && "bg-slate-300",
                 entry.state === 'in_consultation' && "bg-blue-500",
                 entry.state === 'completed' && "bg-orange-500",
-                entry.state === 'paid' && "bg-green-500",
+                entry.state === 'paid' && "bg-emerald-500",
             )} />
 
-            <CardContent className="p-3 pl-4">
+            <div className="p-3 pl-4 flex flex-col gap-2">
+                {/* Top Row: Name & Status */}
                 <div className="flex justify-between items-start">
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-sm truncate">
-                                {entry.patient?.name || entry.patient_name} {entry.patient?.surname || entry.patient_surname}
-                            </span>
-                            {getStatusBadge(entry.state)}
-                        </div>
-
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                                <Play className="h-3 w-3" />
-                                {timeAgo}
-                            </span>
-                            <span className="text-slate-300">|</span>
-                            <span>{arrivedAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
+                    <div className="min-w-0 pr-2">
+                        <h3 className="text-[15px] font-bold text-slate-900 leading-tight truncate">
+                            {entry.patient?.name || entry.patient_name} {entry.patient?.surname || entry.patient_surname}
+                        </h3>
                         {entry.notes && (
-                            <div className="text-xs text-slate-500 mt-1 truncate italic">
+                            <p className="text-xs text-slate-500 mt-0.5 truncate max-w-[180px]">
                                 {entry.notes}
-                            </div>
+                            </p>
                         )}
+                    </div>
+                    <div className="shrink-0">
+                        {getStatusBadge(entry.state)}
                     </div>
                 </div>
 
-                {/* Actions Bar - Visible on Hover (or always visible if needed) */}
-                <div className="flex items-center gap-1 mt-3 justify-end opacity-100 transition-opacity">
-                    {appMode !== 'secretary' && (
+                {/* Bottom Row: Details & Actions */}
+                <div className="flex items-center justify-between mt-1">
+                    <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className={cn(
+                            "h-5 px-1.5 text-[10px] font-medium border bg-slate-50 text-slate-600 gap-1",
+                            entry.state === 'waiting' && timeAgo.includes("heure") && "bg-amber-50 text-amber-700 border-amber-200"
+                        )}>
+                            <Clock className="w-3 h-3" />
+                            {timeAgo}
+                        </Badge>
+
+                        {entry.needs_dilation && (
+                            <Badge variant="outline" className="h-5 px-1.5 text-[10px] gap-1 text-purple-700 bg-purple-50 border-purple-200">
+                                <Eye className="w-3 h-3" />
+                                <span className="hidden sm:inline">Dilatation</span>
+                            </Badge>
+                        )}
+                    </div>
+
+                    {/* Quick Actions (Visible on Hover/Touch) */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {appMode !== 'secretary' && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 text-slate-400 hover:text-purple-600 hover:bg-purple-50"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleDilation(entry);
+                                }}
+                            >
+                                <Eye className="h-3 w-3" />
+                            </Button>
+                        )}
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={cn(
-                                "h-7 w-7",
-                                (entry.needs_dilation) ? "text-purple-600 bg-purple-50" : "text-slate-400 hover:text-purple-600 hover:bg-purple-50"
-                            )}
+                            className="h-6 w-6 text-slate-400 hover:text-red-600 hover:bg-red-50"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onToggleDilation(entry);
+                                onRemove(entry.id);
                             }}
                         >
-                            <Eye className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3" />
                         </Button>
-                    )}
-
-                    {entry.state === 'waiting' && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-green-600 hover:bg-green-50"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onUpdateStatus(entry.id, 'in_consultation');
-                            }}
-                        >
-                            <Play className="h-3.5 w-3.5" />
-                        </Button>
-                    )}
-
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-slate-400 hover:text-red-600 hover:bg-red-50"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onRemove(entry.id);
-                        }}
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    </div>
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 });
 

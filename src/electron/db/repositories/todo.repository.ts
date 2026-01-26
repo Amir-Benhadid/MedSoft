@@ -63,8 +63,8 @@ export class TodoRepository {
      */
     list(includeCompleted = false): Todo[] {
         const query = includeCompleted
-            ? `SELECT * FROM todos ORDER BY is_completed ASC, priority DESC, created_at DESC`
-            : `SELECT * FROM todos WHERE is_completed = 0 ORDER BY priority DESC, created_at DESC`;
+            ? `SELECT * FROM todos ORDER BY is_completed ASC, priority ASC, created_at DESC`
+            : `SELECT * FROM todos WHERE is_completed = 0 ORDER BY priority ASC, created_at DESC`;
 
         const stmt = this.db.prepare(query);
         const rows = stmt.all() as any[];

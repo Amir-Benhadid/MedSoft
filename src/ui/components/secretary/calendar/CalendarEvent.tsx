@@ -12,30 +12,30 @@ interface EnhancedCalendarEventProps {
 
 const STATE_CONFIG = {
     booked: {
-        color: 'bg-blue-500',
-        border: 'border-blue-600',
-        text: 'text-blue-50',
+        border: 'border-blue-500',
+        text: 'text-blue-600 dark:text-blue-400',
+        bg: 'bg-blue-500/5 hover:bg-blue-500/10',
         icon: Clock,
         label: 'RDV'
     },
     present: {
-        color: 'bg-green-500',
-        border: 'border-green-600',
-        text: 'text-green-50',
+        border: 'border-emerald-500',
+        text: 'text-emerald-600 dark:text-emerald-400',
+        bg: 'bg-emerald-500/5 hover:bg-emerald-500/10',
         icon: CheckCircle2,
         label: 'Présent'
     },
     overdue: {
-        color: 'bg-red-500',
-        border: 'border-red-600',
-        text: 'text-red-50',
+        border: 'border-red-500',
+        text: 'text-red-600 dark:text-red-400',
+        bg: 'bg-red-500/5 hover:bg-red-500/10',
         icon: AlertCircle,
         label: 'Retard'
     },
     completed: {
-        color: 'bg-gray-400',
-        border: 'border-gray-500',
-        text: 'text-gray-50',
+        border: 'border-slate-400',
+        text: 'text-slate-500 dark:text-slate-400',
+        bg: 'bg-slate-500/5 hover:bg-slate-500/10',
         icon: CheckCircle2,
         label: 'Terminé'
     },
@@ -52,43 +52,42 @@ export const EnhancedCalendarEvent = memo(({ event, isDayView, showArrivalAlways
     if (!isDayView) {
         // Month view - ultra compact
         return (
-            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${config.color} ${config.text} text-xs font-medium truncate w-full`}>
-                <Icon className="h-3 w-3 shrink-0" />
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded bg-card border border-border border-l-4 ${config.border.replace('border-', 'border-l-')} ${config.text} text-[10px] font-bold truncate w-full shadow-sm`}>
                 <span className="truncate">{event.title}</span>
-                {needsDilation && appMode !== 'secretary' && <Eye className="h-3 w-3 shrink-0 ml-auto" />}
+                {needsDilation && appMode !== 'secretary' && <Eye className="h-3 w-3 shrink-0 ml-auto opacity-50" />}
             </div>
         );
     }
 
     // Day/Week view - compact with more info
     return (
-        <div className={`h-full flex flex-col gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-lg border-l-4 ${config.border} ${config.color} ${config.text} shadow-sm hover:shadow-md transition-shadow`}>
-            <div className="flex items-center justify-between gap-1">
-                <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
-                    <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
-                    <span className="font-bold text-xs sm:text-sm truncate">{event.title}</span>
+        <div className={`h-full w-full flex flex-col p-1 sm:p-1.5 rounded-r-lg border-l-[3px] ${config.border} ${config.bg} border border-t-0 border-b-0 border-r-0 shadow-sm transition-all overflow-hidden leading-tight group`}>
+            {/* Header: Time + Icon */}
+            <div className="flex items-center justify-between gap-1 mb-0.5">
+                <div className={`flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider ${config.text} opacity-90`}>
+                    <Icon className="h-3 w-3" />
+                    <span className="truncate">
+                        {event.start?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                 </div>
                 {needsDilation && appMode !== 'secretary' && (
-                    <Badge className="h-4 sm:h-5 px-1 sm:px-1.5 bg-white/20 text-white border-white/30 shrink-0 text-[10px] sm:text-xs">
-                        <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </Badge>
+                    <div className="h-1.5 w-1.5 rounded-full bg-purple-500 shrink-0" title="Dilatation" />
                 )}
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs opacity-90">
-                <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                <span>
-                    {event.start?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                    {' - '}
-                    {event.end?.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                </span>
+            {/* Content: Name */}
+            <div className="font-bold text-xs sm:text-[13px] text-foreground truncate leading-snug">
+                {event.title}
             </div>
 
+            {/* Footer: Arrival (if needed) */}
             {(arrivedAt || showArrivalAlways) && arrivedAt && (
-                <Badge className="text-[10px] sm:text-xs h-4 sm:h-5 bg-white/20 text-white border-white/30 w-fit px-1 sm:px-1.5">
-                    <User className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                    Arrivé {new Date(arrivedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                </Badge>
+                <div className="mt-auto pt-1 flex items-center text-[10px] text-muted-foreground font-medium truncate">
+                    <User className="h-2.5 w-2.5 mr-1 text-muted-foreground/70" />
+                    <span className="truncate">
+                        Arr. {new Date(arrivedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                </div>
             )}
         </div>
     );

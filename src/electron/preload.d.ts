@@ -19,6 +19,12 @@ export interface ElectronAPI {
 	saveSetup: (config: any) => Promise<boolean>;
 	selectDirectory: () => Promise<string | null>;
 	selectFile: (filters: any[]) => Promise<string | null>;
+	// Auto Updater
+	onUpdateAvailable: (callback: (info: any) => void) => () => void;
+	onUpdateDownloaded: (callback: (info: any) => void) => () => void;
+	onDownloadProgress: (callback: (progress: any) => void) => () => void;
+	onUpdateError: (callback: (error: any) => void) => () => void;
+	quitAndInstall: () => Promise<void>;
 }
 
 declare global {

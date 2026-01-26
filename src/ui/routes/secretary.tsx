@@ -24,6 +24,8 @@ import { ConsultationTypesParams } from '@/ui/components/doctor/settings/Consult
 import { ProfessionalContactsParams } from '@/ui/components/doctor/settings/ProfessionalContactsParams';
 import { Settings, CreditCard, Users } from 'lucide-react';
 import { useConfig } from '@/ui/contexts/ConfigContext';
+import { Sheet, SheetContent } from '@/ui/components/ui/sheet';
+import { SecretaryFloatingMessaging } from '@/ui/components/secretary/messaging/SecretaryFloatingMessaging';
 
 export const Route = createFileRoute('/secretary')({
 	component: SecretaryPage,
@@ -41,12 +43,11 @@ function SecretaryPage() {
 	const [currentTab, setCurrentTab] = useState('agenda');
 	const [currentViewDate, setCurrentViewDate] = useState(new Date());
 
+	// Responsive State
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
+
 	const handleCalendarRangeChange = (range: { start: Date, end: Date, view: string }) => {
-		// Only update the view date if we are in a day view, or if we want to 
-		// track the start of the range as the potential "context" date.
-		// For now, let's sync strictly on day view, or stick to start date.
-		// If in month view, maybe we don't force waitlist to update wildly, but 
-		// typically "tabs change" implies day-to-day navigation.
 		if (range.view === 'timeGridDay') {
 			setCurrentViewDate(range.start);
 		}
@@ -56,115 +57,182 @@ function SecretaryPage() {
 		setCurrentViewDate(new Date(dateStr));
 	};
 
+	const handleTabChange = (tab: string) => {
+		if (tab === 'toggle-sidebar') {
+			setIsSidebarOpen(true);
+		} else if (tab === 'toggle-waitlist') {
+			setIsWaitlistOpen(true);
+		} else {
+			setCurrentTab(tab);
+		}
+	};
+
 	const { appMode } = useConfig();
 
+	// Standardized Content Wrapper
+	const ContentCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
+		<div className={`flex-1 flex flex-col overflow-hidden bg-card rounded-xl shadow-sm border border-border relative h-full min-w-0 ${className}`}>
+			{children}
+		</div>
+	);
+
+	// Standardized Header for Tabs
+	const TabHeader = ({ title, subtitle, icon: Icon }: { title: string, subtitle: string, icon: any }) => (
+		<div className="bg-card border-b border-border px-6 py-4">
+			<div className="flex items-center gap-3 mb-1">
+				<div className="p-2 bg-primary/10 rounded-lg">
+					<Icon className="w-5 h-5 text-primary" />
+				</div>
+				<div>
+					<h2 className="text-xl font-bold text-foreground">{title}</h2>
+					<p className="text-sm text-muted-foreground">{subtitle}</p>
+				</div>
+			</div>
+		</div>
+	);
+
+	// Render helpers
+	const renderContent = () => {
+		if (currentTab === 'agenda') {
+			return (
+				<div className="flex h-full overflow-hidden relative bg-transparent">
+					<ContentCard className="flex-1 mr-6">
+						<Calendar
+							onRangeChange={handleCalendarRangeChange}
+							onDateSelect={handleDateSelect}
+						/>
+					</ContentCard>
+
+					{/* Desktop Waitlist - Now a separate card */}
+					<div className="hidden lg:block w-[350px] shrink-0 h-full">
+						<div className="h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+							<Waitlist date={currentViewDate} />
+						</div>
+					</div>
+
+					{/* Mobile Waitlist Sheet */}
+					<Sheet open={isWaitlistOpen} onOpenChange={setIsWaitlistOpen}>
+						<SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0 border-border bg-card">
+							<div className="h-full pt-6">
+								<Waitlist date={currentViewDate} />
+							</div>
+						</SheetContent>
+					</Sheet>
+				</div>
+			);
+		}
+
+		if (currentTab === 'resume') {
+			return (
+				<ContentCard>
+					<TabHeader title="Résumé du Jour" subtitle="Statistiques et activité quotidienne" icon={BarChart2} />
+					<div className="flex-1 overflow-auto">
+						<TodayResume />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		if (currentTab === 'tarifs' && appMode === 'both') {
+			return (
+				<ContentCard>
+					<TabHeader title="Tarifs" subtitle="Configuration des types de consultation et prix" icon={CreditCard} />
+					<div className="flex-1 p-6 overflow-hidden">
+						<ConsultationTypesParams readonly={true} />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		if (currentTab === 'annuaire' && appMode === 'both') {
+			return (
+				<ContentCard>
+					<TabHeader title="Annuaire Pro" subtitle="Liste des médecins, cliniques et contacts professionnels" icon={Users} />
+					<div className="flex-1 p-6 overflow-hidden">
+						<ProfessionalContactsParams />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		if (currentTab === 'monthly' && appMode === 'secretary') {
+			return (
+				<ContentCard>
+					<TabHeader title="Résumé Mensuel" subtitle="Vue d'ensemble de l'activité du mois" icon={CalendarIcon} />
+					<div className="flex-1 overflow-hidden">
+						<MonthlyResume />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		if (currentTab === 'books' && appMode === 'secretary') {
+			return (
+				<ContentCard>
+					<TabHeader title="Bibliothèque" subtitle="Documents et ressources PDF" icon={BookOpen} />
+					<div className="flex-1 overflow-hidden">
+						<BooksLibrary />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		if (currentTab === 'settings' && appMode === 'secretary') {
+			return (
+				<ContentCard>
+					<TabHeader title="Paramètres" subtitle="Configuration des tarifs et types de consultation" icon={Settings} />
+					<div className="flex-1 p-6 overflow-hidden">
+						<ConsultationTypesParams />
+					</div>
+				</ContentCard>
+			);
+		}
+
+		return (
+			<ContentCard>
+				<div className="flex-1 flex items-center justify-center text-muted-foreground">
+					<div className="text-center">
+						<p className="text-lg font-medium">Selectionnez un onglet valide</p>
+					</div>
+				</div>
+			</ContentCard>
+		);
+	};
+
 	return (
-		<div className="h-screen w-full bg-slate-50 flex flex-col overflow-hidden">
+		<div className="h-screen w-full bg-secondary/20 flex flex-col overflow-hidden font-sans text-foreground">
 			{/* Top Header */}
 			<SecretaryHeader
 				currentTab={currentTab}
-				onTabChange={setCurrentTab}
+				onTabChange={handleTabChange}
 			/>
 
 			{/* Main Content Area */}
-			<main className="flex-1 flex overflow-hidden p-4 gap-4">
-				{/* Left Sidebar - Workflow/Messaging */}
-				<aside className="w-[380px] flex flex-col shrink-0 overflow-hidden h-full">
+			<main className="flex-1 flex overflow-hidden p-2 sm:p-4 lg:p-6 gap-2 sm:gap-4 lg:gap-6">
+				{/* Desktop Sidebar - Workflow/Messaging - Takes styling from component itself or wrapper? */}
+				{/* Let's wrap it in a Card style wrapper if the sidebar itself isn't one. The Sidebar has its own structure. */}
+				<aside className="hidden lg:flex w-[380px] flex-col shrink-0 overflow-hidden h-full bg-card rounded-xl border border-border shadow-sm">
 					<SecretaryWorkflowSidebar />
 				</aside>
 
+				{/* Mobile Sidebar Sheet */}
+				<Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+					<SheetContent side="left" className="w-[85vw] sm:w-[380px] p-0 border-border bg-card">
+						<div className="h-full pt-4">
+							<SecretaryWorkflowSidebar />
+						</div>
+					</SheetContent>
+				</Sheet>
+
 				{/* Center Content */}
-				<div className="flex-1 flex flex-col overflow-hidden bg-white rounded-xl shadow-sm border border-slate-200 relative h-full">
-					{currentTab === 'agenda' ? (
-						<div className="flex h-full overflow-hidden">
-							<div className="flex-1 h-full overflow-hidden">
-								<Calendar
-									onRangeChange={handleCalendarRangeChange}
-									onDateSelect={handleDateSelect}
-								/>
-							</div>
-							<div className="w-[350px] border-l border-slate-200 bg-slate-50/50 h-full overflow-hidden">
-								<Waitlist date={currentViewDate} />
-							</div>
-						</div>
-					) : currentTab === 'resume' ? (
-						<div className="flex-1 overflow-auto">
-							<TodayResume />
-						</div>
-					) : (currentTab === 'tarifs' && appMode === 'both') ? (
-						<div className="h-full flex flex-col bg-slate-50">
-							<div className="bg-white border-b px-6 py-4">
-								<div className="flex items-center gap-3 mb-1">
-									<div className="p-2 bg-slate-100 rounded-lg">
-										<CreditCard className="w-5 h-5 text-slate-600" />
-									</div>
-									<div>
-										<h2 className="text-xl font-bold text-slate-900">Tarifs</h2>
-										<p className="text-sm text-slate-500">Configuration des types de consultation et prix</p>
-									</div>
-								</div>
-							</div>
-							<div className="flex-1 p-6 overflow-hidden">
-								<div className="flex-1 bg-white rounded-xl border shadow-sm overflow-hidden h-full flex flex-col">
-									<ConsultationTypesParams readonly={true} />
-								</div>
-							</div>
-						</div>
-					) : (currentTab === 'annuaire' && appMode === 'both') ? (
-						<div className="h-full flex flex-col bg-slate-50">
-							<div className="bg-white border-b px-6 py-4">
-								<div className="flex items-center gap-3 mb-1">
-									<div className="p-2 bg-slate-100 rounded-lg">
-										<Users className="w-5 h-5 text-slate-600" />
-									</div>
-									<div>
-										<h2 className="text-xl font-bold text-slate-900">Annuaire Pro</h2>
-										<p className="text-sm text-slate-500">Liste des médecins, cliniques et contacts professionnels</p>
-									</div>
-								</div>
-							</div>
-							<div className="flex-1 p-6 overflow-hidden">
-								<div className="flex-1 bg-white rounded-xl border shadow-sm overflow-hidden h-full flex flex-col">
-									<ProfessionalContactsParams />
-								</div>
-							</div>
-						</div>
-					) : (currentTab === 'monthly' && appMode === 'secretary') ? (
-						<div className="flex-1 overflow-hidden">
-							<MonthlyResume />
-						</div>
-					) : (currentTab === 'books' && appMode === 'secretary') ? (
-						<div className="flex-1 overflow-hidden">
-							<BooksLibrary />
-						</div>
-					) : (currentTab === 'settings' && appMode === 'secretary') ? (
-						<div className="h-full flex flex-col bg-slate-50">
-							<div className="bg-white border-b px-6 py-4">
-								<div className="flex items-center gap-3 mb-1">
-									<div className="p-2 bg-slate-100 rounded-lg">
-										<Settings className="w-5 h-5 text-slate-600" />
-									</div>
-									<div>
-										<h2 className="text-xl font-bold text-slate-900">Paramètres</h2>
-										<p className="text-sm text-slate-500">Configuration des tarifs et types de consultation</p>
-									</div>
-								</div>
-							</div>
-							<div className="flex-1 p-6 overflow-hidden">
-								<div className="flex-1 bg-white rounded-xl border shadow-sm overflow-hidden h-full flex flex-col">
-									<ConsultationTypesParams />
-								</div>
-							</div>
-						</div>
-					) : (
-						<div className="flex-1 flex items-center justify-center text-slate-400">
-							<div className="text-center">
-								<p className="text-lg font-medium">Selectionnez un onglet valide</p>
-							</div>
-						</div>
-					)}
+				<div className="flex-1 flex flex-col overflow-hidden relative h-full min-w-0">
+					{renderContent()}
 				</div>
 			</main>
+			<SecretaryFloatingMessaging />
 		</div>
 	);
 }
+
+// Helper icons
+import { Calendar as CalendarIcon, BookOpen, BarChart2 } from 'lucide-react';

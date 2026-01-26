@@ -84,19 +84,24 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
     const completedPatients = waitlist?.filter(e => ['completed', 'paid', 'creance'].includes(e.state)) || [];
 
     return (
-        <div className="flex flex-col h-full bg-slate-50/50">
+        <div className="flex flex-col h-full">
             {/* Header Section */}
-            <div className="p-4 border-b border-slate-200 bg-white shadow-sm flex justify-between items-center shrink-0">
-                <div className="flex items-center gap-2 text-slate-700">
-                    <Users className="h-5 w-5 text-blue-600" />
-                    <h2 className="font-bold text-lg">File d'attente</h2>
+            <div className="p-3 sm:p-4 border-b border-border bg-primary/5 flex justify-between items-center shrink-0">
+                <div className="flex items-center gap-2 text-foreground">
+                    <div className="p-1.5 bg-primary/10 rounded-lg">
+                        <Users className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                        <h2 className="font-bold text-sm sm:text-base text-foreground">File d'attente</h2>
+                        {waitlist && waitlist.length > 0 && <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{waitlist.length} Patients</p>}
+                    </div>
                 </div>
                 <Button
                     size="sm"
                     onClick={() => setIsSheetOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-105 active:scale-95"
+                    className="h-8 bg-card hover:bg-secondary text-primary border border-border shadow-sm hover:shadow transition-all text-xs font-semibold"
                 >
-                    <UserPlus className="h-4 w-4 mr-2" />
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
                     Ajouter
                 </Button>
             </div>

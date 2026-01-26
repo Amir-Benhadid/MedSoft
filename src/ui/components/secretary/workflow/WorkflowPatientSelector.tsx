@@ -138,7 +138,7 @@ export function WorkflowPatientSelector({ onSelect, onCreateNew }: WorkflowPatie
     }
 
     return (
-        <div className="flex flex-col h-[450px]">
+        <div className="flex flex-col h-[50vh] sm:h-[450px]">
             {/* Header / Mode Switch */}
             <div className="mb-4 flex flex-col gap-3">
                 <div className="relative">

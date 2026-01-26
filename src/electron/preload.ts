@@ -161,6 +161,55 @@ try {
 				ipcRenderer.removeListener('data-changed', subscription);
 			};
 		},
+
+		/**
+		 * Subscribes to update available events.
+		 */
+		onUpdateAvailable: (callback: (info: any) => void) => {
+			const subscription = (_event: any, info: any) => callback(info);
+			ipcRenderer.on('update-available', subscription);
+			return () => {
+				ipcRenderer.removeListener('update-available', subscription);
+			};
+		},
+
+		/**
+		 * Subscribes to update downloaded events.
+		 */
+		onUpdateDownloaded: (callback: (info: any) => void) => {
+			const subscription = (_event: any, info: any) => callback(info);
+			ipcRenderer.on('update-downloaded', subscription);
+			return () => {
+				ipcRenderer.removeListener('update-downloaded', subscription);
+			};
+		},
+
+		/**
+		 * Subscribes to download progress events.
+		 */
+		onDownloadProgress: (callback: (progress: any) => void) => {
+			const subscription = (_event: any, progress: any) => callback(progress);
+			ipcRenderer.on('download-progress', subscription);
+			return () => {
+				ipcRenderer.removeListener('download-progress', subscription);
+			};
+		},
+
+		/**
+		 * Subscribes to update error events.
+		 */
+		onUpdateError: (callback: (error: any) => void) => {
+			const subscription = (_event: any, error: any) => callback(error);
+			ipcRenderer.on('update-error', subscription);
+			return () => {
+				ipcRenderer.removeListener('update-error', subscription);
+			};
+		},
+
+		/**
+		 * Quits the application and installs the downloaded update.
+		 */
+		quitAndInstall: () => ipcRenderer.invoke('app:quitAndInstall'),
 	};
 
 	console.log('🔧 Exposing electronAPI to main world...');

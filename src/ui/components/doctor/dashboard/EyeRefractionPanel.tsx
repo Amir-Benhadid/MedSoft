@@ -76,8 +76,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
 
     return (
         <Card className={cn("h-full flex flex-col overflow-hidden border-t-4 shadow-sm", isRight ? "border-t-green-500" : "border-t-blue-500")}>
-            <div className={cn("px-2 py-1 border-b flex justify-between items-center min-h-[32px]", badgeBg)}>
-                <span className={cn("font-bold text-xs", themeColor)}>{title}</span>
+            <div className={cn("px-3 py-2 border-b flex justify-between items-center min-h-[40px]", badgeBg)}>
+                <span className={cn("font-bold text-sm", themeColor)}>{title}</span>
                 {action && <div className="-my-1">{action}</div>}
             </div>
 
@@ -85,9 +85,9 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                 <div className="flex-1 flex flex-col p-1.5 gap-1.5 overflow-y-auto custom-scrollbar">
                     {/* Visual Acuity - Horizontal row for extreme compactness */}
                     <Section label="Acuité Visuelle">
-                        <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 items-center">
-                            <span className="text-[10px] font-bold text-muted-foreground w-4">VL</span>
-                            <div className="flex gap-1">
+                        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 items-center">
+                            <span className="text-xs font-bold text-muted-foreground w-6">VL</span>
+                            <div className="flex gap-2">
                                 <CompactSelect
                                     value={data.visualAcuityVL_SC}
                                     onChange={(v) => handleChange("visualAcuityVL_SC", v)}
@@ -106,8 +106,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                 />
                             </div>
 
-                            <span className="text-[10px] font-bold text-muted-foreground w-4">VP</span>
-                            <div className="flex gap-1">
+                            <span className="text-xs font-bold text-muted-foreground w-6">VP</span>
+                            <div className="flex gap-2">
                                 <CompactSelect
                                     value={data.visualAcuityVP_SC}
                                     onChange={(v) => handleChange("visualAcuityVP_SC", v)}
@@ -154,8 +154,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
 
                     {/* Additional Data: Correctin & Kerato - Moved Up & Adaptive */}
                     <div className="grid grid-cols-2 gap-2 flex-shrink-0">
-                        <div className={cn("p-1.5 rounded-md border bg-slate-50/50 flex flex-col justify-center", borderColor)}>
-                            <Label className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Kérato</Label>
+                        <div className={cn("p-2 rounded-md border bg-slate-50/50 flex flex-col justify-center", borderColor)}>
+                            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Kérato</Label>
                             <div className="grid grid-cols-2 gap-1">
                                 <Field label="K1">
                                     <CompactSelect
@@ -178,9 +178,9 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                             </div>
                         </div>
 
-                        <div className={cn("p-1.5 rounded-md border bg-slate-50/50 flex flex-col justify-center", borderColor)}>
-                            <Label className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Correction</Label>
-                            <div className="space-y-1 w-full">
+                        <div className={cn("p-2 rounded-md border bg-slate-50/50 flex flex-col justify-center", borderColor)}>
+                            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Correction</Label>
+                            <div className="space-y-2 w-full">
                                 <div className="grid grid-cols-2 gap-1">
                                     <Field label="Verre">
                                         <CompactSelect
@@ -232,7 +232,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                     {/* Tonometry - Moves to bottom, fills remaining space if any */}
                     <div className="flex-1 flex flex-col justify-end min-h-0">
                         <Section label="Tonométrie">
-                            <div className="flex gap-1">
+                            <div className="flex gap-2">
                                 <Field label="PIO" className="flex-1">
                                     <CompactSelect
                                         value={data.tension}
@@ -247,7 +247,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                         value={data.corrected_iop || ""}
                                         onChange={(e) => handleChange("corrected_iop", e.target.value)}
                                         disabled={readOnly}
-                                        className="h-7 text-[10px] px-1"
+                                        className="h-8 text-xs px-2"
                                     />
                                 </Field>
                                 <Field label="Applanat." className="flex-1">
@@ -255,7 +255,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                         value={data.tensionApplanation || ""}
                                         onChange={(e) => handleChange("tensionApplanation", e.target.value)}
                                         disabled={readOnly}
-                                        className="h-7 text-[10px] px-1"
+                                        className="h-8 text-xs px-2"
                                     />
                                 </Field>
                                 <Field label="Pachy" className="flex-1">
@@ -263,7 +263,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                         value={data.pachymetry || ""}
                                         onChange={(e) => handleChange("pachymetry", e.target.value)}
                                         disabled={readOnly}
-                                        className="h-7 text-[10px] px-1"
+                                        className="h-8 text-xs px-2"
                                     />
                                 </Field>
                                 <Field label="Heure" className="flex-1">
@@ -272,7 +272,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                         value={data.tensionTime || ""}
                                         onChange={(e) => handleChange("tensionTime", e.target.value)}
                                         disabled={readOnly}
-                                        className="h-7 w-full text-[10px] bg-white border border-input rounded-md px-1 focus:ring-1 focus:ring-ring"
+                                        className="h-8 w-full text-xs bg-white border border-input rounded-md px-2 focus:ring-1 focus:ring-ring"
                                     />
                                 </Field>
                             </div>
@@ -288,8 +288,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
 
 function Section({ label, children }: { label: string, children: React.ReactNode }) {
     return (
-        <div className="space-y-0.5">
-            <Label className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{label}</Label>
+        <div className="space-y-1">
+            <Label className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">{label}</Label>
             {children}
         </div>
     );
@@ -297,8 +297,8 @@ function Section({ label, children }: { label: string, children: React.ReactNode
 
 function Field({ label, children, className }: { label: string, children: React.ReactNode, className?: string }) {
     return (
-        <div className={cn("space-y-0 w-full", className)}>
-            {label && <Label className="text-[9px] text-muted-foreground font-medium block mb-0.5 truncate">{label}</Label>}
+        <div className={cn("space-y-0.5 w-full", className)}>
+            {label && <Label className="text-[10px] text-muted-foreground font-medium block mb-0.5 truncate">{label}</Label>}
             {children}
         </div>
     );
@@ -325,8 +325,8 @@ function RefractionFields({
     return (
         <div className="space-y-1">
             {fields.map((f) => (
-                <div key={f.key} className="grid grid-cols-[24px_1fr] gap-1 items-center">
-                    <Label className="text-[9px] font-medium text-slate-600">{f.label}</Label>
+                <div key={f.key} className="grid grid-cols-[28px_1fr] gap-2 items-center">
+                    <Label className="text-[10px] font-medium text-slate-600">{f.label}</Label>
                     <CompactSelect
                         value={(data as any)[f.key] || ""}
                         onChange={(val: string) => onChange(f.key as any, val)}
@@ -341,9 +341,6 @@ function RefractionFields({
 }
 
 function CompactSelect({ value, onChange, options, disabled, placeholder, className }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string }) {
-    // For NativeSelect, we just pass value directly. The "__EMPTY__" logic might be needed if the options still contain it.
-    // If the options have __EMPTY__ as a value for the empty state, we need to handle it.
-
     // Transform options for NativeSelect if they contain __EMPTY__
     const nativeOptions = options.map(o => ({
         ...o,
@@ -351,21 +348,18 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
         label: o.value === '__EMPTY__' ? (placeholder || ' ') : o.label
     }));
 
-    // If there isn't an empty option in the list and we have a placeholder, we might want to prepend one,
-    // but the provided options usually cover the empty state in this app.
-
-    // Handle change: Native select returns the value directly
     const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onChange(e.target.value);
+        const val = e.target.value;
+        onChange(val === '' ? '__EMPTY__' : val);
     };
 
     return (
         <div className={cn("relative w-full", className)}>
             <select
                 className={cn(
-                    "flex h-7 w-full items-center justify-between rounded-md border border-slate-200 bg-background px-2 py-0 text-[10px] ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none pr-4",
+                    "flex h-8 w-full items-center justify-between rounded-md border border-slate-200 bg-background px-2 py-1 text-xs ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none pr-6",
                 )}
-                value={value || ""}
+                value={value === '__EMPTY__' ? '' : (value || '')}
                 onChange={handleValueChange}
                 disabled={disabled}
             >
@@ -375,7 +369,7 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
                     </option>
                 ))}
             </select>
-            <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 h-3 w-3 opacity-50 pointer-events-none" />
+            <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 h-4 w-3 opacity-50 pointer-events-none" />
         </div>
     );
 }

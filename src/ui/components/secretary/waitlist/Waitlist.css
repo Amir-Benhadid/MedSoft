@@ -17,7 +17,7 @@
 .waitlist-scroll-area {
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
 }
 
 .waitlist-scroll-area::-webkit-scrollbar {
@@ -29,6 +29,6 @@
 }
 
 .waitlist-scroll-area::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: hsl(var(--border));
     border-radius: 20px;
 }

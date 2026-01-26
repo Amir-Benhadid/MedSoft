@@ -62,9 +62,9 @@ export function MedicineAutocomplete({ value, onSelect, className }: MedicineAut
                         {value ? (
                             <span className="truncate">{value}</span>
                         ) : (
-                            <span className="text-muted-foreground flex items-center gap-2">
+                            <span className="text-muted-foreground flex items-center gap-2 text-sm">
                                 <SearchIcon className="h-4 w-4" />
-                                Rechercher un médicament...
+                                Médicament...
                             </span>
                         )}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -73,7 +73,7 @@ export function MedicineAutocomplete({ value, onSelect, className }: MedicineAut
                 <PopoverContent className="w-[400px] p-0" align="start">
                     <Command shouldFilter={false}>
                         <CommandInput
-                            placeholder="Rechercher un médicament..."
+                            placeholder="Médicament..."
                             value={searchTerm}
                             onValueChange={setSearchTerm}
                         />

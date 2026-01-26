@@ -24,6 +24,7 @@ import { autocompleteRouter } from './routers/autocomplete.router.js';
 import { professionalContactsRouter } from './routers/professional_contacts.router.js';
 import { booksRouter } from './routers/books.router.js';
 import { radiographyRouter } from './routers/radiography.router.js';
+import { sharedRecordsRouter } from './routers/shared_records.router.js';
 
 const routerDef = {
 	auth: authRouter,
@@ -42,6 +43,7 @@ const routerDef = {
 	professionalContacts: professionalContactsRouter,
 	books: booksRouter,
 	radiography: radiographyRouter,
+	sharedRecords: sharedRecordsRouter,
 };
 
 console.log('🔄 Initializing appRouter');
