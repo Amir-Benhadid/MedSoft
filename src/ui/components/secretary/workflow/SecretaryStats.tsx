@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { orpcClient } from '@/ui/lib/orpc/client';
 import { Calendar, UserPlus, Stethoscope } from 'lucide-react';
 import { Skeleton } from "@/ui/components/ui/skeleton";
+import { cn } from "@/ui/lib/utils";
 
 export default function SecretaryStats() {
     const { data: stats, isLoading } = useQuery({
@@ -56,10 +57,16 @@ export default function SecretaryStats() {
                         <div className={`p-1.5 rounded-xl ${item.bg} mb-1.5 group-hover:scale-110 transition-transform`}>
                             <Icon className={`h-3.5 w-3.5 ${item.color}`} />
                         </div>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+                        <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-widest leading-none opacity-80",
+                            item.color
+                        )}>
                             {item.label}
                         </span>
-                        <span className="text-lg font-extrabold text-slate-900 tracking-tighter mt-1 leading-none">
+                        <span className={cn(
+                            "text-3xl font-extrabold tracking-tighter mt-1 leading-none",
+                            item.color
+                        )}>
                             {item.value}
                         </span>
                     </div>

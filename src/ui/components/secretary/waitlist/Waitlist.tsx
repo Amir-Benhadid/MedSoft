@@ -92,7 +92,7 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                         <Users className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                        <h2 className="font-bold text-sm sm:text-base text-foreground">File d'attente</h2>
+                        <h2 className="text-xs font-bold text-foreground uppercase tracking-widest">File d'attente</h2>
                         {waitlist && waitlist.length > 0 && <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{waitlist.length} Patients</p>}
                     </div>
                 </div>
@@ -111,8 +111,8 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                     {/* En Consultation - Highlighted */}
                     {inProgressPatients.length > 0 && (
                         <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 uppercase tracking-wider">
-                                <Activity className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase tracking-widest">
+                                <Activity className="h-3.5 w-3.5" />
                                 En Consultation
                                 <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 ml-auto border-emerald-200">
                                     {inProgressPatients.length}
@@ -140,8 +140,8 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                     {/* En Rééducation (Kinesis) */}
                     {rehabilitationPatients.length > 0 && (
                         <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700 uppercase tracking-wider">
-                                <Activity className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-bold text-indigo-700 uppercase tracking-widest">
+                                <Activity className="h-3.5 w-3.5" />
                                 En Rééducation
                                 <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 ml-auto border-indigo-200">
                                     {rehabilitationPatients.length}
@@ -167,8 +167,8 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
 
                     {/* En Attente */}
                     <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 uppercase tracking-wider">
-                            <Users className="h-4 w-4" />
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-widest">
+                            <Users className="h-3.5 w-3.5" />
                             En Attente
                             <Badge variant="secondary" className="bg-slate-100 text-slate-600 ml-auto">
                                 {waitingPatients.length}
@@ -202,8 +202,8 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                     {/* Terminé / Paiement */}
                     {completedPatients.length > 0 && (
                         <div className="space-y-3 opacity-90 hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                                <CheckCircle className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                <CheckCircle className="h-3.5 w-3.5" />
                                 Terminé / Paiement
                                 <Badge variant="secondary" className="bg-slate-100 text-slate-500 ml-auto">
                                     {completedPatients.length}

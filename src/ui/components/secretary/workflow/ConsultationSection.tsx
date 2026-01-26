@@ -32,13 +32,13 @@ export default function ConsultationSection() {
         <div className={cn(
             "p-3 rounded-2xl transition-all border shadow-sm group",
             inConsultation
-                ? "bg-white border-emerald-200 ring-2 ring-emerald-50"
+                ? "bg-emerald-600 border-emerald-600 shadow-lg shadow-emerald-200"
                 : "bg-white/80 border-slate-100 hover:bg-white hover:border-slate-200"
         )}>
             <div className="flex items-center gap-3">
                 <div className={cn(
                     "flex items-center justify-center w-10 h-10 rounded-xl transition-all",
-                    inConsultation ? "bg-emerald-600 shadow-lg shadow-emerald-200" : "bg-slate-100"
+                    inConsultation ? "bg-white/20 text-white" : "bg-slate-100"
                 )}>
                     <Activity className={cn(
                         "h-4 w-4",
@@ -49,10 +49,10 @@ export default function ConsultationSection() {
                 <div className="flex-1 min-w-0">
                     {inConsultation ? (
                         <div>
-                            <p className="text-sm font-semibold text-slate-900 truncate">
+                            <p className="text-sm font-semibold text-white truncate">
                                 {inConsultation.name} {inConsultation.surname}
                             </p>
-                            <p className="text-[10px] text-emerald-600 font-medium uppercase tracking-tight">En consultation</p>
+                            <p className="text-[10px] text-emerald-100 font-medium uppercase tracking-tight">En consultation</p>
                         </div>
                     ) : (
                         <div>
@@ -66,7 +66,7 @@ export default function ConsultationSection() {
                     <Button
                         size="sm"
                         onClick={() => handleCompleteConsultation(inConsultation)}
-                        className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm"
+                        className="h-8 bg-white hover:bg-emerald-50 text-emerald-600 rounded-lg shadow-sm"
                     >
                         <CheckCircle className="h-3.5 w-3.5" />
                     </Button>

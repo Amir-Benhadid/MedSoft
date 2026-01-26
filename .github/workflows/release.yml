@@ -33,7 +33,7 @@ jobs:
 
       - name: Build and Publish Application
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm run dist
 
       - name: Upload installer artifact

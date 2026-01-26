@@ -65,12 +65,6 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 <div className="flex-1 flex flex-col border-r bg-slate-50 h-full overflow-hidden">
                     {/* Top Section: Refraction */}
                     <div className="flex-none max-h-[60%] border-b bg-white relative flex flex-col">
-                        <div className="p-2 border-b bg-blue-50/30 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm bg-white/90">
-                            <div className="flex items-center gap-2">
-                                <Eye className="w-4 h-4 text-blue-600" />
-                                <h3 className="font-medium text-sm text-slate-800">Réfraction</h3>
-                            </div>
-                        </div>
                         <div className="p-3 overflow-y-auto">
                             <RefractionTab />
                         </div>
@@ -78,9 +72,6 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
 
                     {/* Bottom Section: Clinical Exam & Prescription */}
                     <div className="flex-1 overflow-y-auto bg-slate-50 relative flex flex-col">
-                        {/* Clinical Exam Header - OPTIMIZED: Isolated Component */}
-                        <ClinicalExamHeader />
-
                         <div className="p-4 flex flex-col gap-6">
                             <ClinicalExamTab />
                         </div>

@@ -36,6 +36,7 @@ export const EyeDataSchema = z.object({
     k1: z.string().optional().default(''),
     k2: z.string().optional().default(''),
     axis_k: z.string().optional().default(''),
+    rayon: z.string().optional().default(''),
     diam: z.string().optional().default(''),
     pupillaryDistance: z.string().optional().default(''),
     pd: z.string().optional().default(''),
@@ -222,13 +223,13 @@ export const ConsultationSchema = z.object({
     left_eye: EyeDataSchema.default({
         visualAcuity: '', visualAcuityVL_SC: '', visualAcuityVL_AC: '', visualAcuityVP_SC: '', visualAcuityVP_AC: '',
         sph: '', cyl: '', axis: '', add: '', tension: '', tensionTime: '', pachymetry: '', corrected_iop: '', tensionApplanation: '', k1: '', k2: '', axis_k: '',
-        diam: '', pupillaryDistance: '', pd: '', objSph: '', objCyl: '', objAxis: '', objAdd: '', lensType: '', lensBrand: '',
+        rayon: '', diam: '', pupillaryDistance: '', pd: '', objSph: '', objCyl: '', objAxis: '', objAdd: '', lensType: '', lensBrand: '',
         glassType: '', contactLensType: ''
     }),
     right_eye: EyeDataSchema.default({
         visualAcuity: '', visualAcuityVL_SC: '', visualAcuityVL_AC: '', visualAcuityVP_SC: '', visualAcuityVP_AC: '',
         sph: '', cyl: '', axis: '', add: '', tension: '', tensionTime: '', pachymetry: '', corrected_iop: '', tensionApplanation: '', k1: '', k2: '', axis_k: '',
-        diam: '', pupillaryDistance: '', pd: '', objSph: '', objCyl: '', objAxis: '', objAdd: '', lensType: '', lensBrand: '',
+        rayon: '', diam: '', pupillaryDistance: '', pd: '', objSph: '', objCyl: '', objAxis: '', objAdd: '', lensType: '', lensBrand: '',
         glassType: '', contactLensType: ''
     }),
     tonometrie_data: TonometrieDataSchema.default({

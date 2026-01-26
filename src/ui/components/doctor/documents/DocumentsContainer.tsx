@@ -109,13 +109,13 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = (props) => {
                                     key={tab.id}
                                     onClick={() => setActiveDocTab(tab.id)}
                                     className={cn(
-                                        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border",
+                                        "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border",
                                         isActive
-                                            ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                            ? "bg-primary text-primary-foreground border-primary shadow-sm ring-2 ring-primary/20"
                                             : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground"
                                     )}
                                 >
-                                    <Icon className={cn("w-3.5 h-3.5", isActive ? "text-primary-foreground" : "text-muted-foreground")} />
+                                    <Icon className={cn("w-4 h-4", isActive ? "text-primary-foreground" : "text-muted-foreground")} />
                                     {tab.label}
                                 </button>
                             );
@@ -129,7 +129,7 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = (props) => {
                         size="sm"
                         variant={showPreviewPane ? "secondary" : "outline"}
                         className={cn(
-                            "h-8 gap-2 border-blue-100 transition-colors",
+                            "h-9 gap-2 border-blue-100 transition-colors text-sm",
                             showPreviewPane ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                         )}
                         onClick={() => setShowPreviewPane(!showPreviewPane)}
@@ -139,7 +139,7 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = (props) => {
                     </Button>
                     <Button
                         size="sm"
-                        className="h-8 gap-2 bg-slate-800 hover:bg-slate-700 shadow-sm"
+                        className="h-9 gap-2 bg-slate-800 hover:bg-slate-700 shadow-sm text-sm"
                         onClick={handlePrint}
                     >
                         <Printer className="w-4 h-4" />

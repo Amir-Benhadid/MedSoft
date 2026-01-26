@@ -76,13 +76,13 @@ export default function PatientSelectionSection() {
         <div className={cn(
             "p-3 rounded-2xl transition-all border shadow-sm group",
             selectedPatient
-                ? "bg-white border-blue-200 ring-2 ring-blue-50"
+                ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-200"
                 : "bg-white/80 border-slate-100 hover:bg-white hover:border-slate-200"
         )}>
             <div className="flex items-center gap-3">
                 <div className={cn(
                     "flex items-center justify-center w-10 h-10 rounded-xl transition-all",
-                    selectedPatient ? "bg-blue-600 shadow-lg shadow-blue-200" : "bg-slate-100"
+                    selectedPatient ? "bg-white/20 text-white" : "bg-slate-100"
                 )}>
                     <User className={cn(
                         "h-4 w-4",
@@ -93,10 +93,10 @@ export default function PatientSelectionSection() {
                 <div className="flex-1 min-w-0">
                     {selectedPatient ? (
                         <div>
-                            <p className="text-sm font-semibold text-slate-900 truncate">
+                            <p className="text-sm font-semibold text-white truncate">
                                 {selectedPatient.name} {selectedPatient.surname}
                             </p>
-                            <p className="text-[10px] text-blue-600 font-medium uppercase tracking-tight">Sélectionné</p>
+                            <p className="text-[10px] text-blue-100 font-medium uppercase tracking-tight">Sélectionné</p>
                         </div>
                     ) : (
                         <button
@@ -115,7 +115,7 @@ export default function PatientSelectionSection() {
                             variant="ghost"
                             size="icon"
                             onClick={() => setPatientSelectorOpen(true)}
-                            className="h-8 w-8 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg mr-1"
+                            className="h-8 w-8 text-blue-100 hover:text-white hover:bg-white/20 rounded-lg mr-1"
                             title="Changer de patient"
                         >
                             <RefreshCcw className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ export default function PatientSelectionSection() {
                         <Button
                             size="sm"
                             onClick={() => handleStartConsultation(selectedPatient)}
-                            className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
+                            className="h-8 bg-white hover:bg-blue-50 text-blue-600 rounded-lg shadow-sm"
                             title="Démarrer Consultation"
                         >
                             <Stethoscope className="h-3.5 w-3.5" />
@@ -132,7 +132,7 @@ export default function PatientSelectionSection() {
                             <Button
                                 size="sm"
                                 onClick={() => handleStartRehabilitation(selectedPatient)}
-                                className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm"
+                                className="h-8 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg shadow-sm"
                                 title="Démarrer Rééducation"
                             >
                                 <Dumbbell className="h-3.5 w-3.5" />
@@ -141,6 +141,6 @@ export default function PatientSelectionSection() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

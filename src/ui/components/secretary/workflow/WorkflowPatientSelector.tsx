@@ -165,7 +165,7 @@ export function WorkflowPatientSelector({ onSelect, onCreateNew }: WorkflowPatie
                     {/* Available Patients Only */}
                     {availablePatients.length > 0 ? (
                         <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider px-1">
+                            <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-widest px-1">
                                 <Clock className="h-3.5 w-3.5" />
                                 Patients en Attente (Disponibles)
                                 <Badge variant="secondary" className="ml-auto">{availablePatients.length}</Badge>

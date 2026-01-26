@@ -16,12 +16,12 @@ interface ClinicalExamTabProps {
 
 // New Card Component for sections - Defined outside to prevent re-renders
 const ExamSection = ({ title, icon: Icon, children, className }: any) => (
-    <div className={cn("bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden", className)}>
-        <div className="bg-slate-50/50 px-3 py-1 border-b border-slate-100 flex items-center gap-2 min-h-[28px]">
-            <Icon className="w-3.5 h-3.5 text-slate-500" />
-            <h4 className="text-xs font-semibold text-slate-700">{title}</h4>
+    <div className={cn("bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col", className)}>
+        <div className="bg-slate-50/50 px-4 py-2 border-b border-slate-100 flex items-center gap-2 min-h-[36px]">
+            <Icon className="w-4 h-4 text-slate-500" />
+            <h4 className="text-sm font-semibold text-slate-700">{title}</h4>
         </div>
-        <div className="p-2">
+        <div className="p-3 flex-1 flex flex-col">
             {children}
         </div>
     </div>
@@ -48,15 +48,16 @@ function ClinicalExamTab({
     }
 
     return (
-        <div className="h-full flex flex-col gap-2 pb-2">
-            {/* 1. General Observations - Grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-[120px]">
+        <div className="h-full flex flex-col gap-4 pb-4">
+            {/* 1. General Observations - Grid with larger text */}
+            <div className="grid grid-cols-2 gap-4 min-h-[160px]">
                 <ExamSection title="Inspection" icon={Search} className="flex flex-col">
                     <OptimizedTextarea
                         value={data.inspection || ""}
                         onChange={handleFieldChange("inspection")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-[50px] border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 flex-1 leading-tight"
+                        className="resize-none h-full min-h-[100px] border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 flex-1 leading-normal placeholder:text-slate-400 w-full"
+                        placeholder="Rien à signaler..."
                     />
                 </ExamSection>
                 <ExamSection title="Motilité" icon={Eye} className="flex flex-col">
@@ -64,50 +65,53 @@ function ClinicalExamTab({
                         value={data.motilityExam || ""}
                         onChange={handleFieldChange("motilityExam")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-[50px] border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 flex-1 leading-tight"
+                        className="resize-none h-full min-h-[100px] border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 flex-1 leading-normal placeholder:text-slate-400 w-full"
+                        placeholder="Normal..."
                     />
                 </ExamSection>
             </div>
 
-            {/* 2. Detailed Eye Exam - Side by Side Grid */}
-            <div className="flex-1 min-h-0 grid grid-cols-2 gap-2">
+            {/* 2. Detailed Eye Exam - Side by Side Grid with bigger font */}
+            <div className="flex-1 min-h-0 grid grid-cols-2 gap-4">
                 <ExamSection title="Segment Antérieur" icon={ScanEye} className="flex flex-col min-h-0 h-full">
                     <SmartMultiSelectInput
                         category="anterior_segment"
                         value={data.anteriorSegment?.slit_lamp_exam || ""}
                         onSelect={handleNestedChange("anteriorSegment", "slit_lamp_exam")}
                         placeholder="Examen segment antérieur..."
-                        className="h-full border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 leading-tight whitespace-normal bg-transparent"
+                        className="h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal whitespace-normal bg-transparent w-full"
                     />
                 </ExamSection>
 
-                <ExamSection title="Fond d'œil" icon={ScanEye} className={cn("flex flex-col min-h-0 h-full", dilatationRequired ? "ring-2 ring-amber-400 ring-offset-2" : "")}>
+                <ExamSection title="Fond d'œil" icon={ScanEye} className={cn("flex flex-col min-h-0 h-full transition-colors", dilatationRequired ? "ring-2 ring-amber-400 ring-offset-2" : "")}>
                     <OptimizedTextarea
                         value={data.fundus?.fundus_exam || ""}
                         onChange={handleNestedChange("fundus", "fundus_exam")}
                         disabled={readOnly}
-                        className="resize-none h-full border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 leading-tight"
+                        className="resize-none h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal placeholder:text-slate-400 w-full"
+                        placeholder="Examen du fond d'œil..."
                     />
                 </ExamSection>
             </div>
 
-            {/* 3. Conclusions - Compact */}
-            <div className="grid grid-cols-2 gap-2 h-[80px]">
-                <ExamSection title="Diagnostic" icon={Stethoscope} className="border-blue-200 flex flex-col">
+            {/* 3. Conclusions - Compact with bigger font */}
+            <div className="grid grid-cols-2 gap-4 h-[140px] flex-none">
+                <ExamSection title="Diagnostic" icon={Stethoscope} className="border-blue-200 shadow-sm flex flex-col">
                     <SmartMultiSelectInput
                         category="diagnostic"
                         value={data.diagnosis || ""}
                         onSelect={handleFieldChange("diagnosis")}
                         placeholder="Diagnostic..."
-                        className="h-full border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 text-slate-800 font-medium leading-tight whitespace-normal"
+                        className="h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 text-slate-800 font-medium leading-normal whitespace-normal bg-transparent w-full"
                     />
                 </ExamSection>
-                <ExamSection title="Traitement" icon={Syringe} className="border-teal-200 flex flex-col">
+                <ExamSection title="Traitement" icon={Syringe} className="border-teal-200 shadow-sm flex flex-col">
                     <OptimizedTextarea
                         value={data.treatmentPlan || ""}
                         onChange={handleFieldChange("treatmentPlan")}
                         disabled={readOnly}
-                        className="resize-none h-full border-0 focus-visible:ring-0 p-1 text-xs shadow-none -ml-1 leading-tight"
+                        className="resize-none h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal placeholder:text-slate-400 w-full"
+                        placeholder="Traitement prescrit..."
                     />
                 </ExamSection>
             </div>
