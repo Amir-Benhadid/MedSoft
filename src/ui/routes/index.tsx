@@ -79,7 +79,7 @@ function LandingPage() {
 							iconColor="text-blue-600"
 							title="Secrétaire"
 							description="Gérez les rendez-vous, accueillez les patients et coordonnez l'activité quotidienne du cabinet."
-							buttonText="Espace Secrétariat"
+							buttonText="Secrétariat"
 							buttonColor="bg-blue-600 text-white"
 							onClick={handleSecretaryAccess}
 						/>
@@ -90,7 +90,7 @@ function LandingPage() {
 								iconColor="text-indigo-600"
 								title="Docteur"
 								description="Accédez aux dossiers médicaux, gérez les consultations et suivez l'historique clinique."
-								buttonText="Espace Docteur"
+								buttonText="Médecin"
 								buttonColor="bg-indigo-600 text-white"
 								onClick={handleDoctorAccess}
 								requiresLock
