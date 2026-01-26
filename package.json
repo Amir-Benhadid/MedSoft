@@ -1,7 +1,7 @@
 {
 	"name": "medsoft",
 	"private": true,
-	"version": "1.0.2",
+	"version": "1.0.1",
 	"type": "module",
 	"main": "dist-electron/main.js",
 	"description": "Software for medical appointments.",
@@ -30,6 +30,7 @@
 		"build:win-installer": "npm run build && electron-builder --win nsis",
 		"dist": "npm run build && electron-builder",
 		"dist:win": "npm run build && electron-builder --publish=never --win",
+		"release": "tsx scripts/release.ts",
 		"clean": "node -e \"console.log('🧹 Starting fresh...'); process.exit(0)\"",
 		"test": "echo 'No server health endpoint – tests TBD'",
 		"medicines:setup": "node scripts/setup-medicines.js",
