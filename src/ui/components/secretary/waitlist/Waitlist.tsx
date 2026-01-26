@@ -86,22 +86,25 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
     return (
         <div className="flex flex-col h-full">
             {/* Header Section */}
-            <div className="p-3 sm:p-4 border-b border-border bg-primary/5 flex justify-between items-center shrink-0">
-                <div className="flex items-center gap-2 text-foreground">
-                    <div className="p-1.5 bg-primary/10 rounded-lg">
-                        <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                        <h2 className="text-xs font-bold text-foreground uppercase tracking-widest">File d'attente</h2>
-                        {waitlist && waitlist.length > 0 && <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{waitlist.length} Patients</p>}
-                    </div>
+            {/* Header Section */}
+            <div className="pb-4 pt-0 px-4 bg-transparent border-0 flex justify-between items-center shrink-0 mx-0">
+                <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-extrabold text-foreground capitalize flex items-center gap-2 -ml-1">
+                        <Users className="h-6 w-6" />
+                        File d'attente
+                    </h2>
+                    {waitlist && waitlist.length > 0 && (
+                        <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full ml-2 border border-slate-200">
+                            {waitlist.length}
+                        </span>
+                    )}
                 </div>
                 <Button
                     size="sm"
                     onClick={() => setIsSheetOpen(true)}
-                    className="h-8 bg-card hover:bg-secondary text-primary border border-border shadow-sm hover:shadow transition-all text-xs font-semibold"
+                    className="h-9 shadow-sm"
                 >
-                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    <Plus className="h-4 w-4 mr-1.5" />
                     Ajouter
                 </Button>
             </div>
@@ -250,6 +253,6 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </div >
     );
 }

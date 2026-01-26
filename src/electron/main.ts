@@ -564,33 +564,7 @@ function setupAutoUpdater() {
 		mainWindow?.webContents.send('update-downloaded', info);
 	});
 
-	if (isDevelopment) {
-		console.log('🧪 Injecting Update Simulation...');
-		setTimeout(() => {
-			console.log('🧪 Simulating Update Available...');
-			mainWindow?.webContents.send('update-available', { version: '1.0.5', releaseNotes: 'Improved performance and stability.' });
-		}, 5000);
 
-		setTimeout(() => {
-			console.log('🧪 Simulating Download Progress 10%...');
-			mainWindow?.webContents.send('download-progress', { percent: 10, bytesPerSecond: 1024 * 1024, transferred: 1024 * 1024, total: 1024 * 1024 * 10 });
-		}, 7000);
-
-		setTimeout(() => {
-			console.log('🧪 Simulating Download Progress 50%...');
-			mainWindow?.webContents.send('download-progress', { percent: 50, bytesPerSecond: 1024 * 1024 * 2, transferred: 1024 * 1024 * 5, total: 1024 * 1024 * 10 });
-		}, 8000);
-
-		setTimeout(() => {
-			console.log('🧪 Simulating Download Progress 100%...');
-			mainWindow?.webContents.send('download-progress', { percent: 100, bytesPerSecond: 1024 * 1024 * 2, transferred: 1024 * 1024 * 10, total: 1024 * 1024 * 10 });
-		}, 9000);
-
-		setTimeout(() => {
-			console.log('🧪 Simulating Update Downloaded...');
-			mainWindow?.webContents.send('update-downloaded', { version: '1.0.5', releaseNotes: 'Improved performance and stability.' });
-		}, 10000);
-	}
 }
 
 app.whenReady().then(async () => {

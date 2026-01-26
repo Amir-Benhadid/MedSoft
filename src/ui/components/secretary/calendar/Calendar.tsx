@@ -14,7 +14,7 @@ import { getLocalISOString } from '@/ui/lib/time';
 import { EnhancedCalendarEvent } from './CalendarEvent';
 import { CalendarMenu } from './CalendarMenu';
 import { CalendarAppointmentContent } from './CalendarAppointmentSheet';
-import { CalendarQuickActions } from './CalendarQuickActions';
+
 import { MarkPresentDialog } from './MarkPresentDialog';
 import {
     AlertDialog,
@@ -57,10 +57,9 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
     const toggleDilation = useToggleDilation();
 
     // --- Statistics ---
-    const dilationCount = useMemo(() =>
-        appointments.filter(apt => apt.needs_dilation && apt.state === 'booked').length,
-        [appointments]
-    );
+    // --- Statistics ---
+    // dilationCount removed as unused
+
 
     // --- F4 Key Listener ---
     useEffect(() => {
@@ -212,20 +211,12 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
         }
     }, [selectedAppointment, toggleDilation]);
 
-    const handleNewAppointment = useCallback(() => {
-        setSelectedAppointment(null);
-        setDefaultDate(new Date());
-        openAppointmentSheet(null, new Date());
-    }, [openAppointmentSheet]);
+
 
     return (
         <div className="h-full w-full p-0 flex flex-col appointment-calendar-container overflow-hidden">
             {/* Quick Actions Toolbar */}
-            <CalendarQuickActions
-                onNewAppointment={handleNewAppointment}
-                appointmentCount={appointments.length}
-                dilationCount={dilationCount}
-            />
+            {/* Quick Actions Toolbar removed as per user request */}
 
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -237,10 +228,11 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 /* Toolbar Styles - Clean & Minimal */
                 .appointment-calendar-container .fc-toolbar {
                     background: transparent !important;
-                    padding: 0 0 16px 0 !important;
+                    padding: 0 !important; /* Reset padding as it is handled by specific header style */
                     margin-bottom: 0 !important;
                     display: flex !important;
                     align-items: center !important;
+                    justify-content: space-between !important;
                     gap: 12px !important;
                     flex-wrap: wrap !important;
                     border: none !important;
@@ -535,6 +527,39 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                     /* Hide some text on very small screens */
                     .appointment-calendar-container .fc-button .fc-icon {
                         margin: 0 !important;
+                    }
+                }
+
+                /* Toolbar Styles - Clean & Minimal */
+                .appointment-calendar-container .fc-toolbar {
+                    background: transparent !important;
+                    padding: 0 0 16px 0 !important;
+                    margin-bottom: 0 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 12px !important;
+                    flex-wrap: wrap !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                }
+                
+                .appointment-calendar-container .fc-toolbar-title {
+                    color: hsl(var(--foreground)) !important;
+                    font-weight: 800 !important;
+                    font-size: 1.5rem !important;
+                    letter-spacing: -0.025em !important;
+                    margin-left: 4px !important;
+                }
+
+                @media (min-width: 640px) {
+                    .appointment-calendar-container .fc-toolbar-title {
+                        font-size: 1.3rem !important;
+                    }
+                }
+
+                @media (min-width: 1024px) {
+                    .appointment-calendar-container .fc-toolbar-title {
+                        font-size: 1.5rem !important;
                     }
                 }
             `}} />
