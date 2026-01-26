@@ -135,11 +135,19 @@ async function main() {
     pkg.version = newVersion;
     writePackageJson(pkg);
 
+    // Update lockfile
+    console.log('\n📦 Updating lockfile...');
+    try {
+        execSync('pnpm install', { stdio: 'inherit' });
+    } catch (e) {
+        console.warn('⚠️  pnpm install failed, continuing anyway...');
+    }
+
     // 4. Git operations
     console.log('\ncommit & tag...');
 
-    // Stage package.json
-    runCommand('git add package.json');
+    // Stage package.json and lockfile
+    runCommand('git add package.json pnpm-lock.yaml');
 
     // Check for other changes
     try {
