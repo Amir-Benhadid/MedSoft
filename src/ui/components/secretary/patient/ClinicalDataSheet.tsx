@@ -236,7 +236,7 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
         if (!patient) return;
         setIsPrinting(true);
         try {
-            const printOptions = {
+            const printOptions: any = {
                 leftEye: {
                     visualAcuityVL_SC: formData.og_va,
                     sph: formData.og_sph, cyl: formData.og_cyl, axis: formData.og_axis, add: formData.og_add,
@@ -249,11 +249,15 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
                 },
                 prescriptions: [],
                 clinicalExam: {},
-                printControlFlags: {},
+                printControlFlags: {
+                    includeVisualAcuityWithoutCorrection: true,
+                    includeVisualAcuityWithCorrection: false,
+                    includeGlassType: false
+                },
                 printDataOverrides: {}
             };
 
-            await DocumentPrinter.printDocument('Certificat', patient, printOptions);
+            await DocumentPrinter.printDocument('certificatAcuite', patient, printOptions);
         } catch (error) {
             console.error(error);
             toast({ title: "Erreur", description: "Impossible d'imprimer le certificat", variant: "destructive" });

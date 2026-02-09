@@ -19,9 +19,7 @@ export const Route = createRootRoute({
 function RootComponent() {
 	const [isChecking, setIsChecking] = useState(true);
 	const [isSetup, setIsSetup] = useState(false);
-	const [config, setConfig] = useState<any>({});
-
-	// Determine window mode from URL
+	const [config, setConfig] = useState<any>({});	// Determine window mode from URL
 	const searchParams = new URLSearchParams(window.location.search);
 	const isMainMode = searchParams.get('window') === 'main';
 
@@ -36,9 +34,7 @@ function RootComponent() {
 		} finally {
 			setIsChecking(false);
 		}
-	};
-
-	useEffect(() => {
+	};	useEffect(() => {
 		checkSetup();
 	}, []);
 

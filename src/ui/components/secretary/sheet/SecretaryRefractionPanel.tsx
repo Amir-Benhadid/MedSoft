@@ -36,22 +36,25 @@ export function SecretaryRefractionPanel({ lastRefractionData, showRefraction, p
 
         const printData = {
             rightEye: {
-                raw: lastRefractionData.right_eye?.visualAcuityVL_SC || '',
-                correction: lastRefractionData.right_eye?.visualAcuityVL_AC || ''
+                visualAcuityVL_SC: lastRefractionData.right_eye?.visualAcuityVL_SC || '',
+                visualAcuityVL_AC: lastRefractionData.right_eye?.visualAcuityVL_AC || '',
+                glassType: ''
             },
             leftEye: {
-                raw: lastRefractionData.left_eye?.visualAcuityVL_SC || '',
-                correction: lastRefractionData.left_eye?.visualAcuityVL_AC || ''
+                visualAcuityVL_SC: lastRefractionData.left_eye?.visualAcuityVL_SC || '',
+                visualAcuityVL_AC: lastRefractionData.left_eye?.visualAcuityVL_AC || '',
+                glassType: ''
             }
         };
 
-        DocumentPrinter.printDocument('visualAcuity', patient, {
+        DocumentPrinter.printDocument('certificatAcuite', patient, {
             printDataOverrides: {
-                certificate: printData
+                certificatAcuite: printData
             },
             printControlFlags: {
-                includeRaw: true,
-                includeCorrection: !!(printData.rightEye.correction || printData.leftEye.correction)
+                includeVisualAcuityWithoutCorrection: true,
+                includeVisualAcuityWithCorrection: !!(printData.rightEye.visualAcuityVL_AC || printData.leftEye.visualAcuityVL_AC),
+                includeGlassType: false
             }
         });
     };

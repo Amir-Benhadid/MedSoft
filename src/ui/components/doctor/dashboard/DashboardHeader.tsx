@@ -1,10 +1,18 @@
-import { memo, useState } from 'react';
-import { ArrowLeft, Save, Loader2, Droplet } from 'lucide-react';
+import { memo } from 'react';
+import { ArrowLeft, Save, Loader2, Settings } from 'lucide-react';
 import { Button } from '@/ui/components/ui/button';
-import { useAppointments, useToggleDilation } from '@/ui/hooks/useAppointments';
-import { useWaitlist, useWaitlistToggleDilation } from '@/ui/hooks/useWaitlist';
-import { cn } from '@/ui/lib/utils';
-import { DoctorDilationDialog } from './DoctorDilationDialog';
+import { UpdateIndicator } from '@/ui/components/UpdateIndicator';
+import { usePinDialog } from '@/ui/hooks/usePinDialog';
+import { DoctorSettingsDialog } from './DoctorSettingsDialog';
+import { useState } from 'react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/ui/components/ui/dialog";
+import { Input } from "@/ui/components/ui/input";
 
 interface DashboardHeaderProps {
     patient: any;
@@ -16,8 +24,6 @@ interface DashboardHeaderProps {
     showFinishButton?: boolean;
 }
 
-import { getLocalTodayDate, getDayRangeEncoded } from '@/ui/lib/time';
-
 export const DashboardHeader = memo(function DashboardHeader({
     patient,
     onBack,
@@ -27,50 +33,50 @@ export const DashboardHeader = memo(function DashboardHeader({
     onOpenHistory,
     showFinishButton = true
 }: DashboardHeaderProps) {
-    const today = getLocalTodayDate();
-    const { start, end } = getDayRangeEncoded(today);
-    const { data: appointments = [] } = useAppointments(start, end);
-    const { data: waitlist = [] } = useWaitlist(today);
-
-    // Find active item (Appointment takes precedence)
-    const activeAppointment = appointments.find(a => a.patient_id === patient?.id && a.state !== 'completed');
-    const activeWaitlist = !activeAppointment ? waitlist.find(w => w.patient_id === patient?.id && w.state !== 'completed') : null;
-
-    const toggleApptDilation = useToggleDilation();
-    const toggleWaitlistDilation = useWaitlistToggleDilation();
-    const [isDilationDialogOpen, setIsDilationDialogOpen] = useState(false);
-
-    const isDilating = activeAppointment?.needs_dilation || activeWaitlist?.needs_dilation;
-
-    const handleDilationClick = () => {
-        if (isDilating) {
-            // Stop dilation immediately
-            if (activeAppointment) {
-                toggleApptDilation.mutate({ id: activeAppointment.id, needsDilation: false });
-            } else if (activeWaitlist) {
-                toggleWaitlistDilation.mutate({ id: activeWaitlist.id, needsDilation: false });
-            }
-        } else {
-            // Open dialog to start dilation
-            setIsDilationDialogOpen(true);
-        }
-    };
-
-    const handleDilationConfirm = (product: string) => {
-        if (activeAppointment) {
-            // @ts-ignore - Hook update pending
-            toggleApptDilation.mutate({ id: activeAppointment.id, needsDilation: true, dilationType: product });
-        } else if (activeWaitlist) {
-            // @ts-ignore - Hook update pending
-            toggleWaitlistDilation.mutate({ id: activeWaitlist.id, needsDilation: true, dilationType: product });
-        }
-        setIsDilationDialogOpen(false);
-    };
-
     if (!patient) return null;
+
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const pinDialog = usePinDialog(() => {
+        setIsSettingsOpen(true);
+    });
 
     return (
         <>
+            <DoctorSettingsDialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
+
+            {/* PIN Dialog */}
+            <Dialog open={pinDialog.isOpen} onOpenChange={(open) => !open && pinDialog.closeDialog()}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Code PIN requis</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <Input
+                            type="password"
+                            placeholder="Entrez votre code PIN"
+                            value={pinDialog.pin}
+                            onChange={(e) => pinDialog.setPin(e.target.value)}
+                            onKeyDown={pinDialog.handleKeyPress}
+                            autoFocus
+                            className="text-center text-2xl tracking-widest"
+                            maxLength={4}
+                        />
+                        {pinDialog.error && (
+                            <p className="text-sm text-red-500 text-center">{pinDialog.error}</p>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={pinDialog.closeDialog}>
+                            Annuler
+                        </Button>
+                        <Button onClick={pinDialog.handleSubmit} disabled={pinDialog.isLoading}>
+                            {pinDialog.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            Valider
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <header className="bg-white border-b px-6 py-3 shadow-sm flex justify-between items-center sticky top-0 z-20">
                 <div className="flex items-center gap-4">
                     {onBack && (
@@ -79,39 +85,25 @@ export const DashboardHeader = memo(function DashboardHeader({
                         </Button>
                     )}
                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white shadow-sm">
-                            <span className="text-xl">👤</span>
-                        </div>
                         <div>
                             <h1 className="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
                                 {patient.name} {patient.surname}
                             </h1>
-                            <p className="text-slate-500 text-xs flex items-center gap-3 mt-1 font-medium">
-                                <span>{patient.dob ? new Date(patient.dob).toLocaleDateString() : 'N/A'}</span>
-                                <span className="h-1 w-1 rounded-full bg-slate-300" />
-                                <span>{patient.phone_number ?? 'N/A'}</span>
-                            </p>
                         </div>
                     </div>
                 </div>
                 <div className="flex gap-2 items-center">
-                    {/* Dilation Button */}
-                    {(activeAppointment || activeWaitlist) && (
-                        <Button
-                            size="sm"
-                            variant={isDilating ? "secondary" : "outline"}
-                            className={cn(
-                                "gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50",
-                                isDilating && "bg-indigo-100 border-indigo-300"
-                            )}
-                            onClick={handleDilationClick}
-                            disabled={toggleApptDilation.isPending || toggleWaitlistDilation.isPending}
-                        >
-                            {isDilating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Droplet className="w-4 h-4" />}
-                            {isDilating ? "Dilatation en cours..." : "Dilater"}
-                        </Button>
-                    )}
 
+
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-slate-400 hover:text-slate-600"
+                        onClick={() => pinDialog.openDialog('settings')}
+                    >
+                        <Settings className="w-5 h-5" />
+                    </Button>
+                    <UpdateIndicator />
                     {/* History Button */}
                     <Button
                         size="sm"
@@ -146,13 +138,6 @@ export const DashboardHeader = memo(function DashboardHeader({
                     )}
                 </div>
             </header>
-
-            <DoctorDilationDialog
-                isOpen={isDilationDialogOpen}
-                onClose={() => setIsDilationDialogOpen(false)}
-                onConfirm={handleDilationConfirm}
-                isSubmitting={toggleApptDilation.isPending || toggleWaitlistDilation.isPending}
-            />
         </>
     );
 });

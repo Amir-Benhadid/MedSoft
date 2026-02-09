@@ -45,3 +45,40 @@ export function getDayRangeEncoded(dateString: string): { start: string; end: st
         end: `${dateString}T23:59:59`
     };
 }
+
+/**
+ * Formats a date string (YYYY-MM-DD or ISO) to DD/MM/YYYY
+ * preventing timezone shifts by treating the string as local date parts.
+ */
+export function formatDateDisplay(dateString?: string | null): string {
+    if (!dateString) return '';
+
+    // Take the first part YYYY-MM-DD
+    const datePart = dateString.split('T')[0];
+    const parts = datePart.split('-');
+
+    if (parts.length !== 3) return dateString; // Fallback
+
+    // Return formatted as DD/MM/YYYY
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+/**
+ * Calculates age from a date string, avoiding timezone shifts
+ */
+export function calculateAge(dob?: string | null): number | null {
+    if (!dob) return null;
+
+    const datePart = dob.split('T')[0];
+    const birthDate = new Date(`${datePart}T00:00:00`);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+}

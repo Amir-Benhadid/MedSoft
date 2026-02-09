@@ -36,6 +36,8 @@ import { SecretaryPatientFileSheet } from "./SecretaryPatientFileSheet";
 import { orpcClient } from "@/ui/lib/orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useConfig } from "@/ui/contexts/ConfigContext";
+import { useDoctorCall } from "@/ui/hooks/useDoctorCall";
+import { UpdateIndicator } from "@/ui/components/UpdateIndicator";
 
 interface SecretaryHeaderProps {
     currentTab?: string;
@@ -45,12 +47,13 @@ interface SecretaryHeaderProps {
 export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: SecretaryHeaderProps) {
     const { goToLanding } = useNavigation();
     const { logoPath, businessName, appMode } = useConfig();
+    const { isCalling, cancelCall } = useDoctorCall();
 
     const tabs = [
         { id: 'agenda', label: 'Agenda', icon: Calendar },
-        { id: 'resume', label: 'Résumé Jour', icon: BarChart2 },
+        { id: 'resume', label: 'Recette', icon: BarChart2 },
         ...(appMode === 'both' ? [
-            { id: 'tarifs', label: 'Tarifs', icon: CreditCard },
+            { id: 'tarifs', label: 'Activités', icon: CreditCard },
             { id: 'annuaire', label: 'Agenda', icon: Users },
         ] : []),
         ...(appMode === 'secretary' ? [
@@ -124,9 +127,6 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                 >
                     <Search className="mr-2 h-4 w-4" />
                     Rechercher un dossier...
-                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-auto opacity-100">
-                        <span className="text-xs">⌘</span>K
-                    </kbd>
                 </Button>
 
                 {/* Mobile Search Toggle */}
@@ -154,8 +154,26 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
 
             {/* Right Actions */}
             <div className="flex items-center gap-3" style={{ WebkitAppRegion: 'no-drag' } as any}>
+                <UpdateIndicator className="mr-2" />
                 <div className="flex items-center gap-1 pr-3 border-r border-border">
                     <ModeToggle />
+
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            "h-9 w-9 rounded-lg transition-all duration-300",
+                            isCalling
+                                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 animate-pulse shadow-lg ring-2 ring-offset-2 ring-destructive"
+                                : "text-muted-foreground hover:text-primary hover:bg-primary/10 opacity-50"
+                        )}
+                        onClick={() => isCalling && cancelCall()}
+                        disabled={!isCalling}
+                        title={isCalling ? "Docteur vous appelle !" : "Pas d'appel en cours"}
+                    >
+                        <Bell className={cn("h-4 w-4", isCalling && "fill-current")} />
+                    </Button>
+
                     {false && <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg">
                         <RefreshCw className="h-4 w-4" />
                     </Button>}

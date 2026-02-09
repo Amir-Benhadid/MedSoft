@@ -13,20 +13,10 @@ interface CompactPatientCardProps {
     onEdit?: () => void;
 }
 
+import { formatDateDisplay, calculateAge } from '@/ui/lib/time';
 import { cn } from '@/ui/lib/utils';
 
 export const CompactPatientCard = memo(({ patient, isLoading, onChangePatient, onEdit }: CompactPatientCardProps) => {
-    const calculateAge = (dob: string) => {
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    };
-
     const { appMode } = useConfig();
 
     const showAnts = appMode === 'secretary' ? !!patient.gen_ants : (!!patient.oph_ants || !!patient.gen_ants);
@@ -62,7 +52,7 @@ export const CompactPatientCard = memo(({ patient, isLoading, onChangePatient, o
                     {patient.dob && (
                         <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            {new Date(patient.dob).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            {formatDateDisplay(patient.dob)}
                         </span>
                     )}
                     {patient.phone_number && (

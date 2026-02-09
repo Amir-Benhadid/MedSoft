@@ -33,8 +33,9 @@ export function useRealtime() {
             queryClient.invalidateQueries({ queryKey: [resource] });
 
             // Special handling for dependent queries
-            if (resource === 'appointments' || resource === 'waitlist') {
+            if (resource === 'appointments' || resource === 'waitlist' || resource === 'consultations' || resource === 'payments') {
                 queryClient.invalidateQueries({ queryKey: ['todayStats'] });
+                queryClient.invalidateQueries({ queryKey: ['resume'] });
             }
 
             // When consultations change, also invalidate last-completed query for radiography dashboard

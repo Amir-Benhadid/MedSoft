@@ -1,11 +1,8 @@
 import { memo } from 'react';
-import { Label } from "@/ui/components/ui/label";
 import { OptimizedTextarea } from "@/ui/components/ui/optimized-input";
-import { SmartAutocompleteInput } from "@/ui/components/shared/SmartAutocompleteInput";
 import { SmartMultiSelectInput } from "@/ui/components/shared/SmartMultiSelectInput";
 import { cn } from "@/ui/lib/utils";
 import { useConsultationStore } from "@/ui/store/consultationStore";
-import { Eye, Search, ScanEye, FileText, Stethoscope, Syringe } from "lucide-react";
 
 import { DetailedClinicalExamData } from "@/ui/components/doctor/dashboard/types";
 
@@ -13,19 +10,6 @@ interface ClinicalExamTabProps {
     readOnly?: boolean;
     data?: DetailedClinicalExamData;
 }
-
-// New Card Component for sections - Defined outside to prevent re-renders
-const ExamSection = ({ title, icon: Icon, children, className }: any) => (
-    <div className={cn("bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col", className)}>
-        <div className="bg-slate-50/50 px-4 py-2 border-b border-slate-100 flex items-center gap-2 min-h-[36px]">
-            <Icon className="w-4 h-4 text-slate-500" />
-            <h4 className="text-sm font-semibold text-slate-700">{title}</h4>
-        </div>
-        <div className="p-3 flex-1 flex flex-col">
-            {children}
-        </div>
-    </div>
-);
 
 function ClinicalExamTab({
     readOnly,
@@ -48,72 +32,112 @@ function ClinicalExamTab({
     }
 
     return (
-        <div className="h-full flex flex-col gap-4 pb-4">
-            {/* 1. General Observations - Grid with larger text */}
-            <div className="grid grid-cols-2 gap-4 min-h-[160px]">
-                <ExamSection title="Inspection" icon={Search} className="flex flex-col">
+        <div className="h-full flex flex-col gap-1.5 xl:gap-2">
+            {/* 1. Single-line observations - Compact height */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 xl:gap-2 flex-none">
+                <RowLayout label="INSP" title="Inspection" colorAccent="slate" bgColor="bg-slate-50/90" compact>
                     <OptimizedTextarea
+                        rows={1}
                         value={data.inspection || ""}
                         onChange={handleFieldChange("inspection")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-[100px] border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 flex-1 leading-normal placeholder:text-slate-400 w-full"
+                        className="resize-none h-6 xl:h-8 2xl:h-10 min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 py-1 xl:py-1.5 text-xs xl:text-sm 2xl:text-base leading-tight placeholder:text-slate-300 w-full bg-white shadow-sm transition-all focus:border-slate-400"
                         placeholder="Rien à signaler..."
                     />
-                </ExamSection>
-                <ExamSection title="Motilité" icon={Eye} className="flex flex-col">
+                </RowLayout>
+                <RowLayout label="MOT" title="Motilité" colorAccent="indigo" bgColor="bg-indigo-50/40" compact>
                     <OptimizedTextarea
+                        rows={1}
                         value={data.motilityExam || ""}
                         onChange={handleFieldChange("motilityExam")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-[100px] border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 flex-1 leading-normal placeholder:text-slate-400 w-full"
+                        className="resize-none h-6 xl:h-8 2xl:h-10 min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 py-1 xl:py-1.5 text-xs xl:text-sm 2xl:text-base leading-tight placeholder:text-indigo-300/50 w-full bg-white shadow-sm transition-all focus:border-indigo-400"
                         placeholder="Normal..."
                     />
-                </ExamSection>
+                </RowLayout>
             </div>
 
-            {/* 2. Detailed Eye Exam - Side by Side Grid with bigger font */}
-            <div className="flex-1 min-h-0 grid grid-cols-2 gap-4">
-                <ExamSection title="Segment Antérieur" icon={ScanEye} className="flex flex-col min-h-0 h-full">
+            {/* 2. Two-line detailed exam - Tall height */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 xl:gap-2 flex-none">
+                <RowLayout label="SEG ANT" title="Segment Antérieur" colorAccent="blue" bgColor="bg-blue-50/80">
                     <SmartMultiSelectInput
                         category="anterior_segment"
                         value={data.anteriorSegment?.slit_lamp_exam || ""}
                         onSelect={handleNestedChange("anteriorSegment", "slit_lamp_exam")}
                         placeholder="Examen segment antérieur..."
-                        className="h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal whitespace-normal bg-transparent w-full"
+                        className="h-14 xl:h-20 2xl:h-32 border border-blue-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-blue-400 p-2 xl:p-3 text-xs xl:text-sm 2xl:text-base leading-normal whitespace-normal bg-white w-full shadow-sm content-start items-start"
                     />
-                </ExamSection>
+                </RowLayout>
 
-                <ExamSection title="Fond d'œil" icon={ScanEye} className={cn("flex flex-col min-h-0 h-full transition-colors", dilatationRequired ? "ring-2 ring-amber-400 ring-offset-2" : "")}>
+                <RowLayout label="FO" title="Fond d'œil" colorAccent="purple" bgColor="bg-purple-50/80" className={cn(dilatationRequired && "ring-1 ring-amber-400 ring-offset-1 rounded-lg border-purple-200/60")}>
                     <OptimizedTextarea
                         value={data.fundus?.fundus_exam || ""}
                         onChange={handleNestedChange("fundus", "fundus_exam")}
                         disabled={readOnly}
-                        className="resize-none h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal placeholder:text-slate-400 w-full"
+                        className="resize-none h-14 xl:h-20 2xl:h-32 border border-purple-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-purple-400 p-2 xl:p-3 text-xs xl:text-sm 2xl:text-base leading-normal placeholder:text-purple-300/50 w-full bg-white shadow-sm"
                         placeholder="Examen du fond d'œil..."
                     />
-                </ExamSection>
+                </RowLayout>
             </div>
 
-            {/* 3. Conclusions - Compact with bigger font */}
-            <div className="grid grid-cols-2 gap-4 h-[140px] flex-none">
-                <ExamSection title="Diagnostic" icon={Stethoscope} className="border-blue-200 shadow-sm flex flex-col">
+            {/* 3. Single-line conclusions - Compact height */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 xl:gap-2 flex-none">
+                <RowLayout label="DIAG" title="Diagnostic" colorAccent="emerald" bgColor="bg-emerald-50/80" compact>
                     <SmartMultiSelectInput
                         category="diagnostic"
                         value={data.diagnosis || ""}
                         onSelect={handleFieldChange("diagnosis")}
                         placeholder="Diagnostic..."
-                        className="h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 text-slate-800 font-medium leading-normal whitespace-normal bg-transparent w-full"
+                        className="h-6 xl:h-8 2xl:h-10 min-h-0 border border-emerald-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-emerald-400 px-2 py-1 xl:py-1.5 text-xs xl:text-sm 2xl:text-base font-bold text-slate-700 leading-tight whitespace-normal bg-white w-full shadow-sm"
                     />
-                </ExamSection>
-                <ExamSection title="Traitement" icon={Syringe} className="border-teal-200 shadow-sm flex flex-col">
+                </RowLayout>
+                <RowLayout label="TRT" title="Traitement" colorAccent="teal" bgColor="bg-teal-50/80" compact>
                     <OptimizedTextarea
+                        rows={1}
                         value={data.treatmentPlan || ""}
                         onChange={handleFieldChange("treatmentPlan")}
                         disabled={readOnly}
-                        className="resize-none h-full border-0 focus-visible:ring-0 p-2 text-base shadow-none -ml-1 leading-normal placeholder:text-slate-400 w-full"
+                        className="resize-none h-6 xl:h-8 2xl:h-10 min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 py-1 xl:py-1.5 text-xs xl:text-sm 2xl:text-base leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm"
                         placeholder="Traitement prescrit..."
                     />
-                </ExamSection>
+                </RowLayout>
+            </div>
+        </div>
+    );
+}
+
+// Helper Component
+// Helper Component
+function RowLayout({ label, title, colorAccent = "slate", bgColor, compact, children, className }: {
+    label: string,
+    title?: string,
+    colorAccent?: "slate" | "indigo" | "purple" | "blue" | "teal" | "emerald",
+    bgColor?: string,
+    compact?: boolean,
+    children: React.ReactNode,
+    className?: string
+}) {
+    const colorMap = {
+        slate: "text-slate-500 hover:text-slate-700",
+        indigo: "text-indigo-500 hover:text-indigo-700",
+        purple: "text-purple-500 hover:text-purple-700",
+        blue: "text-blue-500 hover:text-blue-700",
+        teal: "text-teal-500 hover:text-teal-700",
+        emerald: "text-emerald-500 hover:text-emerald-700"
+    };
+
+    return (
+        <div className={cn(
+            "flex items-start gap-1.5 xl:gap-2 rounded-lg border border-slate-200/50",
+            compact ? "p-1 xl:p-1.5 2xl:p-2.5" : "p-1.5 xl:p-2 2xl:p-3",
+            bgColor,
+            className
+        )}>
+            <div className="w-12 xl:w-16 shrink-0 flex items-center justify-center pt-1.5 cursor-help" title={title}>
+                <span className={cn("text-[9px] xl:text-[11px] 2xl:text-xs font-bold uppercase tracking-tight transition-colors text-center leading-tight", colorMap[colorAccent])}>{label}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                {children}
             </div>
         </div>
     );

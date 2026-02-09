@@ -169,6 +169,7 @@ export const usePrintHandlers = ({
         isPreviewing,
         pdfUrl,
         showPreview,
+        setShowPreview,
         handlePreview,
         handlePrint,
         handleClosePreview,

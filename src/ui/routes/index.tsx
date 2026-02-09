@@ -65,15 +65,15 @@ function LandingPage() {
 
 	return (
 		<>
-			<div className="min-h-screen bg-[#f8fafc] flex items-center justify-center relative p-3 sm:p-6 lg:p-8 overflow-hidden">
+			<div className="h-screen bg-[#f8fafc] flex items-center justify-center relative overflow-hidden p-[2vh] sm:p-[3vh]">
 				{/* Background decorative elements */}
-				<div className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-blue-100/50 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none" />
-				<div className="absolute bottom-[-10%] right-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-indigo-100/50 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none" />
+				<div className="absolute top-[-10%] left-[-10%] w-[70%] sm:w-[60%] md:w-[40%] h-[70%] sm:h-[60%] md:h-[40%] bg-blue-100/50 rounded-full blur-[60px] sm:blur-[80px] md:blur-[120px] pointer-events-none" />
+				<div className="absolute bottom-[-10%] right-[-10%] w-[70%] sm:w-[60%] md:w-[40%] h-[70%] sm:h-[60%] md:h-[40%] bg-indigo-100/50 rounded-full blur-[60px] sm:blur-[80px] md:blur-[120px] pointer-events-none" />
 
-				<div className="max-w-6xl w-full relative z-10 flex flex-col items-center px-2 sm:px-4">
+				<div className="max-w-7xl w-full h-full relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 py-[2vh]">
 					<HeaderSection />
 
-					<div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 justify-center items-stretch w-full max-w-4xl mt-4 px-2">
+					<div className="flex flex-col sm:flex-row gap-[2vh] sm:gap-[3vh] justify-center items-stretch w-full max-w-5xl mt-[3vh] flex-shrink-0">
 						<RoleCard
 							icon={User}
 							iconColor="text-blue-600"
@@ -82,6 +82,7 @@ function LandingPage() {
 							buttonText="Secrétariat"
 							buttonColor="bg-blue-600 text-white"
 							onClick={handleSecretaryAccess}
+							className="flex-1"
 						/>
 
 						{appMode !== 'secretary' && (
@@ -95,18 +96,19 @@ function LandingPage() {
 								onClick={handleDoctorAccess}
 								requiresLock
 								animationDelay="0.15s"
+								className="flex-1"
 							/>
 						)}
 					</div>
 
-					<div className="fixed top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
+					<div className="fixed top-[1.5vh] right-[1.5vh] sm:top-[3vh] sm:right-[3vh] z-50">
 						<Button
 							variant="outline"
 							size="icon"
-							className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-white/80 backdrop-blur-md shadow-xl border-slate-100 hover:bg-white hover:scale-110 active:scale-95 transition-all duration-300 group"
+							className="h-[5vh] w-[5vh] sm:h-[6vh] sm:w-[6vh] max-h-14 max-w-14 rounded-xl sm:rounded-2xl bg-white/80 backdrop-blur-md shadow-xl border-slate-100 hover:bg-white hover:scale-110 active:scale-95 transition-all duration-300 group"
 							onClick={handleSettingsClick}
 						>
-							<Settings className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500 group-hover:rotate-90 transition-transform duration-500" />
+							<Settings className="h-[2.5vh] w-[2.5vh] sm:h-[3vh] sm:w-[3vh] max-h-6 max-w-6 text-slate-500 group-hover:rotate-90 transition-transform duration-500" />
 						</Button>
 					</div>
 				</div>

@@ -21,6 +21,7 @@ export interface ElectronAPI {
     onDownloadProgress: (callback: (progress: any) => void) => () => void;
     onUpdateError: (callback: (error: any) => void) => () => void;
     quitAndInstall: () => Promise<void>;
+    factoryReset: () => Promise<void>;
 }
 
 declare global {

@@ -17,6 +17,7 @@ export interface ConsultationType {
     amount: number;
     color: string;
     is_active: number;
+    nature?: 'normal' | 'radiography';
 }
 
 /**

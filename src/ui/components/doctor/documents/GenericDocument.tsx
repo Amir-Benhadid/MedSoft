@@ -184,49 +184,51 @@ const GenericDocument: React.FC<{ config: GenericRecordConfig }> = ({ config }) 
     }, [defaultValues, printData, config.Code, updateOverride]);
 
     return (
-        <Card className="max-w-3xl mx-auto shadow-sm border-slate-200">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-primary" />
+        <div className="space-y-4 font-sans text-sm pb-8">
+            <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <FileText className="w-4 h-4 text-slate-500" />
                     <div>
-                        <h4 className="font-semibold text-slate-800">{config.Title}</h4>
-                        <p className="text-xs text-muted-foreground">{config.Code}</p>
+                        <h4 className="font-bold text-slate-800 text-sm">{config.Title}</h4>
+                        <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{config.Code}</p>
                     </div>
                 </div>
-            </div>
 
-            <div className="p-6 space-y-6">
-                <div className="bg-slate-50 p-4 rounded text-sm italic text-slate-600 border border-slate-200/60">
+                <div className="bg-slate-50 p-3 rounded text-xs italic text-slate-600 border border-slate-200/60 leading-relaxed">
                     {config.Description}
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
+                    {/* Render placeholders */}
                     {allPlaceholders.map(p => {
+                        // Skip auto-filled fields from rendering inputs
                         if (p.type === 'fill_age' || p.type === 'fill_antecedents' || p.type === 'date') return null;
 
                         return (
                             <div key={p.id} className="space-y-1.5">
-                                <Label className="text-sm font-medium text-slate-700">
-                                    {p.label || 'Champ'} ({p.id})
+                                <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                                    {p.label || 'Champ'}
                                 </Label>
                                 <OptimizedInput
                                     value={printData[p.id] || ''}
                                     placeholder={defaultValues[p.id] || ''}
                                     onChange={(val) => setField(p.id, val)}
-                                    className="bg-white"
+                                    className="h-8 font-bold text-slate-900 bg-white border-slate-200 focus:border-slate-400 focus:ring-slate-200"
                                 />
                             </div>
                         );
                     })}
-                </div>
 
-                {(allPlaceholders.length === 0) && (
-                    <div className="flex flex-col items-center justify-center py-8 text-slate-400 border-2 border-dashed border-slate-200 rounded-lg">
-                        <p className="text-sm">Aucun champ à remplir. Prêt à imprimer.</p>
-                    </div>
-                )}
+                    {/* Only show this if no interactive placeholders exist */}
+                    {allPlaceholders.filter(p => !['fill_age', 'fill_antecedents', 'date'].includes(p.type)).length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-6 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg bg-slate-50/50">
+                            <p className="text-xs font-medium">Aucun champ manuel à remplir</p>
+                            <p className="text-[10px] text-slate-400">Ce document est prêt à être imprimé</p>
+                        </div>
+                    )}
+                </div>
             </div>
-        </Card>
+        </div>
     );
 };
 

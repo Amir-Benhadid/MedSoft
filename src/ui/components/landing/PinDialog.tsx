@@ -39,22 +39,22 @@ export function PinDialog({
 }: PinDialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-md p-8 rounded-[2rem] border-0 shadow-2xl bg-white/95 backdrop-blur-md">
-				<DialogHeader className="pt-4">
-					<div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 mb-6 group-hover:scale-110 transition-transform duration-500">
-						<ShieldCheck className="h-10 w-10 text-blue-600 animate-pulse" />
+			<DialogContent className="sm:max-w-md p-6 sm:p-8 rounded-3xl sm:rounded-[2rem] border-0 shadow-2xl bg-white/95 backdrop-blur-md">
+				<DialogHeader className="pt-2 sm:pt-4">
+					<div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-blue-50 mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-500">
+						<ShieldCheck className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600 animate-pulse" />
 					</div>
-					<DialogTitle className="text-3xl font-extrabold text-center text-gray-900 mb-2">
+					<DialogTitle className="text-2xl sm:text-3xl font-extrabold text-center text-gray-900 mb-1 sm:mb-2">
 						{purpose === 'doctor'
 							? 'Accès Docteur'
 							: 'Authentification'}
 					</DialogTitle>
-					<DialogDescription className="text-center text-gray-500 text-lg">
+					<DialogDescription className="text-center text-gray-500 text-base sm:text-lg">
 						Veuillez saisir votre code PIN pour continuer.
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="py-8 space-y-4">
+				<div className="py-6 sm:py-8 space-y-4">
 					<div className="relative group">
 						<Input
 							type={showPin ? 'text' : 'password'}
@@ -64,7 +64,7 @@ export function PinDialog({
 							onKeyPress={onKeyPress}
 							autoFocus
 							disabled={isLoading}
-							className={`text-center text-3xl font-bold tracking-[0.5em] h-20 rounded-2xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-100 ${error
+							className={`text-center text-2xl sm:text-3xl font-bold tracking-[0.3em] sm:tracking-[0.5em] h-16 sm:h-20 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 focus:ring-4 focus:ring-blue-100 ${error
 								? 'border-red-300 bg-red-50 focus:border-red-400'
 								: 'border-gray-100 bg-gray-50/50 focus:border-blue-500'
 								}`}
@@ -72,14 +72,14 @@ export function PinDialog({
 						<Button
 							variant="ghost"
 							size="icon"
-							className="absolute right-4 top-1/2 -translate-y-1/2 hover:bg-transparent text-gray-400 hover:text-gray-600 transition-colors"
+							className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 hover:bg-transparent text-gray-400 hover:text-gray-600 transition-colors"
 							onClick={() => setShowPin(!showPin)}
 							type="button"
 						>
 							{showPin ? (
-								<EyeOff className="h-6 w-6" />
+								<EyeOff className="h-5 w-5 sm:h-6 sm:w-6" />
 							) : (
-								<Eye className="h-6 w-6" />
+								<Eye className="h-5 w-5 sm:h-6 sm:w-6" />
 							)}
 						</Button>
 					</div>
@@ -91,19 +91,19 @@ export function PinDialog({
 					)}
 				</div>
 
-				<DialogFooter className="sm:justify-center flex-col sm:flex-row gap-3 pt-4">
+				<DialogFooter className="sm:justify-center flex-col sm:flex-row gap-3 pt-2 sm:pt-4">
 					<Button
 						variant="ghost"
 						onClick={() => onOpenChange(false)}
 						disabled={isLoading}
-						className="px-8 h-14 text-lg font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-2xl"
+						className="px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl sm:rounded-2xl"
 					>
 						Annuler
 					</Button>
 					<Button
 						onClick={onSubmit}
 						disabled={isLoading || pin.length < 4}
-						className="px-10 h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 rounded-2xl transition-all active:scale-95"
+						className="px-8 sm:px-10 h-12 sm:h-14 text-base sm:text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 rounded-xl sm:rounded-2xl transition-all active:scale-95"
 					>
 						{isLoading ? (
 							<div className="flex items-center gap-2">

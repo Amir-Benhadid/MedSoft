@@ -135,7 +135,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                     <Input
                         id="surname"
                         {...register('surname')}
-                        placeholder="Nom de famille"
                         className="focus:ring-2 focus:ring-primary/20"
                     />
                     {errors.surname && <p className="text-xs text-destructive">{errors.surname.message}</p>}
@@ -148,7 +147,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                     <Input
                         id="name"
                         {...register('name')}
-                        placeholder="Prénom"
                         className="focus:ring-2 focus:ring-primary/20"
                     />
                     {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
@@ -182,7 +180,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                         type="number"
                         value={age}
                         onChange={handleAgeChange}
-                        placeholder="Ex: 45"
                         min="0"
                         max="150"
                         className="focus:ring-2 focus:ring-primary/20"
@@ -198,7 +195,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                 <Input
                     id="phone"
                     {...register('phone_number')}
-                    placeholder="06 12 34 56 78"
                     className="focus:ring-2 focus:ring-primary/20"
                 />
             </div>
@@ -212,7 +208,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                     <Input
                         id="street"
                         {...register('street')}
-                        placeholder="Rue, numéro..."
                         className="focus:ring-2 focus:ring-primary/20"
                     />
                 </div>
@@ -224,7 +219,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                     <Input
                         id="city"
                         {...register('city')}
-                        placeholder="Ville, code postal"
                         className="focus:ring-2 focus:ring-primary/20"
                     />
                 </div>
@@ -239,7 +233,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                     <Textarea
                         id="oph_ants"
                         {...register('oph_ants')}
-                        placeholder="Ex: Chirurgie de la cataracte, Glaucome..."
                         rows={2}
                         className="resize-none focus:ring-2 focus:ring-primary/20"
                     />
@@ -254,7 +247,6 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
                 <Textarea
                     id="gen_ants"
                     {...register('gen_ants')}
-                    placeholder="Ex: Diabète, Hypertension artérielle..."
                     rows={2}
                     className="resize-none focus:ring-2 focus:ring-primary/20"
                 />

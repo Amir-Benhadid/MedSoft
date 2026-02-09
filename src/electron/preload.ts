@@ -210,6 +210,12 @@ try {
 		 * Quits the application and installs the downloaded update.
 		 */
 		quitAndInstall: () => ipcRenderer.invoke('app:quitAndInstall'),
+
+		/**
+		 * Resets the application to factory settings.
+		 * Deletes config and database, then relaunches.
+		 */
+		factoryReset: () => ipcRenderer.invoke('app:factoryReset'),
 	};
 
 	console.log('🔧 Exposing electronAPI to main world...');

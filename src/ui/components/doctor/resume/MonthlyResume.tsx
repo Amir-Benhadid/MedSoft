@@ -139,7 +139,7 @@ export function MonthlyResume() {
             </div>
 
             {/* Calendar Grid */}
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col">
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col shrink-0">
                 <div className="p-4 border-b bg-slate-50">
                     <h3 className="font-semibold text-slate-900">Calendrier</h3>
                 </div>

@@ -44,113 +44,108 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
     };
 
     return (
-        <Card className="border-t-4 border-t-amber-500 shadow-sm mb-4">
-            <CardContent className="p-5">
-                {/* Header Row: Patient Basic Info */}
-                <div className="flex flex-wrap items-center gap-6 mb-6 pb-4 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-amber-100 rounded-full">
-                            <User className="w-6 h-6 text-amber-600" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-slate-800">
+        <div className="flex flex-col rounded-lg border ring-1 shadow-sm overflow-hidden 2xl:shadow-md transition-all h-full bg-blue-50/80 border-blue-100 ring-blue-100">
+            {/* Header */}
+            <div className="px-3 py-2 border-b border-white/40 bg-white/30 backdrop-blur-[2px] flex items-center justify-between">
+                <span className="text-[10px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    Informations Patient
+                </span>
+            </div>
+
+            {/* Content */}
+            <div className="p-2 2xl:p-3 space-y-3 2xl:space-y-4 flex-1">
+                {/* Row 1: Patient Details */}
+                <div className="flex items-center gap-3 px-2 py-1.5 bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm">
+                    <div className="p-1.5 2xl:p-2 bg-indigo-50 rounded-full ring-1 ring-indigo-100">
+                        <User className="w-4 h-4 2xl:w-5 2xl:h-5 text-indigo-600" />
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                        <h2 className="text-sm 2xl:text-base font-bold text-slate-800">
                             {patient?.surname} {patient?.name}
                         </h2>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-slate-700 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200">
-                        <Calendar className="w-4 h-4 text-amber-600" />
-                        <span className="font-semibold text-base">{age}</span>
+                        <span className="text-xs 2xl:text-sm font-bold text-slate-400">
+                            {age}
+                        </span>
                     </div>
 
                     {patient?.email && (
-                        <div className="flex items-center gap-2 text-slate-600">
-                            <Mail className="w-4 h-4 text-amber-500" />
-                            <span className="text-sm font-medium">{patient.email}</span>
+                        <div className="flex items-center gap-1.5 text-slate-400 ml-auto text-[11px] 2xl:text-xs">
+                            <Mail className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
+                            <span className="font-medium">{patient.email}</span>
                         </div>
                     )}
-
-                    <div className="ml-auto flex items-center gap-2">
-                        <Badge
-                            onClick={handleDilationToggle}
-                            className={cn(
-                                "cursor-pointer select-none transition-all px-4 py-1.5 text-sm font-medium",
-                                dilatationRequired
-                                    ? "bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-300"
-                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200"
-                            )}
-                            variant="outline"
-                        >
-                            <Eye className="w-4 h-4 mr-2" />
-                            {dilatationRequired ? "Dilatation Requise" : "Non Dilaté"}
-                        </Badge>
-                    </div>
                 </div>
 
-                {/* Clinical Fields Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-2 h-full relative group">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-widest">Antécédents Généraux</Label>
+                {/* Row 2: Clinical Data Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 2xl:gap-3">
+                    {/* Antécédents Généraux */}
+                    <div className="flex flex-col gap-1 relative group bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors">
+                        <div className="flex items-center justify-between px-1 mb-1">
+                            <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Antécédents Généraux</Label>
                             <button
                                 type="button"
                                 onClick={() => setIsDialogOpen(true)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-100 rounded text-amber-600"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-amber-50 rounded text-amber-600"
                                 disabled={readOnly}
                             >
-                                <Maximize2 className="w-4 h-4" />
+                                <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
                         <SmartMultiSelectInput
                             category="antecedent_gen"
                             value={clinicalExam.generalMedicalHistory || ""}
                             onSelect={(val) => updateClinicalExamField("generalMedicalHistory", val)}
-                            className="min-h-[3rem] h-full bg-slate-50/50 text-sm font-medium"
+                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20"
                             disabled={readOnly}
-                            placeholder="Ajouter un antécédent..."
+                            placeholder="-"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2 h-full">
-                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-widest">Diagnostic</Label>
+                    {/* Diagnostic */}
+                    <div className="flex flex-col gap-1 bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-blue-200 transition-colors">
+                        <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight px-1 mb-1">Diagnostic</Label>
                         <SmartMultiSelectInput
                             category="diagnostic"
                             value={clinicalExam.diagnosis || ""}
                             onSelect={(val) => updateClinicalExamField("diagnosis", val)}
-                            className="min-h-[3rem] h-full bg-slate-50/50 text-sm font-bold text-slate-800"
-                            placeholder="Diagnostic..."
+                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-bold text-slate-800 border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-blue-400/20"
+                            placeholder="-"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2 h-full relative group">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-widest">Antécédents Ophtalmologiques</Label>
+                    {/* Antécédents Ophtalmologiques */}
+                    <div className="flex flex-col gap-1 relative group bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors">
+                        <div className="flex items-center justify-between px-1 mb-1">
+                            <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Antécédents Ophtalmologiques</Label>
                             <button
                                 type="button"
                                 onClick={() => setIsDialogOpen(true)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-100 rounded text-amber-600"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-amber-50 rounded text-amber-600"
                                 disabled={readOnly}
                             >
-                                <Maximize2 className="w-4 h-4" />
+                                <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
                         <SmartMultiSelectInput
                             category="antecedent_oph"
                             value={clinicalExam.ophthalmologicalHistory || ""}
                             onSelect={(val) => updateClinicalExamField("ophthalmologicalHistory", val)}
-                            className="min-h-[3rem] h-full bg-slate-50/50 text-sm font-medium"
+                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20"
                             disabled={readOnly}
-                            placeholder="Ajouter un antécédent..."
+                            placeholder="-"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2 h-full">
-                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-widest">Profil / Notes</Label>
+                    {/* Profil / Notes */}
+                    <div className="flex flex-col gap-1 bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm">
+                        <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight px-1 mb-1">Note</Label>
                         <OptimizedTextarea
                             value={clinicalExam.profile || ""}
                             onChange={(val) => updateClinicalExamField("profile", val)}
-                            className="flex-1 resize-none bg-slate-50/50 min-h-[3rem] text-sm"
+                            className="flex-1 resize-none bg-slate-50/50 min-h-[28px] 2xl:min-h-[36px] h-auto text-xs 2xl:text-sm border-slate-200 shadow-none py-1.5 focus:ring-2 focus:ring-slate-400/20"
                             disabled={readOnly}
-                            placeholder="Notes sur le patient..."
+                            placeholder="-"
                         />
                     </div>
                 </div>
@@ -213,8 +208,8 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }
 

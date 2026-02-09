@@ -261,29 +261,31 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 
                 /* Button Styles - Clean */
                 .appointment-calendar-container .fc-button {
-                    background: hsl(var(--card)) !important;
-                    border: 1px solid hsl(var(--border)) !important;
-                    color: hsl(var(--foreground)) !important;
+                    background: rgba(255, 255, 255, 0.2) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                    color: white !important;
                     font-weight: 600 !important;
-                    border-radius: 8px !important;
+                    border-radius: 10px !important;
                     text-transform: none !important;
-                    font-size: 0.8rem !important;
-                    padding: 8px 12px !important;
+                    font-size: 0.875rem !important;
+                    padding: 8px 16px !important;
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+                    backdrop-filter: blur(8px) !important;
                 }
 
                 .appointment-calendar-container .fc-button:hover {
-                    background: hsl(var(--secondary)) !important;
-                    border-color: hsl(var(--border)) !important;
+                    background: rgba(255, 255, 255, 0.3) !important;
+                    border-color: rgba(255, 255, 255, 0.4) !important;
                     transform: translateY(-1px) !important;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
                 }
                 
                 .appointment-calendar-container .fc-button-active {
-                    background: hsl(var(--primary)) !important;
-                    color: hsl(var(--primary-foreground)) !important;
-                    border-color: hsl(var(--primary)) !important;
-                    box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.2) !important;
+                    background: white !important;
+                    color: #4f46e5 !important;
+                    border-color: white !important;
+                    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
                 }
 
                 /* Time Grid Slots */
@@ -530,30 +532,53 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                     }
                 }
 
-                /* Toolbar Styles - Clean & Minimal */
                 .appointment-calendar-container .fc-toolbar {
-                    background: transparent !important;
-                    padding: 0 0 16px 0 !important;
-                    margin-bottom: 0 !important;
+                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+                    border-radius: 16px !important;
+                    padding: 16px 20px !important;
+                    margin-bottom: 16px !important;
+                    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1) !important;
+                    backdrop-filter: blur(12px) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.15) !important;
                     display: flex !important;
                     align-items: center !important;
+                    justify-content: space-between !important;
                     gap: 12px !important;
                     flex-wrap: wrap !important;
-                    border: none !important;
-                    box-shadow: none !important;
                 }
-                
+
+                @media (min-width: 640px) {
+                    .appointment-calendar-container .fc-toolbar {
+                        border-radius: 18px !important;
+                        padding: 18px 24px !important;
+                        margin-bottom: 18px !important;
+                        gap: 16px !important;
+                    }
+                }
+
+                @media (min-width: 1024px) {
+                    .appointment-calendar-container .fc-toolbar {
+                        border-radius: 20px !important;
+                        padding: 20px 28px !important;
+                        margin-bottom: 20px !important;
+                        gap: 20px !important;
+                    }
+                }
+
                 .appointment-calendar-container .fc-toolbar-title {
-                    color: hsl(var(--foreground)) !important;
+                    color: white !important;
                     font-weight: 800 !important;
-                    font-size: 1.5rem !important;
+                    font-size: 1.25rem !important;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
                     letter-spacing: -0.025em !important;
-                    margin-left: 4px !important;
+                    margin: 0 !important;
+                    flex: 1 !important;
+                    text-align: center !important;
                 }
 
                 @media (min-width: 640px) {
                     .appointment-calendar-container .fc-toolbar-title {
-                        font-size: 1.3rem !important;
+                        font-size: 1.4rem !important;
                     }
                 }
 
@@ -564,7 +589,8 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                 }
             `}} />
 
-            <div className="flex-1 h-full min-h-0 relative px-4 pb-4">
+
+            <div className="flex-1 h-full min-h-0 relative px-4 pt-4 pb-4">
                 <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

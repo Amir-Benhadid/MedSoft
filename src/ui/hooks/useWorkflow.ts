@@ -41,7 +41,7 @@ export function useInConsultation() {
             const range = getDayRangeEncoded(today);
             return orpcClient.appointments.list(range);
         },
-        refetchInterval: 3000, // Faster refresh for real-time feel
+        // refetchInterval: 3000, // Relying on useRealtime
     });
 
     // Query today's waitlist
@@ -51,7 +51,7 @@ export function useInConsultation() {
             const range = getDayRangeEncoded(today);
             return orpcClient.waitlist.list(range);
         },
-        refetchInterval: 3000,
+        // refetchInterval: 3000,
     });
 
     // Compute in consultation patient
@@ -114,7 +114,7 @@ export function usePendingPayment() {
             const range = getDayRangeEncoded(today);
             return orpcClient.appointments.list(range);
         },
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
     });
 
     // Query today's waitlist
@@ -124,7 +124,7 @@ export function usePendingPayment() {
             const range = getDayRangeEncoded(today);
             return orpcClient.waitlist.list(range);
         },
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
     });
 
     // Query all patients
@@ -199,7 +199,7 @@ export function usePatientsNeedingDilation() {
             const range = getDayRangeEncoded(today);
             return orpcClient.appointments.list(range);
         },
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
     });
 
     // Query today's waitlist
@@ -209,7 +209,7 @@ export function usePatientsNeedingDilation() {
             const range = getDayRangeEncoded(today);
             return orpcClient.waitlist.list(range);
         },
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
     });
 
     // Query all patients

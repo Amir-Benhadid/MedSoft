@@ -26,6 +26,7 @@ import { Settings, CreditCard, Users } from 'lucide-react';
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { Sheet, SheetContent } from '@/ui/components/ui/sheet';
 import { SecretaryFloatingMessaging } from '@/ui/components/secretary/messaging/SecretaryFloatingMessaging';
+import { useRealtime } from '@/ui/hooks/useRealtime';
 
 export const Route = createFileRoute('/secretary')({
 	component: SecretaryPage,
@@ -40,6 +41,7 @@ export const Route = createFileRoute('/secretary')({
  * @returns {JSX.Element} Secretary page component
  */
 function SecretaryPage() {
+	useRealtime();
 	const [currentTab, setCurrentTab] = useState('agenda');
 	const [currentViewDate, setCurrentViewDate] = useState(new Date());
 
@@ -76,17 +78,16 @@ function SecretaryPage() {
 		</div>
 	);
 
-	// Standardized Header for Tabs
+	// Standardized Header for Tabs - Matching Waitlist Style
 	const TabHeader = ({ title, subtitle, icon: Icon }: { title: string, subtitle: string, icon: any }) => (
-		<div className="bg-card border-b border-border px-6 py-4">
-			<div className="flex items-center gap-3 mb-1">
-				<div className="p-2 bg-primary/10 rounded-lg">
-					<Icon className="w-5 h-5 text-primary" />
-				</div>
-				<div>
-					<h2 className="text-xl font-bold text-foreground">{title}</h2>
-					<p className="text-sm text-muted-foreground">{subtitle}</p>
-				</div>
+		<div className="px-4 py-2 sm:py-3 rounded-2xl shadow-lg flex items-center gap-3 shrink-0 border border-white/15 mx-4 mt-3 mb-2" style={{
+			background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+			boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1)'
+		}}>
+			<Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+			<div>
+				<h2 className="text-sm sm:text-base font-extrabold text-white">{title}</h2>
+				<p className="text-xs text-white/80 font-medium">{subtitle}</p>
 			</div>
 		</div>
 	);
@@ -104,9 +105,9 @@ function SecretaryPage() {
 					</ContentCard>
 
 					{/* Desktop Waitlist - Now a separate card */}
-					<div className="hidden lg:block w-[350px] shrink-0 h-full">
+					<div className="hidden lg:block w-[450px] shrink-0 h-full">
 						<div className="h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
-							<Waitlist date={currentViewDate} />
+							<Waitlist />
 						</div>
 					</div>
 
@@ -114,7 +115,7 @@ function SecretaryPage() {
 					<Sheet open={isWaitlistOpen} onOpenChange={setIsWaitlistOpen}>
 						<SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0 border-border bg-card">
 							<div className="h-full pt-6">
-								<Waitlist date={currentViewDate} />
+								<Waitlist />
 							</div>
 						</SheetContent>
 					</Sheet>
@@ -125,7 +126,7 @@ function SecretaryPage() {
 		if (currentTab === 'resume') {
 			return (
 				<ContentCard>
-					<TabHeader title="Résumé du Jour" subtitle="Statistiques et activité quotidienne" icon={BarChart2} />
+					<TabHeader title="Recette" subtitle="Statistiques et activité quotidienne" icon={BarChart2} />
 					<div className="flex-1 overflow-auto">
 						<TodayResume />
 					</div>
@@ -136,7 +137,7 @@ function SecretaryPage() {
 		if (currentTab === 'tarifs' && appMode === 'both') {
 			return (
 				<ContentCard>
-					<TabHeader title="Tarifs" subtitle="Configuration des types de consultation et prix" icon={CreditCard} />
+					<TabHeader title="Activités" subtitle="Types d'activités et tarifs" icon={CreditCard} />
 					<div className="flex-1 p-6 overflow-hidden">
 						<ConsultationTypesParams readonly={true} />
 					</div>
@@ -180,7 +181,7 @@ function SecretaryPage() {
 		if (currentTab === 'settings' && appMode === 'secretary') {
 			return (
 				<ContentCard>
-					<TabHeader title="Paramètres" subtitle="Configuration des tarifs et types de consultation" icon={Settings} />
+					<TabHeader title="Paramètres" subtitle="Configuration des activités et tarifs" icon={Settings} />
 					<div className="flex-1 p-6 overflow-hidden">
 						<ConsultationTypesParams />
 					</div>

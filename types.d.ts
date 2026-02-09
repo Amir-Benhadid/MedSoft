@@ -33,5 +33,15 @@ interface Window {
 			callback: (view: View) => void
 		) => UnsubscribeFunction;
 		sendFrameAction: (payload: FrameWindowAction) => void;
+		invoke: (channel: string, ...args: any[]) => Promise<any>;
+		onDataChanged: (callback: (resource: string) => void) => () => void;
+		test: () => string;
+		getVersion: () => Promise<string>;
+		getServerIP: () => Promise<string>;
+		onUpdateAvailable: (callback: (info: any) => void) => void;
+		onDownloadProgress: (callback: (progress: any) => void) => void;
+		onUpdateDownloaded: (callback: (info: any) => void) => void;
+		quitAndInstall: () => void;
+		onUpdateError: (callback: (error: any) => void) => void;
 	};
 }

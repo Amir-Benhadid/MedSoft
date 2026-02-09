@@ -150,14 +150,14 @@ export function DynamicDocumentEditor() {
                 ) : (
                     <div className="flex flex-col gap-4">
                         <SectionBlock
-                            title="Oeil Droit (OD)"
+                            title="OD"
                             lines={storeData.odLines}
                             onChange={lines => updateState({ odLines: lines })}
                             template={activeTemplate}
                             colorClass="border-blue-200 bg-blue-50/30"
                         />
                         <SectionBlock
-                            title="Oeil Gauche (OG)"
+                            title="OG"
                             lines={storeData.ogLines}
                             onChange={lines => updateState({ ogLines: lines })}
                             template={activeTemplate}

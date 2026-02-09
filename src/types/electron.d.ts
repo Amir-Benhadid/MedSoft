@@ -30,6 +30,13 @@ declare global {
             // Network / Discovery
             scanForServers: () => Promise<Array<{ ip: string; port: number; name: string }>>;
             getServerIP: () => Promise<string>;
+
+            // Auto Updater
+            onUpdateAvailable: (callback: (info: any) => void) => () => void;
+            onUpdateDownloaded: (callback: (info: any) => void) => () => void;
+            onDownloadProgress: (callback: (progress: any) => void) => () => void;
+            onUpdateError: (callback: (error: any) => void) => () => void;
+            quitAndInstall: () => Promise<void>;
         };
     }
 }

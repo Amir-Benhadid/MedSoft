@@ -10,4 +10,5 @@ export interface UnifiedPatientItem {
     needsDilation?: boolean;
     dilationStatus?: string;
     consultationTypeId?: number;
+    arrivalTime?: Date; // When patient arrived (for waitlist entries)
 }

@@ -22,169 +22,185 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
     return (
         <ScrollArea className="flex-1 px-3">
             <div className="flex flex-col pb-4">
-                {/* IN CONSULTATION SECTION */}
-                {inConsultationItems.map(item => (
-                    <div key={`consulting-${item.patientId}`} className="mb-3 mt-2">
+                <div className="flex flex-col gap-2">
+                    {/* IN CONSULTATION SECTION */}
+                    {inConsultationItems.map(item => (
                         <div
+                            key={`consulting-${item.patientId}`}
                             onClick={() => onSelect(item)}
                             className={cn(
-                                "p-3 rounded-xl border transition-all cursor-pointer relative shadow-sm group",
+                                "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all border-2",
                                 selectedId === item.patientId
-                                    ? "bg-blue-600 border-blue-600 shadow-blue-200"
-                                    : "bg-white border-blue-100 hover:border-blue-300 hover:shadow-md"
+                                    ? "bg-emerald-500/15 border-emerald-500 shadow-md"
+                                    : "bg-emerald-500/10 border-emerald-300 hover:border-emerald-500 hover:bg-emerald-500/20 hover:shadow-sm"
                             )}
                         >
-                            <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                                <span className={cn(
-                                    "text-[9px] uppercase tracking-widest font-bold",
-                                    selectedId === item.patientId ? "text-blue-100" : "text-blue-600"
-                                )}>
-                                    En cours
+                            {/* Patient name with status indicator */}
+                            <span className={cn(
+                                "font-bold text-sm truncate w-[30%] min-w-0 flex items-center gap-2",
+                                selectedId === item.patientId ? "text-emerald-800" : "text-emerald-700"
+                            )}>
+                                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                                {item.patient?.name} {item.patient?.surname}
+                            </span>
+
+                            {/* Appointment Time */}
+                            <span className="text-xs font-bold text-emerald-700 tabular-nums w-[10%] min-w-[50px]">
+                                {format(item.time, 'HH:mm')}
+                            </span>
+
+                            {/* Arrival Hour - only show if different from appointment time */}
+                            {item.arrivalTime && format(item.arrivalTime, 'HH:mm') !== format(item.time, 'HH:mm') ? (
+                                <span className="text-xs text-emerald-600/80 tabular-nums w-[10%] min-w-[50px]">
+                                    {format(item.arrivalTime, 'HH:mm')}
                                 </span>
-                                <div className={cn(
-                                    "h-1.5 w-1.5 rounded-full animate-pulse",
-                                    selectedId === item.patientId ? "bg-white" : "bg-blue-500"
-                                )} />
+                            ) : (
+                                <span className="w-[10%] min-w-[50px]" />
+                            )}
+
+                            {/* Age */}
+                            {item.patient?.dob && (
+                                <span className="text-xs text-emerald-600/80 w-[10%] min-w-[40px]">
+                                    {getAge(item.patient.dob)}
+                                </span>
+                            )}
+
+                            {/* Phone */}
+                            {item.patient?.phone && (
+                                <span className="text-xs text-emerald-600/80 w-[15%] min-w-[80px]">
+                                    {item.patient.phone}
+                                </span>
+                            )}
+
+                            {/* City */}
+                            {item.patient?.address?.city && (
+                                <span className="text-xs text-emerald-600/80 w-[15%] min-w-[60px] truncate">
+                                    {item.patient.address.city}
+                                </span>
+                            )}
+
+                            {/* Dilation badge */}
+                            {item.needsDilation && (
+                                <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 shrink-0 font-semibold">
+                                    Dil.
+                                </Badge>
+                            )}
+
+                            {/* Notes */}
+                            {item.notes && (
+                                <span className="text-[11px] text-emerald-600/70 italic truncate max-w-[150px] shrink-0">
+                                    {item.notes}
+                                </span>
+                            )}
+                        </div>
+                    ))}
+
+                    {/* Separator with label */}
+                    {inConsultationItems.length > 0 && otherItems.length > 0 && (
+                        <div className="relative my-3">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t-2 border-slate-300"></div>
                             </div>
-
-                            <div className="flex items-center gap-3 mb-2">
-
-
-                                <div className="flex-1 min-w-0">
-                                    <h3 className={cn(
-                                        "font-bold text-base leading-tight truncate",
-                                        selectedId === item.patientId ? "text-white" : "text-slate-900"
-                                    )}>
-                                        {item.patient?.name} {item.patient?.surname}
-                                    </h3>
-                                    <div className="flex items-center gap-2 text-[10px] mt-0.5">
-                                        <span className={cn(
-                                            "flex items-center gap-1 opacity-90",
-                                            selectedId === item.patientId ? "text-white" : "text-slate-500"
-                                        )}>
-                                            <Clock className="h-3 w-3" />
-                                            {format(item.time, 'HH:mm')}
-                                        </span>
-                                        {item.patient?.dob && (
-                                            <span className={cn(
-                                                "opacity-80 font-medium",
-                                                selectedId === item.patientId ? "text-white" : "text-slate-400"
-                                            )}>
-                                                • {getAge(item.patient.dob)}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end mt-1">
-                                <Button
-                                    size="sm"
-                                    className={cn(
-                                        "h-7 px-3 text-[10px] font-semibold shadow-sm rounded-md",
-                                        selectedId === item.patientId
-                                            ? "bg-white text-blue-600 hover:bg-white/90"
-                                            : "bg-blue-600 text-white hover:bg-blue-700"
-                                    )}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onSelect(item);
-                                    }}
-                                >
-                                    Reprendre <ChevronRight className="h-3 w-3 ml-1" />
-                                </Button>
+                            <div className="relative flex justify-center">
+                                <span className="bg-[#f8fafc] px-4 py-1 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    En Attente
+                                </span>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    )}
 
-                {/* Divider */}
-                {inConsultationItems.length > 0 && (
-                    <div className="py-3 flex items-center gap-3">
-                        <div className="h-px bg-slate-100 flex-1" />
-                        <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">En Attente</span>
-                        <div className="h-px bg-slate-100 flex-1" />
-                    </div>
-                )}
-
-                {/* OTHER ITEMS */}
-                <div className="flex flex-col gap-2">
+                    {/* OTHER ITEMS */}
                     {isLoading ? (
-                        <div className="p-12 flex flex-col items-center text-slate-400 gap-3">
-                            <div className="h-6 w-6 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin" />
+                        <div className="p-8 flex flex-col items-center text-slate-400 gap-3">
+                            <div className="h-6 w-6 border-2 border-slate-200 border-t-amber-500 rounded-full animate-spin" />
                             <span className="text-xs">Chargement...</span>
                         </div>
-                    ) : otherItems.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center p-12 text-slate-300 text-center border-2 border-dashed border-slate-100 rounded-xl">
-                            <div className="bg-slate-50 p-4 rounded-full mb-3">
-                                <TrendingUp className="h-6 w-6 opacity-20" />
+                    ) : otherItems.length === 0 && inConsultationItems.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center p-8 text-slate-300 text-center border-2 border-dashed border-slate-100 rounded-xl mt-4">
+                            <div className="bg-slate-50 p-3 rounded-full mb-3">
+                                <TrendingUp className="h-5 w-5 opacity-20" />
                             </div>
-                            <p className="text-sm font-medium text-slate-400">Aucun patient</p>
+                            <p className="text-xs font-medium text-slate-400">Aucun patient</p>
                         </div>
                     ) : (
-                        otherItems.map(item => (
-                            <div
-                                key={`${item.source}-${item.patientId}`}
-                                onClick={() => onSelect(item)}
-                                className={cn(
-                                    "flex items-start gap-4 p-4 cursor-pointer transition-all rounded-xl border border-transparent hover:border-slate-100 hover:shadow-sm",
-                                    selectedId === item.patientId
-                                        ? "bg-blue-50/50 border-blue-100 ring-1 ring-blue-100"
-                                        : "bg-white"
-                                )}
-                            >
+                        otherItems.map(item => {
+                            const isWaitlist = item.source === 'waitlist';
+                            // Match stats colors: Amber for waitlist, Blue for appointments
+                            const baseBg = isWaitlist ? "bg-amber-500/10" : "bg-blue-500/10";
+                            const hoverBg = isWaitlist ? "hover:bg-amber-500/20" : "hover:bg-blue-500/20";
+                            const borderColor = isWaitlist ? "border-amber-300" : "border-blue-300";
+                            const hoverBorder = isWaitlist ? "hover:border-amber-500" : "hover:border-blue-500";
+                            const selectedBorder = isWaitlist ? "border-amber-500" : "border-blue-500";
+                            const textColor = isWaitlist ? "text-amber-800" : "text-blue-800";
+                            const secondaryTextColor = isWaitlist ? "text-amber-600/80" : "text-blue-600/80";
 
+                            return (
+                                <div
+                                    key={`${item.source}-${item.patientId}`}
+                                    onClick={() => onSelect(item)}
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all border-2",
+                                        selectedId === item.patientId
+                                            ? cn(baseBg, selectedBorder, "shadow-md")
+                                            : cn(baseBg, borderColor, hoverBg, hoverBorder, "hover:shadow-sm")
+                                    )}
+                                >
+                                    {/* Patient name */}
+                                    <span className={cn("font-bold text-sm truncate w-[30%] min-w-0", textColor)}>
+                                        {item.patient?.name} {item.patient?.surname}
+                                    </span>
 
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-start mb-0.5">
-                                        <h3 className={cn(
-                                            "text-sm font-bold truncate",
-                                            selectedId === item.patientId ? "text-blue-700" : "text-slate-900"
-                                        )}>
-                                            {item.patient?.name} {item.patient?.surname}
-                                        </h3>
-                                        <span className="text-[10px] font-semibold text-slate-400 tabular-nums bg-slate-50 px-1.5 py-0.5 rounded ml-2">
-                                            {format(item.time, 'HH:mm')}
+                                    {/* Appointment Time */}
+                                    <span className={cn("text-xs font-bold tabular-nums w-[10%] min-w-[50px]", textColor)}>
+                                        {format(item.time, 'HH:mm')}
+                                    </span>
+
+                                    {/* Arrival Hour - only show if different from appointment time */}
+                                    {item.arrivalTime && format(item.arrivalTime, 'HH:mm') !== format(item.time, 'HH:mm') ? (
+                                        <span className={cn("text-xs tabular-nums w-[10%] min-w-[50px]", secondaryTextColor)}>
+                                            {format(item.arrivalTime, 'HH:mm')}
                                         </span>
-                                    </div>
+                                    ) : (
+                                        <span className="w-[10%] min-w-[50px]" />
+                                    )}
 
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Badge variant="secondary" className={cn("text-[10px] px-1.5 h-4 font-semibold rounded-md", getStatusColor(item.status))}>
-                                            {getStatusLabel(item.status)}
+                                    {/* Age */}
+                                    {item.patient?.dob && (
+                                        <span className={cn("text-xs w-[10%] min-w-[40px]", secondaryTextColor)}>
+                                            {getAge(item.patient.dob)}
+                                        </span>
+                                    )}
+
+                                    {/* Phone */}
+                                    {item.patient?.phone && (
+                                        <span className={cn("text-xs w-[15%] min-w-[80px]", secondaryTextColor)}>
+                                            {item.patient.phone}
+                                        </span>
+                                    )}
+
+                                    {/* City */}
+                                    {item.patient?.address?.city && (
+                                        <span className={cn("text-xs w-[15%] min-w-[60px] truncate", secondaryTextColor)}>
+                                            {item.patient.address.city}
+                                        </span>
+                                    )}
+
+                                    {/* Dilation badge */}
+                                    {item.needsDilation && (
+                                        <Badge className="h-5 px-2.5 text-[10px] bg-purple-100 text-purple-700 border-0 shrink-0 font-semibold">
+                                            Dil.
                                         </Badge>
-                                        {item.patient?.dob && (
-                                            <span className="text-[10px] text-slate-400 font-medium">
-                                                {getAge(item.patient.dob)}
-                                            </span>
-                                        )}
-                                    </div>
+                                    )}
 
-                                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                                        {item.patient?.address?.city && (
-                                            <span className="flex items-center gap-1 truncate max-w-[120px] text-[10px] font-medium opacity-80">
-                                                <MapPin className="h-3 w-3" />
-                                                {item.patient.address.city}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {(item.needsDilation || item.notes) && (
-                                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                                            {item.needsDilation && (
-                                                <Badge variant="outline" className="text-[9px] h-4 px-1.5 bg-purple-50 text-purple-700 border-purple-100 font-medium rounded-md">
-                                                    <Activity className="h-2.5 w-2.5 mr-1" /> Dilatation
-                                                </Badge>
-                                            )}
-                                            {item.notes && (
-                                                <span className="text-[10px] text-slate-500 italic truncate max-w-full bg-slate-50 px-1.5 py-0.5 rounded">
-                                                    "{item.notes}"
-                                                </span>
-                                            )}
-                                        </div>
+                                    {/* Notes */}
+                                    {item.notes && (
+                                        <span className={cn("text-[11px] italic truncate max-w-[150px] shrink-0", secondaryTextColor)}>
+                                            {item.notes}
+                                        </span>
                                     )}
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
             </div>

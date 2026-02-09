@@ -184,8 +184,9 @@ export default function DilationSection() {
     if (patientsNeedingDilation.length === 0 && !isOphthalmology) return null;
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center gap-2 px-1">
+        <div className="flex flex-col h-full">
+            {/* Header with vertical padding */}
+            <div className="flex items-center gap-2 px-1 py-3">
                 <div className="p-1.5 rounded-lg bg-indigo-100/50">
                     <Eye className="h-3.5 w-3.5 text-indigo-600" />
                 </div>
@@ -195,9 +196,10 @@ export default function DilationSection() {
                 </Badge>
             </div>
 
+            {/* Scrollable content area that takes up remaining height */}
             <div className={cn(
-                "space-y-2",
-                isOphthalmology && "min-h-[180px] max-h-[180px] overflow-y-auto overflow-x-hidden pr-1 custom-scrollbar"
+                "flex-1 overflow-y-auto overflow-x-hidden pr-1 custom-scrollbar space-y-1",
+                !isOphthalmology && "min-h-0"
             )}>
                 {/* Currently Dilating */}
                 {dilatingPatients.map((patient: any) => {

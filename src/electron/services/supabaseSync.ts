@@ -5,6 +5,9 @@
  * Handles patient deduplication, data normalization, and relationship mapping.
  */
 
+import fs from 'fs';
+import path from 'path';
+// ... rest of imports
 import { createClient } from '@supabase/supabase-js';
 import { getDatabase } from '../db/database.js';
 import type { Database } from 'better-sqlite3';
@@ -27,7 +30,7 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
         const supabase = createClient(url, key);
         const db = getDatabase();
 
-        const tables = ['patients', 'appointments', 'consultations', 'invoices', 'waitlist_entries'];
+        const tables = ['patients', 'appointments', 'consultations', 'invoices', 'waitlist_entries', 'medicines'];
         const data: Record<string, any[]> = {};
 
         for (const table of tables) {
@@ -55,6 +58,23 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
             }
             data[table] = allRows;
         }
+
+        // --- LOCAL DATA INJECTION ---
+        let manualPatients: any[] = [];
+        try {
+            const manualPath = path.join(process.cwd(), 'public', 'old_data', 'clean_patients_manual.json');
+            if (fs.existsSync(manualPath)) {
+                console.log('📂 Found local manual patients file at:', manualPath);
+                const manualContent = fs.readFileSync(manualPath, 'utf-8');
+                manualPatients = JSON.parse(manualContent);
+                console.log(`✅ Loaded ${manualPatients.length} manual patients.`);
+            } else {
+                console.warn('⚠️ Manual patients file not found at:', manualPath);
+            }
+        } catch (e) {
+            console.error('❌ Failed to read manual patients file:', e);
+        }
+        // -----------------------------
 
         console.log('💾 Inserting data into local DB...');
 
@@ -206,20 +226,59 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
 
             const sbPatients = data['patients'] || [];
 
-            for (const p of sbPatients) {
+            // Merge manual patients into processing queue
+            // We need to transform them to match the loop's expectation or handle them specifically
+            // Let's create a unified structure for processing
+            const allPatientsToProcess = [
+                ...sbPatients.map(p => ({ ...p, source: 'supabase' })),
+                ...manualPatients.map(p => ({
+                    // Map manual fields to temporary structure
+                    id: `manual_${p.id || Math.random().toString(36).substr(2, 9)}`, // Temp ID
+                    name: p.prenom,
+                    surname: p.nom,
+                    dob: null, // Will calculate from age
+                    age: p.age,
+                    medical_history: p.antecedents,
+                    address: { city: 'Unknown', street: '' },
+                    phone: '',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    source: 'manual',
+                    originalData: p // Keep original for clinical data extraction
+                }))
+            ];
+
+            // Store manual consultations to process later
+            const manualConsultations: any[] = [];
+
+            for (const p of allPatientsToProcess) {
                 const normName = normalizeStr(p.name);
                 const normSurname = normalizeStr(p.surname);
                 // "p.age" might exist in raw data if not in types
-                const birthYear = getBirthYear(p.dob, p.age);
+                let birthYear = getBirthYear(p.dob, p.age);
+
+                // For manual patients with just age, estimate DOB
+                if (p.source === 'manual' && p.age && !birthYear) {
+                    birthYear = new Date().getFullYear() - p.age;
+                }
 
                 // 1. Check for duplicate
-                const duplicateId = findDuplicate(normName, normSurname, birthYear);
+                // Use a stricter duplicate check for manual data if needed, or rely on existing logic
+                let duplicateId = findDuplicate(normName, normSurname, birthYear);
 
                 if (duplicateId) {
-                    console.log(`⚠️ Duplicate found: Supabase(${p.name} ${p.surname}) overlaps with Local(${duplicateId}). Mapping ID.`);
+                    console.log(`⚠️ Duplicate found: ${p.source}(${p.name} ${p.surname}) near Local(${duplicateId}). Mapping ID.`);
                     idMap.set(p.id, duplicateId);
                     duplicatesCount++;
-                    continue; // Skip Insert
+
+                    // If manual patient is a duplicate, we still need to associate their clinical data with the EXISTING ID
+                    if (p.source === 'manual') {
+                        manualConsultations.push({
+                            patient_id: duplicateId, // Use the existing ID
+                            originalData: p.originalData
+                        });
+                    }
+                    continue;
                 }
 
                 // 2. Normalization for Insert
@@ -227,12 +286,23 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                 const finalSurname = toTitleCase(p.surname);
                 const finalCity = p.address ? toTitleCase(p.address.city || '') : '';
 
+                // Calculate DOB string for manual patients if missing
+                let finalDob = p.dob;
+                if (!finalDob && birthYear) {
+                    finalDob = `${birthYear}-01-01`; // Default to Jan 1st
+                }
+
                 // 3. Insert
+                // Generate a new UUID if it's a manual patient and no ID provided (or use the temp one if we treat it as new)
+                // Better to let SQLite autogenerate or generic UUID? 
+                // The schema likely expects a string ID. For now use the temp ID but we might want a proper UUID.
+                const finalId = p.source === 'manual' ? crypto.randomUUID() : p.id;
+
                 insertPatient.run({
-                    id: p.id,
+                    id: finalId,
                     name: finalName,
                     surname: finalSurname,
-                    dob: p.dob, // Keep original DOB string if present
+                    dob: finalDob,
                     phone_number: p.phone_number || p.phone,
                     street: p.address ? (p.address.street || '') : '',
                     city: finalCity,
@@ -241,11 +311,20 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                     updated_at: p.updated_at
                 });
 
-                seedProcessedIds.add(p.id);
+                if (p.source === 'manual') {
+                    // Update map so subsequent lookups (if any) know this temp ID maps to finalId
+                    idMap.set(p.id, finalId);
+                    manualConsultations.push({
+                        patient_id: finalId,
+                        originalData: p.originalData
+                    });
+                }
+
+                seedProcessedIds.add(finalId);
                 newPatientsCount++;
 
                 addToIndex({
-                    id: p.id,
+                    id: finalId,
                     normName,
                     normSurname,
                     birthYear,
@@ -405,6 +484,23 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                 VALUES (@consultation_id, @diagnosis, @notes, @raw_data)
             `);
 
+            // Helper for eye data - moved to shared scope
+            const processEye = (consultationId: string, eyeData: any, side: 'left' | 'right') => {
+                if (!eyeData) return;
+                insertEye.run({
+                    consultation_id: consultationId,
+                    eye: side,
+                    sph: parseFloat(eyeData.sph) || null,
+                    cyl: parseFloat(eyeData.cyl) || null,
+                    axis: parseFloat(eyeData.axis) || null,
+                    add_val: parseFloat(eyeData.add || eyeData.add_val) || null,
+                    tension: parseFloat(eyeData.tension) || null,
+                    pachymetry: parseFloat(eyeData.pachymetry) || null,
+                    visual_acuity: eyeData.visualAcuity || eyeData.visual_acuity || eyeData.visualAcuityVL_AC || null,
+                    raw_data: JSON.stringify(eyeData)
+                });
+            };
+
             for (const c of data['consultations']) {
                 const pid = ensurePatient(c.patient_id);
                 if (!pid) continue;
@@ -421,25 +517,9 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                     updated_at: c.updated_at
                 });
 
-                // Helper for eye data
-                const processEye = (eyeData: any, side: 'left' | 'right') => {
-                    if (!eyeData) return;
-                    insertEye.run({
-                        consultation_id: c.id,
-                        eye: side,
-                        sph: parseFloat(eyeData.sph) || null,
-                        cyl: parseFloat(eyeData.cyl) || null,
-                        axis: parseFloat(eyeData.axis) || null,
-                        add_val: parseFloat(eyeData.add || eyeData.add_val) || null,
-                        tension: parseFloat(eyeData.tension) || null,
-                        pachymetry: parseFloat(eyeData.pachymetry) || null,
-                        visual_acuity: eyeData.visualAcuity || eyeData.visual_acuity || null,
-                        raw_data: JSON.stringify(eyeData)
-                    });
-                };
+                processEye(c.id, c.left_eye, 'left');
+                processEye(c.id, c.right_eye, 'right');
 
-                processEye(c.left_eye, 'left');
-                processEye(c.right_eye, 'right');
 
                 const examData = c.detailed_clinical_exam || {};
                 let diagnosis = c.diagnosis || examData.diagnosis || '';
@@ -453,6 +533,157 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                     raw_data: JSON.stringify(examData)
                 });
             }
+
+            // --- MANUAL CONSULTATIONS PROCESSING ---
+            const parseDate = (dateInput: any) => {
+                const now = new Date();
+                if (!dateInput) return now.toISOString();
+
+                let date: Date | null = null;
+
+                // Handle Excel serial date (numeric)
+                if (typeof dateInput === 'number') {
+                    // Excel base date: Dec 30 1899
+                    date = new Date((dateInput - 25569) * 86400 * 1000);
+                } else if (typeof dateInput === 'string') {
+                    const clean = dateInput.trim();
+
+                    // Try standard date constructor first if it looks standard
+                    if (clean.includes('-') || clean.includes('/')) {
+                        const d = new Date(clean);
+                        if (!isNaN(d.getTime())) date = d;
+                    }
+
+                    // Handle compact formats likely from manual entry (e.g. 2062025, 1072025)
+                    if (!date) {
+                        // Remove all non-digits
+                        const digits = clean.replace(/\D/g, '');
+                        if (digits.length === 8) {
+                            // DDMMYYYY
+                            const day = parseInt(digits.substring(0, 2));
+                            const month = parseInt(digits.substring(2, 4)) - 1; // Month is 0-indexed
+                            const year = parseInt(digits.substring(4, 8));
+                            date = new Date(year, month, day);
+                        } else if (digits.length === 7) {
+                            // DMMYYYY (e.g. 1072025 -> 1/07/2025)
+                            const day = parseInt(digits.substring(0, 1));
+                            const month = parseInt(digits.substring(1, 3)) - 1;
+                            const year = parseInt(digits.substring(3, 7));
+                            date = new Date(year, month, day);
+                        } else if (digits.length === 6) {
+                            // DDMMYY (e.g. 100725)
+                            const day = parseInt(digits.substring(0, 2));
+                            const month = parseInt(digits.substring(2, 4)) - 1;
+                            const year2d = parseInt(digits.substring(4, 6));
+                            const year = year2d < 50 ? 2000 + year2d : 1900 + year2d; // Pivot at 50 assumes 20xx
+                            date = new Date(year, month, day);
+                        }
+                    }
+                }
+
+                // Final validity check
+                if (!date || isNaN(date.getTime()) || date.getFullYear() < 1900 || date.getFullYear() > 2100) {
+                    // Log meaningful warning but less spammy if it's just empty/garbage
+                    if (dateInput && String(dateInput).length > 2) {
+                        console.warn(`⚠️ Invalid date encountered: "${dateInput}". Defaulting to NOW.`);
+                    }
+                    return now.toISOString();
+                }
+
+                return date.toISOString();
+            };
+
+            const parseTreatment = (text: string): { treatments: any[], notes: string } => {
+                if (!text) return { treatments: [], notes: '' };
+                const treatments: any[] = [];
+                const lines = text.split(/[\n,]/).map(l => l.trim()).filter(l => l.length > 0);
+
+                // Simple heuristic: treat each line as a medicine name unless we can be smarter
+                let order = 1;
+                for (const line of lines) {
+                    treatments.push({
+                        name: line,
+                        customName: line,
+                        dosage: '',
+                        frequency: { value: 1, unit: 'daily' },
+                        duration: { value: 7, unit: 'days' },
+                        instructions: '',
+                        order: order++,
+                        isNew: true // Mark as new/custom
+                    });
+                }
+                return { treatments, notes: '' };
+            };
+
+            // Prepare statements again if needed or reuse
+            for (const mc of manualConsultations) {
+                const pData = mc.originalData;
+                const consultDate = parseDate(pData.date_consultation);
+                const consultId = crypto.randomUUID();
+
+                // Eye Data Mapping
+                // pData.avac (OD/OG) -> visualAcuityVL_AC
+                // pData.avsc (OD/OG) -> visualAcuityVL_SC
+                // pData.pio (OD/OG) -> tension
+
+                // Helper to safely get side data whether it's 'od'/'og' prop or nested
+                const getSideValue = (source: any, side: 'od' | 'og') => {
+                    if (!source) return null;
+                    if (typeof source === 'object') return source[side] || null;
+                    return null;
+                };
+
+                const leftEyeData = {
+                    visualAcuityVL_AC: getSideValue(pData.avac, 'og'),
+                    visualAcuityVL_SC: getSideValue(pData.avsc, 'og'),
+                    tension: getSideValue(pData.pio, 'og'),
+                };
+                const rightEyeData = {
+                    visualAcuityVL_AC: getSideValue(pData.avac, 'od'),
+                    visualAcuityVL_SC: getSideValue(pData.avsc, 'od'),
+                    tension: getSideValue(pData.pio, 'od'),
+                };
+
+                // Clinical Exam Data
+                // symptomes -> diagnosis
+                // fond_oeil -> fundus.fundus_exam
+                // traitement -> treatmentPlan
+                const examData = {
+                    fundus: { fundus_exam: pData.fond_oeil || '' },
+                    treatmentPlan: pData.traitement || '',
+                    // Add other fields if needed
+                };
+
+                // Prescription - User requested to put treatment in clinical exam, typically implies NOT in prescription writer
+                // But we can leave prescription empty or minimal
+                const prescriptionData = {
+                    treatments: [],
+                    notes: ''
+                };
+
+                insertConsult.run({
+                    id: consultId,
+                    patient_id: mc.patient_id,
+                    date: consultDate,
+                    type: 'Consultation', // Or 'Bilan' based on data?
+                    status: 'completed',
+                    documents_data: '{}',
+                    prescription: JSON.stringify(prescriptionData),
+                    created_at: consultDate,
+                    updated_at: consultDate
+                });
+
+                processEye(consultId, leftEyeData, 'left');
+                processEye(consultId, rightEyeData, 'right');
+
+                insertExam.run({
+                    consultation_id: consultId,
+                    diagnosis: pData.symptomes || '',
+                    notes: pData.traitement || '', // Also put in notes for backup visibility
+                    raw_data: JSON.stringify(examData)
+                });
+            }
+            // ---------------------------------------
 
             // Invoices
             const insertInvoice = db.prepare(`
@@ -494,14 +725,44 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
                     updated_at: inv.created_at || new Date().toISOString()
                 });
             }
+
+            // Medicines
+            // Note: aligned with local schema in database.ts (no quantity, status, form, is_favorite in local schema)
+            const insertMedicine = db.prepare(`
+                INSERT OR REPLACE INTO medicines (id, medication_name, strength, type, packaging, instructions, category, created_at, updated_at)
+                VALUES (@id, @medication_name, @strength, @type, @packaging, @instructions, @category, @created_at, @updated_at)
+            `);
+
+            const sbMedicines = data['medicines'] || [];
+            let medicinesCount = 0;
+            for (const m of sbMedicines) {
+                insertMedicine.run({
+                    id: m.id,
+                    medication_name: m.medication_name,
+                    strength: m.strength,
+                    type: m.type,
+                    packaging: m.packaging,
+                    // quantity: m.quantity, // Not in local schema
+                    // status: m.status,     // Not in local schema
+                    category: m.category,
+                    // form: m.form,         // Not in local schema
+                    instructions: m.instructions,
+                    // is_favorite: m.is_favorite ? 1 : 0, // Not in local schema
+                    created_at: m.created_at,
+                    updated_at: m.updated_at
+                });
+                medicinesCount++;
+            }
+            console.log(`✅ Medicines Processed: ${medicinesCount}`);
         })();
 
         return {
             success: true,
             message: 'Synchronization Complete',
             stats: {
-                patients: data['patients'].length,
-                appointments: data['appointments'].length
+                patients: (data['patients']?.length || 0) + manualPatients.length,
+                appointments: data['appointments']?.length || 0,
+                medicines: data['medicines']?.length || 0
             }
         };
 

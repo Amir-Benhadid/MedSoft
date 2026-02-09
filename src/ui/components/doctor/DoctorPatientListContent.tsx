@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { cn } from '@/ui/lib/utils';
 import DoctorStatsHeader from './patient-list/DoctorStatsHeader';
+import DoctorSharedFilesList from './patient-list/DoctorSharedFilesList';
 import PatientListView from './patient-list/PatientListView';
-import PatientDetailsPanel from './patient-list/PatientDetailsPanel';
 import { usePatientListLogic } from './patient-list/usePatientListLogic';
 import { UnifiedPatientItem } from './patient-list/types';
+import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
 
 interface DoctorPatientListContentProps {
     onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography') => void;
@@ -25,23 +26,30 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
         setActiveFilter,
     } = usePatientListLogic();
 
-    // Internal selection state if not controlled prop provided (though it is in route)
-    const [internalSelectedId, setInternalSelectedId] = useState<string | null>(null);
-    const selectedId = propSelectedPatientId || internalSelectedId;
+    const { data: consultationTypes = [] } = useConsultationTypes();
 
-    const selectedItem = unifiedList.find(i => i.patientId === selectedId);
+    // We don't need internal selection state anymore since we navigate immediately
+    const selectedId = propSelectedPatientId;
 
     const handleSelect = (item: UnifiedPatientItem) => {
-        setInternalSelectedId(item.patientId);
+        // Determine target mode based on consultation type
+        const consultationType = consultationTypes.find(t => t.id === item.consultationTypeId);
+        const targetMode = (consultationType?.nature === 'radiography') ? 'radiography' : 'normal';
+
+        onSelectPatient(item.patientId, targetMode);
     };
 
     return (
         <div className="flex flex-1 overflow-hidden h-full">
-            {/* Left Panel: Patient List */}
-            <div className={cn(
-                "flex flex-col border-r bg-white h-full transition-all duration-300 ease-in-out",
-                selectedId ? "w-1/2" : "w-full"
-            )}>
+            {/* Main Panel: Patient List - Always full width now */}
+            <div className="flex flex-col border-r bg-white h-full w-full transition-all duration-300 ease-in-out">
+                {/* Shared Files List */}
+                <DoctorSharedFilesList
+                    onSelectPatient={(patientId) => {
+                        onSelectPatient(patientId);
+                    }}
+                />
+
                 {/* Header with Stats */}
                 <DoctorStatsHeader
                     stats={stats}
@@ -66,14 +74,6 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
                     Fin de la liste
                 </div>
             </div>
-
-            {/* Right Panel: Detail View (50% width) */}
-            {selectedId && selectedItem && (
-                <PatientDetailsPanel
-                    item={selectedItem}
-                    onStartConsultation={onSelectPatient}
-                />
-            )}
         </div>
     );
 }

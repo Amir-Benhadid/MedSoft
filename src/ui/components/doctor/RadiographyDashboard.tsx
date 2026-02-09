@@ -1,7 +1,7 @@
 
 import { Loader2, Eye, FlaskConical } from 'lucide-react';
 import PatientInfoCard from './dashboard/PatientInfoCard';
-import DocumentsContainer from './documents/DocumentsContainer';
+import DocumentsContainer from '@/ui/components/doctor/documents/DocumentsContainer';
 import { FinishConsultationSheet } from './FinishConsultationSheet';
 import { useDoctorDashboardLogic } from './dashboard/useDoctorDashboardLogic';
 import { DashboardHeader } from './dashboard/DashboardHeader';

@@ -8,7 +8,7 @@ import { UnifiedPatientItem } from './types';
 export function usePatientListLogic() {
     const [selectedDate] = useState(new Date());
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeFilter, setActiveFilter] = useState<'all' | 'waiting' | 'consultation' | 'completed'>('all');
+    const [activeFilter, setActiveFilter] = useState<'all' | 'present' | 'waiting' | 'consultation'>('present');
 
     // 1. Fetch Waitlist
     const { data: waitlist, isLoading: isWaitlistLoading } = useWaitlist(format(selectedDate, 'yyyy-MM-dd'));
@@ -52,6 +52,7 @@ export function usePatientListLogic() {
                     needsDilation: entry.needs_dilation,
                     dilationStatus: entry.dilation_type || undefined,
                     consultationTypeId: entry.consultation_type_id,
+                    arrivalTime: new Date(entry.arrived_at),
                 });
                 seenPatientIds.add(entry.patient_id);
             });
@@ -96,12 +97,26 @@ export function usePatientListLogic() {
         const matchesSearch = fullName.includes(searchTerm.toLowerCase());
 
         let matchesFilter = true;
-        if (activeFilter === 'all') {
-            matchesFilter = !['completed', 'paid', 'cancelled'].includes(item.status);
+
+        // "Présents" (Default) - Includes physically present (Waiting + In Consultation)
+        if (activeFilter === 'present') {
+            matchesFilter = ['waiting', 'in_consultation'].includes(item.status);
         }
-        if (activeFilter === 'waiting') matchesFilter = item.status === 'waiting' || item.status === 'booked';
-        if (activeFilter === 'consultation') matchesFilter = item.status === 'in_consultation';
-        if (activeFilter === 'completed') matchesFilter = ['completed', 'paid', 'cancelled'].includes(item.status);
+
+        // "Prévus" (All) - Everything today
+        if (activeFilter === 'all') {
+            matchesFilter = !['cancelled'].includes(item.status);
+        }
+
+        // "En Attente" - Strictly waiting
+        if (activeFilter === 'waiting') {
+            matchesFilter = item.status === 'waiting';
+        }
+
+        // "En Cours" - Strictly in consultation
+        if (activeFilter === 'consultation') {
+            matchesFilter = item.status === 'in_consultation';
+        }
 
         return matchesSearch && matchesFilter;
     });

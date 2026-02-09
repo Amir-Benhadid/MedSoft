@@ -53,7 +53,6 @@ export const CompactAntecedentsSection = ({ register, errors, control }: Compact
                                     category="antecedent_oph"
                                     value={field.value}
                                     onSelect={field.onChange}
-                                    placeholder="Antécédents ophtalmologiques..."
                                     className="h-auto min-h-[50px] whitespace-normal bg-white"
                                 />
                             )}
@@ -75,7 +74,6 @@ export const CompactAntecedentsSection = ({ register, errors, control }: Compact
                                 category="antecedent_gen"
                                 value={field.value}
                                 onSelect={field.onChange}
-                                placeholder="Antécédents généraux..."
                                 className="h-auto min-h-[50px] whitespace-normal bg-white"
                             />
                         )}
@@ -122,7 +120,6 @@ export const CompactAntecedentsSection = ({ register, errors, control }: Compact
                                             value={field.value || ''}
                                             onSelect={field.onChange}
                                             className="min-h-[140px] p-4 border-slate-200 focus:ring-2 focus:ring-amber-500/20 transition-all rounded-xl"
-                                            placeholder="Décrivez les antécédents ophtalmologiques..."
                                         />
                                     )}
                                 />
@@ -146,7 +143,6 @@ export const CompactAntecedentsSection = ({ register, errors, control }: Compact
                                         value={field.value || ''}
                                         onSelect={field.onChange}
                                         className="min-h-[140px] p-4 border-slate-200 focus:ring-2 focus:ring-amber-500/20 transition-all rounded-xl"
-                                        placeholder="Décrivez les antécédents généraux..."
                                     />
                                 )}
                             />

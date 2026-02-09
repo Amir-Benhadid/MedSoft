@@ -301,7 +301,6 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 {view === 'selection' && (
                     <div className="space-y-3 animate-in fade-in slide-in-from-right-5 duration-200 h-full flex flex-col">
                         <div className="flex items-center gap-2 text-xs font-semibold text-primary bg-primary/5 px-3 py-2 rounded-lg flex-none">
-                            <Search className="h-3.5 w-3.5" />
                             Sélectionner patient
                         </div>
                         <div className="flex-1 min-h-0">
@@ -374,16 +373,16 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                         <div className="space-y-1 mb-2">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                                 <Activity className="h-3 w-3" />
-                                Type de consultation
+                                Activité
                             </div>
                             <Select
                                 value={watch('consultation_type_id')}
                                 onValueChange={(val) => setValue('consultation_type_id', val)}
                             >
                                 <SelectTrigger className="h-9 text-sm">
-                                    <SelectValue placeholder="Sélectionner le type" />
+                                    <SelectValue placeholder="Sélectionner l'activité" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="z-[9999]">
                                     {consultationTypes.map(type => (
                                         <SelectItem key={type.id} value={type.id.toString()}>
                                             {type.label} - {type.amount} DA
@@ -435,7 +434,6 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                             <Textarea
                                 {...register('notes')}
                                 rows={3}
-                                placeholder="Motif, instructions..."
                                 className="text-sm resize-none"
                             />
                         </div>

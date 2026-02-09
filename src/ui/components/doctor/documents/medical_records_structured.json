@@ -1,151 +1,151 @@
 [
-    {
-        "Title": "Bilan",
-        "Code": "BILAN CARDIO VASCULAIRE",
-        "Description": "Cher(e) confrère Je vous adresse le(la) sus-nommé(e) que je dois opérer de catarcte pour avis cardiologique pré-opératoire - Intervention prévue sous anesthésie loco-régionale",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "REPONSE HTA",
-        "Description": "Cher(e) confrère - Le(la) patient(e) aux ATCD de: HTA - Hypercholertérolémie- HyperTGD présente à l'examen:",
-        "Bullets": [
-            "Acuité visuelle = OD: {{fill from EyeData: visualAcuity}}, OG: {{fill from EyeData: visualAcuity}}",
-            "Tonus oculaire = normal",
-            "Examen biomicroscopique du FO = NORMAL",
-            "RETINOPATHIE HYPERTENSIVE STADE {{fill number between 1 and 4}}"
-        ]
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CTF (LASER ARGON)",
-        "Description": "Le(la) sus-nommé(e) présente une photocoagulation au LASER ARGON pour: rétinopathie diabétique proliférante de l'œil {{fill: droit/gauche}}, Codification K80",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CTF (LASER YAG)",
-        "Description": "Le(la) sus-nommé(e) présente une capsulectomie au LASER YAG pour: cataracte secondaire de l'œil {{fill: droit/gauche}}, Codification K80",
-        "Bullets": []
-    },
-    {
-        "Title": "Certificat médical",
-        "Code": "CTF (CECITE TOTALE)",
-        "Description": "Cécité totale. IPP = Cent pour cent définitive (100%)",
-        "Bullets": []
-    },
-    {
-        "Title": "Certificat médical",
-        "Code": "CTF MALVISION CLASSE",
-        "Description": "Le(la) sus-nommé(e) présente une mal vision bilatérale qui nécessite le port de lunettes et d'être placé(e) aux premiers rangs de la classe",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "BILAN CARDIO OVCR",
-        "Description": "Je soussigné(e), prie de bien vouloir réaliser les examens suivants concernant le(a) sus-nommé(e):",
-        "Bullets": [
-            "Examen clinique",
-            "ECG",
-            "Échocardiographie",
-            "Doppler des vaisseaux du cou"
-        ]
-    },
-    {
-        "Title": "Certificat de reprise de travail",
-        "Code": "REPRISE DE TRAVAIL",
-        "Description": "L'état de santé du(de la) sus-nommé(e) est consolidé et peut reprendre le travail à partir du: {{fill date}}",
-        "Bullets": []
-    },
-    {
-        "Title": "Certificat médical",
-        "Code": "CTF GLAUCOME",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour un glaucome chronique à angle ouvert",
-        "Bullets": []
-    },
-    {
-        "Title": "Avis d'ophtalmologie",
-        "Code": "REPONSE AZYTER",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une blépharite postérieure chronique (dysfonctionnement des glandes de Mebomius), traitement antibiotique local au long cours",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "ORIENT CARDIO",
-        "Description": "Cher(e) confrère Je vous adresse le(la) sus-nommé(e) pour examen cardio vasculaire dans un but diagnostique étiologique",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "ORIENT NEURO",
-        "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour examen NEURO dans un but diagnostique étiologique",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "ORIENT DIAB MED INTERNE",
-        "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour examen dans un but diagnostique étiologique",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "ANGIO",
-        "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour angiographie - âgé(e) de {{fill age}} aux antécédents de: {{fill antecedents}}.",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "Diabète Normal",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour:",
-        "Bullets": [
-            "Diabète type 2 HTA cardiopathie dysthyroidie",
-            "Acuité visuelle avec correction",
-            "Examen à la L.A.F: sans anomalies",
-            "PIO normale",
-            "FO: sans anomalies",
-            "Conclusion: Absence de complications oculaires du diabète Contrôle annuel"
-        ]
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "COMPTE RENDU CNAS",
-        "Description": "Champ visuel Indication: Glaucome chronique Honoraires: 6000 DA Cotation: K30",
-        "Bullets": []
-    },
-    {
-        "Title": "Lettre d'orientation",
-        "Code": "AVIS ORL DCC",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une dacryocystite chronique {{fill: droite/gauche}} à lavage des voies lacrymales non perméable pour avis prise en charge d'une cause à ce larmoiement et cas échéant un avis pré-opératoire",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CNAS OCT G",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une optic coherence tomography Indication: Glaucome chronique Cotation: K80",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CNAS OCT M",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une optic coherence tomography Indication: maculopathie Cotation: K80",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CNAS ECHO",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une échographie oculaire mode B Indication: HDV Cotation: K30",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CNAS ARGON",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour un laser Argon Cotation: K80",
-        "Bullets": []
-    },
-    {
-        "Title": "Compte rendu",
-        "Code": "CNAS pachy",
-        "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une pachymétrie Cotation: K30",
-        "Bullets": []
-    }
+  {
+    "Title": "Bilan",
+    "Code": "BILAN CARDIO VASCULAIRE",
+    "Description": "Cher(e) confrère Je vous adresse le(la) sus-nommé(e) que je dois opérer de catarcte pour avis cardiologique pré-opératoire - Intervention prévue sous anesthésie loco-régionale",
+    "Bullets": [
+    ]  },
+  {
+    "Title": "Compte rendu",
+    "Code": "REPONSE HTA",
+    "Description": "Cher(e) confrère - Le(la) patient(e) aux ATCD de: HTA - Hypercholertérolémie- HyperTGD présente à l'examen:",
+    "Bullets": [
+      "Acuité visuelle = OD: {{fill from EyeData: visualAcuity}}, OG: {{fill from EyeData: visualAcuity}}",
+      "Tonus oculaire = normal",
+      "Examen biomicroscopique du FO = NORMAL",
+      "RETINOPATHIE HYPERTENSIVE STADE {{fill number between 1 and 4}}"
+    ]
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CTF (LASER ARGON)",
+    "Description": "Le(la) sus-nommé(e) présente une photocoagulation au LASER ARGON pour: rétinopathie diabétique proliférante de l'œil {{fill: droit/gauche}}, Codification K80",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CTF (LASER YAG)",
+    "Description": "Le(la) sus-nommé(e) présente une capsulectomie au LASER YAG pour: cataracte secondaire de l'œil {{fill: droit/gauche}}, Codification K80",
+    "Bullets": []
+  },
+  {
+    "Title": "Certificat médical",
+    "Code": "CTF (CECITE TOTALE)",
+    "Description": "Cécité totale. IPP = Cent pour cent définitive (100%)",
+    "Bullets": []
+  },
+  {
+    "Title": "Certificat médical",
+    "Code": "CTF MALVISION CLASSE",
+    "Description": "Le(la) sus-nommé(e) présente une mal vision bilatérale qui nécessite le port de lunettes et d'être placé(e) aux premiers rangs de la classe",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "BILAN CARDIO OVCR",
+    "Description": "Je soussigné(e), prie de bien vouloir réaliser les examens suivants concernant le(a) sus-nommé(e):",
+    "Bullets": [
+      "Examen clinique",
+      "ECG",
+      "Échocardiographie",
+      "Doppler des vaisseaux du cou"
+    ]
+  },
+  {
+    "Title": "Certificat de reprise de travail",
+    "Code": "REPRISE DE TRAVAIL",
+    "Description": "L'état de santé du(de la) sus-nommé(e) est consolidé et peut reprendre le travail à partir du: {{fill date}}",
+    "Bullets": []
+  },
+  {
+    "Title": "Certificat médical",
+    "Code": "CTF GLAUCOME",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour un glaucome chronique à angle ouvert",
+    "Bullets": []
+  },
+  {
+    "Title": "Avis d'ophtalmologie",
+    "Code": "REPONSE AZYTER",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une blépharite postérieure chronique (dysfonctionnement des glandes de Mebomius), traitement antibiotique local au long cours",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "ORIENT CARDIO",
+    "Description": "Cher(e) confrère Je vous adresse le(la) sus-nommé(e) pour examen cardio vasculaire dans un but diagnostique étiologique",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "ORIENT NEURO",
+    "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour examen NEURO dans un but diagnostique étiologique",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "ORIENT DIAB MED INTERNE",
+    "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour examen dans un but diagnostique étiologique",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "ANGIO",
+    "Description": "Cher(e) confrère, je vous adresse le(la) sus-nommé(e) pour angiographie - âgé(e) de {{fill age}} aux antécédents de: {{fill antecedents}}.",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "Diabète Normal",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour:",
+    "Bullets": [
+      "Diabète type 2 HTA cardiopathie dysthyroidie",
+      "Acuité visuelle avec correction",
+      "Examen à la L.A.F: sans anomalies",
+      "PIO normale",
+      "FO: sans anomalies",
+      "Conclusion: Absence de complications oculaires du diabète Contrôle annuel"
+    ]
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "COMPTE RENDU CNAS",
+    "Description": "Champ visuel Indication: Glaucome chronique Honoraires: 6000 DA Cotation: K30",
+    "Bullets": []
+  },
+  {
+    "Title": "Lettre d'orientation",
+    "Code": "AVIS ORL DCC",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une dacryocystite chronique {{fill: droite/gauche}} à lavage des voies lacrymales non perméable pour avis prise en charge d'une cause à ce larmoiement et cas échéant un avis pré-opératoire",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CNAS OCT G",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une optic coherence tomography Indication: Glaucome chronique Cotation: K80",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CNAS OCT M",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une optic coherence tomography Indication: maculopathie Cotation: K80",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CNAS ECHO",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une échographie oculaire mode B Indication: HDV Cotation: K30",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CNAS ARGON",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour un laser Argon Cotation: K80",
+    "Bullets": []
+  },
+  {
+    "Title": "Compte rendu",
+    "Code": "CNAS pachy",
+    "Description": "Le(la) sus-nommé(e) présente à l'examen du jour une pachymétrie Cotation: K30",
+    "Bullets": []
+  }
 ]

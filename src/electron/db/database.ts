@@ -76,6 +76,69 @@ export function getDatabase(): Database.Database {
 
 	console.log('✅ Database initialized');
 
+	// Register fuzzy matching functions
+	// 1. Levenshtein Distance Helper
+	const levenshtein = (a: string, b: string): number => {
+		if (a.length === 0) return b.length;
+		if (b.length === 0) return a.length;
+
+		const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+
+		for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+		for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+		for (let j = 1; j <= b.length; j++) {
+			for (let i = 1; i <= a.length; i++) {
+				const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+				matrix[j][i] = Math.min(
+					matrix[j][i - 1] + 1, // deletion
+					matrix[j - 1][i] + 1, // insertion
+					matrix[j - 1][i - 1] + indicator // substitution
+				);
+			}
+		}
+		return matrix[b.length][a.length];
+	};
+
+	// 2. Register SQLite function: fuzzy_contains(text, pattern, distance)
+	// Returns 1 if 'text' contains a substring that approximately matches 'pattern'
+	// within 'distance' edits.
+	// Logic:
+	// - If pattern is short (<3), use exact inclusion (too noisy otherwise).
+	// - Otherwise, split text into words and check distance against pattern.
+	// - Also check if pattern matches any substring of text if feasible?
+	//   -> For performance, we'll check if any *word* in text is a fuzzy match.
+	//   -> And also checks if text *contains* the pattern with simple checks.
+	db.function('fuzzy_contains', (text: string, pattern: string, distance: number) => {
+		if (!text || !pattern) return 0;
+		const t = text.toLowerCase();
+		const p = pattern.toLowerCase();
+		const maxDist = Number(distance);
+
+		// Fast path: Exact match
+		if (t.includes(p)) return 1;
+
+		// Short patterns: Exact only to avoid noise
+		if (p.length < 3) return 0;
+
+		// Word-based fuzzy match
+		const words = t.split(/[\s,.-]+/);
+		for (const word of words) {
+			// If word is much shorter than pattern, skip (can't contain it)
+			if (Math.abs(word.length - p.length) > maxDist) continue;
+
+			if (levenshtein(word, p) <= maxDist) return 1;
+		}
+
+		// Substring check (if text is "Jonathan" and pattern is "Jon", it matches by includes)
+		// What if text is "Jonathan" and pattern is "Jxn" (dist 2 from Jon)?
+		// "Jxn" isn't a word in "Jonathan".
+		// For general fuzzy substring search, it's more complex.
+		// Assuming user tokens are close to words:
+
+		return 0;
+	});
+
 	setupDatabase(db, config);
 	runMigrations(db, config);
 

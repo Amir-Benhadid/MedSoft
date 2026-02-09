@@ -1,11 +1,9 @@
 import { memo } from 'react';
-import { EyeData, VISUAL_ACUITY_OPTIONS_DISTANCE_SC, VISUAL_ACUITY_OPTIONS_DISTANCE_AC, VISUAL_ACUITY_OPTIONS_NEAR, SPHERE_VALUES, CYLINDER_VALUES, AXIS_VALUES, ADD_VALUES, TENSION_VALUES, KERATOMETRY_VALUES, LENS_TYPE_OPTIONS, LENS_BRAND_OPTIONS, GLASS_TYPE_OPTIONS, CONTACT_LENS_TYPE_OPTIONS } from "./types";
+import { EyeData, VISUAL_ACUITY_OPTIONS_DISTANCE_SC, VISUAL_ACUITY_OPTIONS_DISTANCE_AC, VISUAL_ACUITY_OPTIONS_NEAR, SPHERE_VALUES, CYLINDER_VALUES, AXIS_VALUES, ADD_VALUES, KERATOMETRY_VALUES, LENS_TYPE_OPTIONS, LENS_BRAND_OPTIONS, GLASS_TYPE_OPTIONS, CONTACT_LENS_TYPE_OPTIONS } from "./types";
 import { cn } from "@/ui/lib/utils";
 import { useConsultationStore } from "@/ui/store/consultationStore";
-import { Label } from "@/ui/components/ui/label";
-import { NativeSelect } from "@/ui/components/ui/native-select";
 import { Input } from "@/ui/components/ui/input";
-import { Card, CardContent } from "@/ui/components/ui/card";
+import { Card } from "@/ui/components/ui/card";
 import { Separator } from "@/ui/components/ui/separator";
 import { ChevronDown } from "lucide-react";
 
@@ -18,343 +16,165 @@ interface EyeRefractionPanelProps {
 
 export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readOnly, action, data: externalData }: EyeRefractionPanelProps) {
     const isRight = side === "right";
-    const title = isRight ? "OD (Droit)" : "OG (Gauche)";
-    const themeColor = isRight ? "text-green-700" : "text-blue-700";
-    const borderColor = isRight ? "border-green-300" : "border-blue-300";
-    const ringColor = isRight ? "focus-visible:ring-green-500" : "focus-visible:ring-blue-500";
-    const badgeBg = isRight ? "bg-green-100" : "bg-blue-100";
+    const title = isRight ? "OD" : "OG";
+    // Enhanced theme colors for better visual separation
+    const themeColor = isRight ? "text-emerald-700" : "text-blue-700";
+    const themeBg = isRight ? "bg-emerald-50/80" : "bg-blue-50/80";
+    const themeBorder = isRight ? "border-emerald-100" : "border-blue-100";
+    const themeRing = isRight ? "ring-emerald-100" : "ring-blue-100";
+    const themeSectionBg = isRight ? "bg-emerald-50/60" : "bg-blue-50/60";
 
     const storeData = useConsultationStore(state => isRight ? state.rightEye : state.leftEye);
     const updateField = useConsultationStore(state => isRight ? state.updateRightEyeField : state.updateLeftEyeField);
-
-    // Use external data if provided, otherwise use store data
     const data = externalData || storeData;
 
     const handleChange = (field: keyof EyeData, value: string) => {
         if (readOnly) return;
         updateField(field, value);
-
+        // Auto-copy objective to subjective refraction
         if (field === 'objSph') updateField('sph', value);
         if (field === 'objCyl') updateField('cyl', value);
         if (field === 'objAxis') updateField('axis', value);
         if (field === 'objAdd') updateField('add', value);
 
-        if (field === 'tension' || field === 'pachymetry' || field === 'corrected_iop') {
-            const currentTensionStr = field === 'tension' ? value : data.tension;
-            const currentPachyStr = field === 'pachymetry' ? value : data.pachymetry;
-            const currentCorrStr = field === 'corrected_iop' ? value : data.corrected_iop;
-            const t = parseFloat(currentTensionStr || '0');
-            const p = parseFloat(currentPachyStr || '0');
-            const c = parseFloat(currentCorrStr || '0');
-
-            if (p > 0) {
-                if (field === 'tension' || field === 'pachymetry') {
-                    if (t > 0) {
-                        const corrected = t - ((p - 545) / 50 * 2.5);
-                        updateField('corrected_iop', corrected.toFixed(0));
-                    }
-                } else if (field === 'corrected_iop') {
-                    const measured = c + ((p - 545) / 50 * 2.5);
-                    updateField('tension', measured.toFixed(0));
-                }
-            }
+        // Auto-fill R0 and DL for certain contact lens types
+        if (field === 'contactLensType' && (value === 'Sphérique' || value === 'Torique')) {
+            if (!data.axis_k) updateField('axis_k', '8.40');
+            if (!data.diam) updateField('diam', '14.00');
         }
     };
 
     return (
-        <Card className={cn("h-full flex flex-col overflow-hidden border-t-4 shadow-md", isRight ? "border-t-green-500" : "border-t-blue-500")}>
-            <div className={cn("px-4 py-3 border-b flex justify-between items-center min-h-[48px]", badgeBg)}>
-                <span className={cn("font-bold text-base", themeColor)}>{title}</span>
+        <Card className={cn("h-auto flex flex-col overflow-hidden shadow-sm border ring-1 transition-all", themeBg, themeBorder, themeRing)}>
+            {/* Header */}
+            <div className={cn("px-2 py-1.5 xl:px-3 xl:py-2.5 2xl:px-4 2xl:py-3 flex justify-between items-center border-b border-white/40 bg-white/30 backdrop-blur-[2px]")}>
+                <div className="flex items-center gap-2">
+                    <span className={cn("font-bold text-xs xl:text-sm 2xl:text-base uppercase tracking-widest", themeColor)}>{title}</span>
+                </div>
                 {action && <div className="-my-1">{action}</div>}
             </div>
 
-            <CardContent className="flex-1 p-0 overflow-hidden flex flex-col min-h-0 bg-white">
-                <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto custom-scrollbar">
+            <div className="flex-1 p-1.5 xl:p-2 2xl:p-3 space-y-2 xl:space-y-3 2xl:space-y-4">
 
-                    {/* Visual Acuity Row */}
-                    <div className="flex items-center gap-4">
-                        <LabelBox label="Acuité" />
-                        <div className="flex-1 grid grid-cols-[auto_1fr_auto_1fr] gap-3 items-center">
-                            <span className="text-sm font-bold text-slate-700 w-6">VL</span>
-                            <div className="flex gap-2">
-                                <CompactSelect
-                                    value={data.visualAcuityVL_SC}
-                                    onChange={(v) => handleChange("visualAcuityVL_SC", v)}
-                                    options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC}
-                                    disabled={readOnly}
-                                    placeholder="SC"
-                                    className="flex-1 h-10 text-base"
-                                />
-                                <CompactSelect
-                                    value={data.visualAcuityVL_AC}
-                                    onChange={(v) => handleChange("visualAcuityVL_AC", v)}
-                                    options={VISUAL_ACUITY_OPTIONS_DISTANCE_AC}
-                                    disabled={readOnly}
-                                    placeholder="AC"
-                                    className="flex-1 h-10 text-base"
-                                />
+                {/* Visual Acuity Card */}
+                <div className={cn("bg-white/70 rounded-lg p-2 xl:p-2.5 border shadow-sm backdrop-blur-sm", themeBorder)}>
+                    <RowLayout label="AV" title="Acuité Visuelle" headerClassName={themeColor}>
+                        <div className="grid grid-cols-[auto_1fr_auto_1fr] gap-2 xl:gap-3 items-center">
+                            <span className="text-[9px] xl:text-[10px] 2xl:text-xs font-bold text-slate-400 w-4 xl:w-5 2xl:w-6 uppercase tracking-wider">VL</span>
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.visualAcuityVL_SC} onChange={(v) => handleChange("visualAcuityVL_SC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} disabled={readOnly} placeholder="SC" />
+                                <CompactSelect value={data.visualAcuityVL_AC} onChange={(v) => handleChange("visualAcuityVL_AC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_AC} disabled={readOnly} placeholder="AC" />
                             </div>
-
-                            <span className="text-sm font-bold text-slate-700 w-6">VP</span>
-                            <div className="flex gap-2">
-                                <CompactSelect
-                                    value={data.visualAcuityVP_SC}
-                                    onChange={(v) => handleChange("visualAcuityVP_SC", v)}
-                                    options={VISUAL_ACUITY_OPTIONS_NEAR}
-                                    disabled={readOnly}
-                                    placeholder="SC"
-                                    className="flex-1 h-10 text-base"
-                                />
-                                <CompactSelect
-                                    value={data.visualAcuityVP_AC}
-                                    onChange={(v) => handleChange("visualAcuityVP_AC", v)}
-                                    options={VISUAL_ACUITY_OPTIONS_NEAR}
-                                    disabled={readOnly}
-                                    placeholder="AC"
-                                    className="flex-1 h-10 text-base"
-                                />
+                            <span className="text-[9px] xl:text-[10px] 2xl:text-xs font-bold text-slate-400 w-4 xl:w-5 2xl:w-6 text-right uppercase tracking-wider">VP</span>
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.visualAcuityVP_SC} onChange={(v) => handleChange("visualAcuityVP_SC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="SC" />
+                                <CompactSelect value={data.visualAcuityVP_AC} onChange={(v) => handleChange("visualAcuityVP_AC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="AC" />
                             </div>
                         </div>
-                    </div>
+                    </RowLayout>
+                </div>
 
-                    <Separator />
-
-                    {/* Objective Refraction Row */}
-                    <RefractionRow
-                        label="Ref. Obj."
-                        prefix="obj"
-                        data={data}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                    />
-
-                    {/* Subjective Refraction Row */}
-                    <RefractionRow
-                        label="Ref. Subj."
-                        prefix=""
-                        data={data}
-                        onChange={handleChange}
-                        readOnly={readOnly}
-                    />
-
-                    <Separator />
-
-                    {/* Keratometry Row */}
-                    <div className="flex items-center gap-4">
-                        <LabelBox label="Kérato" />
-                        <div className="flex-1 grid grid-cols-4 gap-3">
-                            <Field label="K1">
-                                <CompactSelect
-                                    value={data.k1 || ""}
-                                    onChange={(v) => handleChange("k1", v)}
-                                    options={KERATOMETRY_VALUES}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="K2">
-                                <CompactSelect
-                                    value={data.k2 || ""}
-                                    onChange={(v) => handleChange("k2", v)}
-                                    options={KERATOMETRY_VALUES}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="Rayon">
-                                <Input
-                                    value={data.rayon || ""}
-                                    onChange={(e) => handleChange("rayon", e.target.value)}
-                                    disabled={readOnly}
-                                    placeholder="mm"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="Diamètre">
-                                <Input
-                                    value={data.diam || ""}
-                                    onChange={(e) => handleChange("diam", e.target.value)}
-                                    disabled={readOnly}
-                                    placeholder="mm"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
+                {/* Refraction Card */}
+                <div className={cn("bg-white/70 rounded-lg p-2 xl:p-2.5 border shadow-sm backdrop-blur-sm space-y-2", themeBorder)}>
+                    {/* Table Header */}
+                    <div className="flex items-center gap-1.5 xl:gap-2 px-1 mb-1">
+                        <div className="w-6 xl:w-8 shrink-0"></div> {/* Spacer for Label column */}
+                        <div className="flex-1 grid grid-cols-4 gap-1.5 xl:gap-2 text-center">
+                            <HeaderLabel>Sphère</HeaderLabel>
+                            <HeaderLabel>Cylindre</HeaderLabel>
+                            <HeaderLabel>Axe</HeaderLabel>
+                            <HeaderLabel>Add</HeaderLabel>
                         </div>
                     </div>
 
-                    <Separator />
-
-                    {/* Correction Row */}
-                    <div className="flex items-center gap-4">
-                        <LabelBox label="Correction" />
-                        <div className="flex-1 grid grid-cols-4 gap-3">
-                            <Field label="Verre">
-                                <CompactSelect
-                                    value={data.glassType}
-                                    onChange={(v) => handleChange("glassType", v)}
-                                    options={GLASS_TYPE_OPTIONS}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="Lentille">
-                                <CompactSelect
-                                    value={data.contactLensType}
-                                    onChange={(v) => handleChange("contactLensType", v)}
-                                    options={CONTACT_LENS_TYPE_OPTIONS}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="Modèle">
-                                <CompactSelect
-                                    value={data.lensType}
-                                    onChange={(v) => handleChange("lensType", v)}
-                                    options={LENS_TYPE_OPTIONS}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                            <Field label="Marque">
-                                <CompactSelect
-                                    value={data.lensBrand}
-                                    onChange={(v) => handleChange("lensBrand", v)}
-                                    options={LENS_BRAND_OPTIONS}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm"
-                                />
-                            </Field>
-                        </div>
+                    {/* Objective */}
+                    <div className={cn("rounded-md p-1 border border-transparent hover:border-slate-100 transition-colors", themeSectionBg)}>
+                        <RowLayout label="OBJ" title="Réfraction Objective" className="items-center" headerClassName={themeColor}>
+                            <div className="grid grid-cols-4 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.objSph} onChange={(v) => handleChange("objSph", v)} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objCyl} onChange={(v) => handleChange("objCyl", v)} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objAxis} onChange={(v) => handleChange("objAxis", v)} options={AXIS_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objAdd} onChange={(v) => handleChange("objAdd", v)} options={ADD_VALUES} disabled={readOnly} placeholder="-" />
+                            </div>
+                        </RowLayout>
                     </div>
 
-                    <Separator />
-
-                    {/* Tonometry - Full width */}
-                    <div className="flex items-center gap-4">
-                        <LabelBox label="PIO" />
-                        <div className="flex-1 grid grid-cols-5 gap-3">
-                            <Field label="Tension">
-                                <CompactSelect
-                                    value={data.tension}
-                                    onChange={(v) => handleChange("tension", v)}
-                                    options={TENSION_VALUES}
-                                    disabled={readOnly}
-                                    placeholder="-"
-                                    className="h-10 text-sm font-semibold"
-                                />
-                            </Field>
-                            <Field label="Corr.">
-                                <Input
-                                    value={data.corrected_iop || ""}
-                                    onChange={(e) => handleChange("corrected_iop", e.target.value)}
-                                    disabled={readOnly}
-                                    className="h-10 text-sm px-2 font-semibold"
-                                />
-                            </Field>
-                            <Field label="Applan.">
-                                <Input
-                                    value={data.tensionApplanation || ""}
-                                    onChange={(e) => handleChange("tensionApplanation", e.target.value)}
-                                    disabled={readOnly}
-                                    className="h-10 text-sm px-2"
-                                />
-                            </Field>
-                            <Field label="Pachy">
-                                <Input
-                                    value={data.pachymetry || ""}
-                                    onChange={(e) => handleChange("pachymetry", e.target.value)}
-                                    disabled={readOnly}
-                                    className="h-10 text-sm px-2"
-                                />
-                            </Field>
-                            <Field label="Heure">
-                                <input
-                                    type="time"
-                                    value={data.tensionTime || ""}
-                                    onChange={(e) => handleChange("tensionTime", e.target.value)}
-                                    disabled={readOnly}
-                                    className="h-10 w-full text-sm bg-white border border-input rounded-md px-2 focus:ring-1 focus:ring-ring"
-                                />
-                            </Field>
-                        </div>
+                    {/* Subjective - Highlighted */}
+                    <div className={cn("rounded-md p-1 border shadow-sm", themeBorder, isRight ? "bg-emerald-50/60" : "bg-blue-50/60")}>
+                        <RowLayout label="SUB" title="Réfraction Subjective" className="items-center" headerClassName={cn("font-extrabold", themeColor)}>
+                            <div className="grid grid-cols-4 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.sph} onChange={(v) => handleChange("sph", v)} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <CompactSelect value={data.cyl} onChange={(v) => handleChange("cyl", v)} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <CompactSelect value={data.axis} onChange={(v) => handleChange("axis", v)} options={AXIS_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <CompactSelect value={data.add} onChange={(v) => handleChange("add", v)} options={ADD_VALUES} disabled={readOnly} placeholder="-" bold />
+                            </div>
+                        </RowLayout>
                     </div>
                 </div>
-            </CardContent>
+
+                {/* Additional Info Card (Kerato & Lens) */}
+                <div className={cn("bg-white/70 rounded-lg p-2 xl:p-2.5 border shadow-sm backdrop-blur-sm space-y-2", themeBorder)}>
+                    {/* Keratometry */}
+                    <RowLayout label="KER" title="Kératométrie" headerClassName={themeColor}>
+                        <div className="space-y-1.5">
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactInput value={data.axis_k || ""} onChange={(v) => handleChange("axis_k", v)} disabled={readOnly} placeholder="R0" />
+                                <CompactInput value={data.diam || ""} onChange={(v) => handleChange("diam", v)} disabled={readOnly} placeholder="DL" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.k1} onChange={(v) => handleChange("k1", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K1" />
+                                <CompactSelect value={data.k2} onChange={(v) => handleChange("k2", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K2" />
+                            </div>
+                        </div>
+                    </RowLayout>
+
+                    <Separator className={cn("my-1", themeBorder)} />
+
+                    {/* Contact Lenses Section */}
+                    <RowLayout label="LEN" title="Lentilles de Contact" headerClassName={themeColor}>
+                        <div className="space-y-1.5">
+                            {/* Type & Material */}
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.contactLensType} onChange={(v) => handleChange("contactLensType", v)} options={CONTACT_LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Type" className="w-full" />
+                                <CompactSelect value={data.lensType} onChange={(v) => handleChange("lensType", v)} options={LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Matière" className="w-full" />
+                            </div>
+
+                            {/* Brand & Glass Type */}
+                            <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
+                                <CompactSelect value={data.lensBrand} onChange={(v) => handleChange("lensBrand", v)} options={LENS_BRAND_OPTIONS} disabled={readOnly} placeholder="Marque" className="w-full" />
+                                <CompactSelect value={data.glassType} onChange={(v) => handleChange("glassType", v)} options={GLASS_TYPE_OPTIONS} disabled={readOnly} placeholder="Verres" className="w-full" />
+                            </div>
+                        </div>
+                    </RowLayout>
+                </div>
+
+            </div>
         </Card>
     );
 });
 
-// Reuse Components
+// Helper Components
 
-function LabelBox({ label }: { label: string }) {
+function RowLayout({ label, title, children, className, headerClassName }: { label: string, title?: string, children: React.ReactNode, className?: string, headerClassName?: string }) {
     return (
-        <div className="w-[80px] flex-shrink-0 flex items-center justify-center h-full min-h-[40px]">
-            <span className="text-xs font-bold uppercase text-slate-500 tracking-wider text-center leading-tight">
-                {label}
-            </span>
-        </div>
-    );
-}
-
-function Field({ label, children, className }: { label: string, children: React.ReactNode, className?: string }) {
-    return (
-        <div className={cn("space-y-1 w-full", className)}>
-            {label && <Label className="text-[10px] text-slate-500 font-medium block truncate uppercase">{label}</Label>}
-            {children}
-        </div>
-    );
-}
-
-// Row Component for Refraction
-function RefractionRow({
-    label,
-    prefix,
-    data,
-    onChange,
-    readOnly
-}: {
-    label: string;
-    prefix: string;
-    data: EyeData;
-    onChange: (field: keyof EyeData, value: string) => void;
-    readOnly?: boolean;
-}) {
-    const fields = [
-        { label: "Sphère", key: prefix ? "objSph" : "sph", options: SPHERE_VALUES },
-        { label: "Cylindre", key: prefix ? "objCyl" : "cyl", options: CYLINDER_VALUES },
-        { label: "Axe", key: prefix ? "objAxis" : "axis", options: AXIS_VALUES },
-        { label: "Add", key: prefix ? "objAdd" : "add", options: ADD_VALUES },
-    ];
-
-    return (
-        <div className="flex items-center gap-4">
-            <LabelBox label={label} />
-            <div className="flex-1 grid grid-cols-4 gap-3">
-                {fields.map((f) => (
-                    <div key={f.key} className="space-y-1">
-                        <Label className="text-[10px] font-semibold text-slate-500 uppercase">{f.label}</Label>
-                        <CompactSelect
-                            value={(data as any)[f.key] || ""}
-                            onChange={(val: string) => onChange(f.key as any, val)}
-                            options={f.options}
-                            disabled={readOnly}
-                            placeholder="-"
-                            className="h-10 text-base font-medium"
-                        />
-                    </div>
-                ))}
+        <div className={cn("flex items-start gap-1.5 xl:gap-3", className)}>
+            <div className="w-6 xl:w-8 shrink-0 flex items-center justify-center pt-1.5 xl:pt-2 cursor-help" title={title}>
+                <span className={cn("text-[9px] xl:text-[11px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight hover:text-slate-700 transition-colors", headerClassName)}>{label}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                {children}
             </div>
         </div>
     );
 }
 
-function CompactSelect({ value, onChange, options, disabled, placeholder, className }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string }) {
+function HeaderLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <span className="text-[9px] xl:text-[10px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">{children}</span>
+    );
+}
+
+function CompactSelect({ value, onChange, options, disabled, placeholder, className, bold }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string, bold?: boolean }) {
     const nativeOptions = options.map(o => ({
         ...o,
         value: o.value === '__EMPTY__' ? '' : o.value,
@@ -370,10 +190,10 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
         <div className={cn("relative w-full", className)}>
             <select
                 className={cn(
-                    "flex w-full items-center justify-between rounded-md border border-slate-300 bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 appearance-none pr-8 cursor-pointer hover:bg-slate-50 transition-colors",
+                    "flex w-full items-center justify-between rounded-md border border-slate-200 bg-white/80 px-1.5 xl:px-2.5 py-1 xl:py-1.5 text-[10px] xl:text-xs 2xl:text-sm font-bold text-slate-900 ring-offset-background placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50 appearance-none pr-5 xl:pr-6 cursor-pointer hover:bg-white transition-all h-6 xl:h-8 2xl:h-10 shadow-sm",
+                    bold && "font-extrabold text-slate-900 border-slate-300 ring-1 ring-slate-100",
                     className
                 )}
-                style={{ height: className?.match(/h-\d+/)?.[0] ? undefined : '2.5rem' }}
                 value={value === '__EMPTY__' ? '' : (value || '')}
                 onChange={handleValueChange}
                 disabled={disabled}
@@ -384,7 +204,25 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
                     </option>
                 ))}
             </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
+            <ChevronDown className="absolute right-1.5 xl:right-2 top-1/2 -translate-y-1/2 h-3 w-3 xl:h-3.5 xl:w-3.5 text-slate-400 pointer-events-none" />
+        </div>
+    );
+}
+
+function CompactInput({ value, onChange, placeholder, disabled, className }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, className?: string }) {
+    return (
+        <div className={cn("relative w-full", className)}>
+            <input
+                type="text"
+                className={cn(
+                    "flex w-full rounded-md border border-slate-200 bg-white/80 px-1.5 xl:px-2.5 py-1 xl:py-1.5 text-[10px] xl:text-xs 2xl:text-sm font-bold text-slate-900 ring-offset-background placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50 h-6 xl:h-8 2xl:h-10 shadow-sm transition-all hover:bg-white text-center",
+                    className
+                )}
+                value={value || ''}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+                disabled={disabled}
+            />
         </div>
     );
 }

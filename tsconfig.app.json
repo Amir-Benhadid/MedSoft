@@ -1,9 +1,15 @@
 {
 	"compilerOptions": {
-		"types": ["./types"],
+		"types": [
+			"./types"
+		],
 		"target": "ESNext",
 		"useDefineForClassFields": true,
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ESNext"
+		],
 		"allowJs": false,
 		"skipLibCheck": true,
 		"esModuleInterop": false,
@@ -16,9 +22,24 @@
 		"isolatedModules": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
-		"allowImportingTsExtensions": true
+		"allowImportingTsExtensions": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
 	},
-	"include": ["src"],
-	"exclude": ["src/electron", "src/server"],
-	"references": [{ "path": "./tsconfig.node.json" }]
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"src/electron",
+		"src/server"
+	],
+	"references": [
+		{
+			"path": "./tsconfig.node.json"
+		}
+	]
 }

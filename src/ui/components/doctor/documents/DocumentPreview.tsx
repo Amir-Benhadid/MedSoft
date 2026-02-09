@@ -1,480 +1,880 @@
-import React, { useMemo } from 'react';
-import { Card } from '@/ui/components/ui/card';
-import { cn } from '@/ui/lib/utils';
+/**
+ * DocumentPreview Component
+ * 
+ * Displays a preview of various medical documents including prescriptions, 
+ * glasses, contact lenses, certificates, and medical reports.
+ * 
+ * @module DocumentPreview
+ */
+
+import React, { memo } from 'react';
+import { Card, CardContent } from '@/ui/components/ui/card';
 import { ScrollArea } from '@/ui/components/ui/scroll-area';
+import { cn } from '@/ui/lib/utils';
+import { useDocumentPreview } from './hooks/useDocumentPreview';
 
-import { useConsultationStore } from '@/ui/store/consultationStore';
-import { BILAN_CONFIGS } from './BilanDocuments';
-import genericRecords from './medical_records_structured.json';
-import { DocumentUtils } from './utils/DocumentUtils';
+interface DocumentPreviewProps {
+    activeDocTab: string;
+}
 
-const DocumentPreview: React.FC<{ activeDocTab: string; selectedGenericTemplate?: string }> = ({ activeDocTab, selectedGenericTemplate }) => {
-    // Connect directly to store for reactive updates
-    const patient = useConsultationStore(state => state.patient);
-    const clinicalExam = useConsultationStore(state => state.clinicalExam);
-    const rightEye = useConsultationStore(state => state.rightEye);
-    const leftEye = useConsultationStore(state => state.leftEye);
-    const overrides = useConsultationStore(state => state.documentOverrides);
-    const treatments = useConsultationStore(state => state.prescriptions);
+/**
+ * DocumentPreview component implementation
+ * 
+ * @param props - Component props
+ * @returns JSX element
+ */
+const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
+    // Get all preview data from hook
+    const {
+        patient,
+        rightEyeData,
+        leftEyeData,
+        detailedClinicalExam,
+        bilanFields,
+        prescriptionData,
+        absenceData,
+        workStopData,
+        reportData,
+        printControlFlags,
+        glassesPrintData,
+        contactLensesPrintData,
+        visualAcuityPrintData,
+        absencePrintData,
+        workStopPrintData,
+        tonometrie,
+    } = useDocumentPreview({ activeDocTab });
 
-    // Derived data mapping
-    const reportData = {
-        ...clinicalExam,
-        ...leftEye,
-        ...rightEye,
-        ...(overrides.report || {})
-    };
-
-    const glassesPrintData = {
-        rightEye: rightEye,
-        leftEye: leftEye,
-        ...(overrides.glasses || {})
-    };
-
-    const contactLensesPrintData = {
-        rightEye: rightEye,
-        leftEye: leftEye,
-        ...(overrides.contactLenses || {})
-    };
-
-    const workStopPrintData = overrides.workStop;
-    const printBilanData = overrides.bilan;
-    const printControlFlags = overrides.report;
-
-
-    const renderBilanPreview = (title: string, fields: any[]) => (
-        <div className="space-y-4 text-xs">
-            <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">{title}</h4>
-            <ul className="space-y-1 mt-2 list-none pl-0">
-                {fields.map((field, idx) => field.checked && (
-                    <li key={idx} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                        <span>{field.label}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-
-    const getCheckedBilanFields = (type: string, configTitle: string, fieldLabels: Record<string, string>) => {
-        const data = printBilanData?.[type];
-        if (!data) return null;
-
-        const checkedFields = Object.entries(data.selectedFields || {})
-            .filter(([_, checked]) => checked)
-            .map(([key]) => ({ label: fieldLabels[key] || key, checked: true }));
-
-        const customFields = (data.customFields || []).map((f: string) => ({ label: f, checked: true }));
-
-        const allFields = [...checkedFields, ...customFields];
-
-        if (allFields.length === 0) return null;
-
-        return renderBilanPreview(configTitle, allFields);
-    };
-
-    const renderDynamicBilan = (type: string) => {
-        const config = BILAN_CONFIGS[type];
-        if (!config) return null;
-
-        const fieldLabels = config.fields.reduce((acc, f) => {
-            acc[f.key] = f.label;
-            return acc;
-        }, {} as Record<string, string>);
-
-        return getCheckedBilanFields(type, config.title, fieldLabels);
-    };
-
-    const renderGenericPreview = () => {
-        if (!selectedGenericTemplate) return <div className="text-center italic text-slate-400">Aucun modèle sélectionné</div>;
-
-        const config = genericRecords.find(r => r.Code === selectedGenericTemplate);
-        if (!config) return null;
-
-        const data = overrides.generic?.[selectedGenericTemplate] || {};
-
-        return (
-            <div className="space-y-4 text-xs">
-                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">{config.Title}</h4>
-                <div className="space-y-4 whitespace-pre-wrap">
-                    <p className="italic text-slate-600 mb-2 border-b border-dashed pb-2">Données du document :</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(data).map(([key, value]) => (
-                            <div key={key} className="flex flex-col border p-2 rounded bg-slate-50">
-                                <span className="font-bold text-[10px] text-slate-500 uppercase">{key}</span>
-                                <span className="font-medium text-slate-900">{String(value)}</span>
-                            </div>
-                        ))}
-                    </div>
-                    {Object.keys(data).length === 0 && <p className="text-slate-400 text-center py-4">Aucune donnée saisie</p>}
-                </div>
-            </div>
-        );
-    };
-
-    const renderContactLenses = () => {
-        if (!contactLensesPrintData) return null;
-
-        const formatNumberWithSign = (value: string): string => {
-            const num = parseFloat(value || '0');
-            if (num === 0) return '0.00';
-            return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
-        };
-
-        const rightLensType = contactLensesPrintData.rightEye.contactLensType || 'Sphérique';
-        const leftLensType = contactLensesPrintData.leftEye.contactLensType || 'Sphérique';
-        const rightIsSpherical = rightLensType === 'Sphérique';
-        const leftIsSpherical = leftLensType === 'Sphérique';
-
-        const rightRx = contactLensesPrintData.rightEye.sph ? contactLensesPrintData.rightEye : null;
-        const leftRx = contactLensesPrintData.leftEye.sph ? contactLensesPrintData.leftEye : null;
-
-        if (!rightRx && !leftRx) return null;
-
-        return (
-            <div className="space-y-4 text-xs font-mono">
-                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">LENTILLES DE CONTACT</h4>
-
-                <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr_1fr] gap-2 mb-2 font-bold text-[10px] text-slate-500 uppercase border-b pb-1">
-                    <div></div>
-                    <div>Sphère</div>
-                    <div>{!rightIsSpherical && !leftIsSpherical ? 'Cylindre' : ''}</div>
-                    <div>{!rightIsSpherical && !leftIsSpherical ? 'Axe' : ''}</div>
-                    <div>Diam</div>
-                    <div>Rayon</div>
-                </div>
-
-                {rightRx && (
-                    <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center py-1">
-                        <div className="font-bold text-orange-600">OD</div>
-                        <div>{formatNumberWithSign(rightRx.sph)}</div>
-                        <div>
-                            {!rightIsSpherical && rightRx.cyl && `${formatNumberWithSign(rightRx.cyl)}`}
-                        </div>
-                        <div>
-                            {!rightIsSpherical && rightRx.axis && `${rightRx.axis}°`}
-                        </div>
-                        <div>{rightRx.diam ? `${rightRx.diam} mm` : '-'}</div>
-                        <div>{rightRx.axis_k ? `${rightRx.axis_k} mm` : '-'}</div>
-                    </div>
-                )}
-                {leftRx && (
-                    <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center py-1">
-                        <div className="font-bold text-orange-600">OG</div>
-                        <div>{formatNumberWithSign(leftRx.sph)}</div>
-                        <div>
-                            {!leftIsSpherical && leftRx.cyl && `${formatNumberWithSign(leftRx.cyl)}`}
-                        </div>
-                        <div>
-                            {!leftIsSpherical && leftRx.axis && `${leftRx.axis}°`}
-                        </div>
-                        <div>{leftRx.diam ? `${leftRx.diam} mm` : '-'}</div>
-                        <div>{leftRx.axis_k ? `${leftRx.axis_k} mm` : '-'}</div>
-                    </div>
-                )}
-
-                {(rightLensType || leftLensType) && (
-                    <div className="mt-4 pt-2 border-t border-dashed border-slate-200 space-y-1">
-                        <div className="font-bold text-slate-700">Type :</div>
-                        {rightRx && <div>OD: {rightLensType} {contactLensesPrintData.rightEye.lensBrand && `- ${contactLensesPrintData.rightEye.lensBrand}`}</div>}
-                        {leftRx && <div>OG: {leftLensType} {contactLensesPrintData.leftEye.lensBrand && `- ${contactLensesPrintData.leftEye.lensBrand}`}</div>}
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    const renderRadiographyPreview = () => {
-        const data = overrides['radiography_dynamic'];
-        if (!data) return <div className="text-center italic text-slate-400">Aucune donnée</div>;
-
-        const docTitle = data.templateTitle ? data.templateTitle.toUpperCase() : 'PROTOCOLE OPHTALMOLOGIQUE';
-
-        const renderLines = (lines: any[]) => (
-            <div className="space-y-2">
-                {lines.map((line: any) => line.title || line.content ? (
-                    <div key={line.id}>
-                        {line.title && <span className="font-bold">{line.title}: </span>}
-                        <span>{line.content}</span>
-                    </div>
-                ) : null)}
-            </div>
-        );
-
-        return (
-            <div className="space-y-4 text-xs">
-                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">{docTitle}</h4>
-
-                {data.eyeTreatment === 'same' ? (
-                    <div className="space-y-2">
-                        {renderLines(data.bothLines)}
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {data.odLines?.length > 0 && (
-                            <div>
-                                <div className="font-bold text-blue-600 mb-1 border-b border-blue-100">OD</div>
-                                {renderLines(data.odLines)}
-                            </div>
-                        )}
-                        {data.ogLines?.length > 0 && (
-                            <div>
-                                <div className="font-bold text-green-600 mb-1 border-b border-green-100">OG</div>
-                                {renderLines(data.ogLines)}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {data.conclusion && data.conclusion.length > 0 && (
-                    <div className="pt-4 border-t border-dashed mt-4">
-                        <div className="font-bold mb-1">Conclusion / Résumé</div>
-                        {data.conclusion.filter((c: string) => c).length === 1 ? (
-                            <p>{data.conclusion.find((c: string) => c)}</p>
-                        ) : (
-                            <ul className="list-disc pl-4 space-y-1">
-                                {data.conclusion.map((c: string, i: number) => c && <li key={i}>{c}</li>)}
-                            </ul>
-                        )}
-                    </div>
-                )}
-            </div>
-        );
-    };
+    // No accordion state needed - preview shows all medications fully expanded
 
     return (
-        <Card className="h-full bg-slate-50 border-slate-200 overflow-hidden flex flex-col shadow-inner">
-            <div className="p-2 border-b border-slate-100 bg-white/50 text-xs font-semibold text-slate-500 uppercase flex items-center justify-between">
-                <span>Aperçu du document</span>
-            </div>
-            <ScrollArea className="flex-1 p-4">
-                <div className="max-w-full mx-auto bg-white p-6 shadow-sm border border-slate-100 min-h-[500px] text-slate-800 flex flex-col">
+        <ScrollArea className="h-full w-full">
+            <div className="text-xs whitespace-pre-wrap text-foreground pr-2">
+                {activeDocTab === 'bilanPreOp' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                {bilanFields?.bilanPreOp.groupage && (
+                                    <p className="text-xs mb-2 font-semibold">Groupage</p>
+                                )}
+                                {bilanFields?.bilanPreOp.fnsTP && (
+                                    <p className="text-xs mb-2 font-semibold">FNS - TP</p>
+                                )}
+                                {bilanFields?.bilanPreOp.ionogramme && (
+                                    <p className="text-xs mb-2 font-semibold">Ionogramme sanguin</p>
+                                )}
+                                {bilanFields?.bilanPreOp.glycemie && (
+                                    <p className="text-xs mb-2 font-semibold">Glycémie à jeun</p>
+                                )}
+                                {bilanFields?.bilanPreOp.ureeCreatinine && (
+                                    <p className="text-xs mb-2 font-semibold">Urée - créatinine sanguines</p>
+                                )}
+                                {bilanFields?.bilanPreOp.bilanHepatique && (
+                                    <p className="text-xs mb-2 font-semibold">Bilan hépatique</p>
+                                )}
+                                {bilanFields?.bilanPreOp.ecgCardiologie && (
+                                    <p className="text-xs mb-2 font-semibold">ECG / Avis de cardiologie</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
-                    {/* Content */}
-                    <div className="space-y-6 flex-1">
-                        {activeDocTab === 'contacts' && renderContactLenses()}
+                {activeDocTab === 'bilanDiabete' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                {bilanFields?.bilanDiabete.glycemieJeun && (
+                                    <p className="text-xs mb-2 font-semibold">Glycémie à jeun</p>
+                                )}
+                                {bilanFields?.bilanDiabete.glycemiePostPrandiale && (
+                                    <p className="text-xs mb-2 font-semibold">Glycémie post-prandiale</p>
+                                )}
+                                {bilanFields?.bilanDiabete.hbA1c && (
+                                    <p className="text-xs mb-2 font-semibold">HbA1c</p>
+                                )}
+                                {bilanFields?.bilanDiabete.cholesterol && (
+                                    <p className="text-xs mb-2 font-semibold">Cholestérol sanguin</p>
+                                )}
+                                {bilanFields?.bilanDiabete.tgb && (
+                                    <p className="text-xs mb-2 font-semibold">TGB</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
-                        {activeDocTab.startsWith('bilan') && renderDynamicBilan(activeDocTab.replace('bilan', '').toLowerCase())}
+                {activeDocTab === 'bilanInflammatoire' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                {bilanFields?.bilanInflammatoire.fns && (
+                                    <p className="text-xs mb-2 font-semibold">FNS</p>
+                                )}
+                                {bilanFields?.bilanInflammatoire.crp && (
+                                    <p className="text-xs mb-2 font-semibold">CRP</p>
+                                )}
+                                {bilanFields?.bilanInflammatoire.fibrinogene && (
+                                    <p className="text-xs mb-2 font-semibold">Fibrinogène</p>
+                                )}
+                                {bilanFields?.bilanInflammatoire.vs && (
+                                    <p className="text-xs mb-2 font-semibold">VS</p>
+                                )}
+                                {bilanFields?.bilanInflammatoire.electrophorese && (
+                                    <p className="text-xs mb-2 font-semibold">Électrophorèse</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
-                        {activeDocTab === 'generic' && renderGenericPreview()}
+                {activeDocTab === 'bilanUveite' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                {bilanFields?.bilanUveite.fns && (
+                                    <p className="text-xs mb-2 font-semibold">FNS</p>
+                                )}
+                                {bilanFields?.bilanUveite.vsCrp && (
+                                    <p className="text-xs mb-2 font-semibold">VS - CRP</p>
+                                )}
+                                {bilanFields?.bilanUveite.electrophorese && (
+                                    <p className="text-xs mb-2 font-semibold">Électrophorèse</p>
+                                )}
+                                {bilanFields?.bilanUveite.toxoplasmose && (
+                                    <p className="text-xs mb-2 font-semibold">Toxoplasmose</p>
+                                )}
+                                {bilanFields?.bilanUveite.idrTuberculine && (
+                                    <p className="text-xs mb-2 font-semibold">IDR à la tuberculine</p>
+                                )}
+                                {bilanFields?.bilanUveite.aslo && (
+                                    <p className="text-xs mb-2 font-semibold">ASLO</p>
+                                )}
+                                {bilanFields?.bilanUveite.typageHla && (
+                                    <p className="text-xs mb-2 font-semibold">Typage HLA</p>
+                                )}
+                                {bilanFields?.bilanUveite.vdrlTpha && (
+                                    <p className="text-xs mb-2 font-semibold">VDRL - TPHA</p>
+                                )}
+                                {bilanFields?.bilanUveite.serologie && (
+                                    <p className="text-xs mb-2 font-semibold">Sérologie</p>
+                                )}
+                                {bilanFields?.bilanUveite.radioThorax && (
+                                    <p className="text-xs mb-2 font-semibold">Radio de thorax</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
-                        {activeDocTab === 'radiography' && renderRadiographyPreview()}
+                {activeDocTab === 'contacts' &&
+                    ((printControlFlags?.includeRightEye !== false && contactLensesPrintData?.rightEye?.sph) ||
+                        (printControlFlags?.includeLeftEye !== false && contactLensesPrintData?.leftEye?.sph)) && (
+                        <div className="mt-1">
+                            <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                                <CardContent className="p-0 space-y-2">
+                                    <p className="text-xs mb-2 font-semibold">LENTILLES DE CONTACT</p>
 
-                        {activeDocTab === 'workStop' && workStopPrintData && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">ARRÊT DE TRAVAIL</h4>
-                                <p>
-                                    Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail :
+                                    {(() => {
+                                        /**
+                                         * Formats a number with sign prefix
+                                         * @param value - Number string to format
+                                         * @returns Formatted string with sign
+                                         */
+                                        const formatNumberWithSign = (value: string): string => {
+                                            const num = parseFloat(value || '0');
+                                            if (num === 0) return '0.00';
+                                            return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
+                                        };
+
+                                        // Use optional chaining and default to true if undefined, but respect false
+                                        const showRightEye = printControlFlags?.includeRightEye !== false;
+                                        const showLeftEye = printControlFlags?.includeLeftEye !== false;
+
+                                        const rightContactRx = (showRightEye && contactLensesPrintData?.rightEye?.sph)
+                                            ? {
+                                                sphere: contactLensesPrintData.rightEye.sph,
+                                                cylinder: contactLensesPrintData.rightEye.cyl,
+                                                axis: contactLensesPrintData.rightEye.axis,
+                                            }
+                                            : null;
+
+                                        const leftContactRx = (showLeftEye && contactLensesPrintData?.leftEye?.sph)
+                                            ? {
+                                                sphere: contactLensesPrintData.leftEye.sph,
+                                                cylinder: contactLensesPrintData.leftEye.cyl,
+                                                axis: contactLensesPrintData.leftEye.axis,
+                                            }
+                                            : null;
+
+                                        const rightLensType = contactLensesPrintData?.rightEye?.contactLensType || 'Sphérique';
+                                        const leftLensType = contactLensesPrintData?.leftEye?.contactLensType || 'Sphérique';
+                                        const rightIsSpherical = rightLensType === 'Sphérique';
+                                        const leftIsSpherical = leftLensType === 'Sphérique';
+
+                                        return (
+                                            <>
+                                                {(rightContactRx || leftContactRx) && (
+                                                    <div className="mb-3">
+                                                        <div className="flex mb-2 text-xs font-semibold">
+                                                            <div className="w-[60px]">Œil</div>
+                                                            <div className="w-[80px]">Sphère</div>
+                                                            {!rightIsSpherical && !leftIsSpherical && (
+                                                                <>
+                                                                    <div className="w-[80px]">Cylindre</div>
+                                                                    <div className="w-[60px]">Axe</div>
+                                                                </>
+                                                            )}
+                                                            <div className="w-[80px]">Diamètre</div>
+                                                            <div className="w-[80px]">Rayon</div>
+                                                        </div>
+
+                                                        {rightContactRx && (
+                                                            <div className="flex mb-2 text-xs p-1.5 bg-blue-50/30 rounded border border-blue-200">
+                                                                <div className="w-[60px] font-medium text-blue-700">OD</div>
+                                                                <div className="w-[80px]">{formatNumberWithSign(rightContactRx.sphere)} D</div>
+                                                                {!rightIsSpherical && (
+                                                                    <>
+                                                                        <div className="w-[80px]">{formatNumberWithSign(rightContactRx.cylinder)} D</div>
+                                                                        <div className="w-[60px]">{rightContactRx.axis}°</div>
+                                                                    </>
+                                                                )}
+                                                                <div className="w-[80px]">{contactLensesPrintData?.rightEye?.diam || '-'} mm</div>
+                                                                <div className="w-[80px]">{contactLensesPrintData?.rightEye?.axis_k || '-'} mm</div>
+                                                            </div>
+                                                        )}
+
+                                                        {leftContactRx && (
+                                                            <div className="flex mb-2 text-xs p-1.5 bg-green-50/30 rounded border border-green-200">
+                                                                <div className="w-[60px] font-medium text-green-700">OG</div>
+                                                                <div className="w-[80px]">{formatNumberWithSign(leftContactRx.sphere)} D</div>
+                                                                {!leftIsSpherical && (
+                                                                    <>
+                                                                        <div className="w-[80px]">{formatNumberWithSign(leftContactRx.cylinder)} D</div>
+                                                                        <div className="w-[60px]">{leftContactRx.axis}°</div>
+                                                                    </>
+                                                                )}
+                                                                <div className="w-[80px]">{contactLensesPrintData?.leftEye?.diam || '-'} mm</div>
+                                                                <div className="w-[80px]">{contactLensesPrintData?.leftEye?.axis_k || '-'} mm</div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {((showRightEye && contactLensesPrintData?.rightEye?.contactLensType) ||
+                                                    (showLeftEye && contactLensesPrintData?.leftEye?.contactLensType)) && (
+                                                        <div className="space-y-1">
+                                                            <p className="text-xs font-semibold">Type de lentilles:</p>
+                                                            {showRightEye && contactLensesPrintData?.rightEye?.contactLensType && (
+                                                                <p className="text-xs p-1 bg-blue-50/30 rounded border border-blue-200 text-blue-700">OD: {contactLensesPrintData.rightEye.contactLensType}</p>
+                                                            )}
+                                                            {showLeftEye && contactLensesPrintData?.leftEye?.contactLensType && (
+                                                                <p className="text-xs p-1 bg-green-50/30 rounded border border-green-200 text-green-700">OG: {contactLensesPrintData.leftEye.contactLensType}</p>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                {((showRightEye && contactLensesPrintData?.rightEye?.lensBrand) ||
+                                                    (showLeftEye && contactLensesPrintData?.leftEye?.lensBrand)) && (
+                                                        <div className="space-y-1">
+                                                            <p className="text-xs font-semibold">Marque:</p>
+                                                            {showRightEye && contactLensesPrintData?.rightEye?.lensBrand && (
+                                                                <p className="text-xs p-1 bg-blue-50/30 rounded border border-blue-200 text-blue-700">OD: {contactLensesPrintData.rightEye.lensBrand}</p>
+                                                            )}
+                                                            {showLeftEye && contactLensesPrintData?.leftEye?.lensBrand && (
+                                                                <p className="text-xs p-1 bg-green-50/30 rounded border border-green-200 text-green-700">OG: {contactLensesPrintData.leftEye.lensBrand}</p>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                            </>
+                                        );
+                                    })()}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
+
+                {activeDocTab === 'divers' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                <p className="text-xs mb-2 font-semibold">Document vierge</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Document avec en-tête patient uniquement - espace libre pour
+                                    écriture manuelle
                                 </p>
-                                <div className="pl-4 border-l-2 border-slate-100 space-y-2">
-                                    <div className="flex gap-2">
-                                        <span className="font-semibold w-24">Du :</span>
-                                        <span>{workStopPrintData.startDate ? new Date(workStopPrintData.startDate).toLocaleDateString('fr-FR') : '...'}</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <span className="font-semibold w-24">Au :</span>
-                                        <span>{workStopPrintData.endDate ? new Date(workStopPrintData.endDate).toLocaleDateString('fr-FR') : '...'}</span>
-                                    </div>
-                                    <div className="flex gap-2 text-slate-500 italic">
-                                        {workStopPrintData.exitAuthorized ? 'Sortie autorisée' : 'Sortie non-autorisée'}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
-                        {activeDocTab === 'report' && reportData && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">COMPTE RENDU</h4>
+                {activeDocTab === 'certificatAcuite' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                <p className="text-xs mb-2 font-semibold">CERTIFICAT D'ACUITÉ VISUELLE</p>
+                                <p className="text-xs mb-2">
+                                    Je certifie que le(a) patient(e) sus-nommé(e) présente:
+                                </p>
 
-                                {(reportData.generalMedicalHistory || reportData.ophthalmologicalHistory) && (
+                                {printControlFlags?.includeVisualAcuityWithoutCorrection && (
                                     <div className="space-y-1">
-                                        <div className="font-semibold text-slate-700">Antécédents :</div>
-                                        <p>{[reportData.generalMedicalHistory, reportData.ophthalmologicalHistory].filter(Boolean).join(', ')}</p>
-                                    </div>
-                                )}
-
-                                {reportData.inspection && (
-                                    <div className="space-y-1">
-                                        <div className="font-semibold text-slate-700">Inspection :</div>
-                                        <p>{reportData.inspection}</p>
-                                    </div>
-                                )}
-
-                                {(printControlFlags?.includeVisualAcuityWithoutCorrection || printControlFlags?.includeVisualAcuityWithCorrection) && (
-                                    <div className="grid grid-cols-2 gap-4 bg-slate-50 p-2 rounded">
-                                        {printControlFlags?.includeVisualAcuityWithoutCorrection && (
-                                            <div>
-                                                <div className="font-semibold mb-1 text-slate-700">Sans Correction</div>
-                                                <div>OD: {reportData.printVisualAcuityVL_SC_OD || reportData.visualAcuityVL_SC_OD || '-'}</div>
-                                                <div>OG: {reportData.printVisualAcuityVL_SC_OG || reportData.visualAcuityVL_SC_OG || '-'}</div>
-                                            </div>
-                                        )}
-                                        {printControlFlags?.includeVisualAcuityWithCorrection && (
-                                            <div>
-                                                <div className="font-semibold mb-1 text-slate-700">Avec Correction</div>
-                                                <div>OD: {reportData.printVisualAcuityVL_AC_OD || reportData.visualAcuityVL_AC_OD || '-'}</div>
-                                                <div>OG: {reportData.printVisualAcuityVL_AC_OG || reportData.visualAcuityVL_AC_OG || '-'}</div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {printControlFlags?.includeTonometry && (
-                                    <div className="space-y-1">
-                                        <div className="font-semibold text-slate-700">Tonométrie :</div>
+                                        <p className="text-xs font-semibold">Acuité visuelle sans correction:</p>
                                         <div className="flex gap-4">
-                                            <span>OD: {reportData.tonometryOD || '-'} mmHg</span>
-                                            <span>OG: {reportData.tonometryOG || '-'} mmHg</span>
+                                            {visualAcuityPrintData?.visualAcuityVL_SC_OD && (
+                                                <p className="text-xs">OD: {visualAcuityPrintData.visualAcuityVL_SC_OD}</p>
+                                            )}
+                                            {visualAcuityPrintData?.visualAcuityVL_SC_OG && (
+                                                <p className="text-xs">OG: {visualAcuityPrintData.visualAcuityVL_SC_OG}</p>
+                                            )}
                                         </div>
                                     </div>
                                 )}
 
-                                {reportData.segmentAnterieur && (
+                                {printControlFlags?.includeVisualAcuityWithCorrection && (
                                     <div className="space-y-1">
-                                        <div className="font-semibold text-slate-700">Segment Antérieur :</div>
-                                        <p>{reportData.segmentAnterieur}</p>
-                                    </div>
-                                )}
-
-                                {reportData.fondOeil && (
-                                    <div className="space-y-1">
-                                        <div className="font-semibold text-slate-700">Fond d'œil :</div>
-                                        <p>{reportData.fondOeil}</p>
-                                    </div>
-                                )}
-
-                                {reportData.conclusion && (
-                                    <div className="pt-2 border-t border-slate-100">
-                                        <div className="font-semibold text-slate-900">Conclusion :</div>
-                                        <p>{reportData.conclusion}</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeDocTab === 'glasses' && glassesPrintData && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">Correction Optique</h4>
-                                <div className="space-y-2">
-                                    <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-2 font-bold text-[10px] text-slate-500 uppercase border-b pb-1">
-                                        <div></div>
-                                        <div>Sph</div>
-                                        <div>Cyl</div>
-                                        <div>Axe</div>
-                                        <div>Add</div>
-                                    </div>
-                                    <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-2 items-center">
-                                        <div className="font-bold text-blue-600">OD</div>
-                                        <div>{glassesPrintData.rightEye.sph}</div>
-                                        <div>{glassesPrintData.rightEye.cyl}</div>
-                                        <div>{glassesPrintData.rightEye.axis}°</div>
-                                        <div>{glassesPrintData.rightEye.add}</div>
-                                    </div>
-                                    <div className="grid grid-cols-[30px_1fr_1fr_1fr_1fr] gap-2 items-center">
-                                        <div className="font-bold text-blue-600">OG</div>
-                                        <div>{glassesPrintData.leftEye.sph}</div>
-                                        <div>{glassesPrintData.leftEye.cyl}</div>
-                                        <div>{glassesPrintData.leftEye.axis}°</div>
-                                        <div>{glassesPrintData.leftEye.add}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeDocTab === 'medications' && treatments && treatments.length > 0 && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">ORDONNANCE MÉDICALE</h4>
-                                <div className="space-y-4">
-                                    {treatments.map((t: any, idx: number) => (
-                                        <div key={idx} className="space-y-1">
-                                            <div className="font-bold text-slate-900 flex items-center gap-2">
-                                                <span className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center text-[9px] text-slate-500">{idx + 1}</span>
-                                                {t.name}
-                                            </div>
-                                            <div className="pl-6 text-slate-600 text-[11px] italic">
-                                                {[t.dosage, t.frequency, t.duration].filter(Boolean).join(' - ')}
-                                            </div>
-                                            {t.instructions && <div className="pl-6 text-slate-500 text-[10px]">{t.instructions}</div>}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {activeDocTab === 'visualAcuity' && overrides.visualAcuityCertificate && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">CERTIFICAT D'ACUITÉ VISUELLE</h4>
-                                <p className="mb-4 text-slate-600 italic">Je soussigné, certifie que l'examen de la vue de ce jour a révélé:</p>
-
-                                {overrides.visualAcuityCertificate.includeRaw !== false && (
-                                    <div className="space-y-2">
-                                        <div className="font-bold text-slate-700 text-[11px]">Sans Correction</div>
-                                        <div className="grid grid-cols-2 gap-4 pl-3 border-l-2 border-slate-200">
-                                            <div>OD: <span className="font-mono">{overrides.visualAcuityCertificate.rightEye?.raw || '-'}</span></div>
-                                            <div>OG: <span className="font-mono">{overrides.visualAcuityCertificate.leftEye?.raw || '-'}</span></div>
+                                        <p className="text-xs font-semibold">Acuité visuelle avec correction:</p>
+                                        <div className="flex gap-4">
+                                            {visualAcuityPrintData?.visualAcuityVL_AC_OD && (
+                                                <p className="text-xs">OD: {visualAcuityPrintData.visualAcuityVL_AC_OD}</p>
+                                            )}
+                                            {visualAcuityPrintData?.visualAcuityVL_AC_OG && (
+                                                <p className="text-xs">OG: {visualAcuityPrintData.visualAcuityVL_AC_OG}</p>
+                                            )}
                                         </div>
                                     </div>
                                 )}
-
-                                {overrides.visualAcuityCertificate.includeCorrection !== false && (
-                                    <div className="space-y-2 mt-4">
-                                        <div className="font-bold text-slate-700 text-[11px]">Avec Correction</div>
-                                        <div className="grid grid-cols-2 gap-4 pl-3 border-l-2 border-blue-200 bg-blue-50/30 p-2 rounded-r">
-                                            <div>OD: <span className="font-mono">{overrides.visualAcuityCertificate.rightEye?.correction || '-'}</span></div>
-                                            <div>OG: <span className="font-mono">{overrides.visualAcuityCertificate.leftEye?.correction || '-'}</span></div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeDocTab === 'absence' && overrides.absenceCertificate && (
-                            <div className="text-xs space-y-4">
-                                <h4 className="font-bold border-b pb-1 text-slate-800 uppercase text-xs">CERTIFICAT D'ABSENCE</h4>
-                                <div className="space-y-4">
-                                    <p>Je soussigné, certifie que l'état de santé du patient nécessite un repos médical.</p>
-                                    <div className="bg-amber-50 p-3 rounded border border-amber-100 text-amber-900 space-y-2">
-                                        <div className="font-semibold text-[11px] uppercase tracking-wide text-amber-700">Motif</div>
-                                        <div>{overrides.absenceCertificate.reason}</div>
-
-                                        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-amber-100/50 mt-2">
-                                            <div>
-                                                <span className="text-amber-700 text-[10px] uppercase block">Du</span>
-                                                {overrides.absenceCertificate.startDate}
-                                            </div>
-                                            <div>
-                                                <span className="text-amber-700 text-[10px] uppercase block">Au</span>
-                                                {overrides.absenceCertificate.endDate}
-                                            </div>
-                                        </div>
-                                        <div className="pt-2">
-                                            <span className="text-amber-700 text-[10px] uppercase block">Durée</span>
-                                            <span className="font-bold">{overrides.absenceCertificate.daysCount} jours</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                            </CardContent>
+                        </Card>
                     </div>
+                )}
 
-                    {/* Footer / Signature Placeholder */}
-                    <div className="mt-8 pt-4 border-t border-slate-100 text-[10px] text-slate-400 text-center flex-none">
-                        Document généré le {new Date().toLocaleString('fr-FR')} - Logiciel Ophtalmologie
+                {activeDocTab === 'absence' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0 space-y-2">
+                                <p className="text-xs mb-2 font-semibold">CERTIFICAT DE PRÉSENCE</p>
+                                <p className="text-xs mb-2">
+                                    {(() => {
+                                        const today = new Date();
+                                        const consultationDate = absencePrintData?.consultationDate || absenceData?.date || today;
+                                        const isToday = consultationDate.toDateString() === today.toDateString();
+
+                                        if (isToday) {
+                                            return "Je certifie que le(a) patient(e) sus-nommé(e) s'est présenté(e) à ma consultation ce jour.";
+                                        } else {
+                                            const dateInLetters = consultationDate.toLocaleDateString('fr-FR', {
+                                                weekday: 'long',
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            });
+                                            return `Je certifie que le(a) patient(e) sus-nommé(e) s'est présenté(e) à ma consultation le ${dateInLetters}.`;
+                                        }
+                                    })()}
+                                </p>
+                                <p className="text-xs mb-2">
+                                    Ce certificat peut justifier son absence professionnelle ou scolaire.
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
+                )}
 
-                </div>
-            </ScrollArea>
-        </Card>
+                {activeDocTab === 'workStop' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0">
+                                <p className="text-xs mb-2 font-semibold">
+                                    ARRÊT DE TRAVAIL
+                                </p>
+
+                                {(() => {
+                                    const startDate = workStopPrintData?.startDate || workStopData?.startDate;
+                                    const endDate = workStopPrintData?.endDate || workStopData?.endDate;
+                                    const exitAuthorized = workStopPrintData?.exitAuthorized ?? workStopData?.exitAuthorized;
+
+                                    if (!startDate || !endDate) return null;
+
+                                    // Calculate duration in days
+                                    const start = new Date(startDate);
+                                    const end = new Date(endDate);
+                                    const durationMs = end.getTime() - start.getTime();
+                                    const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
+
+                                    // Convert number to French words
+                                    const numberToFrenchWords = (num: number): string => {
+                                        const ones = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                        const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+                                        const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
+
+                                        if (num === 0) return 'zéro';
+                                        if (num < 10) return ones[num];
+                                        if (num < 20) return teens[num - 10];
+                                        if (num < 100) {
+                                            const ten = Math.floor(num / 10);
+                                            const one = num % 10;
+                                            if (ten === 7) return 'soixante-' + teens[one];
+                                            if (ten === 9) return 'quatre-vingt-' + teens[one];
+                                            return tens[ten] + (one > 0 ? '-' + ones[one] : '');
+                                        }
+                                        return num.toString(); // Fallback for numbers >= 100
+                                    };
+
+                                    return (
+                                        <div className="space-y-2">
+                                            <p className="text-xs">
+                                                Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail
+                                            </p>
+                                            <p className="text-xs">
+                                                de: {numberToFrenchWords(durationDays)} ( {durationDays.toString().padStart(2, '0')} ) jours
+                                            </p>
+                                            <p className="text-xs">
+                                                à compter du: {start.toLocaleDateString('fr-FR')}
+                                            </p>
+                                            {exitAuthorized && (
+                                                <p className="text-xs">
+                                                    sortie autorisée
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
+
+                {activeDocTab === 'medications' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0">
+                                {prescriptionData?.treatments && prescriptionData.treatments.length > 0 ? (
+                                    <div className="space-y-1.5">
+                                        {/* Reverse order: oldest to newest (controller shows newest to oldest) */}
+                                        {[...prescriptionData.treatments].reverse().map((treatment, reversedIndex) => {
+                                            // Calculate original index for numbering (oldest = 1, newest = last)
+                                            const originalIndex = prescriptionData.treatments.length - 1 - reversedIndex;
+                                            const name = treatment.name || treatment.customName;
+                                            if (!name) return null;
+
+                                            const isActive = treatment.isNew;
+                                            const nameWithStrength = treatment.strength
+                                                ? `${name} - ${treatment.strength}`
+                                                : name;
+
+                                            return (
+                                                <div
+                                                    key={originalIndex}
+                                                    className={cn(
+                                                        "rounded-lg border p-2.5 transition-all",
+                                                        isActive
+                                                            ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20 shadow-sm"
+                                                            : "bg-muted/30 border-border"
+                                                    )}
+                                                >
+                                                    {/* Full medication display (no accordion) */}
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div className={cn(
+                                                            "text-xs font-semibold flex-[0_0_40%] text-left",
+                                                            isActive ? "text-primary" : "text-foreground"
+                                                        )}>
+                                                            {reversedIndex + 1}. {nameWithStrength}
+                                                        </div>
+                                                        <div className={cn(
+                                                            "text-xs flex-[0_0_25%] text-center",
+                                                            isActive ? "text-primary/80" : "text-muted-foreground"
+                                                        )}>
+                                                            {treatment.type || ''}
+                                                        </div>
+                                                        <div className={cn(
+                                                            "text-xs flex-[0_0_30%] text-right",
+                                                            isActive ? "text-primary/80" : "text-muted-foreground"
+                                                        )}>
+                                                            {treatment.packaging || ''}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Always show details (no accordion) */}
+                                                    <div className={cn(
+                                                        "space-y-1.5 pt-2 border-t",
+                                                        isActive ? "border-primary/20" : "border-border"
+                                                    )}>
+                                                        {treatment.instructions && (
+                                                            <div className={cn(
+                                                                "text-xs ml-2",
+                                                                isActive ? "text-primary/80" : "text-muted-foreground"
+                                                            )}>
+                                                                <span className="font-semibold">Instructions:</span> {treatment.instructions}
+                                                            </div>
+                                                        )}
+                                                        {treatment.dosage && (
+                                                            <div className={cn(
+                                                                "text-xs ml-2",
+                                                                isActive ? "text-primary/80" : "text-muted-foreground"
+                                                            )}>
+                                                                <span className="font-semibold">Dosage:</span> {treatment.dosage}
+                                                            </div>
+                                                        )}
+                                                        {!treatment.instructions && !treatment.dosage && (
+                                                            <div className={cn(
+                                                                "text-xs ml-2 italic",
+                                                                isActive ? "text-primary/60" : "text-muted-foreground/70"
+                                                            )}>
+                                                                Aucun détail supplémentaire
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="text-xs text-muted-foreground text-center py-4">
+                                        Aucun médicament prescrit
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
+
+                {activeDocTab === 'glasses' &&
+                    (printControlFlags?.includeFarVision === true || printControlFlags?.includeNearVision === true ||
+                        (printControlFlags?.includeRightEyeFar !== false || printControlFlags?.includeLeftEyeFar !== false ||
+                            printControlFlags?.includeRightEyeNear !== false || printControlFlags?.includeLeftEyeNear !== false)) && (
+                        <div className="mt-1">
+                            <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                                <CardContent className="p-0">
+                                    <p className="text-xs mb-2 font-semibold">
+                                        VERRES CORRECTEURS
+                                    </p>
+
+                                    {/* Vision de Loin */}
+                                    {printControlFlags?.includeFarVision === true && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Vision de Loin:
+                                            </p>
+                                            {printControlFlags?.includeRightEyeFar !== false && (
+                                                <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
+                                                    <p className="text-xs font-medium text-blue-700">
+                                                        OD: {(() => {
+                                                            const hasData = glassesPrintData?.rightEye?.sph &&
+                                                                (parseFloat(glassesPrintData.rightEye.sph) !== 0 ||
+                                                                    (glassesPrintData.rightEye.cyl && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
+                                                                    (glassesPrintData.rightEye.axis && parseFloat(glassesPrintData.rightEye.axis) !== 0));
+                                                            const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
+
+                                                            if (hasData) {
+                                                                return `${glassesPrintData.rightEye.sph ? (parseFloat(glassesPrintData.rightEye.sph) > 0 ? `+${glassesPrintData.rightEye.sph}` : glassesPrintData.rightEye.sph) : '0.00'}${glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '0.00' ? ` (${parseFloat(glassesPrintData.rightEye.cyl) > 0 ? `+${glassesPrintData.rightEye.cyl}` : glassesPrintData.rightEye.cyl})` : ''}${glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '0' ? ` ${glassesPrintData.rightEye.axis}` : ''}`;
+                                                            } else if (emptyOption === 'conserver') {
+                                                                return 'Conserver ancienne lentille';
+                                                            } else {
+                                                                return 'Plan';
+                                                            }
+                                                        })()}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {printControlFlags?.includeLeftEyeFar !== false && (
+                                                <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
+                                                    <p className="text-xs font-medium text-green-700">
+                                                        OG: {(() => {
+                                                            const hasData = glassesPrintData?.leftEye?.sph &&
+                                                                (parseFloat(glassesPrintData.leftEye.sph) !== 0 ||
+                                                                    (glassesPrintData.leftEye.cyl && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
+                                                                    (glassesPrintData.leftEye.axis && parseFloat(glassesPrintData.leftEye.axis) !== 0));
+                                                            const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
+
+                                                            if (hasData) {
+                                                                return `${glassesPrintData.leftEye.sph ? (parseFloat(glassesPrintData.leftEye.sph) > 0 ? `+${glassesPrintData.leftEye.sph}` : glassesPrintData.leftEye.sph) : '0.00'}${glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '0.00' ? ` (${parseFloat(glassesPrintData.leftEye.cyl) > 0 ? `+${glassesPrintData.leftEye.cyl}` : glassesPrintData.leftEye.cyl})` : ''}${glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '0' ? ` ${glassesPrintData.leftEye.axis}` : ''}`;
+                                                            } else if (emptyOption === 'conserver') {
+                                                                return 'Conserver ancienne lentille';
+                                                            } else {
+                                                                return 'Plan';
+                                                            }
+                                                        })()}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {/* Vision de Près - only if includeNearVision is explicitly true */}
+                                    {printControlFlags?.includeNearVision === true && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Vision de Près:
+                                            </p>
+                                            {printControlFlags?.includeRightEyeNear !== false && (
+                                                <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
+                                                    <p className="text-xs font-medium text-blue-700">
+                                                        OD: {(() => {
+                                                            const hasData = glassesPrintData?.rightEye?.nearSph &&
+                                                                (parseFloat(glassesPrintData.rightEye.nearSph) !== 0 ||
+                                                                    (glassesPrintData.rightEye.nearCyl && parseFloat(glassesPrintData.rightEye.nearCyl) !== 0) ||
+                                                                    (glassesPrintData.rightEye.nearAxis && parseFloat(glassesPrintData.rightEye.nearAxis) !== 0));
+                                                            const emptyOption = glassesPrintData?.rightEye?.emptyNearEyeOption || 'plan';
+
+                                                            if (hasData) {
+                                                                return `${glassesPrintData.rightEye.nearSph ? (parseFloat(glassesPrintData.rightEye.nearSph) > 0 ? `+${glassesPrintData.rightEye.nearSph}` : glassesPrintData.rightEye.nearSph) : '0.00'}${glassesPrintData.rightEye.nearCyl && glassesPrintData.rightEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.rightEye.nearCyl) > 0 ? `+${glassesPrintData.rightEye.nearCyl}` : glassesPrintData.rightEye.nearCyl})` : ''}${glassesPrintData.rightEye.nearAxis && glassesPrintData.rightEye.nearAxis !== '0' ? ` ${glassesPrintData.rightEye.nearAxis}°` : ''}`;
+                                                            } else if (emptyOption === 'conserver') {
+                                                                return 'Conserver ancienne lentille';
+                                                            } else {
+                                                                return 'Plan';
+                                                            }
+                                                        })()}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {printControlFlags?.includeLeftEyeNear !== false && (
+                                                <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
+                                                    <p className="text-xs font-medium text-green-700">
+                                                        OG: {(() => {
+                                                            const hasData = glassesPrintData?.leftEye?.nearSph &&
+                                                                (parseFloat(glassesPrintData.leftEye.nearSph) !== 0 ||
+                                                                    (glassesPrintData.leftEye.nearCyl && parseFloat(glassesPrintData.leftEye.nearCyl) !== 0) ||
+                                                                    (glassesPrintData.leftEye.nearAxis && parseFloat(glassesPrintData.leftEye.nearAxis) !== 0));
+                                                            const emptyOption = glassesPrintData?.leftEye?.emptyNearEyeOption || 'plan';
+
+                                                            if (hasData) {
+                                                                return `${glassesPrintData.leftEye.nearSph ? (parseFloat(glassesPrintData.leftEye.nearSph) > 0 ? `+${glassesPrintData.leftEye.nearSph}` : glassesPrintData.leftEye.nearSph) : '0.00'}${glassesPrintData.leftEye.nearCyl && glassesPrintData.leftEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.leftEye.nearCyl) > 0 ? `+${glassesPrintData.leftEye.nearCyl}` : glassesPrintData.leftEye.nearCyl})` : ''}${glassesPrintData.leftEye.nearAxis && glassesPrintData.leftEye.nearAxis !== '0' ? ` ${glassesPrintData.leftEye.nearAxis}°` : ''}`;
+                                                            } else if (emptyOption === 'conserver') {
+                                                                return 'Conserver ancienne lentille';
+                                                            } else {
+                                                                return 'Plan';
+                                                            }
+                                                        })()}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {(rightEyeData?.pd || leftEyeData?.pd) && (
+                                        <p className="text-xs mb-2">
+                                            Distance Interpupillaire: {rightEyeData?.pd || leftEyeData?.pd} mm
+                                        </p>
+                                    )}
+
+                                    {printControlFlags?.includeGlassType && (
+                                        <p className="text-xs font-semibold">
+                                            Type de verre: {glassesPrintData?.rightEye?.glassType || glassesPrintData?.leftEye?.glassType || 'Standard'}
+                                        </p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
+
+                {activeDocTab === 'report' &&
+                    reportData &&
+                    (reportData.antecedents ||
+                        reportData.inspection ||
+                        reportData.segmentAnterieur ||
+                        reportData.fondOeil ||
+                        reportData.conclusion ||
+                        reportData.customTitle ||
+                        reportData.customText) && (
+                        <div className="mt-1">
+                            <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                                <CardContent className="p-0">
+                                    <p className="text-xs mb-2 font-semibold">
+                                        COMPTE RENDU OPHTALMOLOGIQUE
+                                    </p>
+
+                                    {(() => {
+                                        // Get the combined antecedents value (same logic as ReportDocument)
+                                        const generalHistory = reportData?.generalMedicalHistory || detailedClinicalExam?.generalMedicalHistory;
+                                        const ophthalmologicalHistory = reportData?.ophthalmologicalHistory || detailedClinicalExam?.ophthalmologicalHistory;
+
+                                        let antecedentsValue = '';
+                                        if (generalHistory && ophthalmologicalHistory) {
+                                            antecedentsValue = `${generalHistory}, ${ophthalmologicalHistory}`;
+                                        } else if (generalHistory) {
+                                            antecedentsValue = generalHistory;
+                                        } else if (ophthalmologicalHistory) {
+                                            antecedentsValue = ophthalmologicalHistory;
+                                        }
+
+                                        if (antecedentsValue) {
+                                            return (
+                                                <>
+                                                    <p className="text-xs mb-1 font-semibold">
+                                                        Antécédents:
+                                                    </p>
+                                                    <p className="text-xs mb-2">
+                                                        {antecedentsValue}
+                                                    </p>
+                                                </>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
+
+                                    {reportData.inspection && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Inspection:
+                                            </p>
+                                            <p className="text-xs mb-2">
+                                                {reportData.inspection}
+                                            </p>
+                                        </>
+                                    )}
+
+                                    {/* Visual Acuity - Sans Correction */}
+                                    {printControlFlags?.includeVisualAcuityWithoutCorrection &&
+                                        (reportData.printVisualAcuityVL_SC_OD || reportData.printVisualAcuityVL_SC_OG ||
+                                            reportData.visualAcuityVL_SC_OD || reportData.visualAcuityVL_SC_OG ||
+                                            rightEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuityVL_SC) && (
+                                            <>
+                                                <p className="text-xs mb-1 font-semibold">
+                                                    Acuité visuelle sans correction:
+                                                </p>
+                                                <div className="flex gap-4 mb-2">
+                                                    {(reportData.printVisualAcuityVL_SC_OD || reportData.visualAcuityVL_SC_OD || rightEyeData?.visualAcuityVL_SC) && (
+                                                        <p className="text-xs">
+                                                            OD: {reportData.printVisualAcuityVL_SC_OD || reportData.visualAcuityVL_SC_OD || rightEyeData?.visualAcuityVL_SC}
+                                                        </p>
+                                                    )}
+                                                    {(reportData.printVisualAcuityVL_SC_OG || reportData.visualAcuityVL_SC_OG || leftEyeData?.visualAcuityVL_SC) && (
+                                                        <p className="text-xs">
+                                                            OG: {reportData.printVisualAcuityVL_SC_OG || reportData.visualAcuityVL_SC_OG || leftEyeData?.visualAcuityVL_SC}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+
+                                    {/* Visual Acuity - Avec Correction */}
+                                    {printControlFlags?.includeVisualAcuityWithCorrection &&
+                                        (reportData.printVisualAcuityVL_AC_OD || reportData.printVisualAcuityVL_AC_OG ||
+                                            reportData.visualAcuityVL_AC_OD || reportData.visualAcuityVL_AC_OG ||
+                                            rightEyeData?.visualAcuityVL_AC || leftEyeData?.visualAcuityVL_AC) && (
+                                            <>
+                                                <p className="text-xs mb-1 font-semibold">
+                                                    Acuité visuelle avec correction:
+                                                </p>
+                                                <div className="flex gap-4 mb-2">
+                                                    {(reportData.printVisualAcuityVL_AC_OD || reportData.visualAcuityVL_AC_OD || rightEyeData?.visualAcuityVL_AC) && (
+                                                        <p className="text-xs">
+                                                            OD: {reportData.printVisualAcuityVL_AC_OD || reportData.visualAcuityVL_AC_OD || rightEyeData?.visualAcuityVL_AC}
+                                                        </p>
+                                                    )}
+                                                    {(reportData.printVisualAcuityVL_AC_OG || reportData.visualAcuityVL_AC_OG || leftEyeData?.visualAcuityVL_AC) && (
+                                                        <p className="text-xs">
+                                                            OG: {reportData.printVisualAcuityVL_AC_OG || reportData.visualAcuityVL_AC_OG || leftEyeData?.visualAcuityVL_AC}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+
+                                    {/* Custom fields */}
+                                    {reportData.customTitle && reportData.customText && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                {reportData.customTitle}:
+                                            </p>
+                                            <p className="text-xs mb-2">
+                                                {reportData.customText}
+                                            </p>
+                                        </>
+                                    )}
+
+                                    {/* Tonométrie - Conditional */}
+                                    {printControlFlags?.includeTonometry && (() => {
+                                        const getCorrectedIOP = (eye: 'right' | 'left'): string => {
+                                            const eyeData = tonometrie?.[eye === 'right' ? 'right_eye' : 'left_eye'];
+
+                                            // If corrected IOP already exists, use it
+                                            if (eyeData?.corrected_iop) {
+                                                return eyeData.corrected_iop;
+                                            }
+
+                                            // Otherwise calculate it if we have IOP and pachymetry
+                                            if (eyeData?.iop && eyeData?.pachymetry) {
+                                                const pioNum = parseFloat(eyeData.iop);
+                                                const pachyNum = parseFloat(eyeData.pachymetry);
+                                                if (!isNaN(pioNum) && !isNaN(pachyNum)) {
+                                                    // Apply formula: PIO corrigée = PIO mesurée – (CCT – 545)/50 × 2,5 mmHg
+                                                    const corrected = pioNum - (pachyNum - 545) / 50 * 2.5;
+                                                    return corrected.toFixed(1);
+                                                }
+                                            }
+
+                                            return '';
+                                        };
+
+                                        const pioCorrigeeOD = reportData?.tonometryOD || getCorrectedIOP('right');
+                                        const pioCorrigeeOG = reportData?.tonometryOG || getCorrectedIOP('left');
+
+                                        if (pioCorrigeeOD || pioCorrigeeOG) {
+                                            return (
+                                                <>
+                                                    <p className="text-xs mb-1 font-semibold">
+                                                        Tonométrie:
+                                                    </p>
+                                                    <div className="flex gap-4 mb-2">
+                                                        {pioCorrigeeOD && (
+                                                            <p className="text-xs">
+                                                                OD: {pioCorrigeeOD} mmHg
+                                                            </p>
+                                                        )}
+                                                        {pioCorrigeeOG && (
+                                                            <p className="text-xs">
+                                                                OG: {pioCorrigeeOG} mmHg
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
+
+                                    {reportData.segmentAnterieur && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Segment antérieur:
+                                            </p>
+                                            <p className="text-xs mb-2">
+                                                {reportData.segmentAnterieur}
+                                            </p>
+                                        </>
+                                    )}
+
+                                    {reportData.fondOeil && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Fond d'œil:
+                                            </p>
+                                            <p className="text-xs mb-2">
+                                                {reportData.fondOeil}
+                                            </p>
+                                        </>
+                                    )}
+
+                                    {(detailedClinicalExam?.diagnosis || reportData.conclusion) && (
+                                        <>
+                                            <p className="text-xs mb-1 font-semibold">
+                                                Conclusion:
+                                            </p>
+                                            <p className="text-xs">
+                                                {detailedClinicalExam?.diagnosis || reportData.conclusion}
+                                            </p>
+                                        </>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
+            </div>
+        </ScrollArea >
     );
-
-    // Helper functions can be defined outside or inside render, but since renderRadiographyPreview accesses hooks data, it should be inside or passed props.
-    // However, since we are inside the component body, we can define it here.
 };
 
-// ... inside render function ... 
-// Wait, REPLACE CONTENT strategy: I need to insert `renderRadiographyPreview` definition before `return` and add the call inside JSX.
-// Since the file is large, I'll use multi-replace or careful single replace.
-// I'll add the render function first.
-
-
-export default DocumentPreview;
+export default memo(DocumentPreview);

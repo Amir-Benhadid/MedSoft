@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { WaitlistCard, WaitlistEntry } from './WaitlistCard';
 import './Waitlist.css';
-import { Loader2, Plus, UserPlus, Users, Activity, CreditCard, CheckCircle } from 'lucide-react';
+import { Loader2, Plus, UserPlus, Users, Activity, CreditCard, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from "@/ui/components/ui/button";
 import {
     AlertDialog,
@@ -30,6 +30,11 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
     // State
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
+
+    // Collapsed sections state - only "En Attente" is expanded by default
+    const [isConsultationCollapsed, setIsConsultationCollapsed] = useState(true);
+    const [isRehabilitationCollapsed, setIsRehabilitationCollapsed] = useState(true);
+    const [isCompletedCollapsed, setIsCompletedCollapsed] = useState(true);
 
     const { toast } = useToast();
 
@@ -86,15 +91,17 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
     return (
         <div className="flex flex-col h-full">
             {/* Header Section */}
-            {/* Header Section */}
-            <div className="pb-4 pt-0 px-4 bg-transparent border-0 flex justify-between items-center shrink-0 mx-0">
-                <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-extrabold text-foreground capitalize flex items-center gap-2 -ml-1">
-                        <Users className="h-6 w-6" />
+            <div className="px-4 py-2 sm:py-3 rounded-2xl shadow-lg flex justify-between items-center shrink-0 border border-white/15 mx-4 mt-3 mb-2" style={{
+                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1)'
+            }}>
+                <div className="flex items-center gap-3">
+                    <h2 className="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                        <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                         File d'attente
                     </h2>
                     {waitlist && waitlist.length > 0 && (
-                        <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full ml-2 border border-slate-200">
+                        <span className="text-xs font-bold text-indigo-600 bg-white px-2.5 py-1 rounded-full shadow-sm">
                             {waitlist.length}
                         </span>
                     )}
@@ -102,39 +109,45 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                 <Button
                     size="sm"
                     onClick={() => setIsSheetOpen(true)}
-                    className="h-9 shadow-sm"
+                    className="h-9 px-4 bg-white/20 hover:bg-white/30 text-white border-0 shadow-sm backdrop-blur-sm font-semibold"
                 >
                     <Plus className="h-4 w-4 mr-1.5" />
                     Ajouter
                 </Button>
             </div>
 
-            <ScrollArea className="flex-1 px-4 py-4">
-                <div className="space-y-6 max-w-full">
+            <ScrollArea className="flex-1 px-4 py-2">
+                <div className="space-y-1.5 max-w-full">
                     {/* En Consultation - Highlighted */}
                     {inProgressPatients.length > 0 && (
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase tracking-widest">
+                        <div className="space-y-1">
+                            <div
+                                className="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase tracking-widest cursor-pointer hover:opacity-80 transition-opacity"
+                                onClick={() => setIsConsultationCollapsed(!isConsultationCollapsed)}
+                            >
+                                {isConsultationCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                                 <Activity className="h-3.5 w-3.5" />
                                 En Consultation
                                 <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 ml-auto border-emerald-200">
                                     {inProgressPatients.length}
                                 </Badge>
                             </div>
-                            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
-                                {inProgressPatients.map(entry => (
-                                    <div key={entry.id} className="relative transform transition-all duration-200 hover:scale-[1.01]">
-                                        <div className="absolute inset-0 bg-emerald-500/5 rounded-xl blur-sm"></div>
-                                        <WaitlistCard
-                                            entry={entry as any}
-                                            onRemove={handleRemove}
-                                            onToggleDilation={handleToggleDilation}
-                                            onUpdateStatus={handleUpdateStatus}
-                                            onClick={() => { }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                            {!isConsultationCollapsed && (
+                                <div className="space-y-1 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {inProgressPatients.map(entry => (
+                                        <div key={entry.id} className="relative transform transition-all duration-200 hover:scale-[1.01]">
+                                            <div className="absolute inset-0 bg-emerald-500/5 rounded-xl blur-sm"></div>
+                                            <WaitlistCard
+                                                entry={entry as any}
+                                                onRemove={handleRemove}
+                                                onToggleDilation={handleToggleDilation}
+                                                onUpdateStatus={handleUpdateStatus}
+                                                onClick={() => { }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -142,34 +155,40 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
 
                     {/* En Rééducation (Kinesis) */}
                     {rehabilitationPatients.length > 0 && (
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-xs font-bold text-indigo-700 uppercase tracking-widest">
+                        <div className="space-y-1">
+                            <div
+                                className="flex items-center gap-2 text-xs font-bold text-indigo-700 uppercase tracking-widest cursor-pointer hover:opacity-80 transition-opacity"
+                                onClick={() => setIsRehabilitationCollapsed(!isRehabilitationCollapsed)}
+                            >
+                                {isRehabilitationCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                                 <Activity className="h-3.5 w-3.5" />
                                 En Rééducation
                                 <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 ml-auto border-indigo-200">
                                     {rehabilitationPatients.length}
                                 </Badge>
                             </div>
-                            <div className="space-y-2">
-                                {rehabilitationPatients.map(entry => (
-                                    <div key={entry.id} className="relative transform transition-all duration-200 hover:scale-[1.01]">
-                                        <div className="absolute inset-0 bg-indigo-500/5 rounded-xl blur-sm"></div>
-                                        <WaitlistCard
-                                            entry={entry as any}
-                                            onRemove={handleRemove}
-                                            onToggleDilation={handleToggleDilation}
-                                            onUpdateStatus={handleUpdateStatus}
-                                            onClick={() => { }}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                            {!isRehabilitationCollapsed && (
+                                <div className="space-y-1">
+                                    {rehabilitationPatients.map(entry => (
+                                        <div key={entry.id} className="relative transform transition-all duration-200 hover:scale-[1.01]">
+                                            <div className="absolute inset-0 bg-indigo-500/5 rounded-xl blur-sm"></div>
+                                            <WaitlistCard
+                                                entry={entry as any}
+                                                onRemove={handleRemove}
+                                                onToggleDilation={handleToggleDilation}
+                                                onUpdateStatus={handleUpdateStatus}
+                                                onClick={() => { }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                             <Separator className="bg-slate-200" />
                         </div>
                     )}
 
-                    {/* En Attente */}
-                    <div className="space-y-3">
+                    {/* En Attente - Always Expanded */}
+                    <div className="space-y-1">
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-widest">
                             <Users className="h-3.5 w-3.5" />
                             En Attente
@@ -178,7 +197,7 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
                             </Badge>
                         </div>
 
-                        <div className="space-y-2 min-h-[100px]">
+                        <div className="space-y-1 min-h-[100px]">
                             {waitingPatients.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-8 px-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-slate-400 text-center mx-2">
                                     <Users className="h-8 w-8 mb-2 opacity-50" />
@@ -204,26 +223,32 @@ export default function Waitlist({ date = new Date() }: WaitlistProps) {
 
                     {/* Terminé / Paiement */}
                     {completedPatients.length > 0 && (
-                        <div className="space-y-3 opacity-90 hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        <div className="space-y-1 opacity-90 hover:opacity-100 transition-opacity">
+                            <div
+                                className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest cursor-pointer hover:opacity-80 transition-opacity"
+                                onClick={() => setIsCompletedCollapsed(!isCompletedCollapsed)}
+                            >
+                                {isCompletedCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                                 <CheckCircle className="h-3.5 w-3.5" />
                                 Terminé / Paiement
                                 <Badge variant="secondary" className="bg-slate-100 text-slate-500 ml-auto">
                                     {completedPatients.length}
                                 </Badge>
                             </div>
-                            <div className="space-y-2">
-                                {completedPatients.map(entry => (
-                                    <WaitlistCard
-                                        key={entry.id}
-                                        entry={entry as any}
-                                        onRemove={handleRemove}
-                                        onToggleDilation={handleToggleDilation}
-                                        onUpdateStatus={handleUpdateStatus}
-                                        onClick={() => { }}
-                                    />
-                                ))}
-                            </div>
+                            {!isCompletedCollapsed && (
+                                <div className="space-y-1">
+                                    {completedPatients.map(entry => (
+                                        <WaitlistCard
+                                            key={entry.id}
+                                            entry={entry as any}
+                                            onRemove={handleRemove}
+                                            onToggleDilation={handleToggleDilation}
+                                            onUpdateStatus={handleUpdateStatus}
+                                            onClick={() => { }}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

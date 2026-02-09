@@ -47,15 +47,99 @@ export class PatientRepository {
      * @param term - Search term
      * @returns Array of matching patients (limited to 50 results)
      */
+    /**
+     * Searches patients by multiple criteria (smart search).
+     * 
+     * Handles:
+     * - Multi-token search (AND logic)
+     * - Name, Surname, Phone Number, City, Street
+     * - Date of Birth (partial matching for day, month name, or year)
+     *
+     * @param term - Search string
+     * @returns Array of matching patients (limited to 50 results)
+     */
     search(term: string): Patient[] {
-        const query = `
-            SELECT * FROM patients 
-            WHERE name LIKE ? OR surname LIKE ? OR phone_number LIKE ?
-            ORDER BY surname ASC, name ASC
-            LIMIT 50
-        `;
-        const pattern = `%${term}%`;
-        return this.db.prepare(query).all(pattern, pattern, pattern) as Patient[];
+        const tokens = term.trim().split(/\s+/);
+        if (tokens.length === 0) return [];
+
+        let query = `SELECT * FROM patients WHERE 1=1`;
+        const params: any[] = [];
+
+        // Map French and English month names/abbreviations to digits
+        const months: Record<string, string> = {
+            'jan': '01', 'janvier': '01', 'january': '01',
+            'fev': '02', 'fév': '02', 'fevrier': '02', 'février': '02', 'feb': '02', 'february': '02',
+            'mar': '03', 'mars': '03', 'march': '03',
+            'avr': '04', 'avril': '04', 'apr': '04', 'april': '04',
+            'mai': '05', 'may': '05',
+            'jun': '06', 'juin': '06', 'june': '06',
+            'jul': '07', 'juil': '07', 'juillet': '07', 'july': '07',
+            'aou': '08', 'août': '08', 'aout': '08', 'aug': '08', 'august': '08',
+            'sep': '09', 'sept': '09', 'septembre': '09', 'september': '09',
+            'oct': '10', 'octobre': '10', 'october': '10',
+            'nov': '11', 'novembre': '11', 'november': '11',
+            'dec': '12', 'déc': '12', 'decembre': '12', 'décembre': '12', 'december': '12'
+        };
+
+        for (const token of tokens) {
+            const tokenPattern = `%${token}%`;
+            // Standard text fields with fuzzy support
+            // fuzzy_contains(column, token, 1) returns 1 if fuzzy match or exact substring match found
+            const conditions = [
+                `fuzzy_contains(name, ?, 1)`,
+                `fuzzy_contains(surname, ?, 1)`,
+                `fuzzy_contains(phone_number, ?, 1)`,
+                `fuzzy_contains(city, ?, 1)`,
+                `fuzzy_contains(street, ?, 1)`
+            ];
+            // We pass the RAW token to fuzzy_contains, not the %pattern%
+            const tokenParams = [token, token, token, token, token];
+
+            // Smart Date Handling for DOB (YYYY-MM-DD)
+
+            // 1. Exact number match (Day or Year)
+            // e.g., "29" matches "....-..-29" OR "2029-..-.."
+            if (/^\d+$/.test(token)) {
+                // If it's a 4-digit number, prioritize year check, but still allow generic match
+                conditions.push(`dob LIKE ?`);
+                tokenParams.push(tokenPattern);
+            }
+
+            // 2. Formatted date part match (e.g., "29/10" -> search for "-10-29")
+            if (token.includes('/')) {
+                const parts = token.split('/');
+                if (parts.length === 2) {
+                    // Assume DD/MM input -> Match "-MM-DD"
+                    // Pad with 0 if needed
+                    const d = parts[0].padStart(2, '0');
+                    const m = parts[1].padStart(2, '0');
+                    conditions.push(`dob LIKE ?`);
+                    tokenParams.push(`%-${m}-${d}%`);
+                }
+            }
+
+            // 3. Month Name match
+            const lowerToken = token.toLowerCase();
+            // Check if token matches any month prefix (min 3 chars to avoid false positives with random letters)
+            if (lowerToken.length >= 3) {
+                for (const [name, digit] of Object.entries(months)) {
+                    if (name.startsWith(lowerToken)) {
+                        conditions.push(`dob LIKE ?`);
+                        // Match month in middle: YYYY-MM-DD -> %-MM-%
+                        tokenParams.push(`%-${digit}-%`);
+                        // Don't break, might match multiple (rare) or just add one
+                        break;
+                    }
+                }
+            }
+
+            query += ` AND (${conditions.join(' OR ')})`;
+            params.push(...tokenParams);
+        }
+
+        query += ` ORDER BY surname ASC, name ASC LIMIT 50`;
+
+        return this.db.prepare(query).all(...params) as Patient[];
     }
 
     /**

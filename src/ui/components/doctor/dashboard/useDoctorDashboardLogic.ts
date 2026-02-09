@@ -80,13 +80,9 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
 
             if (todayConsultation) return todayConsultation;
 
-            // Logic 2: Open any PENDING consultation of the specific type
-            const pending = consultations.find(c =>
-                c.status === 'pending' &&
-                (c.type === targetType || (!c.type && targetType === 'Consultation'))
-            );
-
-            if (pending) return pending;
+            // Logic 2: REMOVED - We do not want to automatically open old pending consultations.
+            // If a consultation is pending from a previous day, it should be accessed via History.
+            // We only want to open TODAY'S consultation (Logic 1) or create a NEW one (Logic 3).
 
             // Logic 3: Create NEW consultation
             return await orpcClient.consultations.create({
@@ -103,11 +99,29 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
     });
 
     // 2. Fetch History (All Consultations)
-    const { data: history = [] } = useQuery({
+    const { data: history = [], isLoading: isHistoryLoading } = useQuery({
         queryKey: ['consultations', patientId],
         queryFn: async () => await orpcClient.consultations.listByPatient({ patientId }),
         enabled: !!patientId
     });
+
+    // Auto-open History if patient has history (only once per patient load)
+    const [hasInitializedHistory, setHasInitializedHistory] = useState(false);
+
+    // Reset initialization when patient changes
+    useEffect(() => {
+        setHasInitializedHistory(false);
+        setIsHistoryOpen(false);
+    }, [patientId]);
+
+    useEffect(() => {
+        if (!isHistoryLoading && !hasInitializedHistory) {
+            if (history.length > 0) {
+                setIsHistoryOpen(true);
+            }
+            setHasInitializedHistory(true);
+        }
+    }, [isHistoryLoading, history, hasInitializedHistory]);
 
     // Determine current ID and Safe Sync
     useEffect(() => {

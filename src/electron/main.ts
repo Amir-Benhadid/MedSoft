@@ -493,6 +493,50 @@ function setupIPC() {
 		return scanPromise;
 	});
 
+	ipcMain.handle('app:factoryReset', async () => {
+		console.log('⚠️ FACTORY RESET TRIGGERED ⚠️');
+
+		try {
+			const config = await loadConfig();
+
+			// 1. Close Database
+			try {
+				const { closeDatabase } = await import('./db/database.js');
+				closeDatabase();
+			} catch (e) {
+				console.error("Failed to close database:", e);
+			}
+
+			// 2. Delete Database File(s)
+			if (config && config.dbPath) {
+				try {
+					console.log('🗑️ Deleting database at:', config.dbPath);
+					await fs.rm(config.dbPath, { recursive: true, force: true });
+				} catch (e) {
+					console.error("Failed to delete database:", e);
+				}
+			}
+
+			// 3. Delete Config
+			try {
+				console.log('🗑️ Deleting config file:', CONFIG_PATH);
+				await fs.unlink(CONFIG_PATH);
+			} catch (e) {
+				console.error("Failed to delete config:", e);
+			}
+
+			// 4. Relaunch
+			console.log('🔄 Relaunching application...');
+			app.relaunch();
+			app.exit(0);
+
+			return true;
+		} catch (error) {
+			console.error("❌ Factory reset failed:", error);
+			throw error;
+		}
+	});
+
 	ipcMain.handle('network:getServerIP', async () => {
 		const { getLocalIP } = await import('./utils/discovery.js');
 		return getLocalIP();

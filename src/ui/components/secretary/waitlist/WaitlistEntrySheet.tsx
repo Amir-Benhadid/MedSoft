@@ -177,7 +177,6 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                     {view === 'selection' && (
                         <div className="space-y-3 animate-in fade-in slide-in-from-right-5 duration-200 h-full flex flex-col">
                             <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg flex-none">
-                                <Search className="h-3.5 w-3.5" />
                                 Sélectionner patient
                             </div>
                             <div className="flex-1 min-h-0">
@@ -224,15 +223,15 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                             {appMode !== 'secretary' && <CompactDilationControl control={control} />}
 
                             <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-500">Type de consultation</label>
+                                <label className="text-xs font-medium text-slate-500">Activité</label>
                                 <Select
                                     value={watch('consultation_type_id')}
                                     onValueChange={(val) => setValue('consultation_type_id', val)}
                                 >
                                     <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue placeholder="Sélectionner le type" />
+                                        <SelectValue placeholder="Sélectionner l'activité" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="z-[9999]">
                                         {consultationTypes.map(type => (
                                             <SelectItem key={type.id} value={type.id.toString()} className="text-xs">
                                                 {type.label} - {type.amount} DA
@@ -256,7 +255,6 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                                 <Textarea
                                     {...register('notes')}
                                     rows={3}
-                                    placeholder="Instructions pour l'équipe..."
                                     className="text-sm resize-none"
                                 />
                             </div>

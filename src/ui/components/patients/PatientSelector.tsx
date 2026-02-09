@@ -5,6 +5,7 @@ import { Button } from '@/ui/components/ui/button';
 import { ScrollArea } from '@/ui/components/ui/scroll-area';
 import { usePatientSearch, Patient } from '@/ui/hooks/usePatients';
 import { cn } from '@/ui/lib/utils';
+import { formatDateDisplay } from '@/ui/lib/time';
 
 
 interface PatientSelectorProps {
@@ -44,18 +45,29 @@ export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps)
                             <button
                                 key={patient.id}
                                 className={cn(
-                                    "w-full flex items-center gap-3 p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left"
+                                    "w-full flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-blue-200 hover:bg-blue-50/50 transition-all text-left group bg-white shadow-sm mb-2 last:mb-0 border-slate-100"
                                 )}
                                 onClick={() => onSelect(patient)}
                             >
-
-                                <div className="flex-1 overflow-hidden">
-                                    <div className="font-medium truncate">
+                                <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
                                         {patient.surname} {patient.name}
                                     </div>
-                                    <div className="text-xs text-muted-foreground truncate">
-                                        {patient.dob && <span>{new Date(patient.dob).toLocaleDateString('fr-FR')}</span>}
-                                        {patient.phone_number && <span> • {patient.phone_number}</span>}
+                                    <div className="flex items-center gap-2 text-xs text-slate-500 truncate mt-0.5">
+                                        {patient.dob && (
+                                            <span className="flex items-center gap-1">
+                                                <span className="opacity-70">Né(e) le</span>
+                                                <span className="font-medium text-slate-700">{formatDateDisplay(patient.dob)}</span>
+                                            </span>
+                                        )}
+                                        {patient.phone_number && (
+                                            <>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                <span className="flex items-center gap-1">
+                                                    <span className="font-medium">{patient.phone_number}</span>
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </button>

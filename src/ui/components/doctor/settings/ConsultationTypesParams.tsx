@@ -71,20 +71,23 @@ export function ConsultationTypesParams({ readonly = false }: ConsultationTypesP
     };
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Types de Consultation</h3>
+                <div>
+                    <h3 className="text-xl font-bold text-slate-900">Activités</h3>
+                    <p className="text-sm text-slate-500 mt-1">Gérez les différentes activités et leurs tarifs</p>
+                </div>
                 {!readonly && (
                     <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                         <DialogTrigger asChild>
-                            <Button onClick={() => setFormData({ label: "", amount: 0, color: "#3b82f6", nature: "normal" })}>
+                            <Button onClick={() => setFormData({ label: "", amount: 0, color: "#3b82f6", nature: "normal" })} className="shadow-sm">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Nouveau Type
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Ajouter un type de consultation</DialogTitle>
+                                <DialogTitle>Ajouter une activité</DialogTitle>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
@@ -139,7 +142,7 @@ export function ConsultationTypesParams({ readonly = false }: ConsultationTypesP
                                                 className="flex-1"
                                             >
                                                 <FlaskConical className="w-4 h-4 mr-2" />
-                                                Radiographie
+                                                Exploration
                                             </Button>
                                         </div>
                                     </div>
@@ -151,49 +154,50 @@ export function ConsultationTypesParams({ readonly = false }: ConsultationTypesP
                 )}
             </div>
 
-            <div className="border rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-slate-50 border-b">
-                        <tr>
-                            <th className="w-[40%] px-4 py-3 text-left font-medium text-slate-500">Nom</th>
-                            <th className="w-[30%] px-4 py-3 text-left font-medium text-slate-500">Prix</th>
-                            {isOphthalmology && <th className="w-[15%] px-4 py-3 text-left font-medium text-slate-500">Nature</th>}
-                            <th className="w-[15%] px-4 py-3 text-left font-medium text-slate-500">Couleur</th>
-                            {!readonly && <th className="w-[15%] px-4 py-3 text-right font-medium text-slate-500">Actions</th>}
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                        {types.map((type) => (
-                            <tr key={type.id} className="bg-white">
-                                <td className="px-4 py-3">
-                                    {editingId === type.id ? (
+            {/* Normal Activities Section */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-slate-600" />
+                    <h4 className="text-lg font-bold text-slate-900">Activités Normales</h4>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {types.filter(type => type.nature !== 'radiography').map((type) => (
+                        <div key={type.id} className="group p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all">
+                            {editingId === type.id ? (
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Nom</Label>
                                         <Input
                                             value={formData.label}
                                             onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                                            className="font-semibold"
                                         />
-                                    ) : (
-                                        <span className="font-medium">{type.label}</span>
-                                    )}
-                                </td>
-                                <td className="px-4 py-3">
-                                    {editingId === type.id ? (
+                                    </div>
+                                    <div>
+                                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Prix</Label>
                                         <Input
                                             type="number"
                                             value={formData.amount}
                                             onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                                            className="font-mono font-bold"
                                         />
-                                    ) : (
-                                        <span className="font-mono">{type.amount.toLocaleString()} DZD</span>
-                                    )}
-                                </td>
-                                {isOphthalmology && (
-                                    <td className="px-4 py-3">
-                                        {editingId === type.id ? (
-                                            <div className="flex gap-1">
+                                    </div>
+                                    <div>
+                                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Couleur</Label>
+                                        <DebouncedColorInput
+                                            value={formData.color}
+                                            onChange={(val) => setFormData({ ...formData, color: val })}
+                                            className="w-full h-10 p-1"
+                                        />
+                                    </div>
+                                    {isOphthalmology && (
+                                        <div>
+                                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Nature</Label>
+                                            <div className="flex gap-2">
                                                 <Button
                                                     size="icon"
                                                     variant={formData.nature === "normal" ? "default" : "outline"}
-                                                    className="h-8 w-8"
+                                                    className="flex-1 h-10"
                                                     onClick={() => setFormData({ ...formData, nature: "normal" })}
                                                     title="Normal"
                                                 >
@@ -202,69 +206,180 @@ export function ConsultationTypesParams({ readonly = false }: ConsultationTypesP
                                                 <Button
                                                     size="icon"
                                                     variant={formData.nature === "radiography" ? "default" : "outline"}
-                                                    className="h-8 w-8"
+                                                    className="flex-1 h-10"
                                                     onClick={() => setFormData({ ...formData, nature: "radiography" })}
-                                                    title="Radiographie"
+                                                    title="Exploration"
                                                 >
                                                     <FlaskConical className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2">
-                                                {type.nature === "radiography" ? (
-                                                    <span className="flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
-                                                        <FlaskConical className="w-3 h-3 mr-1" />
-                                                        Radiographie
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                                                        <FileText className="w-3 h-3 mr-1" />
-                                                        Normal
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                    </td>
-                                )}
-                                <td className="px-4 py-3">
-                                    {editingId === type.id ? (
-                                        <DebouncedColorInput
-                                            value={formData.color}
-                                            onChange={(val) => setFormData({ ...formData, color: val })}
-                                            className="w-12 h-8 p-1"
-                                        />
-                                    ) : (
-                                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: type.color }} />
+                                        </div>
                                     )}
-                                </td>
-                                {!readonly && (
-                                    <td className="px-4 py-3 text-right">
-                                        {editingId === type.id ? (
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600" onClick={() => handleSaveEdit(type.id)}>
-                                                    <Check className="h-4 w-4" />
+                                    <div className="flex gap-2 pt-2">
+                                        <Button size="sm" variant="default" className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => handleSaveEdit(type.id)}>
+                                            <Check className="h-4 w-4 mr-1" />
+                                            Sauvegarder
+                                        </Button>
+                                        <Button size="sm" variant="outline" className="flex-1" onClick={() => setEditingId(null)}>
+                                            <X className="h-4 w-4 mr-1" />
+                                            Annuler
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${type.color}20` }}>
+                                            <div className="w-6 h-6 rounded-full" style={{ backgroundColor: type.color }} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-lg font-bold text-slate-900 truncate">{type.label}</h4>
+                                            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Activité</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-extrabold text-slate-900 tracking-tight">{type.amount.toLocaleString()}</span>
+                                            <span className="text-sm text-slate-500 font-medium">DZD</span>
+                                        </div>
+                                    </div>
+
+                                    {!readonly && (
+                                        <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+                                            <Button size="sm" variant="outline" className="flex-1 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200" onClick={() => startEdit(type)}>
+                                                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                                                Modifier
+                                            </Button>
+                                            <Button size="sm" variant="outline" className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200" onClick={() => deleteMutation.mutate(type.id)}>
+                                                <Trash className="h-3.5 w-3.5 mr-1.5" />
+                                                Supprimer
+                                            </Button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Exploration Activities Section */}
+            {isOphthalmology && types.some(type => type.nature === 'radiography') && (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <FlaskConical className="h-5 w-5 text-purple-600" />
+                        <h4 className="text-lg font-bold text-slate-900">Explorations</h4>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {types.filter(type => type.nature === 'radiography').map((type) => (
+                            <div key={type.id} className="group p-5 rounded-2xl bg-white border border-purple-200 shadow-sm hover:shadow-md transition-all">
+                                {editingId === type.id ? (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Nom</Label>
+                                            <Input
+                                                value={formData.label}
+                                                onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                                                className="font-semibold"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Prix</Label>
+                                            <Input
+                                                type="number"
+                                                value={formData.amount}
+                                                onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                                                className="font-mono font-bold"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Couleur</Label>
+                                            <DebouncedColorInput
+                                                value={formData.color}
+                                                onChange={(val) => setFormData({ ...formData, color: val })}
+                                                className="w-full h-10 p-1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">Nature</Label>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    size="icon"
+                                                    variant={formData.nature === "normal" ? "default" : "outline"}
+                                                    className="flex-1 h-10"
+                                                    onClick={() => setFormData({ ...formData, nature: "normal" })}
+                                                    title="Normal"
+                                                >
+                                                    <FileText className="h-4 w-4" />
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => setEditingId(null)}>
-                                                    <X className="h-4 w-4" />
+                                                <Button
+                                                    size="icon"
+                                                    variant={formData.nature === "radiography" ? "default" : "outline"}
+                                                    className="flex-1 h-10"
+                                                    onClick={() => setFormData({ ...formData, nature: "radiography" })}
+                                                    title="Exploration"
+                                                >
+                                                    <FlaskConical className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                        ) : (
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-blue-600" onClick={() => startEdit(type)}>
-                                                    <Pencil className="h-4 w-4" />
+                                        </div>
+                                        <div className="flex gap-2 pt-2">
+                                            <Button size="sm" variant="default" className="flex-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => handleSaveEdit(type.id)}>
+                                                <Check className="h-4 w-4 mr-1" />
+                                                Sauvegarder
+                                            </Button>
+                                            <Button size="sm" variant="outline" className="flex-1" onClick={() => setEditingId(null)}>
+                                                <X className="h-4 w-4 mr-1" />
+                                                Annuler
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex items-start gap-3 mb-4">
+                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${type.color}20` }}>
+                                                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: type.color }} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-lg font-bold text-slate-900 truncate">{type.label}</h4>
+                                                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Activité</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <div className="flex items-baseline gap-2">
+                                                <span className="text-3xl font-extrabold text-slate-900 tracking-tight">{type.amount.toLocaleString()}</span>
+                                                <span className="text-sm text-slate-500 font-medium">DZD</span>
+                                            </div>
+
+                                            <div>
+                                                <span className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-full bg-purple-100 text-purple-700">
+                                                    <FlaskConical className="w-3.5 h-3.5 mr-1.5" />
+                                                    Exploration
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {!readonly && (
+                                            <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+                                                <Button size="sm" variant="outline" className="flex-1 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200" onClick={() => startEdit(type)}>
+                                                    <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                                                    Modifier
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-600" onClick={() => deleteMutation.mutate(type.id)}>
-                                                    <Trash className="h-4 w-4" />
+                                                <Button size="sm" variant="outline" className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200" onClick={() => deleteMutation.mutate(type.id)}>
+                                                    <Trash className="h-3.5 w-3.5 mr-1.5" />
+                                                    Supprimer
                                                 </Button>
                                             </div>
                                         )}
-                                    </td>
+                                    </>
                                 )}
-                            </tr>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

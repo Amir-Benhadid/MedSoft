@@ -245,107 +245,232 @@ const MedicalReportDocument: React.FC = () => {
     }
 
     return (
-        <div className="space-y-6 text-sm pb-8">
-            <Card className="border-none shadow-none bg-transparent">
-                <div className="flex flex-wrap gap-6 items-center p-0">
-                    <h4 className="font-semibold text-foreground mr-4">Options</h4>
+        <div className="space-y-6 font-sans text-sm pb-8">
+            {/* Options Card */}
+            <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                <div className="flex flex-wrap gap-6 items-center">
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-tight mr-2">Options d'impression</h4>
                     <div className="flex items-center gap-2">
-                        <Checkbox id="avsc" checked={overrides.includeVisualAcuityWithoutCorrection !== false}
-                            onCheckedChange={(c) => handleFlagChange('includeVisualAcuityWithoutCorrection')(c as boolean)} />
-                        <Label htmlFor="avsc">Sans Correction</Label>
+                        <Checkbox
+                            id="avsc"
+                            checked={overrides.includeVisualAcuityWithoutCorrection !== false}
+                            onCheckedChange={(c) => handleFlagChange('includeVisualAcuityWithoutCorrection')(c as boolean)}
+                            className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+                        />
+                        <Label htmlFor="avsc" className="text-[11px] font-bold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">Sans Correction</Label>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Checkbox id="avac" checked={overrides.includeVisualAcuityWithCorrection !== false}
-                            onCheckedChange={(c) => handleFlagChange('includeVisualAcuityWithCorrection')(c as boolean)} />
-                        <Label htmlFor="avac">Avec Correction</Label>
+                        <Checkbox
+                            id="avac"
+                            checked={overrides.includeVisualAcuityWithCorrection !== false}
+                            onCheckedChange={(c) => handleFlagChange('includeVisualAcuityWithCorrection')(c as boolean)}
+                            className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+                        />
+                        <Label htmlFor="avac" className="text-[11px] font-bold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">Avec Correction</Label>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Checkbox id="tono" checked={overrides.includeTonometry !== false}
-                            onCheckedChange={(c) => handleFlagChange('includeTonometry')(c as boolean)} />
-                        <Label htmlFor="tono">Tonométrie</Label>
+                        <Checkbox
+                            id="tono"
+                            checked={overrides.includeTonometry !== false}
+                            onCheckedChange={(c) => handleFlagChange('includeTonometry')(c as boolean)}
+                            className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+                        />
+                        <Label htmlFor="tono" className="text-[11px] font-bold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">Tonométrie</Label>
                     </div>
                 </div>
-            </Card>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-4 space-y-4 bg-slate-50/50 border-slate-200">
-                    <h4 className="font-semibold text-slate-800 flex items-center gap-2 text-sm border-b pb-2">
-                        <FileText className="w-4 h-4 text-primary" />
-                        Antécédents & Inspection
-                    </h4>
-                    <div className="space-y-4 pt-2">
-                        <OptimizedInput label="Antécédents généraux" value={getValue('generalMedicalHistory', clinicalExam?.generalMedicalHistory)} onChange={handleDataChange('generalMedicalHistory')} className="bg-white" />
-                        <OptimizedInput label="Antécédents ophtalmologiques" value={getValue('ophthalmologicalHistory', clinicalExam?.ophthalmologicalHistory)} onChange={handleDataChange('ophthalmologicalHistory')} className="bg-white" />
-                        <OptimizedInput label="Inspection" value={getValue('inspection', clinicalExam?.inspection)} onChange={handleDataChange('inspection')} className="bg-white" />
-                    </div>
-                </Card>
-
-                {(overrides.includeVisualAcuityWithoutCorrection !== false || overrides.includeVisualAcuityWithCorrection !== false || overrides.includeTonometry !== false) && (
-                    <Card className="p-4 space-y-4 bg-blue-50/30 border-blue-100">
-                        <h4 className="font-semibold text-blue-800 flex items-center gap-2 text-sm border-b pb-2 border-blue-100">
-                            <Eye className="w-4 h-4 text-blue-600" />
-                            Mesures
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Antécédents & Inspection */}
+                <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm space-y-4 h-full flex flex-col">
+                    <div className="flex items-center gap-2 border-b border-slate-100 pb-2 mb-2">
+                        <FileText className="w-3.5 h-3.5 text-indigo-500" />
+                        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                            Antécédents & Inspection
                         </h4>
-                        <div className="space-y-4 pt-2">
+                    </div>
+
+                    <div className="space-y-3 flex-grow">
+                        <div className="space-y-1">
+                            <Label className="text-[10px] font-bold text-indigo-600/80 uppercase tracking-tight">Antécédents généraux</Label>
+                            <OptimizedInput
+                                value={getValue('generalMedicalHistory', clinicalExam?.generalMedicalHistory)}
+                                onChange={(val) => handleDataChange('generalMedicalHistory')(val)}
+                                className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <Label className="text-[10px] font-bold text-indigo-600/80 uppercase tracking-tight">Antécédents ophtalmologiques</Label>
+                            <OptimizedInput
+                                value={getValue('ophthalmologicalHistory', clinicalExam?.ophthalmologicalHistory)}
+                                onChange={(val) => handleDataChange('ophthalmologicalHistory')(val)}
+                                className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <Label className="text-[10px] font-bold text-indigo-600/80 uppercase tracking-tight">Inspection</Label>
+                            <OptimizedInput
+                                value={getValue('inspection', clinicalExam?.inspection)}
+                                onChange={(val) => handleDataChange('inspection')(val)}
+                                className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mesures (Conditional) */}
+                {(overrides.includeVisualAcuityWithoutCorrection !== false || overrides.includeVisualAcuityWithCorrection !== false || overrides.includeTonometry !== false) && (
+                    <div className="bg-blue-50/20 rounded-lg p-4 border border-blue-100/60 shadow-sm space-y-4 h-full flex flex-col">
+                        <div className="flex items-center gap-2 border-b border-blue-100 pb-2 mb-2">
+                            <Eye className="w-3.5 h-3.5 text-blue-600" />
+                            <h4 className="text-xs font-bold text-blue-700 uppercase tracking-tight">
+                                Mesures
+                            </h4>
+                        </div>
+
+                        <div className="space-y-4 flex-grow">
                             {overrides.includeVisualAcuityWithoutCorrection !== false && (
                                 <div className="space-y-2">
-                                    <span className="text-xs font-medium text-blue-700">AV Sans Correction</span>
+                                    <Label className="text-[10px] font-bold text-blue-600/80 uppercase tracking-tight">AV Sans Correction</Label>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <OptimizedInput placeholder="OD" value={getValue('visualAcuityVL_SC_OD', rightEye?.visualAcuityVL_SC)} onChange={handleDataChange('visualAcuityVL_SC_OD')} className="bg-white" />
-                                        <OptimizedInput placeholder="OG" value={getValue('visualAcuityVL_SC_OG', leftEye?.visualAcuityVL_SC)} onChange={handleDataChange('visualAcuityVL_SC_OG')} className="bg-white" />
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OD</span>
+                                            <OptimizedInput
+                                                value={getValue('visualAcuityVL_SC_OD', rightEye?.visualAcuityVL_SC)}
+                                                onChange={(val) => handleDataChange('visualAcuityVL_SC_OD')(val)}
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OG</span>
+                                            <OptimizedInput
+                                                value={getValue('visualAcuityVL_SC_OG', leftEye?.visualAcuityVL_SC)}
+                                                onChange={(val) => handleDataChange('visualAcuityVL_SC_OG')(val)}
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}
                             {overrides.includeVisualAcuityWithCorrection !== false && (
                                 <div className="space-y-2">
-                                    <span className="text-xs font-medium text-blue-700">AV Avec Correction</span>
+                                    <Label className="text-[10px] font-bold text-blue-600/80 uppercase tracking-tight">AV Avec Correction</Label>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <OptimizedInput placeholder="OD" value={getValue('visualAcuityVL_AC_OD', rightEye?.visualAcuityVL_AC)} onChange={handleDataChange('visualAcuityVL_AC_OD')} className="bg-white" />
-                                        <OptimizedInput placeholder="OG" value={getValue('visualAcuityVL_AC_OG', leftEye?.visualAcuityVL_AC)} onChange={handleDataChange('visualAcuityVL_AC_OG')} className="bg-white" />
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OD</span>
+                                            <OptimizedInput
+                                                value={getValue('visualAcuityVL_AC_OD', rightEye?.visualAcuityVL_AC)}
+                                                onChange={(val) => handleDataChange('visualAcuityVL_AC_OD')(val)}
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OG</span>
+                                            <OptimizedInput
+                                                value={getValue('visualAcuityVL_AC_OG', leftEye?.visualAcuityVL_AC)}
+                                                onChange={(val) => handleDataChange('visualAcuityVL_AC_OG')(val)}
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}
                             {overrides.includeTonometry !== false && (
                                 <div className="space-y-2">
-                                    <span className="text-xs font-medium text-blue-700">Tonométrie</span>
+                                    <Label className="text-[10px] font-bold text-blue-600/80 uppercase tracking-tight">Tonométrie</Label>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <OptimizedInput label="OD" value={getValue('tonometryOD', getCorrectedIOP(rightEye))} onChange={handleDataChange('tonometryOD')} suffix="mmHg" className="bg-white" />
-                                        <OptimizedInput label="OG" value={getValue('tonometryOG', getCorrectedIOP(leftEye))} onChange={handleDataChange('tonometryOG')} suffix="mmHg" className="bg-white" />
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OD</span>
+                                            <OptimizedInput
+                                                value={getValue('tonometryOD', getCorrectedIOP(rightEye))}
+                                                onChange={(val) => handleDataChange('tonometryOD')(val)}
+                                                suffix="mmHg"
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">OG</span>
+                                            <OptimizedInput
+                                                value={getValue('tonometryOG', getCorrectedIOP(leftEye))}
+                                                onChange={(val) => handleDataChange('tonometryOG')(val)}
+                                                suffix="mmHg"
+                                                className="pl-8 h-8 font-bold text-slate-900 bg-white border-blue-200 focus:border-blue-400"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}
                         </div>
-                    </Card>
+                    </div>
                 )}
             </div>
 
-            <Card className="p-4 space-y-4 bg-white border-slate-200 shadow-sm">
-                <h4 className="font-semibold text-slate-800 flex items-center gap-2 text-sm border-b pb-2">
-                    <Activity className="w-4 h-4 text-orange-500" />
-                    Examen Clinique
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    <OptimizedInput label="Segment antérieur" value={getValue('segmentAnterieur', clinicalExam?.anteriorSegment?.slit_lamp_exam)} onChange={handleDataChange('segmentAnterieur')} className="bg-slate-50" />
-                    <OptimizedInput label="Fond d'œil" value={getValue('fondOeil', clinicalExam?.fundus?.fundus_exam)} onChange={handleDataChange('fondOeil')} className="bg-slate-50" />
+            {/* Examen Clinique */}
+            <div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <Activity className="w-3.5 h-3.5 text-orange-500" />
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                        Examen Clinique
+                    </h4>
                 </div>
-            </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                        <Label className="text-[10px] font-bold text-orange-600/80 uppercase tracking-tight">Segment antérieur</Label>
+                        <OptimizedInput
+                            value={getValue('segmentAnterieur', clinicalExam?.anteriorSegment?.slit_lamp_exam)}
+                            onChange={(val) => handleDataChange('segmentAnterieur')(val)}
+                            className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-orange-400 focus:ring-orange-200"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-[10px] font-bold text-orange-600/80 uppercase tracking-tight">Fond d'œil</Label>
+                        <OptimizedInput
+                            value={getValue('fondOeil', clinicalExam?.fundus?.fundus_exam)}
+                            onChange={(val) => handleDataChange('fondOeil')(val)}
+                            className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-orange-400 focus:ring-orange-200"
+                        />
+                    </div>
+                </div>
+            </div>
 
-            <Card className="p-4 space-y-4 bg-slate-50/80 border-slate-200">
-                <h4 className="font-semibold text-slate-800 flex items-center gap-2 text-sm border-b pb-2">
-                    <FileText className="w-4 h-4 text-slate-500" />
-                    Conclusion & Personnalisation
-                </h4>
-                <div className="space-y-4 pt-2">
+            {/* Conclusion & Personnalisation */}
+            <div className="bg-slate-50/50 rounded-lg p-4 border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                    <FileText className="w-3.5 h-3.5 text-slate-500" />
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                        Conclusion & Personnalisation
+                    </h4>
+                </div>
+                <div className="space-y-4">
                     <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Conclusion</Label>
-                        <Textarea value={getValue('conclusion', clinicalExam?.diagnosis)} onChange={(e) => handleDataChange('conclusion')(e.target.value)} rows={3} className="bg-white text-sm" />
+                        <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Conclusion</Label>
+                        <Textarea
+                            value={getValue('conclusion', clinicalExam?.diagnosis)}
+                            onChange={(e) => handleDataChange('conclusion')(e.target.value)}
+                            rows={3}
+                            className="bg-white text-sm font-medium border-slate-200 focus:border-slate-400 focus:ring-slate-200 resize-none shadow-sm"
+                        />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-dashed">
-                        <OptimizedInput label="Titre personnalisé" value={getValue('customTitle', '')} onChange={handleDataChange('customTitle')} className="bg-white" />
-                        <OptimizedInput label="Description personnalisée" value={getValue('customText', '')} onChange={handleDataChange('customText')} className="bg-white" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200/60 border-dashed">
+                        <div className="space-y-1">
+                            <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Titre personnalisé</Label>
+                            <OptimizedInput
+                                value={getValue('customTitle', '')}
+                                onChange={(val) => handleDataChange('customTitle')(val)}
+                                className="h-8 font-bold text-slate-900 bg-white border-slate-200 focus:border-slate-400"
+                            />
+                        </div>
+                        <div className="space-y-1">
+                            <Label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Description personnalisée</Label>
+                            <OptimizedInput
+                                value={getValue('customText', '')}
+                                onChange={(val) => handleDataChange('customText')(val)}
+                                className="h-8 font-bold text-slate-900 bg-white border-slate-200 focus:border-slate-400"
+                            />
+                        </div>
                     </div>
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };

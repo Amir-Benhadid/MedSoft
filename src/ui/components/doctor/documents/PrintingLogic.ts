@@ -1,322 +1,625 @@
 import { rgb } from 'pdf-lib';
-import { createPdfContext, drawDocumentHeader } from './utils/PdfUtils';
-import { generateGlassesPDF } from './GlassesDocument';
+import { createPdfContext } from './PdfUtils';
 import { generateContactLensesPDF } from './ContactLensesDocument';
-import { generateReportPDF } from './MedicalReportDocument';
-import { generateWorkStopPDF } from './WorkStopDocument';
-import { generateGenericPDF, GenericRecordConfig } from './GenericDocument';
+import { generateGlassesPDF } from './GlassesDocument';
+import { generateMedicationsPDF } from './MedicationsDocument';
 import { generateVisualAcuityCertificatePDF } from './VisualAcuityCertificateDocument';
-import { generateBilanPDF, generateBilanCardioPDF } from './BilanDocuments';
+import { generateWorkStopPDF } from './WorkStopDocument';
 import { generateAbsenceCertificatePDF } from './AbsenceCertificateDocument';
-import { generatePrescriptionPDF } from './PrescriptionDocument';
-import { generateRadiographyPDF } from './RadiographyDocument';
-import { DocumentUtils } from './utils/DocumentUtils';
+import { generateReportPDF } from './ReportDocument';
+import { generateBilanPDF } from './BilanDocuments';
+import { generateMedicalRecordPDF } from './MedicalRecordDocument';
+import { generateBilanCardioVasculairePDF } from './BilanCardioVasculaireDocument';
+import { generateReponseHTAPDF } from './ReponseHTADocument';
+import { generateCTFLaserArgonPDF } from './CTFLaserArgonDocument';
+import { generateCTFLaserYAGPDF } from './CTFLaserYAGDocument';
+import { generateCTFCeciteTotalePDF } from './CTFCeciteTotaleDocument';
+import { generateCTFMalvisionClassePDF } from './CTFMalvisionClasseDocument';
+import { generateBilanCardioOVCRPDF } from './BilanCardioOVCRDocument';
+import { generateRepriseDeTravailPDF } from './RepriseDeTravailDocument';
+import { generateCTFGlaucomePDF } from './CTFGlaucomeDocument';
+import { generateReponseAzyterPDF } from './ReponseAzyterDocument';
+import { generateOrientCardioPDF } from './OrientCardioDocument';
+import { generateOrientNeuroPDF } from './OrientNeuroDocument';
+import { generateOrientDiabMedInternePDF } from './OrientDiabMedInterneDocument';
+import { generateAngioPDF } from './AngioDocument';
+import { generateDiabeteNormalPDF } from './DiabeteNormalDocument';
+import { generateCompteRenduCNASPDF } from './CompteRenduCNASDocument';
+import { generateAvisORLDCCPDF } from './AvisORLDCCDocument';
+import { generateCNASOCTGPDF } from './CNASOCTGDocument';
+import { generateCNASOCTMPDF } from './CNASOCTMDocument';
+import { generateCNASECHOPDF } from './CNASECHODocument';
+import { generateCNASArgonPDF } from './CNASArgonDocument';
+import { generateCNASPachyPDF } from './CNASPachyDocument';
+import { drawTitle, drawDocumentHeader } from './PdfUtils';
+import { DocumentUtils } from './DocumentUtils';
+import {
+	DetailedClinicalExamData,
+	EyeData,
+	PrescriptionData,
+	TonometrieData,
+} from './types';
 
-// Types - Redefined locally for now to avoid circular dependencies
-interface EyeData {
-    sph?: string;
-    cyl?: string;
-    axis?: string;
-    add?: string;
-    pd?: string;
-    visualAcuityVL_AC?: string;
-    glassType?: string;
-    [key: string]: any;
+// Define BilanFields interface to match DocumentsSection expectations
+interface BilanFields {
+	bilanPreOp: {
+		groupage: boolean;
+		fnsTP: boolean;
+		ionogramme: boolean;
+		glycemie: boolean;
+		ureeCreatinine: boolean;
+		bilanHepatique: boolean;
+		ecgCardiologie: boolean;
+	};
+	bilanDiabete: {
+		glycemieJeun: boolean;
+		glycemiePostPrandiale: boolean;
+		hbA1c: boolean;
+		cholesterol: boolean;
+		tgb: boolean;
+	};
+	bilanInflammatoire: {
+		fns: boolean;
+		crp: boolean;
+		fibrinogene: boolean;
+		vs: boolean;
+		electrophorese: boolean;
+	};
+	bilanUveite: {
+		fns: boolean;
+		vsCrp: boolean;
+		electrophorese: boolean;
+		toxoplasmose: boolean;
+		idrTuberculine: boolean;
+		aslo: boolean;
+		typageHla: boolean;
+		vdrlTpha: boolean;
+		serologie: boolean;
+		radioThorax: boolean;
+	};
 }
 
 interface PatientData {
-    id: string;
-    name: string;
-    surname: string;
-    dob: string;
-    phone?: string;
-    email?: string;
+	id: string;
+	name: string;
+	surname: string;
+	dob: string;
+	phone?: string;
+	email?: string;
+}
+
+
+interface AbsenceData {
+	consultationDate: Date;
+}
+
+interface WorkStopData {
+	startDate: Date;
+	endDate: Date;
+	reason: string;
+	exitAuthorized: boolean;
+}
+
+interface ReportData {
+	conclusion: string;
+	antecedents?: string;
+	inspection?: string;
+	segmentAnterieur?: string;
+	fondOeil?: string;
 }
 
 interface PrintControlFlags {
-    includeVisualAcuityWithCorrection?: boolean;
-    includeVisualAcuityWithoutCorrection?: boolean;
-    includeGlassType?: boolean;
-    includeFarVision?: boolean;
-    includeNearVision?: boolean;
-    includeRightEyeFar?: boolean;
-    includeLeftEyeFar?: boolean;
-    includeRightEyeNear?: boolean;
-    includeLeftEyeNear?: boolean;
-    includeRightEye?: boolean; // For contacts
-    includeLeftEye?: boolean; // For contacts
-    includeTonometry?: boolean; // For report
-    includeRaw?: boolean; // Certificate
-    includeCorrection?: boolean; // Certificate
-    [key: string]: any;
+	includeVisualAcuityWithCorrection?: boolean;
+	includeVisualAcuityWithoutCorrection?: boolean;
+	includeGlassType?: boolean;
+	includeFarVision?: boolean;
+	includeNearVision?: boolean;
+	includeRightEye?: boolean;
+	includeLeftEye?: boolean;
+	includeRightEyeFar?: boolean;
+	includeLeftEyeFar?: boolean;
+	includeRightEyeNear?: boolean;
+	includeLeftEyeNear?: boolean;
 }
 
 interface PrintDataOverrides {
-    glasses?: any;
-    contactLenses?: any;
-    report?: any;
-    workStop?: any;
-    generic?: any;
-    certificate?: any;
-    bilan?: any;
-    absence?: any;
-    prescriptions?: any;
-    [key: string]: any;
+	glasses?: {
+		rightEye: {
+			sph: string;
+			cyl: string;
+			axis: string;
+			add: string;
+			visualAcuityVL_AC: string;
+			glassType: string;
+			nearSph: string;
+			nearCyl: string;
+			nearAxis: string;
+			emptyEyeOption?: 'plan' | 'conserver';
+			emptyNearEyeOption?: 'plan' | 'conserver';
+		};
+		leftEye: {
+			sph: string;
+			cyl: string;
+			axis: string;
+			add: string;
+			visualAcuityVL_AC: string;
+			glassType: string;
+			nearSph: string;
+			nearCyl: string;
+			nearAxis: string;
+			emptyEyeOption?: 'plan' | 'conserver';
+			emptyNearEyeOption?: 'plan' | 'conserver';
+		};
+	};
+	certificatAcuite?: {
+		rightEye: {
+			visualAcuityVL_SC: string;
+			visualAcuityVL_AC: string;
+			glassType: string;
+		};
+		leftEye: {
+			visualAcuityVL_SC: string;
+			visualAcuityVL_AC: string;
+			glassType: string;
+		};
+	};
+	contacts?: {
+		rightEye: {
+			contactLensType: string;
+			lensBrand: string;
+			sph: string;
+			cyl: string;
+			axis: string;
+			add: string;
+			axis_k: string;
+			diam: string;
+			k1: string;
+			k2: string;
+		};
+		leftEye: {
+			contactLensType: string;
+			lensBrand: string;
+			sph: string;
+			cyl: string;
+			axis: string;
+			add: string;
+			axis_k: string;
+			diam: string;
+			k1: string;
+			k2: string;
+		};
+	};
+	divers?: {
+		certificateContent: string;
+		certificateTitle: string;
+	};
+	medicalRecord?: {
+		documentType: string;
+		printData: any;
+	};
+	workStop?: {
+		startDate: Date;
+		endDate: Date;
+		exitAuthorized: boolean;
+	};
+	absence?: {
+		consultationDate: Date;
+	};
 }
 
 export class DocumentPrinter {
-    /**
-     * Generate PDF bytes for any document type
-     */
-    static async generatePdfBytes(
-        documentType: string,
-        patient: PatientData,
-        options: {
-            leftEye?: EyeData;
-            rightEye?: EyeData;
-            glassType?: string;
-            printControlFlags?: PrintControlFlags;
-            printDataOverrides?: PrintDataOverrides;
-            genericConfig?: GenericRecordConfig;
-            prescriptions?: any[];
-            clinicalExam?: any;
-            [key: string]: any;
-        }
-    ): Promise<Uint8Array> {
-        // Create PDF context
-        const context = await createPdfContext();
+	/**
+	 * Generate PDF bytes for any document type
+	 */
+	static async generatePdfBytes(
+		documentType: string,
+		patient: PatientData,
+		options: {
+			leftEye?: EyeData;
+			rightEye?: EyeData;
+			prescriptionData?: PrescriptionData;
+			detailedClinicalExam?: DetailedClinicalExamData;
+			tonometrie?: TonometrieData;
+			bilanFields?: BilanFields;
+			absenceData?: AbsenceData;
+			workStopData?: WorkStopData;
+			reportData?: ReportData;
+			glassType?: string;
+			printControlFlags?: PrintControlFlags;
+			printDataOverrides?: PrintDataOverrides;
+		}
+	): Promise<Uint8Array> {
+		// Create PDF context
+		const context = await createPdfContext();
 
-        // Generate PDF based on document type
-        switch (documentType) {
-            case 'medications':
-                return await generatePrescriptionPDF(
-                    context,
-                    patient,
-                    {
-                        treatments: options.prescriptions || [],
-                        notes: options.printDataOverrides?.prescriptions?.notes, // Hypothetical override if we had one
-                        nextAppointment: options.clinicalExam?.nextAppointment ? {
-                            date: options.clinicalExam.nextAppointment.date,
-                            reason: options.clinicalExam.nextAppointment.reason,
-                            timeframe: options.clinicalExam.nextAppointment.timeframe
-                        } : undefined
-                    }
-                );
-            case 'glasses':
-                return await generateGlassesPDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.glasses,
-                    options.printControlFlags ? {
-                        includeGlassType: options.printControlFlags.includeGlassType ?? false,
-                        includeFarVision: options.printControlFlags.includeFarVision ?? false,
-                        includeNearVision: options.printControlFlags.includeNearVision ?? false,
-                        includeRightEyeFar: options.printControlFlags.includeRightEyeFar,
-                        includeLeftEyeFar: options.printControlFlags.includeLeftEyeFar,
-                        includeRightEyeNear: options.printControlFlags.includeRightEyeNear,
-                        includeLeftEyeNear: options.printControlFlags.includeLeftEyeNear,
-                        includeVisualAcuityWithCorrection: false
-                    } : undefined
-                );
-            case 'contacts':
-                return await generateContactLensesPDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.contactLenses,
-                    options.printControlFlags ? {
-                        includeRightEye: options.printControlFlags.includeRightEye ?? true,
-                        includeLeftEye: options.printControlFlags.includeLeftEye ?? true,
-                    } : undefined
-                );
-            case 'report':
-                return await generateReportPDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.report,
-                    options.printControlFlags ? {
-                        includeVisualAcuityWithoutCorrection: options.printControlFlags.includeVisualAcuityWithoutCorrection ?? true,
-                        includeVisualAcuityWithCorrection: options.printControlFlags.includeVisualAcuityWithCorrection ?? true,
-                        includeTonometry: options.printControlFlags.includeTonometry ?? true,
-                    } : undefined
-                );
-            case 'workStop':
-                return await generateWorkStopPDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.workStop
-                );
-            case 'visualAcuity':
-                return await generateVisualAcuityCertificatePDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.certificate,
-                    options.printControlFlags ? {
-                        includeRaw: options.printControlFlags.includeRaw ?? true,
-                        includeCorrection: options.printControlFlags.includeCorrection ?? true,
-                    } : undefined
-                );
-            case 'absence':
-                return await generateAbsenceCertificatePDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.absence
-                );
-            case 'bilanPreOp':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'preop',
-                    options.printDataOverrides?.bilan?.preop
-                );
-            case 'bilanDiabete':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'diabete',
-                    options.printDataOverrides?.bilan?.diabete
-                );
-            case 'bilanCardio':
-                return await generateBilanCardioPDF(
-                    context,
-                    patient
-                );
-            case 'bilanCnas':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'cnas',
-                    options.printDataOverrides?.bilan?.cnas
-                );
-            case 'bilanCtf':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'ctf',
-                    options.printDataOverrides?.bilan?.ctf
-                );
-            case 'bilanBiometrie':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'biometrie',
-                    options.printDataOverrides?.bilan?.biometrie
-                );
-            case 'bilanInfectieux':
-                return await generateBilanPDF(
-                    context,
-                    patient,
-                    'infectieux',
-                    options.printDataOverrides?.bilan?.infectieux
-                );
-            case 'generic':
-                if (!options.genericConfig) {
-                    throw new Error('Generic document configuration missing');
-                }
-                return await generateGenericPDF(
-                    context,
-                    patient,
-                    options.genericConfig,
-                    options.printDataOverrides?.generic || {}
-                );
-            case 'radiography':
-                return await generateRadiographyPDF(
-                    context,
-                    patient,
-                    options.printDataOverrides?.radiography
-                );
-            default:
-                // Fallback for unknown document types
-                context.page.drawText(`Document '${documentType}' en cours de portage...`, {
-                    x: context.LEFT_MARGIN,
-                    y: context.height - 100,
-                    size: context.TEXT_SIZES.small,
-                    font: context.helvetica,
-                    color: rgb(0, 0, 0),
-                });
-                return await context.pdfDoc.save();
-        }
-    }
+		// Get eye data with print overrides
+		const rightEyeData = this.getRightEyeDataWithOverrides(
+			options.rightEye,
+			documentType,
+			options.printDataOverrides
+		);
+		const leftEyeData = this.getLeftEyeDataWithOverrides(
+			options.leftEye,
+			documentType,
+			options.printDataOverrides
+		);
 
-    static async printDocument(
-        documentType: string,
-        patient: PatientData,
-        options: any
-    ): Promise<void> {
-        try {
-            // 1) Generate the PDF bytes
-            const bytes = await this.generatePdfBytes(documentType, patient, options);
+		// Generate PDF based on document type
+		switch (documentType) {
+			case 'contacts':
+				return await generateContactLensesPDF(
+					context,
+					patient,
+					options.printDataOverrides?.contacts,
+					options.printControlFlags ? {
+						includeRightEye: options.printControlFlags.includeRightEye,
+						includeLeftEye: options.printControlFlags.includeLeftEye,
+					} : undefined
+				);
+			case 'glasses':
+				return await generateGlassesPDF(
+					context,
+					patient,
+					options.printDataOverrides?.glasses,
+					options.printControlFlags ? {
+						includeGlassType: options.printControlFlags.includeGlassType ?? false,
+						includeFarVision: options.printControlFlags.includeFarVision ?? false,
+						includeNearVision: options.printControlFlags.includeNearVision ?? false,
+						includeRightEyeFar: options.printControlFlags.includeRightEyeFar,
+						includeLeftEyeFar: options.printControlFlags.includeLeftEyeFar,
+						includeRightEyeNear: options.printControlFlags.includeRightEyeNear,
+						includeLeftEyeNear: options.printControlFlags.includeLeftEyeNear,
+					} : undefined
+				);
+			case 'medications':
+				return await generateMedicationsPDF(context, patient, options.prescriptionData);
+			case 'certificatAcuite':
+				// Use the visual acuity print data from printDataOverrides
+				const visualAcuityPrintData = options.printDataOverrides?.certificatAcuite ? {
+					visualAcuityVL_SC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_SC,
+					visualAcuityVL_SC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_SC,
+					visualAcuityVL_AC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_AC,
+					visualAcuityVL_AC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_AC,
+				} : undefined;
+				return await generateVisualAcuityCertificatePDF(
+					context,
+					patient,
+					visualAcuityPrintData,
+					options.printControlFlags ? {
+						includeVisualAcuityWithoutCorrection: options.printControlFlags.includeVisualAcuityWithoutCorrection ?? true,
+						includeVisualAcuityWithCorrection: options.printControlFlags.includeVisualAcuityWithCorrection ?? true,
+					} : undefined
+				);
+			case 'workStop':
+				// Use the work stop print data from printDataOverrides
+				const workStopPrintData = options.printDataOverrides?.workStop ? {
+					startDate: options.printDataOverrides.workStop.startDate,
+					endDate: options.printDataOverrides.workStop.endDate,
+					exitAuthorized: options.printDataOverrides.workStop.exitAuthorized,
+				} : undefined;
+				return await generateWorkStopPDF(context, patient, workStopPrintData);
+			case 'absence':
+				// Use the absence print data from printDataOverrides
+				const absencePrintData = options.printDataOverrides?.absence ? {
+					consultationDate: options.printDataOverrides.absence.consultationDate,
+				} : undefined;
+				return await generateAbsenceCertificatePDF(context, patient, absencePrintData);
+			case 'report':
+				return await generateReportPDF(
+					context,
+					patient,
+					rightEyeData,
+					leftEyeData,
+					options.detailedClinicalExam,
+					options.tonometrie,
+					options.reportData,
+					options.printControlFlags ? {
+						includeVisualAcuityWithCorrection: options.printControlFlags.includeVisualAcuityWithCorrection ?? true,
+						includeGlassType: options.printControlFlags.includeGlassType ?? false,
+						includeVisualAcuityWithoutCorrection: options.printControlFlags.includeVisualAcuityWithoutCorrection ?? true,
+						includeTonometry: false, // Default to false if not specified
+					} : undefined
+				);
+			case 'divers':
+				// Handle individual medical record documents
+				if (options.printDataOverrides?.medicalRecord) {
+					const documentType = options.printDataOverrides.medicalRecord.documentType;
+					const printData = options.printDataOverrides.medicalRecord.printData;
 
-            // 2) Build Blob
-            const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
+					switch (documentType) {
+						case 'BILAN CARDIO VASCULAIRE':
+							return await generateBilanCardioVasculairePDF(context, patient);
+						case 'REPONSE HTA':
+							return await generateReponseHTAPDF(context, patient, printData);
+						case 'CTF (LASER ARGON)':
+							return await generateCTFLaserArgonPDF(context, patient, printData);
+						case 'CTF (LASER YAG)':
+							return await generateCTFLaserYAGPDF(context, patient, printData);
+						case 'CTF (CECITE TOTALE)':
+							return await generateCTFCeciteTotalePDF(context, patient);
+						case 'CTF MALVISION CLASSE':
+							return await generateCTFMalvisionClassePDF(context, patient);
+						case 'BILAN CARDIO OVCR':
+							return await generateBilanCardioOVCRPDF(context, patient);
+						case 'REPRISE DE TRAVAIL':
+							return await generateRepriseDeTravailPDF(context, patient, printData);
+						case 'CTF GLAUCOME':
+							return await generateCTFGlaucomePDF(context, patient);
+						case 'REPONSE AZYTER':
+							return await generateReponseAzyterPDF(context, patient);
+						case 'ORIENT CARDIO':
+							return await generateOrientCardioPDF(context, patient);
+						case 'ORIENT NEURO':
+							return await generateOrientNeuroPDF(context, patient);
+						case 'ORIENT DIAB MED INTERNE':
+							return await generateOrientDiabMedInternePDF(context, patient);
+						case 'ANGIO':
+							return await generateAngioPDF(context, patient, printData);
+						case 'Diabète Normal':
+							return await generateDiabeteNormalPDF(context, patient);
+						case 'COMPTE RENDU CNAS':
+							return await generateCompteRenduCNASPDF(context, patient);
+						case 'AVIS ORL DCC':
+							return await generateAvisORLDCCPDF(context, patient, printData);
+						case 'CNAS OCT G':
+							return await generateCNASOCTGPDF(context, patient);
+						case 'CNAS OCT M':
+							return await generateCNASOCTMPDF(context, patient);
+						case 'CNAS ECHO':
+							return await generateCNASECHOPDF(context, patient);
+						case 'CNAS ARGON':
+							return await generateCNASArgonPDF(context, patient);
+						case 'CNAS pachy':
+							return await generateCNASPachyPDF(context, patient);
+						default:
+							// Fallback for unknown medical record types
+							context.page.drawText('Document en cours de préparation...', {
+								x: context.LEFT_MARGIN,
+								y: context.height - 100,
+								size: context.TEXT_SIZES.small,
+								font: context.helvetica,
+								color: rgb(0, 0, 0),
+							});
+							return await context.pdfDoc.save();
+					}
+				}
 
-            // 3) Hidden iframe
-            const iframe = document.createElement('iframe');
-            Object.assign(iframe.style, {
-                position: 'fixed', right: '0', bottom: '0', width: '0', height: '0', border: '0'
-            });
-            iframe.src = url;
-            document.body.appendChild(iframe);
+				// For other divers documents, create a certificate document
+				const diversData = options.printDataOverrides?.divers;
+				if (diversData) {
+					// Add patient header
+					context.page.drawText(`${patient.name} ${patient.surname}`, {
+						x: context.LEFT_MARGIN,
+						y: context.height - 100,
+						size: context.TEXT_SIZES.title,
+						font: context.helveticaBold,
+						color: rgb(0, 0, 0),
+					});
 
-            // 4) Cleanup
-            const cleanup = () => {
-                try { document.body.removeChild(iframe); } catch { }
-                try { URL.revokeObjectURL(url); } catch { }
-            };
+					// Add certificate title
+					context.page.drawText(diversData.certificateTitle, {
+						x: context.LEFT_MARGIN,
+						y: context.height - 150,
+						size: context.TEXT_SIZES.header,
+						font: context.helveticaBold,
+						color: rgb(0, 0, 0),
+					});
 
-            const targetWin = () => iframe.contentWindow || iframe;
+					// Add certificate content
+					const lines = diversData.certificateContent.split('\n');
+					let yPosition = context.height - 200;
+					for (const line of lines) {
+						if (yPosition < 100) break; // Prevent overflow
+						context.page.drawText(line, {
+							x: context.LEFT_MARGIN,
+							y: yPosition,
+							size: context.TEXT_SIZES.small,
+							font: context.helvetica,
+							color: rgb(0, 0, 0),
+						});
+						yPosition -= 20;
+					}
+				} else {
+					// Document vierge - just show header with patient info
+					drawDocumentHeader(context, patient, DocumentUtils.calculateAge);
+				}
+				return await context.pdfDoc.save();
+			case 'bilanPreOp':
+			case 'bilanDiabete':
+			case 'bilanInflammatoire':
+			case 'bilanUveite':
+				return await generateBilanPDF(context, patient, documentType as any, options.bilanFields as any);
+			default:
+				// Check if it's a medical record document
+				if (options.printDataOverrides?.medicalRecord) {
+					// Import medical records and find the selected one
+					const medicalRecords = await import('./medical_records_structured.json');
+					const selectedRecord = medicalRecords.default.find((record: any) => record.Code === documentType);
 
-            const attachAfterPrint = () => {
-                const tw = targetWin();
-                if (tw) {
-                    (tw as any).addEventListener('afterprint', () => setTimeout(cleanup, 500));
-                }
+					if (selectedRecord) {
+						return await generateMedicalRecordPDF(
+							context,
+							patient,
+							selectedRecord,
+							options.printDataOverrides.medicalRecord.printData
+						);
+					}
+				}
 
-                if ('matchMedia' in window) {
-                    const mql = window.matchMedia('print');
-                    const listener = (ev: MediaQueryListEvent) => {
-                        if (!ev.matches) {
-                            setTimeout(cleanup, 0); // Cleanup immediately after print dialog closes
-                            mql.removeEventListener?.('change', listener);
-                        }
-                    };
-                    mql.addEventListener?.('change', listener);
-                }
+				// Fallback for unknown document types
+				context.page.drawText('Document en cours de préparation...', {
+					x: context.LEFT_MARGIN,
+					y: context.height - 100,
+					size: context.TEXT_SIZES.small,
+					font: context.helvetica,
+					color: rgb(0, 0, 0),
+				});
+				return await context.pdfDoc.save();
+		}
+	}
 
-                setTimeout(cleanup, 60_000); // Failsafe
-            };
+	/**
+	 * Get right eye data with print overrides applied
+	 */
+	private static getRightEyeDataWithOverrides(
+		rightEye?: EyeData,
+		documentType?: string,
+		printDataOverrides?: PrintDataOverrides
+	): EyeData | undefined {
+		if (documentType === 'glasses' && printDataOverrides?.glasses?.rightEye) {
+			return { ...rightEye, ...printDataOverrides.glasses.rightEye } as EyeData;
+		}
+		if (documentType === 'certificatAcuite' && printDataOverrides?.certificatAcuite?.rightEye) {
+			return { ...rightEye, ...printDataOverrides.certificatAcuite.rightEye } as EyeData;
+		}
+		return rightEye;
+	}
 
-            // 5) Wait and print
-            iframe.onload = () => {
-                attachAfterPrint();
-                setTimeout(() => {
-                    try {
-                        const win = iframe.contentWindow;
-                        if (win) {
-                            win.focus();
-                            (win as Window).print();
-                        }
-                    } catch { }
-                }, 750);
-            };
-        } catch (err) {
-            console.error('Print error:', err);
-            throw new Error("Erreur à la génération du PDF.");
-        }
-    }
+	/**
+	 * Get left eye data with print overrides applied
+	 */
+	private static getLeftEyeDataWithOverrides(
+		leftEye?: EyeData,
+		documentType?: string,
+		printDataOverrides?: PrintDataOverrides
+	): EyeData | undefined {
+		if (documentType === 'glasses' && printDataOverrides?.glasses?.leftEye) {
+			return { ...leftEye, ...printDataOverrides.glasses.leftEye } as EyeData;
+		}
+		if (documentType === 'certificatAcuite' && printDataOverrides?.certificatAcuite?.leftEye) {
+			return { ...leftEye, ...printDataOverrides.certificatAcuite.leftEye } as EyeData;
+		}
+		return leftEye;
+	}
 
-    static async generatePreviewUrl(
-        documentType: string,
-        patient: PatientData,
-        printOptions: any
-    ): Promise<string> {
-        try {
-            const bytes = await this.generatePdfBytes(documentType, patient, printOptions);
-            const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
-            return URL.createObjectURL(blob);
-        } catch (err) {
-            console.error('Preview generation error:', err);
-            throw new Error('Erreur à la génération de l\'aperçu.');
-        }
-    }
+	static async printDocument(
+		documentType: string,
+		patient: PatientData,
+		options: {
+			leftEye?: EyeData;
+			rightEye?: EyeData;
+			prescriptionData?: PrescriptionData;
+			detailedClinicalExam?: DetailedClinicalExamData;
+			tonometrie?: TonometrieData;
+			bilanFields?: BilanFields;
+			absenceData?: AbsenceData;
+			workStopData?: WorkStopData;
+			reportData?: ReportData;
+			glassType?: string;
+			printControlFlags?: PrintControlFlags;
+			printDataOverrides?: PrintDataOverrides;
+		}
+	): Promise<void> {
+		try {
+			// 1) Generate the PDF bytes
+			const bytes = await this.generatePdfBytes(documentType, patient, options);
+
+			// 2) IMPORTANT: Build Blob from the Uint8Array itself, not bytes.buffer
+			const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+
+			// 3) Create a hidden iframe to host the PDF
+			const iframe = document.createElement('iframe');
+			iframe.style.position = 'fixed';
+			iframe.style.right = '0';
+			iframe.style.bottom = '0';
+			iframe.style.width = '0';
+			iframe.style.height = '0';
+			iframe.style.border = '0';
+			iframe.src = url; // let the browser’s PDF handler load it
+			document.body.appendChild(iframe);
+
+			// 4) Robust cleanup that won't race printing
+			const cleanup = () => {
+				try { document.body.removeChild(iframe); } catch { }
+				try { URL.revokeObjectURL(url); } catch { }
+			};
+
+			// Prefer the iframe's own print events if available
+			const targetWin = () => iframe.contentWindow || iframe;
+
+			// onafterprint fires when the print dialog closes (most browsers)
+			const attachAfterPrint = () => {
+				const tw = targetWin();
+				if (!tw) return;
+				const after = () => {
+					// Add a tiny delay so spoolers can still read the PDF
+					setTimeout(cleanup, 500);
+				};
+				if (tw) {
+					// TS doesn't know iframe windows support afterprint, so cast to any
+					(tw as any).addEventListener('afterprint', () => {
+						setTimeout(cleanup, 500);
+					});
+				}
+
+				// Fallback: page-level matchMedia for print state
+				if ('matchMedia' in window) {
+					const mql = window.matchMedia('print');
+					const listener = (ev: MediaQueryListEvent) => {
+						if (!ev.matches) {
+							setTimeout(after, 0);
+							mql.removeEventListener?.('change', listener);
+						}
+					};
+					mql.addEventListener?.('change', listener);
+				}
+
+				// Last-resort cleanup in case no events ever fire (Safari quirks)
+				setTimeout(after, 60_000);
+			};
+
+			// 5) Wait for the PDF to load in the iframe, then print
+			iframe.onload = () => {
+				attachAfterPrint();
+				// Give the built-in viewer a moment to parse & attach
+				setTimeout(() => {
+					try {
+						const win = iframe.contentWindow;
+						if (win) {
+							win.focus();
+							(win as Window).print();
+						}
+					} catch {
+						// If printing throws for any reason, leave the iframe so the user can retry
+					}
+				}, 750); // tweak to 500–1500ms if you see timing issues on Safari
+			};
+		} catch (err) {
+			console.error('Print error:', err);
+			throw new Error("Erreur à la génération du PDF.");
+		}
+	}
+
+
+	/**
+	 * Generate PDF preview URL
+	 */
+	static async generatePreviewUrl(
+		documentType: string,
+		patient: PatientData,
+		printOptions: {
+			leftEye?: EyeData;
+			rightEye?: EyeData;
+			prescriptionData?: PrescriptionData;
+			detailedClinicalExam?: DetailedClinicalExamData;
+			tonometrie?: TonometrieData;
+			bilanFields?: BilanFields;
+			absenceData?: AbsenceData;
+			workStopData?: WorkStopData;
+			reportData?: ReportData;
+			glassType?: string;
+			printControlFlags?: PrintControlFlags;
+			printDataOverrides?: PrintDataOverrides;
+		}
+	): Promise<string> {
+		try {
+			const bytes = await this.generatePdfBytes(documentType, patient, printOptions);
+			const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+			return URL.createObjectURL(blob);
+		} catch (err) {
+			console.error('Preview generation error:', err);
+			throw new Error('Erreur à la génération de l\'aperçu.');
+		}
+	}
 }

@@ -25,7 +25,7 @@ export function SmartMultiSelectInput({
     category,
     value = "",
     onSelect,
-    placeholder = "Type to add...",
+    placeholder = "Ajouter...",
     className,
     disabled = false
 }: SmartMultiSelectInputProps) {

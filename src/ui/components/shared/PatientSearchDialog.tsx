@@ -114,7 +114,7 @@ export function PatientSearchDialog({
     };
 
     return (
-        <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={!!selectedPatient}>
+        <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>
             <CommandInput
                 placeholder={selectedPatient
                     ? `Actions pour ${selectedPatient.surname} ${selectedPatient.name}...`
@@ -143,12 +143,12 @@ export function PatientSearchDialog({
                                         key={patient.id}
                                         value={`${patient.surname} ${patient.name} ${patient.id}`} // Unique value
                                         onSelect={() => handlePatientClick(patient)}
-                                        className="flex items-center justify-between p-3 cursor-pointer aria-selected:bg-blue-50 aria-selected:text-blue-900"
+                                        className="flex items-center justify-between p-3 cursor-pointer aria-selected:bg-blue-50 aria-selected:text-blue-900 antialiased"
                                     >
                                         <div className="flex items-center gap-3">
                                             <History className="w-4 h-4 text-slate-400" />
                                             <div>
-                                                <div className="font-semibold text-slate-900 capitalize">
+                                                <div className="font-extrabold text-slate-900 capitalize text-base">
                                                     {patient.surname} {patient.name}
                                                 </div>
                                             </div>
@@ -165,14 +165,14 @@ export function PatientSearchDialog({
                                         key={patient.id}
                                         value={`${patient.surname} ${patient.name} ${patient.id}`}
                                         onSelect={() => handlePatientClick(patient)}
-                                        className="flex items-center justify-between p-3 cursor-pointer aria-selected:bg-blue-50 aria-selected:text-blue-900 data-[disabled]:pointer-events-auto data-[disabled]:opacity-100"
+                                        className="flex items-center justify-between p-3 cursor-pointer aria-selected:bg-blue-50 aria-selected:text-blue-900 data-[disabled]:pointer-events-auto data-[disabled]:opacity-100 antialiased"
                                     >
                                         <div className="flex items-center gap-3">
                                             <div>
-                                                <div className="font-semibold text-slate-900 capitalize">
+                                                <div className="font-extrabold text-slate-900 capitalize text-base">
                                                     {patient.surname} {patient.name}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                                <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
                                                     {patient.dob && (
                                                         <span>Né(e) en {patient.dob}</span>
                                                     )}
@@ -186,7 +186,7 @@ export function PatientSearchDialog({
                                             </div>
                                         </div>
                                         {patient.phone_number && (
-                                            <div className="flex items-center gap-1 text-xs text-slate-400">
+                                            <div className="flex items-center gap-1 text-xs text-slate-600 font-semibold">
                                                 <Phone className="w-3 h-3" />
                                                 {patient.phone_number}
                                             </div>

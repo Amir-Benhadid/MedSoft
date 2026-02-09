@@ -54,17 +54,17 @@ export default function SecretaryStats() {
                         key={item.label}
                         className="flex flex-col items-center justify-center py-2.5 rounded-2xl transition-all hover:bg-white hover:shadow-sm group cursor-default"
                     >
-                        <div className={`p-1.5 rounded-xl ${item.bg} mb-1.5 group-hover:scale-110 transition-transform`}>
-                            <Icon className={`h-3.5 w-3.5 ${item.color}`} />
+                        <div className={`p-2 rounded-xl ${item.bg} mb-2 group-hover:scale-110 transition-transform`}>
+                            <Icon className={`h-5 w-5 ${item.color}`} />
                         </div>
                         <span className={cn(
-                            "text-[10px] font-bold uppercase tracking-widest leading-none opacity-80",
+                            "text-xs font-bold uppercase tracking-widest leading-none opacity-80",
                             item.color
                         )}>
                             {item.label}
                         </span>
                         <span className={cn(
-                            "text-3xl font-extrabold tracking-tighter mt-1 leading-none",
+                            "text-4xl font-extrabold tracking-tighter mt-1 leading-none",
                             item.color
                         )}>
                             {item.value}
