@@ -30,6 +30,7 @@ interface SecretaryPatientDetailsProps {
     isPatientLoading: boolean;
     onOpenClinicalData: () => void;
     onOpenDocuments: () => void;
+    onOpenCertificate: () => void;
     patientId: string;
     onEdit: () => void;
     initialTab?: string;
@@ -42,6 +43,7 @@ export function SecretaryPatientDetails({
     isPatientLoading,
     onOpenClinicalData,
     onOpenDocuments,
+    onOpenCertificate,
     patientId,
     onEdit,
     initialTab = 'info'
@@ -238,27 +240,34 @@ export function SecretaryPatientDetails({
                             </div>
 
                             {/* Actions Footer for Info Tab */}
-                            {appMode !== 'secretary' && (
-                                <div className="grid grid-cols-2 gap-3 pt-2">
-                                    <Button
-                                        className="h-auto flex-col gap-1 p-3 border border-teal-200 bg-white hover:bg-teal-50 text-teal-700 shadow-sm"
-                                        variant="outline"
-                                        onClick={onOpenClinicalData}
-                                    >
-                                        <Activity className="w-5 h-5 mb-1" />
-                                        <span className="font-bold text-xs">Données Cliniques</span>
-                                    </Button>
+                            <div className="grid grid-cols-2 gap-3 pt-2">
+                                <Button
+                                    className="h-auto flex-col gap-1 p-3 border border-teal-200 bg-white hover:bg-teal-50 text-teal-700 shadow-sm"
+                                    variant="outline"
+                                    onClick={onOpenClinicalData}
+                                >
+                                    <Activity className="w-5 h-5 mb-1" />
+                                    <span className="font-bold text-xs">Données Cliniques</span>
+                                </Button>
 
-                                    <Button
-                                        className="h-auto flex-col gap-1 p-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm"
-                                        variant="outline"
-                                        onClick={onOpenDocuments}
-                                    >
-                                        <FileText className="w-5 h-5 mb-1" />
-                                        <span className="font-bold text-xs">Documents</span>
-                                    </Button>
-                                </div>
-                            )}
+                                <Button
+                                    className="h-auto flex-col gap-1 p-3 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm"
+                                    variant="outline"
+                                    onClick={onOpenDocuments}
+                                >
+                                    <FileText className="w-5 h-5 mb-1" />
+                                    <span className="font-bold text-xs">Documents</span>
+                                </Button>
+
+                                <Button
+                                    className="h-auto flex-col gap-1 p-3 border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 shadow-sm"
+                                    variant="outline"
+                                    onClick={onOpenCertificate}
+                                >
+                                    <FileText className="w-5 h-5 mb-1" />
+                                    <span className="font-bold text-xs">Certificat Minute</span>
+                                </Button>
+                            </div>
 
                         </TabsContent>
 

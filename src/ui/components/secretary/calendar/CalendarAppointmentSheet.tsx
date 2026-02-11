@@ -144,6 +144,31 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
         }
     }, [patientData.data, appointment, selectedPatient, reset]);
 
+    // Enforce 00 minutes on start time and sync end time
+    const watchedStartTime = watch('start_time');
+    useEffect(() => {
+        if (!watchedStartTime) return;
+
+        const date = new Date(watchedStartTime);
+        if (isNaN(date.getTime())) return;
+
+        // Enforce minutes to 00
+        if (date.getMinutes() !== 0 || date.getSeconds() !== 0) {
+            date.setMinutes(0, 0, 0);
+            const cleanStart = getLocalISOString(date).slice(0, 16);
+            if (cleanStart !== watchedStartTime) {
+                setValue('start_time', cleanStart);
+                return; // Will re-run effect with clean time
+            }
+        }
+
+        // Sync end time (always 1 hour after start)
+        const endDate = new Date(date.getTime() + 60 * 60 * 1000);
+        const desiredEnd = getLocalISOString(endDate).slice(0, 16);
+        setValue('end_time', desiredEnd);
+
+    }, [watchedStartTime, setValue]);
+
     const handlePatientSelect = useCallback((patient: Patient) => {
         setSelectedPatient(patient);
         setView('appointment');
@@ -221,6 +246,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
             <SecretaryDocumentsContent
                 patientId={selectedPatient.id}
                 patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
+                patient={selectedPatient}
                 onClose={() => {
                     closeSheet('documents');
                     activeSheetRef.current = null;
@@ -400,6 +426,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                                 </div>
                                 <Input
                                     type="datetime-local"
+                                    step="3600"
                                     {...register('start_time')}
                                     className="h-9 text-sm"
                                 />
@@ -412,6 +439,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                                 </div>
                                 <Input
                                     type="datetime-local"
+                                    step="3600"
                                     {...register('end_time')}
                                     className="h-9 text-sm"
                                 />

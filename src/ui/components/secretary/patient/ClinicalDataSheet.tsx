@@ -254,7 +254,18 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
                     includeVisualAcuityWithCorrection: false,
                     includeGlassType: false
                 },
-                printDataOverrides: {}
+                printDataOverrides: {
+                    certificatAcuite: {
+                        rightEye: {
+                            visualAcuityVL_SC: formData.od_va,
+                            glassType: ""
+                        },
+                        leftEye: {
+                            visualAcuityVL_SC: formData.og_va,
+                            glassType: ""
+                        }
+                    }
+                }
             };
 
             await DocumentPrinter.printDocument('certificatAcuite', patient, printOptions);
@@ -282,59 +293,55 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
 
             <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                 {/* Refraction */}
-                {appMode !== 'secretary' && (
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-sm text-slate-900 border-b pb-1">Réfraction Objective</h3>
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-sm text-slate-900 border-b pb-1">Réfraction Objective</h3>
 
-                        {/* OD */}
-                        <div className="grid grid-cols-5 gap-2 items-center">
-                            <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
-                            <CompactSelect placeholder="Sph" value={formData.od_sph} onChange={v => handleChange('od_sph', v)} options={SPHERE_VALUES} />
-                            <CompactSelect placeholder="Cyl" value={formData.od_cyl} onChange={v => handleChange('od_cyl', v)} options={CYLINDER_VALUES} />
-                            <CompactSelect placeholder="Axe" value={formData.od_axis} onChange={v => handleChange('od_axis', v)} options={AXIS_VALUES} />
-                            <CompactSelect placeholder="Add" value={formData.od_add} onChange={v => handleChange('od_add', v)} options={ADD_VALUES} />
-                        </div>
-
-                        {/* OG */}
-                        <div className="grid grid-cols-5 gap-2 items-center">
-                            <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
-                            <CompactSelect placeholder="Sph" value={formData.og_sph} onChange={v => handleChange('og_sph', v)} options={SPHERE_VALUES} />
-                            <CompactSelect placeholder="Cyl" value={formData.og_cyl} onChange={v => handleChange('og_cyl', v)} options={CYLINDER_VALUES} />
-                            <CompactSelect placeholder="Axe" value={formData.og_axis} onChange={v => handleChange('og_axis', v)} options={AXIS_VALUES} />
-                            <CompactSelect placeholder="Add" value={formData.og_add} onChange={v => handleChange('og_add', v)} options={ADD_VALUES} />
-                        </div>
+                    {/* OD */}
+                    <div className="grid grid-cols-5 gap-2 items-center">
+                        <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
+                        <CompactSelect placeholder="Sph" value={formData.od_sph} onChange={v => handleChange('od_sph', v)} options={SPHERE_VALUES} />
+                        <CompactSelect placeholder="Cyl" value={formData.od_cyl} onChange={v => handleChange('od_cyl', v)} options={CYLINDER_VALUES} />
+                        <CompactSelect placeholder="Axe" value={formData.od_axis} onChange={v => handleChange('od_axis', v)} options={AXIS_VALUES} />
+                        <CompactSelect placeholder="Add" value={formData.od_add} onChange={v => handleChange('od_add', v)} options={ADD_VALUES} />
                     </div>
-                )}
+
+                    {/* OG */}
+                    <div className="grid grid-cols-5 gap-2 items-center">
+                        <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
+                        <CompactSelect placeholder="Sph" value={formData.og_sph} onChange={v => handleChange('og_sph', v)} options={SPHERE_VALUES} />
+                        <CompactSelect placeholder="Cyl" value={formData.og_cyl} onChange={v => handleChange('og_cyl', v)} options={CYLINDER_VALUES} />
+                        <CompactSelect placeholder="Axe" value={formData.og_axis} onChange={v => handleChange('og_axis', v)} options={AXIS_VALUES} />
+                        <CompactSelect placeholder="Add" value={formData.og_add} onChange={v => handleChange('og_add', v)} options={ADD_VALUES} />
+                    </div>
+                </div>
 
                 {/* VA & Tonometry */}
-                {appMode !== 'secretary' && (
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-sm text-slate-900 border-b pb-1">Acuité & Tonométrie</h3>
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-sm text-slate-900 border-b pb-1">Acuité & Tonométrie</h3>
 
-                        <div className="grid grid-cols-4 gap-4">
-                            <div className="col-span-1"></div>
-                            <Label className="text-center text-xs text-muted-foreground">AV (SC)</Label>
-                            <Label className="text-center text-xs text-muted-foreground">PIO (mmHg)</Label>
-                            <Label className="text-center text-xs text-muted-foreground">Pachy (µm)</Label>
-                        </div>
-
-                        {/* OD */}
-                        <div className="grid grid-cols-4 gap-4 items-center">
-                            <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
-                            <CompactSelect placeholder="-" value={formData.od_va} onChange={v => handleChange('od_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
-                            <CompactSelect placeholder="-" value={formData.od_iop} onChange={v => handleChange('od_iop', v)} options={TENSION_VALUES} />
-                            <Input placeholder="550" value={formData.od_pach} onChange={e => handleChange('od_pach', e.target.value)} className="h-8 text-xs" />
-                        </div>
-
-                        {/* OG */}
-                        <div className="grid grid-cols-4 gap-4 items-center">
-                            <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
-                            <CompactSelect placeholder="-" value={formData.og_va} onChange={v => handleChange('og_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
-                            <CompactSelect placeholder="-" value={formData.og_iop} onChange={v => handleChange('og_iop', v)} options={TENSION_VALUES} />
-                            <Input placeholder="550" value={formData.og_pach} onChange={e => handleChange('og_pach', e.target.value)} className="h-8 text-xs" />
-                        </div>
+                    <div className="grid grid-cols-4 gap-4">
+                        <div className="col-span-1"></div>
+                        <Label className="text-center text-xs text-muted-foreground">AV (SC)</Label>
+                        <Label className="text-center text-xs text-muted-foreground">PIO (mmHg)</Label>
+                        <Label className="text-center text-xs text-muted-foreground">Pachy (µm)</Label>
                     </div>
-                )}
+
+                    {/* OD */}
+                    <div className="grid grid-cols-4 gap-4 items-center">
+                        <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
+                        <CompactSelect placeholder="-" value={formData.od_va} onChange={v => handleChange('od_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
+                        <CompactSelect placeholder="-" value={formData.od_iop} onChange={v => handleChange('od_iop', v)} options={TENSION_VALUES} />
+                        <Input placeholder="550" value={formData.od_pach} onChange={e => handleChange('od_pach', e.target.value)} className="h-8 text-xs" />
+                    </div>
+
+                    {/* OG */}
+                    <div className="grid grid-cols-4 gap-4 items-center">
+                        <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
+                        <CompactSelect placeholder="-" value={formData.og_va} onChange={v => handleChange('og_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
+                        <CompactSelect placeholder="-" value={formData.og_iop} onChange={v => handleChange('og_iop', v)} options={TENSION_VALUES} />
+                        <Input placeholder="550" value={formData.og_pach} onChange={e => handleChange('og_pach', e.target.value)} className="h-8 text-xs" />
+                    </div>
+                </div>
             </div>
 
             <div className="px-6 py-4 border-t mt-auto flex justify-end gap-2 bg-slate-50">

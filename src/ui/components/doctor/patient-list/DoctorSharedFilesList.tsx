@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orpcClient } from '@/ui/lib/orpc/client';
-import { FileText, X, ExternalLink, Loader2 } from 'lucide-react';
+import { FileText, X, ExternalLink, Loader2, User } from 'lucide-react';
 import { Button } from '@/ui/components/ui/button';
-import { ScrollArea } from '@/ui/components/ui/scroll-area';
 import { useToast } from '@/ui/hooks/use-toast';
+import { cn } from '@/ui/lib/utils';
 
 interface DoctorSharedFilesListProps {
     onSelectPatient?: (patientId: string) => void;
@@ -16,7 +16,6 @@ export default function DoctorSharedFilesList({ onSelectPatient }: DoctorSharedF
     const { data: sharedFiles = [], isLoading } = useQuery({
         queryKey: ['sharedRecords', 'doctor'],
         queryFn: () => orpcClient.sharedRecords.list({ receiver: 'DOCTOR' }),
-        refetchInterval: 5000
     });
 
     const markAsReadMutation = useMutation({
@@ -38,86 +37,86 @@ export default function DoctorSharedFilesList({ onSelectPatient }: DoctorSharedF
     if (unreadFiles.length === 0) return null;
 
     return (
-        <div className="bg-white border-b border-slate-200">
-            <div className="px-5 py-3 flex items-center justify-between border-b border-slate-100 bg-amber-50/50">
-                <div className="flex items-center gap-2">
-                    <div className="bg-amber-100 p-1.5 rounded-lg">
-                        <FileText className="h-4 w-4 text-amber-600" />
-                    </div>
-                    <span className="text-sm font-bold text-amber-900">
-                        Dossiers Reçus ({unreadFiles.length})
-                    </span>
-                </div>
+        <div className="mx-4 mt-4 mb-2 p-3 bg-[#fef3c7] border border-[#f59e0b] rounded-xl shadow-sm animate-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-2 mb-3">
+                <div className="h-2 w-2 rounded-full bg-[#f59e0b]"></div>
+                <h3 className="text-sm font-bold text-[#92400e] flex items-center gap-2">
+                    📨 Dossiers Envoyés par la Secrétaire
+                </h3>
             </div>
 
-            <ScrollArea className="max-h-48">
-                <div className="divide-y divide-slate-100">
-                    {unreadFiles.map((file: any) => (
-                        <div key={file.id} className="px-5 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between group">
-                            <div className="flex items-center gap-3 overflow-hidden">
-                                <div className="h-8 w-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center shrink-0 font-bold text-xs">
-                                    {file.patient_surname?.charAt(0)}{file.patient_name?.charAt(0)}
-                                </div>
-                                <div className="min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <h4 className="font-medium text-sm text-slate-900 truncate">
-                                            {file.patient_surname} {file.patient_name}
-                                        </h4>
-                                        <span className="text-[10px] text-slate-400">
-                                            {new Date(file.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                                        <span>
-                                            {file.patient_dob ? `Né(e) le ${file.patient_dob}` : 'DDN Inconnue'}
-                                        </span>
-                                        {file.notes && (
-                                            <>
-                                                <span>•</span>
-                                                <span className="truncate max-w-[200px] italic">"{file.notes}"</span>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+            <div className="space-y-2">
+                {unreadFiles.map((file: any) => (
+                    <div
+                        key={file.id}
+                        className="bg-white rounded-lg border border-[#f59e0b]/30 p-2 flex items-center justify-between shadow-sm hover:border-[#f59e0b] transition-all"
+                    >
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            {/* Avatar */}
+                            <div className="h-8 w-8 bg-[#f59e0b] text-white rounded-full flex items-center justify-center shrink-0 font-bold text-xs shadow-sm">
+                                {file.patient_surname?.charAt(0)}{file.patient_name?.charAt(0)}
                             </div>
 
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1.5"
-                                    onClick={() => {
-                                        if (file.patient_id && onSelectPatient) {
-                                            onSelectPatient(file.patient_id);
-                                        } else {
-                                            toast({
-                                                title: "Impossible d'ouvrir le dossier",
-                                                variant: "destructive"
-                                            });
-                                        }
-                                    }}
-                                >
-                                    <ExternalLink className="h-3.5 w-3.5" />
-                                    <span className="text-xs font-medium">Ouvrir</span>
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
-                                    onClick={() => markAsReadMutation.mutate(file.id)}
-                                    disabled={markAsReadMutation.isPending}
-                                >
-                                    {markAsReadMutation.isPending ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <X className="h-4 w-4" />
-                                    )}
-                                </Button>
+                            {/* Info */}
+                            <div className="min-w-0 flex items-center gap-3">
+                                <h4 className="font-bold text-sm text-slate-800 truncate">
+                                    {file.patient_surname} {file.patient_name}
+                                </h4>
+
+                                <span className="text-xs text-slate-500 font-medium hidden sm:inline-block">
+                                    👤 {file.patient_dob ? (() => {
+                                        try {
+                                            const today = new Date();
+                                            const birthDate = new Date(file.patient_dob);
+                                            const age = today.getFullYear() - birthDate.getFullYear();
+                                            return `${age} ans`;
+                                        } catch { return 'Age inconnu'; }
+                                    })() : 'Age inconnu'}
+                                </span>
+
+                                {file.patient_gen_ants && (
+                                    <span className="text-xs text-slate-400 italic truncate max-w-[150px] hidden md:inline-block">
+                                        🩺 {file.patient_gen_ants}
+                                    </span>
+                                )}
                             </div>
                         </div>
-                    ))}
-                </div>
-            </ScrollArea>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2">
+                            <Button
+                                size="sm"
+                                className="h-7 px-3 text-xs bg-[#f59e0b] hover:bg-[#d97706] text-white border-none shadow-none font-semibold"
+                                onClick={() => {
+                                    if (file.patient_id && onSelectPatient) {
+                                        onSelectPatient(file.patient_id);
+                                    } else {
+                                        toast({
+                                            title: "Impossible d'ouvrir le dossier",
+                                            variant: "destructive"
+                                        });
+                                    }
+                                }}
+                            >
+                                Ouvrir
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-3 text-xs border-[#f59e0b] text-[#f59e0b] hover:bg-[#fef3c7] hover:text-[#d97706] font-semibold bg-transparent"
+                                onClick={() => markAsReadMutation.mutate(file.id)}
+                                disabled={markAsReadMutation.isPending}
+                            >
+                                {markAsReadMutation.isPending ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                    "Retirer"
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

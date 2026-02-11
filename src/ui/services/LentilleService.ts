@@ -81,25 +81,37 @@ export class LentilleService {
      * @returns {Promise<{sphere: number; cylinder: number; axis: number}>} Converted prescription
      */
     public async convertToContactLens(
-        sph: number,
-        cyl: number,
-        axis: number,
+        sphInput: number | string,
+        cylInput: number | string,
+        axisInput: number | string,
         lensType: string
     ): Promise<{ sphere: number; cylinder: number; axis: number }> {
+        // Normalize inputs - handle strings with commas
+        const normalize = (val: any) => {
+            if (typeof val === 'string') {
+                return parseFloat(val.replace(',', '.'));
+            }
+            return parseFloat(String(val || 0));
+        };
+
+        const sph = normalize(sphInput);
+        const cyl = normalize(cylInput);
+        const axis = normalize(axisInput);
+
         try {
-            // General conversion formula:
-            // 1. Convert sphere -> convertedSphere
-            // 2. Convert (sphere + cylinder) -> convertedSpherePlusCylinder
-            // 3. new cylinder = convertedSpherePlusCylinder - convertedSphere
-            // 4. new sphere = convertedSphere
-            // Exception: When type == "Sphérique" AND cylinder > 0:
-            //   new sphere = convertedSphere + new cylinder
+            // If any input is invalid, return original (as numbers if possible)
+            if (isNaN(sph) || isNaN(cyl) || isNaN(axis)) {
+                return {
+                    sphere: isNaN(sph) ? 0 : sph,
+                    cylinder: isNaN(cyl) ? 0 : cyl,
+                    axis: isNaN(axis) ? 0 : axis
+                };
+            }
 
             // Convert the sphere
             const sphereConversion = await this.getConversionForSphere(sph);
 
-            // If no conversion found, usually means power is low (<4.00) where Vertex Distance doesn't matter much, 
-            // OR it's out of range. 
+            // If no conversion found, power is low (<4.00) or out of range
             if (!sphereConversion) {
                 return { sphere: sph, cylinder: cyl, axis: axis };
             }
@@ -118,7 +130,6 @@ export class LentilleService {
                     ? (spherePlusCylinderConversion.lun_moins ?? spherePlusCylinder)
                     : (spherePlusCylinderConversion.lun_plus ?? spherePlusCylinder);
             } else {
-                // If no conversion found for (sphere + cylinder), use original value
                 convertedSpherePlusCylinder = spherePlusCylinder;
             }
 
@@ -128,19 +139,19 @@ export class LentilleService {
             // Start with new sphere = convertedSphere
             let newSphere = convertedSphere;
 
-            // Exception: When type == "Sphérique" AND cylinder > 0. (Maybe for spherical equivalent?)
-            if (lensType === 'Sphérique' && cyl !== 0) {
-                // Use the new cylinder for calculation but result will just be a sphere
+            // Exception: When type == "Sphérique" AND cylinder != 0.
+            if (lensType === 'Sphérique' && Math.abs(cyl) > 0.01) {
                 const calculatedSphere = convertedSphere + 0.5 * newCylinder;
-                newSphere = Math.ceil(calculatedSphere * 4) / 4;
+                // Round to nearest 0.25 (using signs correctly for myopia/hyperopia)
+                newSphere = Math.round(calculatedSphere * 4) / 4;
                 newCylinder = 0;
             }
 
-            // Ensure we return numbers
+            // Final safety check to ensure we return finite numbers
             return {
-                sphere: Number(newSphere),
-                cylinder: Number(newCylinder),
-                axis: Number(axis)
+                sphere: isFinite(newSphere) ? Number(newSphere) : sph,
+                cylinder: isFinite(newCylinder) ? Number(newCylinder) : cyl,
+                axis: isFinite(axis) ? Number(axis) : 0
             };
 
         } catch (error) {

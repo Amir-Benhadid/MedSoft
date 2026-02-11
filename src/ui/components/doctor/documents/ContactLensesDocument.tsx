@@ -495,10 +495,19 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 	}, []);
 
 	// Helper function to format numbers with + sign for positive values
-	const formatNumberWithSign = (value: number): string => {
-		if (isNaN(value) || !isFinite(value)) return '';
-		const formatted = value.toFixed(2);
-		return value > 0 ? `+${formatted}` : formatted;
+	/**
+	 * Formats a number with sign (+ or -) and 2 decimal places.
+	 * Handles both numbers and strings with possible commas.
+	 */
+	const formatNumberWithSign = (value: number | string): string => {
+		const strVal = value?.toString().replace(',', '.') || '0';
+		const num = parseFloat(strVal);
+		if (isNaN(num) || !isFinite(num)) {
+			return value?.toString() || '';
+		}
+		if (num === 0) return '0.00';
+		const formatted = num.toFixed(2);
+		return num > 0 ? `+${formatted}` : formatted;
 	};
 
 	// Handler for print data changes
@@ -538,33 +547,35 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 			const isSpherical = currentType === 'Sphérique';
 
 			if (currentSph || currentCyl || currentAxis) {
-				const sphNum = parseFloat(currentSph || '0');
-				const cylNum = parseFloat(currentCyl || '0');
-				const axisNum = parseFloat(currentAxis || '0');
+				// Normalize inputs for parsing
+				const normalize = (v: string) => parseFloat(v.replace(',', '.') || '0');
+				const sphNum = normalize(currentSph);
+				const cylNum = normalize(currentCyl);
+				const axisNum = normalize(currentAxis);
 
-				// Only convert if we have valid numbers
-				if (!isNaN(sphNum) && !isNaN(cylNum) && !isNaN(axisNum)) {
+				// Proceed if we have valid numerical data
+				if (!isNaN(sphNum)) {
 					const converted = await lentilleService.convertToContactLens(
-						sphNum,
-						cylNum,
-						axisNum,
+						currentSph,
+						currentCyl,
+						currentAxis,
 						currentType
 					);
 
 					// Check if conversion returned valid numbers
-					if (converted && !isNaN(converted.sphere) && isFinite(converted.sphere)) {
+					if (converted && isFinite(converted.sphere)) {
 						setPrintData((prev) => ({
 							...prev,
 							rightEye: {
 								...prev.rightEye,
 								sph: formatNumberWithSign(converted.sphere),
-								cyl: isSpherical ? '' : (converted.cylinder && !isNaN(converted.cylinder) && isFinite(converted.cylinder) ? formatNumberWithSign(converted.cylinder) : ''),
+								cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
 								axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
 								contactLensType: currentType,
 							},
 						}));
 					} else {
-						// Fallback to original values if conversion fails
+						// Fallback to original values if conversion fails or returns invalid data
 						setPrintData((prev) => ({
 							...prev,
 							rightEye: {
@@ -577,7 +588,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 						}));
 					}
 				} else {
-					// Invalid input, use original values
+					// Minimal data for conversion not met, use original values
 					setPrintData((prev) => ({
 						...prev,
 						rightEye: {
@@ -632,33 +643,35 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 			const isSpherical = currentType === 'Sphérique';
 
 			if (currentSph || currentCyl || currentAxis) {
-				const sphNum = parseFloat(currentSph || '0');
-				const cylNum = parseFloat(currentCyl || '0');
-				const axisNum = parseFloat(currentAxis || '0');
+				// Normalize inputs for parsing
+				const normalize = (v: string) => parseFloat(v.replace(',', '.') || '0');
+				const sphNum = normalize(currentSph);
+				const cylNum = normalize(currentCyl);
+				const axisNum = normalize(currentAxis);
 
-				// Only convert if we have valid numbers
-				if (!isNaN(sphNum) && !isNaN(cylNum) && !isNaN(axisNum)) {
+				// Proceed if we have valid numerical data
+				if (!isNaN(sphNum)) {
 					const converted = await lentilleService.convertToContactLens(
-						sphNum,
-						cylNum,
-						axisNum,
+						currentSph,
+						currentCyl,
+						currentAxis,
 						currentType
 					);
 
 					// Check if conversion returned valid numbers
-					if (converted && !isNaN(converted.sphere) && isFinite(converted.sphere)) {
+					if (converted && isFinite(converted.sphere)) {
 						setPrintData((prev) => ({
 							...prev,
 							leftEye: {
 								...prev.leftEye,
 								sph: formatNumberWithSign(converted.sphere),
-								cyl: isSpherical ? '' : (converted.cylinder && !isNaN(converted.cylinder) && isFinite(converted.cylinder) ? formatNumberWithSign(converted.cylinder) : ''),
+								cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
 								axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
 								contactLensType: currentType,
 							},
 						}));
 					} else {
-						// Fallback to original values if conversion fails
+						// Fallback to original values if conversion fails or returns invalid data
 						setPrintData((prev) => ({
 							...prev,
 							leftEye: {
@@ -671,7 +684,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 						}));
 					}
 				} else {
-					// Invalid input, use original values
+					// Minimal data for conversion not met, use original values
 					setPrintData((prev) => ({
 						...prev,
 						leftEye: {

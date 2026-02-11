@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/ui/components/ui/button";
 import { Input } from "@/ui/components/ui/input";
-import { MessageCircle, CheckSquare, Send, X, Plus, Trash2, Calendar, Flag, FolderOpen, User } from 'lucide-react';
+import { MessageCircle, CheckSquare, Send, X, Plus, Trash2, Calendar, Flag } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orpcClient } from "@/ui/lib/orpc/client";
 import { cn } from "@/ui/lib/utils";
@@ -14,17 +14,9 @@ export function FloatingMessaging() {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('messages');
 
-    // Fetch messages
     const { data: allMessages = [] } = useQuery({
         queryKey: ['messages', 'today'],
         queryFn: () => orpcClient.messages.list(),
-        refetchInterval: 3000
-    });
-
-    // Fetch shared records (files)
-    const { data: sharedRecords = [] } = useQuery({
-        queryKey: ['sharedRecords', 'doctor'],
-        queryFn: () => orpcClient.sharedRecords.list({ receiver: 'DOCTOR' }),
         refetchInterval: 3000
     });
 
@@ -40,9 +32,8 @@ export function FloatingMessaging() {
 
     // Calculate unread counts
     const unreadChatCount = chatMessages.filter((msg: any) => msg.sender === 'SECRETARY' && !msg.is_read).length;
-    const unreadFilesCount = sharedRecords.filter((rec: any) => rec.status === 'unread').length;
 
-    const totalCount = unreadChatCount + unreadFilesCount;
+    const totalCount = unreadChatCount;
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
@@ -56,10 +47,7 @@ export function FloatingMessaging() {
                                         Messages
                                         {unreadChatCount > 0 && <span className="bg-red-500 text-white text-[10px] items-center justify-center flex h-4 w-4 rounded-full ml-1">{unreadChatCount}</span>}
                                     </TabsTrigger>
-                                    <TabsTrigger value="dossiers" className="text-xs h-7 px-3 flex gap-1">
-                                        Dossiers
-                                        {unreadFilesCount > 0 && <span className="bg-blue-500 text-white text-[10px] items-center justify-center flex h-4 w-4 rounded-full ml-1">{unreadFilesCount}</span>}
-                                    </TabsTrigger>
+
                                     <TabsTrigger value="todos" className="text-xs h-7 px-3">Tâches</TabsTrigger>
                                 </TabsList>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 min-w-7 text-slate-400 hover:text-slate-600" onClick={() => setIsOpen(false)}>
@@ -71,7 +59,7 @@ export function FloatingMessaging() {
 
                     <div className="flex-1 overflow-hidden bg-white">
                         {activeTab === 'messages' && <MessagesTab messages={chatMessages} />}
-                        {activeTab === 'dossiers' && <DossiersTab records={sharedRecords} />}
+
                         {activeTab === 'todos' && <TodosTab />}
                     </div>
                 </div>
@@ -199,68 +187,7 @@ function MessagesTab({ messages }: { messages: any[] }) {
     );
 }
 
-function DossiersTab({ records }: { records: any[] }) {
-    const queryClient = useQueryClient();
 
-    // Mark as read immediately when viewed in this tab
-    const markAsReadMutation = useMutation({
-        mutationFn: (ids: string[]) => orpcClient.sharedRecords.markAsRead({ ids }),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['sharedRecords'] })
-    });
-
-    useEffect(() => {
-        const unreadIds = records
-            .filter((rec: any) => rec.status === 'unread')
-            .map((rec: any) => rec.id);
-
-        if (unreadIds.length > 0) {
-            markAsReadMutation.mutate(unreadIds);
-        }
-    }, [records]);
-
-    return (
-        <ScrollArea className="flex-1 h-full p-2">
-            <div className="space-y-2">
-                {records.length === 0 && (
-                    <div className="text-center text-slate-400 text-sm mt-10 flex flex-col items-center gap-2">
-                        <FolderOpen className="h-8 w-8 opacity-20" />
-                        <p>Aucun dossier reçu</p>
-                    </div>
-                )}
-                {records.map((rec: any) => (
-                    <DossierItem key={rec.id} record={rec} />
-                ))}
-            </div>
-        </ScrollArea>
-    );
-}
-
-function DossierItem({ record }: { record: any }) {
-    // Record already has patient details joined from repository
-    return (
-        <div className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer group">
-            <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
-                <User className="h-5 w-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-sm text-slate-900 truncate">
-                        {record.patient_surname} {record.patient_name}
-                    </h4>
-                    <span className="text-[10px] text-slate-400">
-                        {new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                </div>
-                <p className="text-xs text-slate-500 truncate">
-                    {record.patient_dob ? `Né(e) le ${record.patient_dob}` : 'Date de naissance inconnue'}
-                </p>
-            </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                <FolderOpen className="h-4 w-4" />
-            </Button>
-        </div>
-    );
-}
 
 
 function TodosTab() {

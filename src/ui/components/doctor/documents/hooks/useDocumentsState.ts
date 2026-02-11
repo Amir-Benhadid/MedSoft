@@ -27,7 +27,7 @@ export interface BilanFields {
         glycemiePostPrandiale: boolean;
         hbA1c: boolean;
         cholesterol: boolean;
-        tgb: boolean;
+        triglycerides: boolean;
     };
     bilanInflammatoire: {
         fns: boolean;
@@ -213,7 +213,7 @@ export const useDocumentsState = ({
                 glycemiePostPrandiale: true,
                 hbA1c: true,
                 cholesterol: true,
-                tgb: true,
+                triglycerides: true,
                 customFields: [],
             },
             bilanInflammatoire: {

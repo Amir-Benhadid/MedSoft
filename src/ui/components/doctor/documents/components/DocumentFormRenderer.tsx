@@ -23,28 +23,6 @@ import {
     AbsenceCertificateDocument,
     ReportDocument,
     MedicalRecordDocument,
-    BilanCardioVasculaireDocument,
-    ReponseHTADocument,
-    CTFLaserArgonDocument,
-    CTFLaserYAGDocument,
-    CTFCeciteTotaleDocument,
-    CTFMalvisionClasseDocument,
-    BilanCardioOVCRDocument,
-    RepriseDeTravailDocument,
-    CTFGlaucomeDocument,
-    ReponseAzyterDocument,
-    OrientCardioDocument,
-    OrientNeuroDocument,
-    OrientDiabMedInterneDocument,
-    AngioDocument,
-    DiabeteNormalDocument,
-    CompteRenduCNASDocument,
-    AvisORLDCCDocument,
-    CNASOCTGDocument,
-    CNASOCTMDocument,
-    CNASECHODocument,
-    CNASArgonDocument,
-    CNASPachyDocument,
 } from '../../documents';
 import medicalRecords from '../../documents/medical_records_structured.json';
 
@@ -178,193 +156,35 @@ const DocumentFormRenderer: React.FC<DocumentFormRendererProps> = ({
             setSelectedDiversDocument('documentVierge');
         };
 
-        switch (selectedDiversDocument) {
-            case 'BILAN CARDIO VASCULAIRE':
+        if (selectedDiversDocument && selectedDiversDocument !== 'documentVierge') {
+            const selectedRecord = medicalRecords.find((record: any) => record.code === selectedDiversDocument);
+
+            if (selectedRecord) {
                 return (
                     <FormWrapper>
                         <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <BilanCardioVasculaireDocument />
+                            <MedicalRecordDocument
+                                medicalRecord={selectedRecord as any}
+                                printData={printMedicalRecordData}
+                                setPrintData={setPrintMedicalRecordData}
+                                rightEyeData={rightEyeData}
+                                leftEyeData={leftEyeData}
+                                patient={patient}
+                            />
                         </MedicalRecordDocumentWrapper>
                     </FormWrapper>
                 );
-            case 'REPONSE HTA':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <ReponseHTADocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CTF (LASER ARGON)':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CTFLaserArgonDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CTF (LASER YAG)':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CTFLaserYAGDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CTF (CECITE TOTALE)':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CTFCeciteTotaleDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CTF MALVISION CLASSE':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CTFMalvisionClasseDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'BILAN CARDIO OVCR':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <BilanCardioOVCRDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'REPRISE DE TRAVAIL':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <RepriseDeTravailDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CTF GLAUCOME':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CTFGlaucomeDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'REPONSE AZYTER':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <ReponseAzyterDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'ORIENT CARDIO':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <OrientCardioDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'ORIENT NEURO':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <OrientNeuroDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'ORIENT DIAB MED INTERNE':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <OrientDiabMedInterneDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'ANGIO':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <AngioDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'Diabète Normal':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <DiabeteNormalDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'COMPTE RENDU CNAS':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CompteRenduCNASDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'AVIS ORL DCC':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <AvisORLDCCDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CNAS OCT G':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CNASOCTGDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CNAS OCT M':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CNASOCTMDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CNAS ECHO':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CNASECHODocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CNAS ARGON':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CNASArgonDocument />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            case 'CNAS pachy':
-                return (
-                    <FormWrapper>
-                        <MedicalRecordDocumentWrapper onBack={handleBack}>
-                            <CNASPachyDocument patient={patient!} />
-                        </MedicalRecordDocumentWrapper>
-                    </FormWrapper>
-                );
-            default:
-                return (
-                    <FormWrapper>
-                        <DiversDocumentForm
-                            onPrint={onPrint}
-                            isPrinting={isPrinting}
-                        />
-                    </FormWrapper>
-                );
+            }
         }
+
+        return (
+            <FormWrapper>
+                <DiversDocumentForm
+                    onPrint={onPrint}
+                    isPrinting={isPrinting}
+                />
+            </FormWrapper>
+        );
     }
 
     // Use persistent wrapper for eye documents and handle other documents
@@ -374,7 +194,12 @@ const DocumentFormRenderer: React.FC<DocumentFormRendererProps> = ({
                 {/* Render other documents when they are active */}
                 {activeDocTab === 'workStop' && <WorkStopDocument />}
                 {activeDocTab === 'absence' && <AbsenceCertificateDocument />}
-                {activeDocTab === 'report' && <ReportDocument />}
+                <div className={cn(
+                    "h-full overflow-hidden",
+                    activeDocTab === 'report' ? 'block' : 'hidden'
+                )}>
+                    <ReportDocument />
+                </div>
                 {activeDocTab === 'certificatAcuite' && <VisualAcuityCertificateDocument />}
                 {activeDocTab === 'medications' && <MedicationsDocument />}
             </PersistentEyeDocumentWrapper>

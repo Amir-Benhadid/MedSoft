@@ -14,6 +14,7 @@ export interface SharedRecord {
     patient_name?: string;
     patient_surname?: string;
     patient_dob?: string;
+    patient_gen_ants?: string;
 }
 
 export class SharedRecordRepository {
@@ -43,7 +44,7 @@ export class SharedRecordRepository {
 
     list(receiver: 'DOCTOR' | 'SECRETARY', limit = 50): SharedRecord[] {
         const stmt = this.db.prepare(`
-            SELECT sr.*, p.name as patient_name, p.surname as patient_surname, p.dob as patient_dob
+            SELECT sr.*, p.name as patient_name, p.surname as patient_surname, p.dob as patient_dob, p.gen_ants as patient_gen_ants
             FROM shared_records sr
             JOIN patients p ON sr.patient_id = p.id
             WHERE sr.receiver = ?

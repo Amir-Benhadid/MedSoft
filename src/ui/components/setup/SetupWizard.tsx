@@ -132,8 +132,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
 
     // Supabase State
     const [enableSupabaseSync, setEnableSupabaseSync] = useState(false);
-    const [supabaseUrl, setSupabaseUrl] = useState('');
-    const [supabaseKey, setSupabaseKey] = useState('');
+    const [enteredPin, setEnteredPin] = useState('');
 
     useEffect(() => {
         // Make window transparent for the setup wizard
@@ -177,6 +176,10 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
     };
     const handleFinish = async () => {
         setIsSaving(true);
+        // PLUG YOUR URL AND ANON KEY HERE
+        const HARDCODED_SUPABASE_URL = 'https://oouzzscntdsqqhfsbnli.supabase.co';
+        const HARDCODED_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdXp6c2NudGRzcXFoZnNibmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzY1MTksImV4cCI6MjA3Mjc1MjUxOX0.KYcBMIqxmDhSnqBQjr_U7MLFG3Mncqsf-o_4lNrvxGw';
+
         try {
             await window.electronAPI.saveSetup({
                 businessName,
@@ -189,8 +192,8 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                 logoPath,
                 // Pass sync params
                 enableSupabaseSync,
-                supabaseUrl,
-                supabaseKey
+                supabaseUrl: HARDCODED_SUPABASE_URL,
+                supabaseKey: HARDCODED_SUPABASE_KEY
             });
             // Give a small delay for feeling
             setTimeout(() => {
@@ -356,9 +359,9 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                     return (
                         <div className="space-y-4">
                             <div>
-                                <Label>Synchronisation Supabase (Optionnel)</Label>
+                                <Label>Synchronisation de données</Label>
                                 <p className="text-sm text-muted-foreground mb-4">
-                                    Voulez-vous importer des données depuis une base Supabase existante ?
+                                    Voulez-vous peupler la base de données avec les données initiales ?
                                 </p>
 
                                 <div className="flex items-center space-x-2 mb-4">
@@ -367,7 +370,10 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                                         id="enableSupabase"
                                         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                         checked={enableSupabaseSync}
-                                        onChange={(e) => setEnableSupabaseSync(e.target.checked)}
+                                        onChange={(e) => {
+                                            setEnableSupabaseSync(e.target.checked);
+                                            if (!e.target.checked) setEnteredPin('');
+                                        }}
                                     />
                                     <Label htmlFor="enableSupabase" className="font-normal cursor-pointer">
                                         Oui, peupler la base de données
@@ -377,23 +383,17 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                                 {enableSupabaseSync && (
                                     <div className="space-y-3 border-l-2 pl-3 border-primary/20 transition-all">
                                         <div>
-                                            <Label htmlFor="sbUrl" className="text-xs">Supabase URL</Label>
+                                            <Label htmlFor="pinCode" className="text-xs">Code PIN de sécurité</Label>
                                             <Input
-                                                id="sbUrl"
-                                                value={supabaseUrl}
-                                                onChange={e => setSupabaseUrl(e.target.value)}
-                                                placeholder="https://xyz.supabase.co"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="sbKey" className="text-xs">Supabase Anon Key</Label>
-                                            <Input
-                                                id="sbKey"
-                                                value={supabaseKey}
-                                                onChange={e => setSupabaseKey(e.target.value)}
-                                                placeholder="eyJhbG..."
+                                                id="pinCode"
+                                                value={enteredPin}
+                                                onChange={e => setEnteredPin(e.target.value)}
+                                                placeholder="Entrez le code PIN"
                                                 type="password"
                                             />
+                                            {enteredPin && enteredPin !== '120669' && (
+                                                <p className="text-[10px] text-destructive mt-1">Code PIN incorrect</p>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -503,7 +503,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
                             (step === 2 && !businessType) || // Require business type
                             (step === 5 && serverMode === 'host' && !dbPath) || // Require DB path ONLY if host
                             (step === 5 && serverMode === 'client' && !dbPath) || // "dbPath" stores IP in client mode
-                            (step === 6 && enableSupabaseSync && (!supabaseUrl || !supabaseKey)) // If sync enabled, require creds
+                            (step === 6 && enableSupabaseSync && enteredPin !== '120669') // If sync enabled, require correct PIN
                         }
                     >
                         Suivant

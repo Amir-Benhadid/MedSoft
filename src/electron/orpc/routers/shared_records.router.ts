@@ -14,6 +14,7 @@ const sharedRecordSchema = z.object({
     patient_name: z.string().optional(),
     patient_surname: z.string().optional(),
     patient_dob: z.string().optional().nullable(),
+    patient_gen_ants: z.string().optional().nullable(),
 });
 
 export const sharedRecordsRouter = os.router({
@@ -35,7 +36,7 @@ export const sharedRecordsRouter = os.router({
         .handler(async ({ input }) => {
             const repo = new SharedRecordRepository();
             const result = repo.create(input.patientId, input.sender, input.receiver);
-            broadcastChange('shared_records');
+            broadcastChange('sharedRecords');
             return result;
         }),
 
@@ -53,7 +54,7 @@ export const sharedRecordsRouter = os.router({
             const repo = new SharedRecordRepository();
             const success = repo.markAsRead(input.ids);
             if (success) {
-                broadcastChange('shared_records');
+                broadcastChange('sharedRecords');
             }
             return { success };
         }),
@@ -64,7 +65,7 @@ export const sharedRecordsRouter = os.router({
             const repo = new SharedRecordRepository();
             const success = repo.delete(input.id);
             if (success) {
-                broadcastChange('shared_records');
+                broadcastChange('sharedRecords');
             }
             return { success };
         })

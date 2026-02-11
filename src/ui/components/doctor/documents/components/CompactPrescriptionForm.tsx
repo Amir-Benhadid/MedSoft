@@ -37,6 +37,7 @@ import { PrescriptionData, Treatment } from '../types';
 import { useSupabaseMedicinesPaginated } from '../../../../hooks/useSupabaseMedicinesPaginated';
 import { cn } from "@/ui/lib/utils";
 import { useDocumentForm } from '../hooks/useDocumentForm';
+import { DocumentUtils } from '../DocumentUtils';
 
 interface CompactPrescriptionFormProps {
     prescriptionData?: PrescriptionData;
@@ -211,8 +212,8 @@ const TreatmentItem = memo<{
                         </div>
                         {/* We can show title here if not editing or if collapsed */}
                         {(!isEditing || !isExpanded) && (
-                            <span className="font-semibold text-xs text-foreground">
-                                {localTreatment.customName || localTreatment.name || `Médicament ${treatment.order}`}
+                            <span className="text-xs text-foreground">
+                                {localTreatment.customName || localTreatment.name ? DocumentUtils.toTitleCase(localTreatment.customName || localTreatment.name) : `Médicament ${treatment.order}`}
                             </span>
                         )}
                         {/* Summary when collapsed */}
@@ -648,7 +649,7 @@ const CompactPrescriptionForm = ({
                         <div className="py-4">
                             {medicineToSave && (
                                 <div className="bg-card p-3 rounded-lg border border-border text-sm space-y-2 shadow-sm">
-                                    <div className="font-semibold text-foreground">{medicineToSave.name || medicineToSave.customName || ''}</div>
+                                    <div className="text-foreground">{DocumentUtils.toTitleCase(medicineToSave.name || medicineToSave.customName || '')}</div>
                                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                         {medicineToSave.type && <div><span className="font-semibold text-foreground">Type:</span> {medicineToSave.type}</div>}
                                         {medicineToSave.strength && <div><span className="font-semibold text-foreground">Dosage:</span> {medicineToSave.strength}</div>}

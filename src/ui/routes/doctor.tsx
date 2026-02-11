@@ -12,6 +12,7 @@ import DoctorDashboard from '@/ui/components/doctor/DoctorDashboard';
 import RadiographyDashboard from '@/ui/components/doctor/RadiographyDashboard';
 import { FloatingMessaging } from '@/ui/components/doctor/messaging/FloatingMessaging';
 import { z } from 'zod';
+import { useRealtime } from '@/ui/hooks/useRealtime';
 
 /**
  * Search parameters schema for doctor route
@@ -28,6 +29,7 @@ export const Route = createFileRoute('/doctor')({
 });
 
 function DoctorPage() {
+	useRealtime();
 	const { patientId, mode, consultationId } = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 

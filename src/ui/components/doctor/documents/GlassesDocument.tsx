@@ -137,8 +137,30 @@ export const generateGlassesPDF = async (
 	const columnWidth = usableWidth / columnCount;
 
 	// Column positions
-	const col2 = LEFT_MARGIN + columnWidth / 2; // Sphère
-	const col3 = width / 2 - 'VERRES CORRECTEURS'.length * 3; // Cylindre
+	const colODLabel = LEFT_MARGIN;
+	const colODValue = LEFT_MARGIN + 35;
+	const colOGLabel = width / 2 + 10;
+	const colOGValue = width / 2 + 45;
+
+	const col2 = LEFT_MARGIN + columnWidth / 2; // Keep for Glass Type if needed
+	const col3 = width / 2 - 'VERRES CORRECTEURS'.length * 3; // Keep for consistency if used elsewhere, though we override for vision sections
+
+	// Helper for prescription formatting
+	const formatPrescriptionLine = (sph: string, cyl: string, axisRaw: string): string => {
+		const sphText = DocumentUtils.formatNumberWithSignOrEmpty(sph);
+		const cylNum = parseFloat(cyl) || 0;
+		const axisExists = axisRaw && axisRaw.trim() !== '';
+
+		// Case: Sphere only (Cyl is 0 and Axis is empty/0)
+		if (Math.abs(cylNum) < 0.01 && !axisExists) {
+			return `${sphText} D`;
+		}
+
+		// Case: Cylinder present
+		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
+		const axisText = axisExists ? axisRaw : '0';
+		return `${sphText} (${cylText} à ${axisText}°)`;
+	};
 
 	// Use print data directly - apply empty field formatting
 	const rightSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.sph);
@@ -177,7 +199,7 @@ export const generateGlassesPDF = async (
 		// Show title
 		if (shouldShowFarVisionTitle) {
 			page.drawText('Vision de Loin:', {
-				x: col2,
+				x: colODLabel,
 				y,
 				size: TEXT_SIZES.sectionHeader,
 				font: helveticaBold,
@@ -185,6 +207,9 @@ export const generateGlassesPDF = async (
 			});
 			y -= 1.2 * LINE_HEIGHTS.normal;
 		}
+
+		// Store initial Y to ensure OD and OG are on same line
+		const startY = y;
 
 		// Right Eye (OD)
 		if (shouldShowRightEyeFar) {
@@ -198,38 +223,25 @@ export const generateGlassesPDF = async (
 			const rightHasVisualData = !DocumentUtils.isEmptyField(rightSph) || !DocumentUtils.isEmptyField(rightCyl) || rightAxisExists;
 			const rightIsEffectivelyZero = rightSphNum === 0 && rightCylNum === 0 && !rightAxisExists;
 
-			// Logic:
-			// 1. If Conserver selected -> Print Conserver
-			// 2. If valid data and NOT effectively zero -> Print Data
-			// 3. Otherwise (No data, or Zero data, or Plan selected) -> Print Plan
-
-			const labelX = col2;
-			const contentX = col3; // Aligned with column 3 title if exists, or just spaced out
-
-			page.drawText("OD:", { x: labelX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			page.drawText("OD:", { x: colODLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
 
 			if (rightEmptyOption === 'conserver') {
-				page.drawText('Conserver ancienne lentille', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				page.drawText('Verre en place', {
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (rightHasVisualData && !rightIsEffectivelyZero) {
-				const rightCylText = !DocumentUtils.isEmptyField(rightCyl) ? `(${DocumentUtils.formatNumberWithSignOrEmpty(rightCyl)})` : '';
-				const rightAxisText = rightAxisExists ? rightAxis + '°' : '';
-				const rightPrescription = [DocumentUtils.formatNumberWithSignOrEmpty(rightSph), rightCylText, rightAxisText]
-					.filter(p => p !== '').join(' ');
-
-				page.drawText(rightPrescription, {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				const rightText = formatPrescriptionLine(rightSph, rightCyl, rightAxis);
+				page.drawText(rightText, {
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			}
-			y -= LINE_HEIGHTS.normal;
 		}
 
-		// Left Eye (OG)
+		// Left Eye (OG) - on same line (startY)
 		if (shouldShowLeftEyeFar) {
 			const leftEmptyOption = printData?.leftEye?.emptyEyeOption || 'plan';
 
@@ -239,32 +251,26 @@ export const generateGlassesPDF = async (
 			const leftHasVisualData = !DocumentUtils.isEmptyField(leftSph) || !DocumentUtils.isEmptyField(leftCyl) || leftAxisExists;
 			const leftIsEffectivelyZero = leftSphNum === 0 && leftCylNum === 0 && !leftAxisExists;
 
-			const labelX = col2;
-			const contentX = col3;
-
-			page.drawText("OG:", { x: labelX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			page.drawText("OG:", { x: colOGLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
 
 			if (leftEmptyOption === 'conserver') {
-				page.drawText('Conserver ancienne lentille', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				page.drawText('Verre en place', {
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (leftHasVisualData && !leftIsEffectivelyZero) {
-				const leftCylText = !DocumentUtils.isEmptyField(leftCyl) ? `(${DocumentUtils.formatNumberWithSignOrEmpty(leftCyl)})` : '';
-				const leftAxisText = leftAxisExists ? leftAxis + '°' : '';
-				const leftPrescription = [DocumentUtils.formatNumberWithSignOrEmpty(leftSph), leftCylText, leftAxisText]
-					.filter(p => p !== '').join(' ');
-
-				page.drawText(leftPrescription, {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				const leftText = formatPrescriptionLine(leftSph, leftCyl, leftAxis);
+				page.drawText(leftText, {
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			}
-			y -= LINE_HEIGHTS.normal;
 		}
 
+		// Move Y down after the row completes
+		y = startY - LINE_HEIGHTS.normal;
 		y -= 0.5 * LINE_HEIGHTS.normal; // Spacing after section
 	}
 
@@ -298,7 +304,7 @@ export const generateGlassesPDF = async (
 		// Show title
 		if (shouldShowNearVisionTitle) {
 			page.drawText("Vision de Près:", {
-				x: col2,
+				x: colODLabel,
 				y,
 				size: TEXT_SIZES.sectionHeader,
 				font: helveticaBold,
@@ -306,6 +312,8 @@ export const generateGlassesPDF = async (
 			});
 			y -= 1.2 * LINE_HEIGHTS.normal;
 		}
+
+		const startY = y;
 
 		// Right Eye (OD)
 		if (shouldShowRightEyeNear) {
@@ -317,33 +325,21 @@ export const generateGlassesPDF = async (
 			const rightNearHasVisualData = !DocumentUtils.isEmptyField(rightNearSph) || !DocumentUtils.isEmptyField(rightNearCyl) || rightNearAxisExists;
 			const rightNearIsEffectivelyZero = rightNearSphNum === 0 && rightNearCylNum === 0 && !rightNearAxisExists;
 
-			const labelX = col2;
-			const contentX = col3;
-
-			page.drawText("OD:", { x: labelX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			page.drawText("OD:", { x: colODLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
 
 			if (rightNearEmptyOption === 'conserver') {
-				page.drawText('Conserver ancienne lentille', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				page.drawText('Verre en place', {
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (rightNearHasVisualData && !rightNearIsEffectivelyZero) {
-				const rightNearCylText = !DocumentUtils.isEmptyField(rightNearCyl) ? `(${DocumentUtils.formatNumberWithSignOrEmpty(rightNearCyl)})` : '';
-				const rightNearAxisText = rightNearAxisExists ? rightNearAxis + '°' : '';
-				const rightNearPrescription = [DocumentUtils.formatNumberWithSignOrEmpty(rightNearSph), rightNearCylText, rightNearAxisText]
-					.filter(p => p !== '').join(' ');
-
-				page.drawText(rightNearPrescription, {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				const rightText = formatPrescriptionLine(rightNearSph, rightNearCyl, rightNearAxis);
+				page.drawText(rightText, {
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
-			}
-			y -= LINE_HEIGHTS.normal;
-			// Only add extra spacing if left eye will also be shown
-			if (shouldShowLeftEyeNear) {
-				y -= 0.5 * LINE_HEIGHTS.normal;
 			}
 		}
 
@@ -357,31 +353,25 @@ export const generateGlassesPDF = async (
 			const leftNearHasVisualData = !DocumentUtils.isEmptyField(leftNearSph) || !DocumentUtils.isEmptyField(leftNearCyl) || leftNearAxisExists;
 			const leftNearIsEffectivelyZero = leftNearSphNum === 0 && leftNearCylNum === 0 && !leftNearAxisExists;
 
-			const labelX = col2;
-			const contentX = col3;
-
-			page.drawText("OG:", { x: labelX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			page.drawText("OG:", { x: colOGLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
 
 			if (leftNearEmptyOption === 'conserver') {
-				page.drawText('Conserver ancienne lentille', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				page.drawText('Verre en place', {
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (leftNearHasVisualData && !leftNearIsEffectivelyZero) {
-				const leftNearCylText = !DocumentUtils.isEmptyField(leftNearCyl) ? `(${DocumentUtils.formatNumberWithSignOrEmpty(leftNearCyl)})` : '';
-				const leftNearAxisText = leftNearAxisExists ? leftNearAxis + '°' : '';
-				const leftNearPrescription = [DocumentUtils.formatNumberWithSignOrEmpty(leftNearSph), leftNearCylText, leftNearAxisText]
-					.filter(p => p !== '').join(' ');
-
-				page.drawText(leftNearPrescription, {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				const leftText = formatPrescriptionLine(leftNearSph, leftNearCyl, leftNearAxis);
+				page.drawText(leftText, {
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: contentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			}
-			y -= LINE_HEIGHTS.normal;
 		}
+
+		y = startY - LINE_HEIGHTS.normal;
 	}
 
 	// Distance interpupillaire - Note: This would need to be added to printData if needed
@@ -505,7 +495,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 				},
 			};
 
-			// Don't clear emptyEyeOption automatically - user can always choose to show "Conserver ancienne lentille"
+			// Don't clear emptyEyeOption automatically - user can always choose to show "Verre en place"
 			// Only clear if user explicitly sets it to 'plan' and there's data
 			if (field === 'emptyEyeOption' || field === 'emptyNearEyeOption') {
 				// Keep the option as selected
@@ -889,7 +879,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 													onCheckedChange={(checked) => handlePrintDataChange('rightEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
 													className="h-4 w-4 border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
 												/>
-												<Label htmlFor="rightEyeEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Conserver</Label>
+												<Label htmlFor="rightEyeEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Verre en place</Label>
 											</div>
 										);
 									} else {
@@ -905,7 +895,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="conserver" id="right-conserver" className="h-4 w-4 border-blue-400 text-blue-600" />
-													<Label htmlFor="right-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Conserver</Label>
+													<Label htmlFor="right-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">En place</Label>
 												</div>
 											</RadioGroup>
 										);
@@ -992,7 +982,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 													onCheckedChange={(checked) => handlePrintDataChange('leftEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
 													className="h-4 w-4 border-green-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
 												/>
-												<Label htmlFor="leftEyeEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Conserver</Label>
+												<Label htmlFor="leftEyeEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Verre en place</Label>
 											</div>
 										);
 									} else {
@@ -1008,7 +998,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="conserver" id="left-conserver" className="h-4 w-4 border-green-400 text-green-600" />
-													<Label htmlFor="left-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">Conserver</Label>
+													<Label htmlFor="left-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">En place</Label>
 												</div>
 											</RadioGroup>
 										);
@@ -1110,7 +1100,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 													onCheckedChange={(checked) => handlePrintDataChange('rightEye', 'emptyNearEyeOption')(checked ? 'conserver' : 'plan')}
 													className="h-4 w-4 border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
 												/>
-												<Label htmlFor="rightEyeNearEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Conserver</Label>
+												<Label htmlFor="rightEyeNearEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Verre en place</Label>
 											</div>
 										);
 									} else {
@@ -1126,7 +1116,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="conserver" id="right-near-conserver" className="h-4 w-4 border-blue-400 text-blue-600" />
-													<Label htmlFor="right-near-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Conserver</Label>
+													<Label htmlFor="right-near-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">En place</Label>
 												</div>
 											</RadioGroup>
 										);
@@ -1213,7 +1203,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 													onCheckedChange={(checked) => handlePrintDataChange('leftEye', 'emptyNearEyeOption')(checked ? 'conserver' : 'plan')}
 													className="h-4 w-4 border-green-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
 												/>
-												<Label htmlFor="leftEyeNearEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Conserver</Label>
+												<Label htmlFor="leftEyeNearEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Verre en place</Label>
 											</div>
 										);
 									} else {
@@ -1229,7 +1219,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 												</div>
 												<div className="flex items-center space-x-2">
 													<RadioGroupItem value="conserver" id="left-near-conserver" className="h-4 w-4 border-green-400 text-green-600" />
-													<Label htmlFor="left-near-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">Conserver</Label>
+													<Label htmlFor="left-near-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">En place</Label>
 												</div>
 											</RadioGroup>
 										);

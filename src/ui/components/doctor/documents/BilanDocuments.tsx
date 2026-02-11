@@ -28,7 +28,7 @@ interface BilanDiabeteFields extends BilanFieldsBase {
 	glycemiePostPrandiale: boolean;
 	hbA1c: boolean;
 	cholesterol: boolean;
-	tgb: boolean;
+	triglycerides: boolean;
 }
 
 interface BilanInflammatoireFields extends BilanFieldsBase {
@@ -219,7 +219,7 @@ const bilanConfigs = {
 			{ key: 'glycemiePostPrandiale', label: 'Glycémie post-prandiale' },
 			{ key: 'hbA1c', label: 'HbA1c' },
 			{ key: 'cholesterol', label: 'Cholestérol sanguin' },
-			{ key: 'tgb', label: 'TGB' },
+			{ key: 'triglycerides', label: 'Triglycérides' },
 		],
 	},
 	bilanInflammatoire: {

@@ -27,7 +27,7 @@ export const usePrintHandlers = ({
             printControlFlags: overrides.printControlFlags || {},
             printDataOverrides: {
                 glasses: overrides.glasses,
-                contactLenses: overrides.contacts,
+                contacts: overrides.contacts,
                 report: overrides.report,
                 workStop: overrides.workStop,
                 generic: overrides.generic,
@@ -37,7 +37,7 @@ export const usePrintHandlers = ({
                 radiography: overrides['radiography_dynamic'],
             },
             genericConfig: documentType === 'generic'
-                ? genericRecords.find(r => r.Code === overrides.selectedGenericTemplate)
+                ? genericRecords.find(r => r.code === overrides.selectedGenericTemplate)
                 : undefined,
         };
 
@@ -74,22 +74,6 @@ export const usePrintHandlers = ({
                 // Mark as printed in the database
                 const consultationId = useConsultationStore.getState().consultationId;
                 if (consultationId) {
-                    // We need to fetch current printed list first or use an atomic update if possible.
-                    // Since we don't have atomic array append easily via simple update here without reading,
-                    // we might need to read it or just append blind if the backend supports it.
-                    // However, we can use the `documents_data` from the store/backend.
-                    // Let's rely on reading the current state from the store if it has it, 
-                    // or better, fetch-update pattern creates race conditions but is acceptable here.
-
-                    // Actually, the best way might be to just call a specific mutation if one existed, 
-                    // but we only have `update`.
-                    // Let's assume we can get the current list from the store if we add it there, 
-                    // but wait, `documents_data` IS in the store: `state.documentOverrides`.
-                    // But `documentOverrides` in store maps to `documents_data` in DB? 
-                    // Let's check `loadConsultation` in store.
-                    // `documentOverrides: data.documents_data || {}`
-                    // So yes, we can update `documentOverrides` locally and send it.
-
                     const state = useConsultationStore.getState();
                     const currentDocs = state.documentOverrides || {};
                     const currentPrinted = (currentDocs.printed as string[]) || [];
@@ -99,39 +83,15 @@ export const usePrintHandlers = ({
                         const newDocs = { ...currentDocs, printed: newPrinted };
 
                         // Update local store
-                        // We don't have a direct "setDocumentsData" but we have `setDocumentOverride` 
-                        // which sets a KEY in `documentOverrides`. 
-                        // Wait, `documentOverrides` IS `documents_data` object in schema?
-                        // Schema: `documents_data: DocumentsDataSchema`.
-                        // Store: `documentOverrides: Record<string, any>`.
-                        // `loadConsultation`: `documentOverrides: data.documents_data || {}`.
-                        // So `documentOverrides` IS the whole `documents_data` object.
-
-                        // So I can update specific field "printed" in it?
-                        // `setDocumentOverride` implementation: 
-                        // `documentOverrides: { ...state.documentOverrides, [docId]: data }`
-                        // this assumes `documentOverrides` is a map of docId -> data.
-
-                        // BUT `loadConsultation` sets it to `data.documents_data`.
-                        // `documents_data` has structure `{ reportData: {}, absenceData: {}, ... }`.
-
-                        // If `documentOverrides` is treated as the root `documents_data` object:
-                        // `setDocumentOverride(docId, data)` would do `documents_data[docId] = data`.
-                        // So `setDocumentOverride('printed', newPrinted)` would result in 
-                        // `documents_data.printed = newPrinted`.
-                        // This matches the schema `printed: z.array(...)`.
-
                         state.setDocumentOverride('printed', newPrinted);
 
                         // Update on server
+                        // Dynamic import to avoid circular dependencies if any, though standard import is fine usually.
                         const { orpcClient } = await import('@/ui/lib/orpc/client');
                         await orpcClient.consultations.update({
                             id: consultationId,
                             updates: {
-                                documents_data: {
-                                    ...newDocs,
-                                    printed: newPrinted
-                                }
+                                documents_data: newDocs
                             }
                         });
                     }

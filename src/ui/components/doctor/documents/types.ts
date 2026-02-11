@@ -14,7 +14,7 @@ export interface BilanFields {
         glycemiePostPrandiale: boolean;
         hbA1c: boolean;
         cholesterol: boolean;
-        tgb: boolean;
+        triglycerides: boolean;
         customFields: string[];
     };
     bilanInflammatoire: {

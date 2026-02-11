@@ -59,7 +59,9 @@ function formatNumberWithSign(
     value: string | undefined,
     defaultValue = '0.00'
 ): string {
-    const num = parseFloat(value || defaultValue);
+    const normalizedValue = value ? value.toString().replace(',', '.') : defaultValue;
+    const num = parseFloat(normalizedValue);
+    if (isNaN(num)) return value || defaultValue;
     return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
 }
 
@@ -206,7 +208,9 @@ export const DocumentUtils = {
         if (DocumentUtils.isEmptyField(value)) {
             return '';
         }
-        const num = parseFloat(value || '0');
+        const normalizedValue = value ? value.toString().replace(',', '.') : '0';
+        const num = parseFloat(normalizedValue);
+        if (isNaN(num)) return value || '';
         if (num === 0) return '';
         return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
     },

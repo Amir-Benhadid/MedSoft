@@ -62,7 +62,7 @@ interface PrintControlFlags {
 	includeTonometry: boolean;
 }
 
-interface ReportDocumentProps {}
+interface ReportDocumentProps { }
 
 // PDF Generation Constants
 const LEFT_MARGIN = 50;
@@ -535,21 +535,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 
 	// Initialize on mount and sync initial values
 	useEffect(() => {
-		if (reportData.inspection || reportData.segmentAnterieur || reportData.fondOeil || 
+		if (reportData.inspection || reportData.segmentAnterieur || reportData.fondOeil ||
 			reportData.conclusion || reportData.generalMedicalHistory || reportData.ophthalmologicalHistory) {
 			hasSavedDataRef.current = true;
 		}
-		
-		// Initialize previous source refs with current clinical exam values
-		if (detailedClinicalExam) {
-			prevSourceRef.current.inspection = detailedClinicalExam.inspection || '';
-			prevSourceRef.current.segmentAnterieur = detailedClinicalExam.anteriorSegment?.slit_lamp_exam || '';
-			prevSourceRef.current.fondOeil = detailedClinicalExam.fundus?.fundus_exam || '';
-			prevSourceRef.current.conclusion = detailedClinicalExam.diagnosis || '';
-			prevSourceRef.current.generalMedicalHistory = detailedClinicalExam.generalMedicalHistory || '';
-			prevSourceRef.current.ophthalmologicalHistory = detailedClinicalExam.ophthalmologicalHistory || '';
-		}
-		
+
 		hasMountedRef.current = true;
 	}, []);
 
@@ -559,22 +549,22 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 		const newSourceList = newSourceTags.split(',').map(s => s.trim()).filter(Boolean);
 		const previousSourceList = previousSourceTags.split(',').map(s => s.trim()).filter(Boolean);
 		const currentDocumentList = currentDocumentTags.split(',').map(s => s.trim()).filter(Boolean);
-		
+
 		// Identify manual additions: tags in document that weren't in previous source
-		const manualAdditions = currentDocumentList.filter(tag => 
+		const manualAdditions = currentDocumentList.filter(tag =>
 			!previousSourceList.some(st => st.toLowerCase() === tag.toLowerCase())
 		);
-		
+
 		// Start with manual additions
 		const merged = [...manualAdditions];
-		
+
 		// Add all tags from new source
 		newSourceList.forEach(tag => {
 			if (!merged.some(t => t.toLowerCase() === tag.toLowerCase())) {
 				merged.push(tag);
 			}
 		});
-		
+
 		return merged.join(', ');
 	}, []);
 
@@ -582,11 +572,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.inspection || '';
 		const previous = prevSourceRef.current.inspection ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.inspection || '';
 			// Only replace if reportData matches previous source (not manually edited)
@@ -604,11 +594,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.anteriorSegment?.slit_lamp_exam || '';
 		const previous = prevSourceRef.current.segmentAnterieur ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.segmentAnterieur || '';
 			// Merge tags: preserve manual additions, sync changes from clinical exam
@@ -622,11 +612,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.fundus?.fundus_exam || '';
 		const previous = prevSourceRef.current.fondOeil ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.fondOeil || '';
 			// Only replace if reportData matches previous source (not manually edited)
@@ -644,11 +634,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.diagnosis || '';
 		const previous = prevSourceRef.current.conclusion ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.conclusion || '';
 			// Merge tags: preserve manual additions, sync changes from clinical exam
@@ -662,11 +652,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.generalMedicalHistory || '';
 		const previous = prevSourceRef.current.generalMedicalHistory ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.generalMedicalHistory || '';
 			if (prevValue === previous || (!previous && !prevValue)) {
@@ -682,11 +672,11 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 	useEffect(() => {
 		if (!hasMountedRef.current && hasSavedDataRef.current) return;
 		if (!detailedClinicalExam) return;
-		
+
 		const current = detailedClinicalExam.ophthalmologicalHistory || '';
 		const previous = prevSourceRef.current.ophthalmologicalHistory ?? '';
 		if (current === previous) return;
-		
+
 		setReportData((prev) => {
 			const prevValue = prev.ophthalmologicalHistory || '';
 			if (prevValue === previous || (!previous && !prevValue)) {

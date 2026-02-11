@@ -9,28 +9,7 @@ import { generateAbsenceCertificatePDF } from './AbsenceCertificateDocument';
 import { generateReportPDF } from './ReportDocument';
 import { generateBilanPDF } from './BilanDocuments';
 import { generateMedicalRecordPDF } from './MedicalRecordDocument';
-import { generateBilanCardioVasculairePDF } from './BilanCardioVasculaireDocument';
-import { generateReponseHTAPDF } from './ReponseHTADocument';
-import { generateCTFLaserArgonPDF } from './CTFLaserArgonDocument';
-import { generateCTFLaserYAGPDF } from './CTFLaserYAGDocument';
-import { generateCTFCeciteTotalePDF } from './CTFCeciteTotaleDocument';
-import { generateCTFMalvisionClassePDF } from './CTFMalvisionClasseDocument';
-import { generateBilanCardioOVCRPDF } from './BilanCardioOVCRDocument';
-import { generateRepriseDeTravailPDF } from './RepriseDeTravailDocument';
-import { generateCTFGlaucomePDF } from './CTFGlaucomeDocument';
-import { generateReponseAzyterPDF } from './ReponseAzyterDocument';
-import { generateOrientCardioPDF } from './OrientCardioDocument';
-import { generateOrientNeuroPDF } from './OrientNeuroDocument';
-import { generateOrientDiabMedInternePDF } from './OrientDiabMedInterneDocument';
-import { generateAngioPDF } from './AngioDocument';
-import { generateDiabeteNormalPDF } from './DiabeteNormalDocument';
-import { generateCompteRenduCNASPDF } from './CompteRenduCNASDocument';
-import { generateAvisORLDCCPDF } from './AvisORLDCCDocument';
-import { generateCNASOCTGPDF } from './CNASOCTGDocument';
-import { generateCNASOCTMPDF } from './CNASOCTMDocument';
-import { generateCNASECHOPDF } from './CNASECHODocument';
-import { generateCNASArgonPDF } from './CNASArgonDocument';
-import { generateCNASPachyPDF } from './CNASPachyDocument';
+
 import { drawTitle, drawDocumentHeader } from './PdfUtils';
 import { DocumentUtils } from './DocumentUtils';
 import {
@@ -56,7 +35,7 @@ interface BilanFields {
 		glycemiePostPrandiale: boolean;
 		hbA1c: boolean;
 		cholesterol: boolean;
-		tgb: boolean;
+		triglycerides: boolean;
 	};
 	bilanInflammatoire: {
 		fns: boolean;
@@ -167,6 +146,7 @@ interface PrintDataOverrides {
 		rightEye: {
 			contactLensType: string;
 			lensBrand: string;
+			lensType: string;
 			sph: string;
 			cyl: string;
 			axis: string;
@@ -179,6 +159,7 @@ interface PrintDataOverrides {
 		leftEye: {
 			contactLensType: string;
 			lensBrand: string;
+			lensType: string;
 			sph: string;
 			cyl: string;
 			axis: string;
@@ -323,65 +304,28 @@ export class DocumentPrinter {
 			case 'divers':
 				// Handle individual medical record documents
 				if (options.printDataOverrides?.medicalRecord) {
-					const documentType = options.printDataOverrides.medicalRecord.documentType;
-					const printData = options.printDataOverrides.medicalRecord.printData;
+					// Import medical records and find the selected one
+					const medicalRecords = await import('./medical_records_structured.json');
+					const selectedRecord = medicalRecords.default.find((record: any) => record.code === options.printDataOverrides!.medicalRecord!.documentType);
 
-					switch (documentType) {
-						case 'BILAN CARDIO VASCULAIRE':
-							return await generateBilanCardioVasculairePDF(context, patient);
-						case 'REPONSE HTA':
-							return await generateReponseHTAPDF(context, patient, printData);
-						case 'CTF (LASER ARGON)':
-							return await generateCTFLaserArgonPDF(context, patient, printData);
-						case 'CTF (LASER YAG)':
-							return await generateCTFLaserYAGPDF(context, patient, printData);
-						case 'CTF (CECITE TOTALE)':
-							return await generateCTFCeciteTotalePDF(context, patient);
-						case 'CTF MALVISION CLASSE':
-							return await generateCTFMalvisionClassePDF(context, patient);
-						case 'BILAN CARDIO OVCR':
-							return await generateBilanCardioOVCRPDF(context, patient);
-						case 'REPRISE DE TRAVAIL':
-							return await generateRepriseDeTravailPDF(context, patient, printData);
-						case 'CTF GLAUCOME':
-							return await generateCTFGlaucomePDF(context, patient);
-						case 'REPONSE AZYTER':
-							return await generateReponseAzyterPDF(context, patient);
-						case 'ORIENT CARDIO':
-							return await generateOrientCardioPDF(context, patient);
-						case 'ORIENT NEURO':
-							return await generateOrientNeuroPDF(context, patient);
-						case 'ORIENT DIAB MED INTERNE':
-							return await generateOrientDiabMedInternePDF(context, patient);
-						case 'ANGIO':
-							return await generateAngioPDF(context, patient, printData);
-						case 'Diabète Normal':
-							return await generateDiabeteNormalPDF(context, patient);
-						case 'COMPTE RENDU CNAS':
-							return await generateCompteRenduCNASPDF(context, patient);
-						case 'AVIS ORL DCC':
-							return await generateAvisORLDCCPDF(context, patient, printData);
-						case 'CNAS OCT G':
-							return await generateCNASOCTGPDF(context, patient);
-						case 'CNAS OCT M':
-							return await generateCNASOCTMPDF(context, patient);
-						case 'CNAS ECHO':
-							return await generateCNASECHOPDF(context, patient);
-						case 'CNAS ARGON':
-							return await generateCNASArgonPDF(context, patient);
-						case 'CNAS pachy':
-							return await generateCNASPachyPDF(context, patient);
-						default:
-							// Fallback for unknown medical record types
-							context.page.drawText('Document en cours de préparation...', {
-								x: context.LEFT_MARGIN,
-								y: context.height - 100,
-								size: context.TEXT_SIZES.small,
-								font: context.helvetica,
-								color: rgb(0, 0, 0),
-							});
-							return await context.pdfDoc.save();
+					if (selectedRecord) {
+						return await generateMedicalRecordPDF(
+							context,
+							patient,
+							selectedRecord as any,
+							options.printDataOverrides.medicalRecord.printData
+						);
 					}
+
+					// Fallback if not found
+					context.page.drawText(`Document non trouvé: ${options.printDataOverrides.medicalRecord.documentType}`, {
+						x: context.LEFT_MARGIN,
+						y: context.height - 100,
+						size: context.TEXT_SIZES.normal,
+						font: context.helvetica,
+						color: rgb(1, 0, 0),
+					});
+					return await context.pdfDoc.save();
 				}
 
 				// For other divers documents, create a certificate document
@@ -431,20 +375,7 @@ export class DocumentPrinter {
 				return await generateBilanPDF(context, patient, documentType as any, options.bilanFields as any);
 			default:
 				// Check if it's a medical record document
-				if (options.printDataOverrides?.medicalRecord) {
-					// Import medical records and find the selected one
-					const medicalRecords = await import('./medical_records_structured.json');
-					const selectedRecord = medicalRecords.default.find((record: any) => record.Code === documentType);
 
-					if (selectedRecord) {
-						return await generateMedicalRecordPDF(
-							context,
-							patient,
-							selectedRecord,
-							options.printDataOverrides.medicalRecord.printData
-						);
-					}
-				}
 
 				// Fallback for unknown document types
 				context.page.drawText('Document en cours de préparation...', {

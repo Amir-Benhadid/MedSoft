@@ -50,7 +50,7 @@ const BilanFormsContainer: React.FC<BilanFormsContainerProps> = ({
                 { key: 'glycemiePostPrandiale', label: 'Glycémie post-prandiale' },
                 { key: 'hbA1c', label: 'HbA1c' },
                 { key: 'cholesterol', label: 'Cholestérol sanguin' },
-                { key: 'tgb', label: 'TGB' },
+                { key: 'triglycerides', label: 'Triglycérides' },
             ],
         },
         bilanInflammatoire: {

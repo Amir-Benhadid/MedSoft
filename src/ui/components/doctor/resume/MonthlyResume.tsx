@@ -202,9 +202,9 @@ export function MonthlyResume() {
                 <div className="p-4 border-b bg-slate-50">
                     <h3 className="font-semibold text-slate-900">Liste des Consultations du Mois</h3>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="relative overflow-auto max-h-[500px] border-t scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                     <table className="w-full text-sm text-left">
-                        <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
+                        <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b sticky top-0 z-20 shadow-sm">
                             <tr>
                                 <th className="px-4 py-3 font-medium">Date</th>
                                 <th className="px-4 py-3 font-medium">Patient</th>

@@ -143,7 +143,15 @@ export const DocumentUtils = {
 		if (DocumentUtils.isEmptyField(value)) {
 			return '';
 		}
-		const num = parseFloat(value || '0');
+
+		// Handle comma for French users
+		const normalizedValue = value ? value.toString().replace(',', '.') : '0';
+		const num = parseFloat(normalizedValue);
+
+		if (isNaN(num)) {
+			return value || ''; // Return original string if it's not a number (e.g. "10/10")
+		}
+
 		if (num === 0) return '';
 		return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
 	},

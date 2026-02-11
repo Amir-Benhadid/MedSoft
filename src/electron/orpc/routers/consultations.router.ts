@@ -92,19 +92,19 @@ export const consultationsRouter = os.router({
                     const today = new Date().toISOString().split('T')[0]; // Simple YYYY-MM-DD
 
                     // Try to find active appointment
-                    const appointments = await appointmentRepo.findAllInDateRange(today, today);
-                    const activeAppt = appointments.find(a => a.patientId === consultation.patientId && a.state !== 'completed' && a.state !== 'paid');
+                    const appointments = appointmentRepo.findAllInDateRange(today, today);
+                    const activeAppt = appointments.find(a => a.patient_id === consultation.patient_id && a.state !== 'completed' && a.state !== 'paid');
 
                     if (activeAppt) {
-                        await appointmentRepo.update(activeAppt.id, { state: 'completed' });
+                        appointmentRepo.update(activeAppt.id, { state: 'completed' });
                         broadcastChange('appointments');
                     } else {
                         // Try waitlist
-                        const waitlist = await waitlistRepo.findAllInDateRange(today, today);
-                        const activeEntry = waitlist.find(w => w.patientId === consultation.patientId && w.state !== 'completed' && w.state !== 'paid');
+                        const waitlist = waitlistRepo.findAllInDateRange(today, today);
+                        const activeEntry = waitlist.find(w => w.patient_id === consultation.patient_id && w.state !== 'completed' && w.state !== 'paid');
 
                         if (activeEntry) {
-                            await waitlistRepo.updateStatus(activeEntry.id, 'completed');
+                            waitlistRepo.updateStatus(activeEntry.id, 'completed');
                             broadcastChange('waitlist');
                         }
                     }

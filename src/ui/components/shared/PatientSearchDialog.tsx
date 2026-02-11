@@ -19,6 +19,7 @@ interface PatientSearchDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onPatientSelect: (patientId: string, action?: 'file' | 'consultation' | 'agenda') => void;
+    mode?: 'doctor' | 'secretary';
 }
 
 interface Patient {
@@ -33,7 +34,8 @@ interface Patient {
 export function PatientSearchDialog({
     open,
     onOpenChange,
-    onPatientSelect
+    onPatientSelect,
+    mode
 }: PatientSearchDialogProps) {
     const [search, setSearch] = useState('');
     const debouncedSearch = useDebounce(search, 300);
@@ -42,7 +44,8 @@ export function PatientSearchDialog({
     const { appMode } = useConfig();
 
     // Robust check for secretary mode (including URL check for dev/mixed environments)
-    const isSecretary = appMode === 'secretary' || (typeof window !== 'undefined' && window.location.hash.includes('secretary'));
+    // If explicit mode is passed, use it. Otherwise fall back to detection.
+    const isSecretary = mode ? mode === 'secretary' : (appMode === 'secretary' || (typeof window !== 'undefined' && window.location.hash.includes('secretary')));
 
     // Load recents from local storage on mount
     useEffect(() => {

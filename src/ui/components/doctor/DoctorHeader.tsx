@@ -232,6 +232,7 @@ export default function DoctorHeader({ currentTab = 'patients', onTabChange }: D
                     open={isSearchOpen}
                     onOpenChange={setIsSearchOpen}
                     onPatientSelect={handlePatientSelect}
+                    mode="doctor"
                 />
             </header>
         </>

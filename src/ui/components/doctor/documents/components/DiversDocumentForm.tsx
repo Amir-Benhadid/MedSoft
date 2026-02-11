@@ -56,24 +56,24 @@ const DiversDocumentForm: React.FC<DiversDocumentFormProps> = ({
                     </Card>
 
                     {/* Medical Records */}
-                    {medicalRecords.map((record) => (
+                    {medicalRecords.map((record: any) => (
                         <Card
-                            key={record.Code}
+                            key={record.code}
                             className={cn(
                                 "w-full cursor-pointer transition-all",
-                                selectedDiversDocument === record.Code
+                                selectedDiversDocument === record.code
                                     ? "border-2 border-primary bg-primary/10 shadow-sm"
                                     : "border border-border hover:bg-muted/50"
                             )}
-                            onClick={() => setSelectedDiversDocument(record.Code)}
+                            onClick={() => setSelectedDiversDocument(record.code)}
                         >
                             <CardContent className="p-3">
                                 <div className="space-y-1">
                                     <p className="text-sm font-medium text-foreground">
-                                        {record.Code}
+                                        {record.code}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
-                                        {record.Title} - {record.Description.substring(0, 80)}{record.Description.length > 80 ? '...' : ''}
+                                        {record.title} {record.body ? `- ${record.body.substring(0, 80)}${record.body.length > 80 ? '...' : ''}` : ''}
                                     </p>
                                 </div>
                             </CardContent>

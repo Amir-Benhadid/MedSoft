@@ -650,6 +650,28 @@ function runMigrations(db: Database.Database, config: AppConfig) {
 	addNatureToConsultationTypes(db);
 	addRadiographyDocumentSchema(db, config);
 	addSharedRecordsSchema(db);
+	addDocumentsDataColumn(db);
+}
+
+function addDocumentsDataColumn(db: Database.Database) {
+	const migrationName = '007_add_documents_data_column';
+	const exists = db.prepare('SELECT 1 FROM migrations WHERE name = ?').get(migrationName);
+
+	if (!exists) {
+		console.log(`🚀 Running migration: ${migrationName}`);
+		try {
+			db.transaction(() => {
+				const tableInfo = db.prepare("PRAGMA table_info(consultations)").all() as any[];
+				if (!tableInfo.some(c => c.name === 'documents_data')) {
+					db.exec('ALTER TABLE consultations ADD COLUMN documents_data TEXT');
+				}
+				db.prepare('INSERT INTO migrations (name) VALUES (?)').run(migrationName);
+			})();
+			console.log(`✅ Migration ${migrationName} completed successfully`);
+		} catch (error) {
+			console.error(`❌ Migration ${migrationName} failed:`, error);
+		}
+	}
 }
 
 function addSharedRecordsSchema(db: Database.Database) {

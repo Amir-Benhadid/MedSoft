@@ -95,8 +95,8 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                 {bilanFields?.bilanDiabete.cholesterol && (
                                     <p className="text-xs mb-2 font-semibold">Cholestérol sanguin</p>
                                 )}
-                                {bilanFields?.bilanDiabete.tgb && (
-                                    <p className="text-xs mb-2 font-semibold">TGB</p>
+                                {bilanFields?.bilanDiabete.triglycerides && (
+                                    <p className="text-xs mb-2 font-semibold">Triglycérides</p>
                                 )}
                             </CardContent>
                         </Card>
@@ -180,8 +180,11 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                          * @param value - Number string to format
                                          * @returns Formatted string with sign
                                          */
-                                        const formatNumberWithSign = (value: string): string => {
-                                            const num = parseFloat(value || '0');
+                                        const formatNumberWithSign = (value: string | undefined | null): string => {
+                                            if (!value || value === '__EMPTY__') return '-';
+                                            const normalizedValue = value.toString().replace(',', '.');
+                                            const num = parseFloat(normalizedValue);
+                                            if (isNaN(num)) return value; // Show original if not a number
                                             if (num === 0) return '0.00';
                                             return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
                                         };
@@ -566,9 +569,25 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                             const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                return `${glassesPrintData.rightEye.sph ? (parseFloat(glassesPrintData.rightEye.sph) > 0 ? `+${glassesPrintData.rightEye.sph}` : glassesPrintData.rightEye.sph) : '0.00'}${glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '0.00' ? ` (${parseFloat(glassesPrintData.rightEye.cyl) > 0 ? `+${glassesPrintData.rightEye.cyl}` : glassesPrintData.rightEye.cyl})` : ''}${glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '0' ? ` ${glassesPrintData.rightEye.axis}` : ''}`;
+                                                                const s = glassesPrintData.rightEye.sph;
+                                                                const c = glassesPrintData.rightEye.cyl;
+                                                                const a = glassesPrintData.rightEye.axis;
+
+                                                                const formatVal = (v: string) => {
+                                                                    const n = parseFloat(v?.toString().replace(',', '.') || '0');
+                                                                    if (isNaN(n)) return v || '';
+                                                                    return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
+                                                                };
+
+                                                                const sphFormatted = formatVal(s);
+                                                                const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
+                                                                    ? ` (${formatVal(c)})`
+                                                                    : '';
+                                                                const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
+
+                                                                return `${sphFormatted}${cylFormatted}${axisFormatted}`;
                                                             } else if (emptyOption === 'conserver') {
-                                                                return 'Conserver ancienne lentille';
+                                                                return 'Verre en place';
                                                             } else {
                                                                 return 'Plan';
                                                             }
@@ -588,9 +607,25 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                             const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                return `${glassesPrintData.leftEye.sph ? (parseFloat(glassesPrintData.leftEye.sph) > 0 ? `+${glassesPrintData.leftEye.sph}` : glassesPrintData.leftEye.sph) : '0.00'}${glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '0.00' ? ` (${parseFloat(glassesPrintData.leftEye.cyl) > 0 ? `+${glassesPrintData.leftEye.cyl}` : glassesPrintData.leftEye.cyl})` : ''}${glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '0' ? ` ${glassesPrintData.leftEye.axis}` : ''}`;
+                                                                const s = glassesPrintData.leftEye.sph;
+                                                                const c = glassesPrintData.leftEye.cyl;
+                                                                const a = glassesPrintData.leftEye.axis;
+
+                                                                const formatVal = (v: string) => {
+                                                                    const n = parseFloat(v?.toString().replace(',', '.') || '0');
+                                                                    if (isNaN(n)) return v || '';
+                                                                    return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
+                                                                };
+
+                                                                const sphFormatted = formatVal(s);
+                                                                const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
+                                                                    ? ` (${formatVal(c)})`
+                                                                    : '';
+                                                                const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
+
+                                                                return `${sphFormatted}${cylFormatted}${axisFormatted}`;
                                                             } else if (emptyOption === 'conserver') {
-                                                                return 'Conserver ancienne lentille';
+                                                                return 'Verre en place';
                                                             } else {
                                                                 return 'Plan';
                                                             }
@@ -620,7 +655,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                             if (hasData) {
                                                                 return `${glassesPrintData.rightEye.nearSph ? (parseFloat(glassesPrintData.rightEye.nearSph) > 0 ? `+${glassesPrintData.rightEye.nearSph}` : glassesPrintData.rightEye.nearSph) : '0.00'}${glassesPrintData.rightEye.nearCyl && glassesPrintData.rightEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.rightEye.nearCyl) > 0 ? `+${glassesPrintData.rightEye.nearCyl}` : glassesPrintData.rightEye.nearCyl})` : ''}${glassesPrintData.rightEye.nearAxis && glassesPrintData.rightEye.nearAxis !== '0' ? ` ${glassesPrintData.rightEye.nearAxis}°` : ''}`;
                                                             } else if (emptyOption === 'conserver') {
-                                                                return 'Conserver ancienne lentille';
+                                                                return 'Verre en place';
                                                             } else {
                                                                 return 'Plan';
                                                             }
@@ -642,7 +677,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                             if (hasData) {
                                                                 return `${glassesPrintData.leftEye.nearSph ? (parseFloat(glassesPrintData.leftEye.nearSph) > 0 ? `+${glassesPrintData.leftEye.nearSph}` : glassesPrintData.leftEye.nearSph) : '0.00'}${glassesPrintData.leftEye.nearCyl && glassesPrintData.leftEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.leftEye.nearCyl) > 0 ? `+${glassesPrintData.leftEye.nearCyl}` : glassesPrintData.leftEye.nearCyl})` : ''}${glassesPrintData.leftEye.nearAxis && glassesPrintData.leftEye.nearAxis !== '0' ? ` ${glassesPrintData.leftEye.nearAxis}°` : ''}`;
                                                             } else if (emptyOption === 'conserver') {
-                                                                return 'Conserver ancienne lentille';
+                                                                return 'Verre en place';
                                                             } else {
                                                                 return 'Plan';
                                                             }

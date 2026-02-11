@@ -7,6 +7,7 @@ import { SecretaryDocumentsContent } from "@/ui/components/secretary/sheet/Secre
 import { useSheetStack } from "@/ui/components/ui/sheet-stack";
 import { PatientForm } from "../patients/PatientForm";
 import { useUpdatePatient } from "@/ui/hooks/usePatients";
+import { SecretaryCertificateContent } from "./patient/SecretaryCertificateSheet";
 
 interface SecretaryPatientFileSheetProps {
     patientId: string | null;
@@ -50,6 +51,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
             <SecretaryDocumentsContent
                 patientId={patientId}
                 patientName={patient ? `${patient.surname} ${patient.name}` : ''}
+                patient={patient}
                 onClose={() => closeSheet('documents')}
             />,
             { id: 'documents', width: 500, title: 'Documents' }
@@ -75,6 +77,19 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
         );
     };
 
+    const handleOpenCertificate = () => {
+        if (!patientId) return;
+        openSheet(
+            <SecretaryCertificateContent
+                patientId={patientId}
+                patientName={patient ? `${patient.surname} ${patient.name}` : ''}
+                patient={patient}
+                onCancel={() => closeSheet('certificate')}
+            />,
+            { id: 'certificate', width: 500, title: 'Certificat Minute' }
+        );
+    };
+
     useEffect(() => {
         if (open && patientId) {
             // Open the Main Sheet (Level 0)
@@ -84,6 +99,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
                     isPatientLoading={isPatientLoading}
                     onOpenClinicalData={handleOpenClinicalData}
                     onOpenDocuments={handleOpenDocuments}
+                    onOpenCertificate={handleOpenCertificate}
                     onEdit={handleOpenEditPatient}
                     patientId={patientId}
                     initialTab={initialTab}
@@ -102,6 +118,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
             closeSheet('clinical-data');
             closeSheet('documents');
             closeSheet('patient-edit');
+            closeSheet('certificate');
         }
 
         return () => {

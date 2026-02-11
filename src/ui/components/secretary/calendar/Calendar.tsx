@@ -1,4 +1,5 @@
 import { useAppointments, useDeleteAppointment, useUpdateAppointment, useMarkPresent, useToggleDilation, Appointment } from '@/ui/hooks/useAppointments';
+import { useToast } from '@/ui/hooks/use-toast';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -102,12 +103,27 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
         );
     }, [openSheet, closeSheet]);
 
+    const { toast } = useToast();
+
     const handleDateClick = useCallback((arg: { date: Date }) => {
+        const now = new Date();
+        const currentHourStart = new Date(now);
+        currentHourStart.setMinutes(0, 0, 0);
+
+        if (arg.date.getTime() < currentHourStart.getTime()) {
+            toast({
+                title: "Action impossible",
+                description: "Il n'est pas possible de créer un rendez-vous dans une tranche horaire passée.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setDefaultDate(arg.date);
         setSelectedAppointment(null);
         openAppointmentSheet(null, arg.date);
         onDateSelect?.(arg.date.toISOString());
-    }, [onDateSelect, openAppointmentSheet]);
+    }, [onDateSelect, openAppointmentSheet, toast]);
 
     const handleEventClick = useCallback((arg: EventClickArg) => {
         const apt = appointments.find(a => a.id === arg.event.id);

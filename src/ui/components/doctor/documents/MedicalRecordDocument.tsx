@@ -12,28 +12,37 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/ui/components/ui/select";
-import { Card, CardContent } from '@/ui/components/ui/card';
+import { Checkbox } from '@/ui/components/ui/checkbox';
+import { Textarea } from '@/ui/components/ui/textarea';
 
-// Types
-interface MedicalRecordField {
-	value: string;
-	shouldFill: boolean;
+// Types conforming to the new JSON structure
+export interface MedicalRecordSchema {
+	title: string;
+	code: string;
+	type: string;
+	header?: string;
+	body?: string;
+	closing?: string;
+	legal_note?: string;
+	placeholders?: string[];
+	exam?: {
+		items: string[];
+	};
+	billing?: {
+		codification: string;
+		tariff_da: number;
+	};
+	indication?: string;
+	conclusion?: string;
+	notes?: string;
 }
 
-interface MedicalRecord {
-	Title: string;
-	Code: string;
-	Description: string;
-	Bullets: string[];
-	Fields?: Record<string, MedicalRecordField>;
-}
-
-interface MedicalRecordPrintData {
+export interface MedicalRecordPrintData {
 	[key: string]: string;
 }
 
 interface MedicalRecordDocumentProps {
-	medicalRecord: MedicalRecord;
+	medicalRecord: MedicalRecordSchema;
 	printData: MedicalRecordPrintData;
 	setPrintData: React.Dispatch<React.SetStateAction<MedicalRecordPrintData>>;
 	rightEyeData?: any;
@@ -48,121 +57,177 @@ const TEXT_SIZES = {
 	title: 16,
 	sectionHeader: 12,
 	normal: 11,
-	small: 8,
+	small: 10,
+	tiny: 8,
 };
 const LINE_HEIGHTS = {
 	title: 20,
 	sectionHeader: 16,
 	normal: 15,
-	small: 12,
+	small: 13,
 	header: 18,
+};
+
+// Helper: Replace placeholders in text
+const processText = (text: string, printData?: MedicalRecordPrintData) => {
+	if (!text || !printData) return text;
+	let processed = text;
+
+	// Handle {{fill ...}} pattern
+	// First check simple keys in printData
+	Object.keys(printData).forEach(key => {
+		// Exact match for simple placeholders if any
+		// But the new schema uses specific placeholder list strings mostly for input generation
+		// The text usually contains {{fill ...}} which we need to parse or map
+	});
+
+	// For specific placeholders defined in the text like {{fill from EyeData: visualAcuity_OD}}
+	// We will try to replace them with values from printData if the key matches a sanitized version
+	// OR if we map specific placeholder patterns to printData keys.
+
+	// Strategy: The printData keys are derived from the 'placeholders' array in the JSON.
+	// We need to map the patterns in the text to these keys.
+
+	// Common replacements based on potentially known patterns:
+	const replacements: Record<string, string> = {
+		'{{fill from EyeData: visualAcuity_OD}}': printData['EyeData.visualAcuity_OD'] || '______',
+		'{{fill from EyeData: visualAcuity_OG}}': printData['EyeData.visualAcuity_OG'] || '______',
+		'{{fill number between 1 and 4}}': printData['retinopathie_stade'] || '___',
+		'{{fill: droit/gauche}}': printData['oeil_droit_gauche'] || '______', // generic side
+		'{{fill age}}': printData['age'] || '___',
+		'{{fill antecedents}}': printData['antecedents'] || '____________________',
+		'{{fill date}}': printData['date_reprise'] || '___/___/______',
+		'{{fill indication}}': printData['indication'] || '____________________',
+		'{{fill: droite/gauche}}': printData['cote_droite_gauche'] || '______',
+		'(voir diagnostic)': printData['diagnostic'] ? `(${printData['diagnostic']})` : '(voir diagnostic)',
+		'(voir ATCD)': printData['ATCD'] ? `(${printData['ATCD']})` : '(voir ATCD)',
+	};
+
+	// Apply known replacements
+	Object.entries(replacements).forEach(([pattern, value]) => {
+		processed = processed.split(pattern).join(value);
+	});
+
+	// Also try to replace direct keys if they exist in curly braces similar to previous logic
+	// e.g. if user manually added {{diagnostic}}
+	if (printData) {
+		Object.keys(printData).forEach(key => {
+			const bracketPattern = `{{${key}}}`;
+			if (processed.includes(bracketPattern)) {
+				processed = processed.split(bracketPattern).join(printData[key]);
+			}
+		});
+	}
+
+	return processed;
 };
 
 // PDF Generation Function
 export const generateMedicalRecordPDF = async (
 	context: PdfGenerationContext,
 	patient: { surname: string; name: string; dob: string },
-	medicalRecord: MedicalRecord,
+	medicalRecord: MedicalRecordSchema,
 	printData?: MedicalRecordPrintData
 ): Promise<Uint8Array> => {
 	const { page, width, helvetica, helveticaBold, LEFT_MARGIN, RIGHT_MARGIN, TEXT_SIZES, LINE_HEIGHTS } = context;
 
-	let y = drawTitle(context, medicalRecord.Title.toUpperCase(), drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
+	// Title code usually maps to what we want to display as main title, or we use the 'title' field
+	// The new JSON has 'title' (e.g. "Bilan") and 'code' (e.g. "BILAN CARDIO VASCULAIRE")
+	// Let's use the Code as the main title if it looks like a title, otherwise combine/use logical one.
+	// For "Bilan", "BILAN CARDIO VASCULAIRE" is good.
+	// For "Compte rendu", "REPONSE HTA" is good.
+	const displayTitle = medicalRecord.code.toUpperCase();
 
-	// Add description if available
-	if (medicalRecord.Description) {
-		// Replace {{}} placeholders with actual field values
-		let processedDescription = medicalRecord.Description;
-		if (printData) {
-			Object.keys(printData).forEach(fieldKey => {
-				const placeholder = `{{${fieldKey}}}`;
-				if (processedDescription.includes(placeholder)) {
-					processedDescription = processedDescription.replace(placeholder, printData[fieldKey] || '');
-				}
-			});
-		}
+	let y = drawTitle(context, displayTitle, drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
-		const descriptionWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
-		const descriptionLines = DocumentUtils.splitTextIntoLinesOptimized(
-			processedDescription,
-			descriptionWidth
-		);
-
-		descriptionLines.forEach((line) => {
+	const drawWrappedText = (text: string, size: number = TEXT_SIZES.normal, font = helvetica, indent = 0) => {
+		const processedText = processText(text, printData);
+		const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - indent + 20;
+		const lines = DocumentUtils.splitTextIntoLinesOptimized(processedText, availableWidth);
+		lines.forEach(line => {
 			page.drawText(line, {
-				x: LEFT_MARGIN + 20,
+				x: LEFT_MARGIN + 20 + indent,
 				y,
-				size: TEXT_SIZES.normal,
-				font: helvetica,
+				size,
+				font,
 				color: rgb(0, 0, 0),
 			});
 			y -= LINE_HEIGHTS.normal;
 		});
-		y -= 15;
+	};
+
+	// Header (Cher confrère...)
+	if (medicalRecord.header) {
+		drawWrappedText(medicalRecord.header);
+		y -= 10;
 	}
 
-	// Add bullets if available
-	if (medicalRecord.Bullets && medicalRecord.Bullets.length > 0) {
-		medicalRecord.Bullets.forEach((bullet) => {
-			// Replace {{}} placeholders with actual field values
-			let processedBullet = bullet;
-			if (printData) {
-				Object.keys(printData).forEach(fieldKey => {
-					const placeholder = `{{${fieldKey}}}`;
-					if (processedBullet.includes(placeholder)) {
-						processedBullet = processedBullet.replace(placeholder, printData[fieldKey] || '');
-					}
-				});
-			}
+	// Body
+	if (medicalRecord.body) {
+		drawWrappedText(medicalRecord.body);
+		y -= 10;
+	}
 
-			const bulletWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
-			const bulletLines = DocumentUtils.splitTextIntoLinesOptimized(
-				processedBullet,
-				bulletWidth
-			);
-
-			bulletLines.forEach((line) => {
-				page.drawText(`- ${line}`, {
-					x: LEFT_MARGIN + 20,
-					y,
-					size: TEXT_SIZES.normal,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.normal;
-			});
+	// Exam items
+	if (medicalRecord.exam && medicalRecord.exam.items) {
+		// y -= 5;
+		medicalRecord.exam.items.forEach(item => {
+			drawWrappedText(`- ${item}`, TEXT_SIZES.normal, helvetica, 10);
 		});
-		y -= 15;
+		y -= 10;
 	}
 
-	// Add fillable fields if available
-	if (medicalRecord.Fields && Object.keys(medicalRecord.Fields).length > 0) {
-		Object.entries(medicalRecord.Fields).forEach(([fieldKey, fieldConfig]) => {
-			const fieldValue = printData?.[fieldKey] || fieldConfig.value || '';
-
-			// Only show fields that should be filled or have values
-			if (fieldConfig.shouldFill || fieldValue) {
-				const fieldText = `${fieldKey}: ${fieldValue}`;
-				const fieldWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
-				const fieldLines = DocumentUtils.splitTextIntoLinesOptimized(
-					fieldText,
-					fieldWidth
-				);
-
-				fieldLines.forEach((line) => {
-					page.drawText(line, {
-						x: LEFT_MARGIN + 20,
-						y,
-						size: TEXT_SIZES.normal,
-						font: helvetica,
-						color: rgb(0, 0, 0),
-					});
-					y -= LINE_HEIGHTS.normal;
-				});
-				y -= 5;
-			}
-		});
+	// Specific fields mapping
+	// Billing
+	if (medicalRecord.billing) {
+		y -= 10;
+		const billingText = `Codification: ${medicalRecord.billing.codification}    Honoraires: ${medicalRecord.billing.tariff_da} DA`;
+		drawWrappedText(billingText, TEXT_SIZES.small, helveticaBold);
+		y -= 5;
 	}
+
+	// Indication (for CNAS mainly)
+	if (medicalRecord.indication) {
+		const indicationText = `Indication : ${processText(medicalRecord.indication, printData)}`;
+		drawWrappedText(indicationText);
+		y -= 10;
+	}
+
+	// Conclusion
+	if (medicalRecord.conclusion) {
+		y -= 5;
+		drawWrappedText(`Conclusion: ${medicalRecord.conclusion}`, TEXT_SIZES.normal, helveticaBold);
+		y -= 10;
+	}
+
+	// Notes
+	if (medicalRecord.notes) {
+		drawWrappedText(medicalRecord.notes, TEXT_SIZES.small, helvetica, 0);
+		y -= 10;
+	}
+
+	// Legal Note
+	if (medicalRecord.legal_note) {
+		y -= 20; // Extra spacing for legal note at bottom usually, but flow is sequential here
+		drawWrappedText(medicalRecord.legal_note, TEXT_SIZES.small, helvetica, 0);
+	}
+
+	// Closing
+	if (medicalRecord.closing) {
+		y -= 20;
+		// Align closing to right or simplified block? Standard is usually just text.
+		drawWrappedText(medicalRecord.closing);
+	}
+
+	// Signature area
+	y -= 40;
+	page.drawText("Le médecin", {
+		x: width - RIGHT_MARGIN - 100,
+		y,
+		size: TEXT_SIZES.normal,
+		font: helveticaBold,
+		color: rgb(0, 0, 0),
+	});
 
 	const pdfBytes = await context.pdfDoc.save();
 	return pdfBytes;
@@ -185,189 +250,134 @@ const MedicalRecordDocument: React.FC<MedicalRecordDocumentProps> = ({
 		}));
 	};
 
-	// Auto-populate fields from eye data when available
+	// Effect to pre-fill data based on placeholders
 	React.useEffect(() => {
-		if (rightEyeData || leftEyeData || patient) {
-			const newData: MedicalRecordPrintData = { ...printData };
+		if (medicalRecord.placeholders) {
+			const newData = { ...printData };
+			let hasChanges = false;
 
-			// Map common field names to eye data
-			Object.keys(medicalRecord.Fields || {}).forEach(fieldKey => {
-				const fieldKeyLower = fieldKey.toLowerCase();
-
-				// Visual acuity fields
-				if (fieldKeyLower.includes('acuitévisuelleod') || fieldKeyLower.includes('acuitevisuelleod')) {
-					newData[fieldKey] = rightEyeData?.visualAcuity || rightEyeData?.visualAcuityVL_SC || '';
-				} else if (fieldKeyLower.includes('acuitévisuelleog') || fieldKeyLower.includes('acuitevisuelleog')) {
-					newData[fieldKey] = leftEyeData?.visualAcuity || leftEyeData?.visualAcuityVL_SC || '';
-				} else if (fieldKeyLower.includes('acuité') || fieldKeyLower.includes('acuite')) {
-					if (fieldKeyLower.includes('od')) {
-						newData[fieldKey] = rightEyeData?.visualAcuity || rightEyeData?.visualAcuityVL_SC || '';
-					} else if (fieldKeyLower.includes('og')) {
-						newData[fieldKey] = leftEyeData?.visualAcuity || leftEyeData?.visualAcuityVL_SC || '';
-					} else {
-						// General acuity field
-						newData[fieldKey] = rightEyeData?.visualAcuity || rightEyeData?.visualAcuityVL_SC || '';
+			medicalRecord.placeholders.forEach(placeholder => {
+				if (!newData[placeholder]) {
+					// Auto-fill logic based on placeholder name
+					if (placeholder === 'EyeData.visualAcuity_OD' && rightEyeData?.visualAcuityVL_SC) {
+						// Prefer SC or AC? usually AC for reports unless specified
+						newData[placeholder] = rightEyeData.visualAcuityVL_AC || rightEyeData.visualAcuityVL_SC || '';
+						hasChanges = true;
 					}
-				}
-				// Tonometry fields
-				else if (fieldKeyLower.includes('tonus') || fieldKeyLower.includes('pio')) {
-					if (fieldKeyLower.includes('od')) {
-						newData[fieldKey] = rightEyeData?.tension || '';
-					} else if (fieldKeyLower.includes('og')) {
-						newData[fieldKey] = leftEyeData?.tension || '';
-					} else {
-						newData[fieldKey] = rightEyeData?.tension || '';
+					else if (placeholder === 'EyeData.visualAcuity_OG' && leftEyeData?.visualAcuityVL_SC) {
+						newData[placeholder] = leftEyeData.visualAcuityVL_AC || leftEyeData.visualAcuityVL_SC || '';
+						hasChanges = true;
 					}
-				}
-				// Age field
-				else if (fieldKeyLower.includes('age')) {
-					if (patient?.dob) {
-						const age = DocumentUtils.calculateAge(patient.dob);
-						newData[fieldKey] = age.toString();
+					else if (placeholder === 'age' && patient?.dob) {
+						newData[placeholder] = DocumentUtils.calculateAge(patient.dob).toString();
+						hasChanges = true;
 					}
-				}
-				// Eye side fields
-				else if (fieldKeyLower.includes('œilaffecté') || fieldKeyLower.includes('cote')) {
-					// Default to empty, user will fill
-					newData[fieldKey] = newData[fieldKey] || '';
-				}
-				// Date fields
-				else if (fieldKeyLower.includes('date')) {
-					if (fieldKeyLower.includes('reprise')) {
-						newData[fieldKey] = newData[fieldKey] || new Date().toLocaleDateString('fr-FR');
-					} else {
-						newData[fieldKey] = newData[fieldKey] || new Date().toLocaleDateString('fr-FR');
+					else if (placeholder === 'date_reprise') {
+						const nextWeek = new Date();
+						nextWeek.setDate(nextWeek.getDate() + 7);
+						newData[placeholder] = nextWeek.toLocaleDateString('fr-FR');
+						hasChanges = true;
 					}
-				}
-				// Other fields
-				else {
-					newData[fieldKey] = newData[fieldKey] || '';
 				}
 			});
 
-			// Only update if values actually changed
-			setPrintData((prev) => {
-				if (JSON.stringify(prev) === JSON.stringify(newData)) {
-					return prev;
-				}
-				return newData;
-			});
+			if (hasChanges) {
+				setPrintData(newData);
+			}
 		}
-	}, [rightEyeData, leftEyeData, patient, medicalRecord.Fields]);
+	}, [medicalRecord.placeholders, rightEyeData, leftEyeData, patient]);
+
+	const getInputComponent = (placeholder: string) => {
+		// Determine input type based on placeholder name
+		const labelStr = placeholder.replace(/_/g, ' ').replace(/\./g, ' ');
+
+		if (placeholder.includes('date')) {
+			return (
+				<Input
+					type="date"
+					value={printData[placeholder] || ''}
+					onChange={(e) => handlePrintDataChange(placeholder)(e.target.value)}
+					className="h-8 text-xs font-bold"
+				/>
+			);
+		}
+
+		if (placeholder.includes('stade') || placeholder.includes('number between')) {
+			return (
+				<Select
+					value={printData[placeholder] || ''}
+					onValueChange={(val) => handlePrintDataChange(placeholder)(val)}
+				>
+					<SelectTrigger className="h-8 text-xs font-bold">
+						<SelectValue placeholder="Sélectionner..." />
+					</SelectTrigger>
+					<SelectContent>
+						{[1, 2, 3, 4].map(num => (
+							<SelectItem key={num} value={num.toString()}>{`Stade ${num}`}</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			);
+		}
+
+		if (placeholder.includes('droit_gauche') || placeholder.includes('droite/gauche')) {
+			return (
+				<Select
+					value={printData[placeholder] || ''}
+					onValueChange={(val) => handlePrintDataChange(placeholder)(val)}
+				>
+					<SelectTrigger className="h-8 text-xs font-bold">
+						<SelectValue placeholder="Côté..." />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="Droit">Droit</SelectItem>
+						<SelectItem value="Gauche">Gauche</SelectItem>
+						<SelectItem value="Bilatéral">Bilatéral</SelectItem>
+					</SelectContent>
+				</Select>
+			);
+		}
+
+		// Default Text Input
+		return (
+			<Input
+				value={printData[placeholder] || ''}
+				onChange={(e) => handlePrintDataChange(placeholder)(e.target.value)}
+				placeholder={`Saisir ${labelStr}...`}
+				className="h-8 text-xs font-bold"
+			/>
+		);
+	};
 
 	return (
 		<div className="space-y-4 font-sans text-sm pb-8">
 			<div className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm space-y-4">
 				<div className="flex items-center gap-2 border-b border-slate-100 pb-3">
 					<div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center border border-indigo-100">
-						<span className="font-bold text-xs text-indigo-700">{medicalRecord.Code.slice(0, 3)}</span>
+						<span className="font-bold text-[10px] text-indigo-700 text-center leading-none px-0.5">
+							{medicalRecord.code.substring(0, 4)}
+						</span>
 					</div>
 					<div>
-						<h4 className="font-bold text-slate-800 text-sm">{medicalRecord.Title}</h4>
-						<p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{medicalRecord.Code}</p>
+						<h4 className="font-bold text-slate-800 text-sm">{medicalRecord.title}</h4>
+						<p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{medicalRecord.code}</p>
 					</div>
 				</div>
 
-				{medicalRecord.Description && (
-					<div className="bg-slate-50 p-3 rounded text-xs italic text-slate-600 border border-slate-200/60 leading-relaxed">
-						{medicalRecord.Description}
-					</div>
-				)}
-
+				{/* Preview of body text with highlighting placeholders could be cool, but simple inputs for now */}
 				<div className="space-y-4 pt-2">
-					{/* Fillable Fields */}
-					{medicalRecord.Fields && Object.keys(medicalRecord.Fields).length > 0 && (
+					{medicalRecord.placeholders && medicalRecord.placeholders.length > 0 ? (
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{Object.entries(medicalRecord.Fields).map(([fieldKey, fieldConfig]) => {
-								const fieldKeyLower = fieldKey.toLowerCase();
-
-								// Common logic for label
-								const label = (
+							{medicalRecord.placeholders.map((placeholder) => (
+								<div key={placeholder} className="space-y-1">
 									<Label className="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1.5 block">
-										{fieldKey}
-										{fieldConfig.shouldFill && <span className="text-red-500 ml-0.5">*</span>}
+										{placeholder.replace(/_/g, ' ')}
 									</Label>
-								);
-
-								// Special field types
-								// Eye side selection
-								if (fieldKeyLower.includes('œilaffecté') || fieldKeyLower.includes('cote') || fieldKeyLower.includes('latéralité')) {
-									return (
-										<div key={fieldKey} className="space-y-1">
-											{label}
-											<Select
-												value={printData[fieldKey] || ''}
-												onValueChange={(val) => handlePrintDataChange(fieldKey)(val)}
-											>
-												<SelectTrigger className="h-8 text-xs font-bold text-slate-900 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-200">
-													<SelectValue placeholder="Sélectionner..." />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="Droit">Œil Droit</SelectItem>
-													<SelectItem value="Gauche">Œil Gauche</SelectItem>
-													<SelectItem value="Bilatéral">Bilatéral</SelectItem>
-												</SelectContent>
-											</Select>
-										</div>
-									);
-								}
-
-								// Date fields
-								if (fieldKeyLower.includes('date')) {
-									return (
-										<div key={fieldKey} className="space-y-1">
-											{label}
-											<Input
-												type="date"
-												value={printData[fieldKey] || ''}
-												onChange={(e) => handlePrintDataChange(fieldKey)(e.target.value)}
-												className="h-8 text-xs font-bold text-slate-900 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
-											/>
-										</div>
-									);
-								}
-
-								// Stage/Stade fields
-								if (fieldKeyLower.includes('stade') || fieldKeyLower.includes('grade')) {
-									return (
-										<div key={fieldKey} className="space-y-1">
-											{label}
-											<Select
-												value={printData[fieldKey] || ''}
-												onValueChange={(val) => handlePrintDataChange(fieldKey)(val)}
-											>
-												<SelectTrigger className="h-8 text-xs font-bold text-slate-900 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-200">
-													<SelectValue placeholder="Sélectionner..." />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="1">Stade 1</SelectItem>
-													<SelectItem value="2">Stade 2</SelectItem>
-													<SelectItem value="3">Stade 3</SelectItem>
-													<SelectItem value="4">Stade 4</SelectItem>
-												</SelectContent>
-											</Select>
-										</div>
-									);
-								}
-
-								// Default text field
-								return (
-									<div key={fieldKey} className="space-y-1">
-										{label}
-										<Input
-											value={printData[fieldKey] || ''}
-											onChange={(e) => handlePrintDataChange(fieldKey)(e.target.value)}
-											placeholder={fieldConfig.value || ''}
-											className="h-8 text-xs font-bold text-slate-900 bg-white border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
-										/>
-									</div>
-								);
-							})}
+									{getInputComponent(placeholder)}
+								</div>
+							))}
 						</div>
-					)}
-
-					{/* Empty state for fields */}
-					{(!medicalRecord.Fields || Object.keys(medicalRecord.Fields).length === 0) && (
+					) : (
 						<div className="flex flex-col items-center justify-center py-6 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg bg-slate-50/50">
 							<p className="text-xs font-medium">Aucun champ manuel à remplir</p>
 							<p className="text-[10px] text-slate-400">Ce document est prêt à être imprimé</p>
@@ -376,24 +386,25 @@ const MedicalRecordDocument: React.FC<MedicalRecordDocumentProps> = ({
 				</div>
 			</div>
 
-			{/* Bullets Preview - Optional, keeping it subtle */}
-			{medicalRecord.Bullets && medicalRecord.Bullets.length > 0 && (
-				<div className="bg-slate-50/50 rounded-lg p-3 border border-slate-200/60 shadow-sm">
-					<h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-200/50 pb-1">
-						Aperçu du contenu généré
-					</h4>
-					<div className="space-y-1.5 pl-1">
-						{medicalRecord.Bullets.map((bullet, index) => (
-							<div key={index} className="flex items-start gap-2">
-								<span className="text-indigo-400 mt-1.5">•</span>
-								<p className="text-xs text-slate-600 leading-relaxed font-medium">
-									{bullet}
-								</p>
-							</div>
-						))}
-					</div>
+			{/* Preview Box - Simple text representation */}
+			<div className="bg-slate-50/50 rounded-lg p-3 border border-slate-200/60 shadow-sm">
+				<h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-200/50 pb-1">
+					Aperçu du contenu
+				</h4>
+				<div className="text-xs text-slate-600 leading-relaxed space-y-2 font-serif">
+					{medicalRecord.header && <p>{processText(medicalRecord.header, printData)}</p>}
+					{medicalRecord.body && <p>{processText(medicalRecord.body, printData)}</p>}
+					{medicalRecord.exam && (
+						<ul className="list-disc pl-4 space-y-1">
+							{medicalRecord.exam.items.map((item, i) => (
+								<li key={i}>{processText(item, printData)}</li>
+							))}
+						</ul>
+					)}
+					{medicalRecord.conclusion && <p className="font-bold">{medicalRecord.conclusion}</p>}
+					{medicalRecord.legal_note && <p className="italic text-[10px]">{medicalRecord.legal_note}</p>}
 				</div>
-			)}
+			</div>
 		</div>
 	);
 };

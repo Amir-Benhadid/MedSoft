@@ -38,6 +38,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useConfig } from "@/ui/contexts/ConfigContext";
 import { useDoctorCall } from "@/ui/hooks/useDoctorCall";
 import { UpdateIndicator } from "@/ui/components/UpdateIndicator";
+import { GuestCertificateSheet } from "./sheet/GuestCertificateSheet";
 
 interface SecretaryHeaderProps {
     currentTab?: string;
@@ -70,6 +71,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
     const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
     const [isPatientInfoOpen, setIsPatientInfoOpen] = useState(false);
     const [initialSheetTab, setInitialSheetTab] = useState<string>('info');
+    const [isGuestCertOpen, setIsGuestCertOpen] = useState(false);
 
     const handlePatientSelect = (patientId: string, action?: 'file' | 'consultation' | 'agenda') => {
         setInitialSheetTab(action === 'agenda' ? 'rdv' : 'info');
@@ -129,6 +131,16 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                     Rechercher un dossier...
                 </Button>
 
+                <Button
+                    variant="outline"
+                    className="hidden md:flex text-muted-foreground bg-secondary/30 border-border hover:bg-card hover:text-foreground hover:border-primary/50 transition-all shadow-sm ml-2"
+                    onClick={() => setIsGuestCertOpen(true)}
+                    title="Certificat Patient Externe"
+                >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Certificat Externe
+                </Button>
+
                 {/* Mobile Search Toggle */}
                 <Button
                     variant="ghost"
@@ -137,6 +149,15 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                     onClick={() => setIsSearchOpen(true)}
                 >
                     <Search className="h-5 w-5" />
+                </Button>
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    onClick={() => setIsGuestCertOpen(true)}
+                >
+                    <FileText className="h-5 w-5" />
                 </Button>
 
                 {/* Mobile Waitlist Toggle (Agenda Only) */}
@@ -222,6 +243,7 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                 open={isSearchOpen}
                 onOpenChange={setIsSearchOpen}
                 onPatientSelect={handlePatientSelect}
+                mode="secretary"
             />
 
             <SecretaryPatientFileSheet
@@ -229,6 +251,11 @@ export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: 
                 open={isPatientInfoOpen}
                 onOpenChange={setIsPatientInfoOpen}
                 initialTab={initialSheetTab}
+            />
+
+            <GuestCertificateSheet
+                open={isGuestCertOpen}
+                onOpenChange={setIsGuestCertOpen}
             />
         </header>
     );

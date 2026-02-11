@@ -42,7 +42,7 @@ export function PatientForm({ initialData, onSubmit, onCancel, isLoading }: Pati
             dob: initialData?.dob || '',
             phone_number: initialData?.phone_number || '',
             street: initialData?.street || '',
-            city: initialData?.city || '',
+            city: initialData?.city || 'Constantine',
             oph_ants: initialData?.oph_ants || '',
             gen_ants: initialData?.gen_ants || '',
         }
