@@ -116,11 +116,13 @@ export const useConsultationStore = create<ConsultationState>((set) => ({
     setRightEye: (data) => set((state) => ({ rightEye: { ...state.rightEye, ...data } })),
 
     updateLeftEyeField: (field, value) => set((state) => ({
-        leftEye: { ...state.leftEye, [field]: value }
+        leftEye: { ...state.leftEye, [field]: value },
+        ...(field === 'glassType' ? { rightEye: { ...state.rightEye, [field]: value } } : {})
     })),
 
     updateRightEyeField: (field, value) => set((state) => ({
-        rightEye: { ...state.rightEye, [field]: value }
+        rightEye: { ...state.rightEye, [field]: value },
+        ...(field === 'glassType' ? { leftEye: { ...state.leftEye, [field]: value } } : {})
     })),
 
     setClinicalExam: (data) => set((state) => ({ clinicalExam: { ...state.clinicalExam, ...data } })),

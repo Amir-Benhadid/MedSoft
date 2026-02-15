@@ -10,7 +10,9 @@ export interface ElectronAPI {
 	platform: string;
 	openDevTools: () => Promise<void>;
 	reloadApp: () => Promise<void>;
+	maximizeWindow: () => Promise<void>;
 	closeWindow: () => Promise<void>;
+	launchMainWindow: () => Promise<void>;
 	readCsvFile: (filename: string) => Promise<string>;
 	writeCsvFile: (filename: string, content: string) => Promise<boolean>;
 	invoke: (channel: string, ...args: any[]) => Promise<any>;
@@ -19,6 +21,13 @@ export interface ElectronAPI {
 	saveSetup: (config: any) => Promise<boolean>;
 	selectDirectory: () => Promise<string | null>;
 	selectFile: (filters: any[]) => Promise<string | null>;
+	copyLogo: (path: string) => Promise<string | null>;
+	factoryReset: () => Promise<boolean>;
+	// Network
+	scanForServers: () => Promise<any[]>;
+	getServerIP: () => Promise<string>;
+	// Events
+	onDataChanged: (callback: (resource: string) => void) => () => void;
 	// Auto Updater
 	onUpdateAvailable: (callback: (info: any) => void) => () => void;
 	onUpdateDownloaded: (callback: (info: any) => void) => () => void;

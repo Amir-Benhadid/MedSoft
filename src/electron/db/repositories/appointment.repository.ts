@@ -23,6 +23,7 @@ export interface Appointment {
     needs_dilation: boolean;
     dilation_status?: string | null;
     dilation_type?: string | null;
+    dilation_eye?: string | null;
     dilation_started_at?: string;
     created_at?: string;
     updated_at?: string;
@@ -66,7 +67,7 @@ export class AppointmentRepository {
                 SELECT 
                     a.id, a.patient_id, a.start_time, a.end_time, a.arrived_at, 
                     a.title, a.state, a.type, a.notes, a.created_at, a.updated_at, a.consultation_type_id,
-                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.created_at as dilation_started_at,
+                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.eye as dilation_eye, d.created_at as dilation_started_at,
                     p.name as patient_name, p.surname as patient_surname, p.dob as patient_dob,
                     p.phone_number as patient_phone, p.street as patient_street, p.city as patient_city
                 FROM appointments a
@@ -80,7 +81,7 @@ export class AppointmentRepository {
                 SELECT 
                     a.id, a.patient_id, a.start_time, a.end_time, a.arrived_at, 
                     a.title, a.state, a.type, a.notes, a.created_at, a.updated_at, a.consultation_type_id,
-                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_started_at,
+                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_eye, NULL as dilation_started_at,
                     p.name as patient_name, p.surname as patient_surname, p.dob as patient_dob,
                     p.phone_number as patient_phone, p.street as patient_street, p.city as patient_city
                 FROM appointments a
@@ -108,6 +109,7 @@ export class AppointmentRepository {
             needs_dilation: !!row.dilation_id,
             dilation_status: row.dilation_status,
             dilation_type: row.dilation_medicine,
+            dilation_eye: row.dilation_eye,
             dilation_started_at: row.dilation_started_at,
             patient: row.patient_name ? {
                 name: row.patient_name,
@@ -160,9 +162,9 @@ export class AppointmentRepository {
                 if (hasDilations) {
                     const dilationId = randomUUID();
                     this.db.prepare(`
-						INSERT INTO dilations (id, appointment_id, patient_id, medicine, status)
-						VALUES (?, ?, ?, ?, 'pending')
-					`).run(dilationId, id, appointment.patient_id, appointment.dilation_type || null);
+						INSERT INTO dilations (id, appointment_id, patient_id, medicine, eye, status)
+						VALUES (?, ?, ?, ?, ?, 'pending')
+					`).run(dilationId, id, appointment.patient_id, appointment.dilation_type || null, appointment.dilation_eye || null);
                 }
             }
         });
@@ -191,6 +193,7 @@ export class AppointmentRepository {
             delete appointmentUpdates.needs_dilation;
             delete appointmentUpdates.dilation_status;
             delete appointmentUpdates.dilation_type;
+            delete appointmentUpdates.dilation_eye;
 
             if (Object.keys(appointmentUpdates).length > 0) {
                 const sets: string[] = [];
@@ -221,20 +224,30 @@ export class AppointmentRepository {
                             const patientId = this.db.prepare('SELECT patient_id FROM appointments WHERE id = ?').get(id) as any;
                             if (patientId) {
                                 this.db.prepare(`
-									INSERT INTO dilations (id, appointment_id, patient_id, medicine, status)
-									VALUES (?, ?, ?, ?, 'pending')
-								`).run(randomUUID(), id, patientId.patient_id, updates.dilation_type || null);
+									INSERT INTO dilations (id, appointment_id, patient_id, medicine, eye, status)
+									VALUES (?, ?, ?, ?, ?, 'pending')
+								`).run(randomUUID(), id, patientId.patient_id, updates.dilation_type || null, updates.dilation_eye || null);
 
                                 this.db.prepare("UPDATE appointments SET state = ?, updated_at = datetime('now', 'localtime') WHERE id = ?").run('present', id);
                             }
-                        } else if (updates.dilation_type !== undefined) {
-                            this.db.prepare('UPDATE dilations SET medicine = ? WHERE appointment_id = ?').run(updates.dilation_type, id);
+                        } else {
+                            if (updates.dilation_type !== undefined) {
+                                this.db.prepare('UPDATE dilations SET medicine = ? WHERE appointment_id = ?').run(updates.dilation_type, id);
+                            }
+                            if (updates.dilation_eye !== undefined) {
+                                this.db.prepare('UPDATE dilations SET eye = ? WHERE appointment_id = ?').run(updates.dilation_eye, id);
+                            }
                         }
                     } else {
                         this.db.prepare('DELETE FROM dilations WHERE appointment_id = ?').run(id);
                     }
-                } else if (updates.dilation_type !== undefined) {
-                    this.db.prepare('UPDATE dilations SET medicine = ? WHERE appointment_id = ?').run(updates.dilation_type, id);
+                } else {
+                    if (updates.dilation_type !== undefined) {
+                        this.db.prepare('UPDATE dilations SET medicine = ? WHERE appointment_id = ?').run(updates.dilation_type, id);
+                    }
+                    if (updates.dilation_eye !== undefined) {
+                        this.db.prepare('UPDATE dilations SET eye = ? WHERE appointment_id = ?').run(updates.dilation_eye, id);
+                    }
                 }
             }
         });
@@ -269,7 +282,7 @@ export class AppointmentRepository {
             query = `
                 SELECT 
                     a.*,
-                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine
+                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.eye as dilation_eye
                 FROM appointments a
                 LEFT JOIN dilations d ON a.id = d.appointment_id
                 WHERE a.id = ?
@@ -278,7 +291,7 @@ export class AppointmentRepository {
             query = `
                 SELECT 
                     a.*,
-                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine
+                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_eye
                 FROM appointments a
                 WHERE a.id = ?
             `;
@@ -301,6 +314,7 @@ export class AppointmentRepository {
             needs_dilation: !!row.dilation_id,
             dilation_status: row.dilation_status,
             dilation_type: row.dilation_medicine,
+            dilation_eye: row.dilation_eye,
             consultation_type_id: row.consultation_type_id
         };
     }
@@ -328,7 +342,7 @@ export class AppointmentRepository {
      * @param needsDilation - Whether dilation is needed
      * @returns True if operation was successful
      */
-    toggleDilation(id: string, needsDilation: boolean): boolean {
+    toggleDilation(id: string, needsDilation: boolean, eye?: string): boolean {
         const transaction = this.db.transaction(() => {
             const hasDilations = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='dilations'").get();
             if (!hasDilations) return;
@@ -339,10 +353,12 @@ export class AppointmentRepository {
                     const patientIdRow = this.db.prepare('SELECT patient_id FROM appointments WHERE id = ?').get(id) as any;
                     if (patientIdRow) {
                         this.db.prepare(`
-                            INSERT INTO dilations (id, appointment_id, patient_id, status)
-                            VALUES (?, ?, ?, 'pending')
-                        `).run(randomUUID(), id, patientIdRow.patient_id);
+                            INSERT INTO dilations (id, appointment_id, patient_id, eye, status)
+                            VALUES (?, ?, ?, ?, 'pending')
+                        `).run(randomUUID(), id, patientIdRow.patient_id, eye || null);
                     }
+                } else if (eye) {
+                    this.db.prepare('UPDATE dilations SET eye = ? WHERE appointment_id = ?').run(eye, id);
                 }
             } else {
                 this.db.prepare('DELETE FROM dilations WHERE appointment_id = ?').run(id);

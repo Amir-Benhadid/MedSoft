@@ -37,7 +37,7 @@ export const DocumentTabs: React.FC<DocumentTabsProps> = ({
     };
 
     return (
-        <div className="flex-1 relative overflow-hidden h-[36px]">
+        <div className="flex-1 relative overflow-hidden transition-all" style={{ height: 'var(--dash-h)' }}>
             <AnimatePresence mode="popLayout" initial={false}>
                 <motion.div
                     key={page}
@@ -45,7 +45,8 @@ export const DocumentTabs: React.FC<DocumentTabsProps> = ({
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: page === 0 ? 50 : -50, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    className="grid grid-cols-5 gap-1.5 w-full h-full absolute inset-0"
+                    className="grid grid-cols-5 w-full h-full absolute inset-0"
+                    style={{ gap: 'calc(var(--dash-gap) / 2)' }}
                 >
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
@@ -55,11 +56,12 @@ export const DocumentTabs: React.FC<DocumentTabsProps> = ({
                                 key={tab.id}
                                 onClick={() => onTabClick(tab)}
                                 className={cn(
-                                    "flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-tight transition-all duration-200 border truncate",
+                                    "flex items-center justify-center font-semibold uppercase tracking-tight transition-all duration-200 border truncate rounded-lg",
                                     active
                                         ? "bg-primary text-primary-foreground border-primary shadow-sm"
                                         : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-primary/30"
                                 )}
+                                style={{ gap: 'calc(var(--dash-gap) / 3)', paddingInline: 'calc(var(--dash-p) / 4)', fontSize: 'calc(var(--dash-label) - 1px)' }}
                             >
                                 <Icon className={cn("w-3.5 h-3.5 flex-shrink-0", active ? "text-primary-foreground" : "text-muted-foreground")} />
                                 <span className="truncate">{tab.label}</span>

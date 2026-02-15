@@ -1,0 +1,40 @@
+diff --git a/src/electronmon.js b/src/electronmon.js
+index fc1ed5b9cd9d042722a97c3abce66237b35cee9f..e3cc32b60e342274c02561c7712857e96ab41746 100644
+--- a/src/electronmon.js
++++ b/src/electronmon.js	
+@@ -90,6 +90,16 @@ module.exports = ({
+ 
+       app.on('message', onMessage);
+ 
++      // Handle IPC channel closed - avoid unhandled 'error' event crash when child exits during file change
++      app.on('error', (err) => {
++        if (err.code === 'ERR_IPC_CHANNEL_CLOSED') {
++          log.info('IPC channel closed (app may have exited), will restart on next change');
++          globalApp = null;
++        } else {
++          log.info('app error:', err.message);
++        }
++      });
++
+       app.once('exit', (code, signal) => {
+         process.removeListener('SIGTERM', onTerm);
+         process.removeListener('SIGHUP', onTerm);
+@@ -120,8 +130,16 @@ module.exports = ({
+ 
+       const send = app.send.bind(app);
+       globalApp.send = (signal) => {
+-        send(signal);
+-
++        try {
++          send(signal);
++        } catch (err) {
++          if (err.code === 'ERR_IPC_CHANNEL_CLOSED') {
++            log.info('IPC channel closed during send, app may have exited');
++            globalApp = null;
++            return;
++          }
++          throw err;
++        }
+         if (signal === 'reset') {
+           // app is being killed, ignore all future messages
+           globalApp.send = () => {};

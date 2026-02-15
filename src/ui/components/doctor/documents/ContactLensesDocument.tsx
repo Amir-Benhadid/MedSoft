@@ -82,6 +82,7 @@ const LINE_HEIGHTS = {
 	normal: 14,
 	small: 12,
 };
+const SECTION_GAP = 18; // Same as Glasses PDF - OD-to-section, section-to-values, between sections
 
 
 // PDF Generation Function
@@ -99,9 +100,10 @@ export const generateContactLensesPDF = async (
 	let y = drawTitle(context, 'LENTILLES DE CONTACT', drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
 	// Normalize to nested structure (support legacy flat data)
-	const rightSph = (printData?.rightEye?.sph) || printData?.sph || printData?.objSph || '';
-	const rightCyl = (printData?.rightEye?.cyl) || printData?.cyl || printData?.objCyl || '';
-	const rightAxis = (printData?.rightEye?.axis) || printData?.axis || printData?.objAxis || '';
+	const rightSph = DocumentUtils.formatFieldDisplay((printData?.rightEye?.sph) || printData?.sph || printData?.objSph);
+	const rightCyl = DocumentUtils.formatFieldDisplay((printData?.rightEye?.cyl) || printData?.cyl || printData?.objCyl);
+	const rightAxisRaw = (printData?.rightEye?.axis) || printData?.axis || printData?.objAxis || '';
+	const rightAxis = rightAxisRaw.trim() !== '' ? rightAxisRaw : '';
 	const rightDiam = (printData?.rightEye?.diam) || printData?.diam || '';
 	// Use rayon from eyeData if available, otherwise use axis_k from printData
 	const rightAxisK = (printData?.rightEye?.axis_k) || printData?.axis_k || '';
@@ -109,9 +111,10 @@ export const generateContactLensesPDF = async (
 	const rightLensType = (printData?.rightEye?.lensType) || '';
 	const rightLensBrand = (printData?.rightEye?.lensBrand) || printData?.lensBrand || '';
 
-	const leftSph = (printData?.leftEye?.sph) || '';
-	const leftCyl = (printData?.leftEye?.cyl) || '';
-	const leftAxis = (printData?.leftEye?.axis) || '';
+	const leftSph = DocumentUtils.formatFieldDisplay((printData?.leftEye?.sph) || '');
+	const leftCyl = DocumentUtils.formatFieldDisplay((printData?.leftEye?.cyl) || '');
+	const leftAxisRaw = (printData?.leftEye?.axis) || '';
+	const leftAxis = leftAxisRaw.trim() !== '' ? leftAxisRaw : '';
 	const leftDiam = (printData?.leftEye?.diam) || '';
 	// Use rayon from eyeData if available, otherwise use axis_k from printData
 	const leftAxisK = (printData?.leftEye?.axis_k) || '';
@@ -123,9 +126,9 @@ export const generateContactLensesPDF = async (
 	const rightIsSpherical = rightContactLensType === 'Sphérique';
 	const leftIsSpherical = leftContactLensType === 'Sphérique';
 
-	// Use values directly from printData (already converted and displayed in UI)
-	const hasRightEyeData = rightSph || rightCyl || rightAxis;
-	const hasLeftEyeData = leftSph || leftCyl || leftAxis;
+	// Check if we have prescription data (raw values for existence)
+	const hasRightEyeData = rightSph || rightCyl || rightAxisRaw;
+	const hasLeftEyeData = leftSph || leftCyl || leftAxisRaw;
 
 	// Calculate equal column distribution across page width
 	const usableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
@@ -143,242 +146,134 @@ export const generateContactLensesPDF = async (
 	const col5 = LEFT_MARGIN + columnWidth * 4; // Diamètre (toric)
 	const col6 = LEFT_MARGIN + columnWidth * 5; // Rayon (toric)
 
-	// Vision de Loin section - P:, R:, D: format like Contacts.tsx
-	const shouldShowRightEye = printControlFlags?.includeRightEye !== false; // Default to true
-	const shouldShowLeftEye = printControlFlags?.includeLeftEye !== false; // Default to true
+	// Same layout as Glasses PDF: OD/OG once at top, row labels on left, values on separate lines
+	const shouldShowRightEye = printControlFlags?.includeRightEye !== false;
+	const shouldShowLeftEye = printControlFlags?.includeLeftEye !== false;
+	const colLabel = LEFT_MARGIN;
+	const colOD = LEFT_MARGIN + 35; // Aligned with Glasses colODValue
+	const colOG = width / 2 + 45;   // Aligned with Glasses colOGValue
+	const colRowLabel = colOD - 25; // Closer to values as requested
 
-	if ((shouldShowRightEye && hasRightEyeData) || (shouldShowLeftEye && hasLeftEyeData)) {
-		// Column positions for P:, R:, D: format
-		const col2 = LEFT_MARGIN + columnWidth / 2;
-		const col3 = width / 2 - "LENTILLES DE CONTACT".length * 3;
-
-		// Right Eye - format: OD: P: sph (cyl) axe, R: rayon, D: diametre 
-		if (shouldShowRightEye && hasRightEyeData) {
-			// Format: P: sph (cyl) axe
-			// For Sphériques lenses: only show sphere (no cylinder, no axis)
-			// For Toriques lenses: show sphere, cylinder, and axis
-			// Use values directly from printData (already formatted)
-			let rightPrescription: string;
-			if (rightIsSpherical) {
-				// Sphériques: only sphere (already formatted in printData)
-				rightPrescription = `P: ${rightSph}`;
-			} else {
-				// Toriques: sphere, cylinder, and axis (already formatted in printData)
-				const rightCylText = rightCyl ? `(${rightCyl})` : '';
-				const rightAxisText = rightAxis ? `${rightAxis}°` : '';
-				rightPrescription = `P: ${rightSph} ${rightCylText} ${rightAxisText}`.trim();
-			}
-
-			page.drawText("OD:", {
-				x: col2,
-				y,
-				size: TEXT_SIZES.normal,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			page.drawText(rightPrescription, {
-				x: col3,
-				y,
-				size: TEXT_SIZES.normal,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.normal;
-
-			// R: rayon - only if axis_k exists
-			if (rightAxisK) {
-				page.drawText(`R: ${rightAxisK} mm`, {
-					x: col3,
-					y,
-					size: TEXT_SIZES.normal,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.normal;
-			}
-
-			// D: diametre - only if diam exists
-			if (rightDiam) {
-				page.drawText(`D: ${rightDiam} mm`, {
-					x: col3,
-					y,
-					size: TEXT_SIZES.normal,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.normal;
-			}
-
-			y -= LINE_HEIGHTS.normal; // Extra spacing
+	const hasPrescriptionData = (shouldShowRightEye && hasRightEyeData) || (shouldShowLeftEye && hasLeftEyeData);
+	const hasTypeData = (shouldShowRightEye && (rightContactLensType || rightLensType || rightLensBrand)) ||
+		(shouldShowLeftEye && (leftContactLensType || leftLensType || leftLensBrand));
+	if (hasPrescriptionData || hasTypeData) {
+		// OD and OG written once at top - aligned with value columns
+		const headerY = y;
+		if (shouldShowRightEye) {
+			page.drawText("OD", { x: colOD, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
-
-		// Left Eye - format: OG: P: sph (cyl) axe, R: rayon, D: diametre
-		if (shouldShowLeftEye && hasLeftEyeData) {
-			// Add spacing between eyes
-			y -= 10;
-
-			// Format: P: sph (cyl) axe
-			// For Sphériques lenses: only show sphere (no cylinder, no axis)
-			// For Toriques lenses: show sphere, cylinder, and axis
-			// Use values directly from printData (already formatted)
-			let leftPrescription: string;
-			if (leftIsSpherical) {
-				// Sphériques: only sphere (already formatted in printData)
-				leftPrescription = `P: ${leftSph}`;
-			} else {
-				// Toriques: sphere, cylinder, and axis (already formatted in printData)
-				const leftCylText = leftCyl ? `(${leftCyl})` : '';
-				const leftAxisText = leftAxis ? `${leftAxis}°` : '';
-				leftPrescription = `P: ${leftSph} ${leftCylText} ${leftAxisText}`.trim();
-			}
-
-			page.drawText("OG:", {
-				x: col2,
-				y,
-				size: TEXT_SIZES.normal,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			page.drawText(leftPrescription, {
-				x: col3,
-				y,
-				size: TEXT_SIZES.normal,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.normal;
-
-			// R: rayon - only if axis_k exists
-			if (leftAxisK) {
-				page.drawText(`R: ${leftAxisK} mm`, {
-					x: col3,
-					y,
-					size: TEXT_SIZES.normal,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.normal;
-			}
-
-			// D: diametre - only if diam exists
-			if (leftDiam) {
-				page.drawText(`D: ${leftDiam} mm`, {
-					x: col3,
-					y,
-					size: TEXT_SIZES.normal,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.normal;
-			}
-
-			y -= LINE_HEIGHTS.normal; // Extra spacing
+		if (shouldShowLeftEye) {
+			page.drawText("OG", { x: colOG, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
+		y -= 2 * SECTION_GAP;
 	}
 
-	// Additional information section
+	// Format prescription like Glasses: sphere D or sphere (cylinder à axe°)
+	const formatPrescriptionLikeGlasses = (sph: string, cyl: string, axisRaw: string, isSpherical: boolean): string => {
+		const sphNum = parseFloat(sph) || 0;
+		const cylNum = parseFloat(cyl) || 0;
+		const axisExists = axisRaw && axisRaw.trim() !== '';
+		if ((!sph && !cyl && !axisRaw) || (Math.abs(sphNum) < 0.01 && Math.abs(cylNum) < 0.01 && !axisExists)) {
+			return 'Plan';
+		}
+		const sphText = DocumentUtils.formatNumberWithSignOrEmpty(sph);
+		if (isSpherical) {
+			return `${sphText} D`;
+		}
+		if (Math.abs(cylNum) < 0.01 && !axisExists) {
+			return `${sphText} D`;
+		}
+		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
+		const axisText = axisExists ? axisRaw : '0';
+		return `${sphText} (${cylText} à ${axisText}°)`;
+	};
+
+	if (hasPrescriptionData) {
+		// P: row - label on left, values next to it (same line) in OD/OG columns, formatted like Glasses
+		const rightPrescription = formatPrescriptionLikeGlasses(rightSph, rightCyl, rightAxis, rightIsSpherical);
+		const leftPrescription = formatPrescriptionLikeGlasses(leftSph, leftCyl, leftAxis, leftIsSpherical);
+
+		page.drawText("P:", { x: colRowLabel, y, size: TEXT_SIZES.normal, font: helveticaBold, color: rgb(0, 0, 0) });
+		if (shouldShowRightEye && hasRightEyeData) {
+			page.drawText(rightPrescription, { x: colOD, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+		}
+		if (shouldShowLeftEye && hasLeftEyeData) {
+			page.drawText(leftPrescription, { x: colOG, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+		}
+		y -= LINE_HEIGHTS.normal;
+
+		// R: rayon row - label on left, values next to it (same line)
+		if ((shouldShowRightEye && rightAxisK) || (shouldShowLeftEye && leftAxisK)) {
+			page.drawText("R:", { x: colRowLabel, y, size: TEXT_SIZES.normal, font: helveticaBold, color: rgb(0, 0, 0) });
+			if (shouldShowRightEye && rightAxisK) {
+				page.drawText(`${rightAxisK} mm`, { x: colOD, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			}
+			if (shouldShowLeftEye && leftAxisK) {
+				page.drawText(`${leftAxisK} mm`, { x: colOG, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			}
+			y -= LINE_HEIGHTS.normal;
+		}
+
+		// D: diamètre row - label on left, values next to it (same line)
+		if ((shouldShowRightEye && rightDiam) || (shouldShowLeftEye && leftDiam)) {
+			page.drawText("D:", { x: colRowLabel, y, size: TEXT_SIZES.normal, font: helveticaBold, color: rgb(0, 0, 0) });
+			if (shouldShowRightEye && rightDiam) {
+				page.drawText(`${rightDiam} mm`, { x: colOD, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			}
+			if (shouldShowLeftEye && leftDiam) {
+				page.drawText(`${leftDiam} mm`, { x: colOG, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			}
+			y -= LINE_HEIGHTS.normal;
+		}
+		y -= 2 * SECTION_GAP;
+	}
+
+	// Type de lentilles - same layout: row labels on left, values under OD/OG
 	if (
-		(shouldShowRightEye && (rightContactLensType || rightLensBrand)) ||
-		(shouldShowLeftEye && (leftContactLensType || leftLensBrand))
+		(shouldShowRightEye && (rightContactLensType || rightLensType || rightLensBrand)) ||
+		(shouldShowLeftEye && (leftContactLensType || leftLensType || leftLensBrand))
 	) {
-		y -= 15;
+		y -= SECTION_GAP;
 		page.drawText('Type de lentilles:', {
-			x: LEFT_MARGIN,
+			x: colLabel,
 			y,
 			size: TEXT_SIZES.sectionHeader,
 			font: helveticaBold,
 			color: rgb(0, 0, 0),
 		});
-		y -= LINE_HEIGHTS.normal;
+		y -= SECTION_GAP;
 
+		// Type row
+		page.drawText('Type:', { x: colLabel, y, size: TEXT_SIZES.small, font: helveticaBold, color: rgb(0, 0, 0) });
 		if (shouldShowRightEye && rightContactLensType) {
-			page.drawText(`OD: ${rightContactLensType}`, {
-				x: LEFT_MARGIN + 20,
-				y,
-				size: TEXT_SIZES.small,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.small;
+			page.drawText(rightContactLensType, { x: colOD, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 		}
-
 		if (shouldShowLeftEye && leftContactLensType) {
-			page.drawText(`OG: ${leftContactLensType}`, {
-				x: LEFT_MARGIN + 20,
-				y,
-				size: TEXT_SIZES.small,
-				font: helvetica,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.small;
+			page.drawText(leftContactLensType, { x: colOG, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 		}
+		y -= SECTION_GAP;
 
 		if ((shouldShowRightEye && rightLensType) || (shouldShowLeftEye && leftLensType)) {
-			y -= 5;
-			page.drawText('Matière:', {
-				x: LEFT_MARGIN,
-				y,
-				size: TEXT_SIZES.sectionHeader,
-				font: helveticaBold,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.normal;
-
+			page.drawText('Matière:', { x: colLabel, y, size: TEXT_SIZES.small, font: helveticaBold, color: rgb(0, 0, 0) });
 			if (shouldShowRightEye && rightLensType) {
-				page.drawText(`OD: ${rightLensType}`, {
-					x: LEFT_MARGIN + 20,
-					y,
-					size: TEXT_SIZES.small,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.small;
+				page.drawText(rightLensType, { x: colOD, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
-
 			if (shouldShowLeftEye && leftLensType) {
-				page.drawText(`OG: ${leftLensType}`, {
-					x: LEFT_MARGIN + 20,
-					y,
-					size: TEXT_SIZES.small,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.small;
+				page.drawText(leftLensType, { x: colOG, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
+			y -= SECTION_GAP;
 		}
 
 		if ((shouldShowRightEye && rightLensBrand) || (shouldShowLeftEye && leftLensBrand)) {
-			y -= 5;
-			page.drawText('Marque:', {
-				x: LEFT_MARGIN,
-				y,
-				size: TEXT_SIZES.sectionHeader,
-				font: helveticaBold,
-				color: rgb(0, 0, 0),
-			});
-			y -= LINE_HEIGHTS.normal;
-
+			page.drawText('Marque:', { x: colLabel, y, size: TEXT_SIZES.small, font: helveticaBold, color: rgb(0, 0, 0) });
 			if (shouldShowRightEye && rightLensBrand) {
-				page.drawText(`OD: ${rightLensBrand}`, {
-					x: LEFT_MARGIN + 20,
-					y,
-					size: TEXT_SIZES.small,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.small;
+				page.drawText(rightLensBrand, { x: colOD, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
-
 			if (shouldShowLeftEye && leftLensBrand) {
-				page.drawText(`OG: ${leftLensBrand}`, {
-					x: LEFT_MARGIN + 20,
-					y,
-					size: TEXT_SIZES.small,
-					font: helvetica,
-					color: rgb(0, 0, 0),
-				});
-				y -= LINE_HEIGHTS.small;
+				page.drawText(leftLensBrand, { x: colOG, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
+			y -= LINE_HEIGHTS.small;
 		}
 	}
 

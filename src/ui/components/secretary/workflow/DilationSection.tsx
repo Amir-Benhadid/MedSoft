@@ -229,9 +229,16 @@ export default function DilationSection() {
                             showAsComplete ? "bg-white border-emerald-200 ring-2 ring-emerald-50" : "bg-white border-indigo-100"
                         )}>
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-semibold text-slate-900 truncate">
-                                    {patient.name} {patient.surname}
-                                </span>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-sm font-semibold text-slate-900 truncate">
+                                        {patient.name} {patient.surname}
+                                    </span>
+                                    {patient.dilation_type && (
+                                        <span className="text-[10px] text-slate-500 font-medium truncate">
+                                            {patient.dilation_type} {patient.dilation_eye && <span className="text-indigo-600">({patient.dilation_eye})</span>}
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="flex items-center gap-2">
                                     {!showAsComplete && (
                                         <button
@@ -268,7 +275,13 @@ export default function DilationSection() {
                     <div key={patient.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/80 border border-slate-100 hover:bg-white hover:border-indigo-200 transition-all shadow-sm group">
                         <div className="flex flex-col">
                             <span className="text-sm font-semibold text-slate-700">{patient.name} {patient.surname}</span>
-                            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">En attente de gouttes</span>
+                            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">
+                                {patient.dilation_type ? (
+                                    <>
+                                        {patient.dilation_type} {patient.dilation_eye && <span className="text-indigo-600 font-bold">({patient.dilation_eye})</span>}
+                                    </>
+                                ) : "En attente de gouttes"}
+                            </span>
                         </div>
                         <button
                             onClick={() => handleStartDilation(patient)}

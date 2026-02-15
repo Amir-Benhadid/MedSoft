@@ -276,6 +276,8 @@ export const useDocumentsState = ({
     const suppressNotifyRef = useRef(false);
     // Track last sent payload to avoid sending identical updates repeatedly
     const lastSentJsonRef = useRef<string | null>(null);
+    // Track when contact lens conversion was last applied (prevents race: overwriting fresh conversion with stale saved data)
+    const lastContactLensConversionAppliedRef = useRef(0);
 
     // Update state when initialDocumentsData changes (for loading saved data)
     // Guard against recursive updates by only setting if values actually changed
@@ -329,11 +331,22 @@ export const useDocumentsState = ({
                 }
                 if (printStates.printContactLensesData) {
                     const newPrintContactLensesData = printStates.printContactLensesData;
-                    setPrintContactLensesData(prev =>
-                        JSON.stringify(prev) !== JSON.stringify(newPrintContactLensesData)
-                            ? newPrintContactLensesData
-                            : prev
-                    );
+                    // Skip overwriting when a conversion was just applied (Contact Lenses tab + refraction change):
+                    // the conversion updates printData, but the debounced save hasn't fired yet, so
+                    // initialDocumentsData can contain stale data that would revert the fresh conversion.
+                    const msSinceConversion = Date.now() - lastContactLensConversionAppliedRef.current;
+                    if (msSinceConversion < 400) {
+                        // Conversion was applied recently; avoid overwriting with possibly stale data
+                        // (save will fire at ~200ms and then this effect would run with correct data - but
+                        // in rare cases another update path could run first with stale data)
+                        // Fall through without updating
+                    } else {
+                        setPrintContactLensesData(prev =>
+                            JSON.stringify(prev) !== JSON.stringify(newPrintContactLensesData)
+                                ? newPrintContactLensesData
+                                : prev
+                        );
+                    }
                 }
                 if (printStates.printVisualAcuityData) {
                     const newPrintVisualAcuityData = printStates.printVisualAcuityData;
@@ -454,6 +467,10 @@ export const useDocumentsState = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [documentsDataToSend, onDocumentsDataChange]);
 
+    const markContactLensConversionApplied = useCallback(() => {
+        lastContactLensConversionAppliedRef.current = Date.now();
+    }, []);
+
     return {
         // States
         bilanFields,
@@ -471,6 +488,7 @@ export const useDocumentsState = ({
         setPrintGlassesData,
         printContactLensesData,
         setPrintContactLensesData,
+        markContactLensConversionApplied,
         printVisualAcuityData,
         setPrintVisualAcuityData,
         printWorkStopData,

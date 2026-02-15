@@ -22,4 +22,13 @@ export const conversionRouter = os.router({
             const result = conversionRepository.getConversionForSphere(input.sphere);
             return result;
         }),
+
+    /**
+     * Gets all conversion records.
+     * Used for client-side caching.
+     */
+    getAll: os
+        .handler(async () => {
+            return conversionRepository.getAllConversions();
+        }),
 });

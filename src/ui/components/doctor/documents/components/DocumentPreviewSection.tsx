@@ -112,18 +112,20 @@ const DocumentPreviewSection: React.FC<DocumentPreviewSectionProps> = ({
                 </div>
             </CardHeader>
 
-            <CardContent className="flex-1 overflow-hidden p-0">
-                <ScrollArea className="h-full">
-                    {showPreview && pdfUrl ? (
+            <CardContent className="flex-1 min-h-0 overflow-hidden p-0 flex flex-col">
+                {showPreview && pdfUrl ? (
+                    <div className="flex-1 min-h-0 relative">
                         <iframe
                             src={pdfUrl}
-                            className="w-full h-full border-0"
+                            className="absolute inset-0 w-full h-full border-0"
                             title="PDF Preview"
                         />
-                    ) : (
+                    </div>
+                ) : (
+                    <ScrollArea className="h-full min-h-0 flex-1">
                         <DocumentPreview activeDocTab={activeDocTab} />
-                    )}
-                </ScrollArea>
+                    </ScrollArea>
+                )}
             </CardContent>
         </Card>
     );

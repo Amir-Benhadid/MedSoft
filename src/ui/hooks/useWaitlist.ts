@@ -19,6 +19,7 @@ export interface WaitlistEntry {
     arrived_at: string;
     needs_dilation: boolean;
     dilation_type?: string | null;
+    dilation_eye?: string | null;
     dilation_start_time?: string;
     patient_name?: string;
     patient_surname?: string;
@@ -130,8 +131,8 @@ export function useUpdateWaitlistStatus() {
 export function useWaitlistToggleDilation() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ id, needsDilation, dilationType }: { id: string; needsDilation: boolean; dilationType?: string }) => {
-            return await orpc.waitlist.toggleDilation({ id, needsDilation, dilationMedicine: dilationType });
+        mutationFn: async ({ id, needsDilation, dilationType, eye }: { id: string; needsDilation: boolean; dilationType?: string; eye?: string }) => {
+            return await orpc.waitlist.toggleDilation({ id, needsDilation, dilationMedicine: dilationType, eye });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });

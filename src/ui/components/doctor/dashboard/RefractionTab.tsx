@@ -55,13 +55,13 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
         }
     };
 
-    const handleDilationConfirm = (product: string) => {
+    const handleDilationConfirm = (product: string, eye: string) => {
         if (activeAppointment) {
             // @ts-ignore - Hook update pending
-            toggleApptDilation.mutate({ id: activeAppointment.id, needsDilation: true, dilationType: product });
+            toggleApptDilation.mutate({ id: activeAppointment.id, needsDilation: true, dilationType: product, eye });
         } else if (activeWaitlist) {
             // @ts-ignore - Hook update pending
-            toggleWaitlistDilation.mutate({ id: activeWaitlist.id, needsDilation: true, dilationType: product });
+            toggleWaitlistDilation.mutate({ id: activeWaitlist.id, needsDilation: true, dilationType: product, eye });
         }
         setIsDilationDialogOpen(false);
     };
@@ -77,10 +77,10 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
     };
 
     return (
-        <div className="flex flex-col gap-1.5 xl:gap-2 2xl:gap-4 transition-all duration-300">
+        <div className="flex flex-col transition-all duration-300" style={{ gap: 'var(--dash-gap)' }}>
             {/* Main Header */}
-            <div className="bg-slate-50/90 rounded-md border border-slate-200 px-2 py-1 xl:px-3 xl:py-1.5 2xl:px-4 2xl:py-2.5 shadow-sm flex items-center justify-between transition-all">
-                <span className="text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Réfraction</span>
+            <div className="bg-slate-50/90 rounded-md border border-slate-200 shadow-sm flex items-center justify-between transition-all" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}>
+                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Réfraction</span>
 
                 {/* Dilation Button */}
                 {!readOnly && (activeAppointment || activeWaitlist) && (
@@ -100,7 +100,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-1.5 xl:gap-2 2xl:gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: 'var(--dash-gap)' }}>
                 <EyeRefractionPanel
                     side="right"
                     readOnly={readOnly}

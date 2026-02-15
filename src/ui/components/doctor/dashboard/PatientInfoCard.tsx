@@ -46,31 +46,40 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
     return (
         <div className="flex flex-col rounded-lg border ring-1 shadow-sm overflow-hidden 2xl:shadow-md transition-all h-full bg-blue-50/80 border-blue-100 ring-blue-100">
             {/* Header */}
-            <div className="px-3 py-2 border-b border-white/40 bg-white/30 backdrop-blur-[2px] flex items-center justify-between">
-                <span className="text-[10px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <div
+                className="border-b border-white/40 bg-white/30 backdrop-blur-[2px] flex items-center justify-between"
+                style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}
+            >
+                <span className="font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5" style={{ fontSize: 'var(--dash-label)' }}>
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                     Informations Patient
                 </span>
             </div>
 
             {/* Content */}
-            <div className="p-2 2xl:p-3 space-y-3 2xl:space-y-4 flex-1">
+            <div className="flex-1 flex flex-col" style={{ padding: 'var(--dash-p)', gap: 'var(--dash-gap)' }}>
                 {/* Row 1: Patient Details */}
-                <div className="flex items-center gap-3 px-2 py-1.5 bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm">
-                    <div className="p-1.5 2xl:p-2 bg-indigo-50 rounded-full ring-1 ring-indigo-100">
-                        <User className="w-4 h-4 2xl:w-5 2xl:h-5 text-indigo-600" />
+                <div
+                    className="flex items-center bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm"
+                    style={{ gap: 'var(--dash-gap)', paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}
+                >
+                    <div
+                        className="bg-indigo-50 rounded-full ring-1 ring-indigo-100 flex items-center justify-center shrink-0"
+                        style={{ width: 'calc(var(--dash-h) * 0.8)', height: 'calc(var(--dash-h) * 0.8)' }}
+                    >
+                        <User className="text-indigo-600" style={{ width: 'calc(var(--dash-h) * 0.45)', height: 'calc(var(--dash-h) * 0.45)' }} />
                     </div>
-                    <div className="flex items-baseline gap-2">
-                        <h2 className="text-sm 2xl:text-base font-bold text-slate-800">
+                    <div className="flex items-baseline" style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
+                        <h2 className="font-bold text-slate-800" style={{ fontSize: 'calc(var(--dash-label) + 2px)' }}>
                             {patient?.surname} {patient?.name}
                         </h2>
-                        <span className="text-xs 2xl:text-sm font-bold text-slate-400">
+                        <span className="font-bold text-slate-400" style={{ fontSize: 'var(--dash-label)' }}>
                             {age}
                         </span>
                     </div>
 
                     {patient?.email && (
-                        <div className="flex items-center gap-1.5 text-slate-400 ml-auto text-[11px] 2xl:text-xs">
+                        <div className="flex items-center ml-auto text-slate-400" style={{ gap: 'calc(var(--dash-gap) / 2)', fontSize: 'calc(var(--dash-label) - 1px)' }}>
                             <Mail className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             <span className="font-medium">{patient.email}</span>
                         </div>
@@ -78,11 +87,14 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                 </div>
 
                 {/* Row 2: Clinical Data Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 2xl:gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--dash-gap)' }}>
                     {/* Antécédents Généraux */}
-                    <div className="flex flex-col gap-1 relative group bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors">
-                        <div className="flex items-center justify-between px-1 mb-1">
-                            <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Antécédents Généraux</Label>
+                    <div
+                        className="flex flex-col relative group bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors"
+                        style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
+                    >
+                        <div className="flex items-center justify-between px-1">
+                            <Label className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Antécédents Généraux</Label>
                             <button
                                 type="button"
                                 onClick={() => setIsDialogOpen(true)}
@@ -92,32 +104,42 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
-                        <SmartMultiSelectInput
-                            category="antecedent_gen"
-                            value={clinicalExam.generalMedicalHistory || ""}
-                            onSelect={(val) => updateClinicalExamField("generalMedicalHistory", val)}
-                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20"
-                            disabled={readOnly}
-                            placeholder="-"
-                        />
+                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                            <SmartMultiSelectInput
+                                category="antecedent_gen"
+                                value={clinicalExam.generalMedicalHistory || ""}
+                                onSelect={(val) => updateClinicalExamField("generalMedicalHistory", val)}
+                                className="bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20 h-full"
+                                disabled={readOnly}
+                                placeholder="-"
+                            />
+                        </div>
                     </div>
 
                     {/* Diagnostic */}
-                    <div className="flex flex-col gap-1 bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-blue-200 transition-colors">
-                        <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight px-1 mb-1">Diagnostic</Label>
-                        <SmartMultiSelectInput
-                            category="diagnostic"
-                            value={clinicalExam.diagnosis || ""}
-                            onSelect={(val) => updateClinicalExamField("diagnosis", val)}
-                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-bold text-slate-800 border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-blue-400/20"
-                            placeholder="-"
-                        />
+                    <div
+                        className="flex flex-col bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm hover:border-blue-200 transition-colors"
+                        style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
+                    >
+                        <Label className="font-bold text-slate-500 uppercase tracking-tight px-1" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Diagnostic</Label>
+                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                            <SmartMultiSelectInput
+                                category="diagnostic"
+                                value={clinicalExam.diagnosis || ""}
+                                onSelect={(val) => updateClinicalExamField("diagnosis", val)}
+                                className="bg-slate-50/50 text-xs 2xl:text-sm font-bold text-slate-800 border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-blue-400/20 h-full"
+                                placeholder="-"
+                            />
+                        </div>
                     </div>
 
                     {/* Antécédents Ophtalmologiques */}
-                    <div className="flex flex-col gap-1 relative group bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors">
-                        <div className="flex items-center justify-between px-1 mb-1">
-                            <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Antécédents Ophtalmologiques</Label>
+                    <div
+                        className="flex flex-col relative group bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm hover:border-amber-200 transition-colors"
+                        style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
+                    >
+                        <div className="flex items-center justify-between px-1">
+                            <Label className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Antécédents Ophtalmologiques</Label>
                             <button
                                 type="button"
                                 onClick={() => setIsDialogOpen(true)}
@@ -127,23 +149,29 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
-                        <SmartMultiSelectInput
-                            category="antecedent_oph"
-                            value={clinicalExam.ophthalmologicalHistory || ""}
-                            onSelect={(val) => updateClinicalExamField("ophthalmologicalHistory", val)}
-                            className="min-h-[28px] 2xl:min-h-[36px] bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20"
-                            disabled={readOnly}
-                            placeholder="-"
-                        />
+                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                            <SmartMultiSelectInput
+                                category="antecedent_oph"
+                                value={clinicalExam.ophthalmologicalHistory || ""}
+                                onSelect={(val) => updateClinicalExamField("ophthalmologicalHistory", val)}
+                                className="bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20 h-full"
+                                disabled={readOnly}
+                                placeholder="-"
+                            />
+                        </div>
                     </div>
 
                     {/* Profil / Notes */}
-                    <div className="flex flex-col gap-1 bg-white/70 backdrop-blur-sm p-2 rounded-lg border border-blue-100 shadow-sm">
-                        <Label className="text-[9px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight px-1 mb-1">Note</Label>
+                    <div
+                        className="flex flex-col bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 shadow-sm"
+                        style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
+                    >
+                        <Label className="font-bold text-slate-500 uppercase tracking-tight px-1" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Note</Label>
                         <OptimizedTextarea
                             value={clinicalExam.profile || ""}
                             onChange={(val) => updateClinicalExamField("profile", val)}
-                            className="flex-1 resize-none bg-slate-50/50 min-h-[28px] 2xl:min-h-[36px] h-auto text-xs 2xl:text-sm border-slate-200 shadow-none py-1.5 focus:ring-2 focus:ring-slate-400/20"
+                            className="flex-1 resize-none bg-slate-50/50 h-auto border-slate-200 shadow-none focus:ring-2 focus:ring-slate-400/20"
+                            style={{ minHeight: 'var(--dash-h)', fontSize: 'var(--dash-label)', paddingBlock: 'calc(var(--dash-gap) / 4)' }}
                             disabled={readOnly}
                             placeholder="-"
                         />

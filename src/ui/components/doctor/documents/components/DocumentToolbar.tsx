@@ -75,7 +75,10 @@ export const DocumentToolbar: React.FC<DocumentToolbarProps> = ({
     };
 
     return (
-        <div className="flex-none px-4 py-2.5 border-b border-border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent flex items-center justify-between gap-2">
+        <div
+            className="flex-none border-b border-border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent flex items-center justify-between gap-2"
+            style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}
+        >
             <div className="flex-1 flex items-center justify-between min-w-0 mr-2">
                 {/* Pagination Controls */}
                 <div className="flex items-center gap-1 bg-background/50 rounded-lg p-1 mr-2 border border-border/50">

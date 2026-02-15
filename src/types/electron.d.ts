@@ -26,6 +26,7 @@ declare global {
             selectDirectory: () => Promise<string | null>;
             selectFile: (filters: any[]) => Promise<string | null>;
             copyLogo: (path: string) => Promise<string | null>;
+            factoryReset: () => Promise<boolean>;
 
             // Network / Discovery
             scanForServers: () => Promise<Array<{ ip: string; port: number; name: string }>>;

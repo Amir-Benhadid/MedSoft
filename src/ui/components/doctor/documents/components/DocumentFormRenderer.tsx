@@ -64,7 +64,10 @@ const MedicalRecordDocumentWrapper: React.FC<{
 }> = ({ children, onBack }) => {
     return (
         <div className="h-full flex flex-col overflow-hidden">
-            <div className="flex items-center mb-4 p-2 flex-shrink-0">
+            <div
+                className="flex items-center flex-shrink-0"
+                style={{ paddingInline: 'calc(var(--dash-p) / 2)', marginBottom: 'calc(var(--dash-gap) / 2)' }}
+            >
                 <Button
                     variant="ghost"
                     size="icon"

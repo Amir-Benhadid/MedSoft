@@ -55,6 +55,16 @@ export class ConversionRepository {
 
         return closest;
     }
+    /**
+     * Retrieves all conversion records from the database.
+     * Used for client-side caching to avoid repeated DB calls and floating-point issues.
+     *
+     * @returns Array of all conversion records
+     */
+    getAllConversions(): LentilleConversion[] {
+        const db = getDatabase();
+        return db.prepare('SELECT * FROM lentille_conv ORDER BY lunettes ASC').all() as LentilleConversion[];
+    }
 }
 
 export const conversionRepository = new ConversionRepository();

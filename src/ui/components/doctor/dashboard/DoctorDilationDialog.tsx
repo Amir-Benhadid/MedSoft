@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/components/ui/dialog";
 import { Button } from "@/ui/components/ui/button";
@@ -10,7 +9,7 @@ import { cn } from "@/ui/lib/utils";
 interface DoctorDilationDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (medication: string) => void;
+    onConfirm: (medication: string, eye: string) => void;
     isSubmitting: boolean;
 }
 
@@ -22,17 +21,19 @@ const DILATION_PRODUCTS = [
 ] as const;
 
 export function DoctorDilationDialog({ isOpen, onClose, onConfirm, isSubmitting }: DoctorDilationDialogProps) {
-    const [dilationStatus, setDilationStatus] = useState<string>("Mydriaticum");
+    const [dilationStatus, setDilationStatus] = useState<string>("Mydriaticum"); // Default Mydriaticum
+    const [selectedEye, setSelectedEye] = useState<string>("ODS"); // Default Both
 
     // Reset default when opening
     useEffect(() => {
         if (isOpen) {
             setDilationStatus("Mydriaticum");
+            setSelectedEye("ODS");
         }
     }, [isOpen]);
 
     const handleConfirm = () => {
-        onConfirm(dilationStatus);
+        onConfirm(dilationStatus, selectedEye);
     };
 
     return (
@@ -44,11 +45,37 @@ export function DoctorDilationDialog({ isOpen, onClose, onConfirm, isSubmitting 
                         Demande de dilatation
                     </DialogTitle>
                     <DialogDescription>
-                        Sélectionnez le produit pour la dilatation.
+                        Sélectionnez l'œil et le produit pour la dilatation.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-4">
+                <div className="py-4 space-y-4">
+                    {/* Eye Selection */}
+                    <div className="grid grid-cols-3 gap-2">
+                        <Button
+                            variant={selectedEye === 'OD' ? 'default' : 'outline'}
+                            onClick={() => setSelectedEye('OD')}
+                            className={cn(selectedEye === 'OD' ? "bg-blue-600" : "text-slate-600")}
+                        >
+                            OD (Droit)
+                        </Button>
+                        <Button
+                            variant={selectedEye === 'OG' ? 'default' : 'outline'}
+                            onClick={() => setSelectedEye('OG')}
+                            className={cn(selectedEye === 'OG' ? "bg-blue-600" : "text-slate-600")}
+                        >
+                            OG (Gauche)
+                        </Button>
+                        <Button
+                            variant={selectedEye === 'ODS' ? 'default' : 'outline'}
+                            onClick={() => setSelectedEye('ODS')}
+                            className={cn(selectedEye === 'ODS' ? "bg-blue-600" : "text-slate-600")}
+                        >
+                            ODS (Les 2)
+                        </Button>
+                    </div>
+
+                    {/* Product Selection */}
                     <Select value={dilationStatus} onValueChange={setDilationStatus}>
                         <SelectTrigger className="w-full h-12 bg-white border-blue-200 focus:ring-blue-500">
                             <div className="flex items-center gap-2">

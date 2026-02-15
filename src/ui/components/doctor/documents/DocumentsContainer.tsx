@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useConsultationStore } from '@/ui/store/consultationStore';
+import { cn } from '@/ui/lib/utils';
 import { usePrintHandlers } from './hooks/usePrintHandlers';
 import { useDocumentsState } from './hooks/useDocumentsState';
 import DocumentFormRenderer from './components/DocumentFormRenderer';
@@ -227,12 +228,15 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
             />
 
             {/* Content Area */}
-            <div className="flex-1 overflow-hidden flex flex-col md:flex-row relative gap-3 p-3">
-                <div className="flex-1 overflow-hidden flex flex-col bg-card rounded-lg border border-border shadow-sm w-full md:w-[58%]">
+            <div className="flex-1 overflow-hidden flex flex-col md:flex-row relative" style={{ gap: 'var(--dash-gap)', padding: 'var(--dash-p)' }}>
+                <div className="flex-1 overflow-hidden flex flex-col bg-card rounded-lg border border-border shadow-sm w-full md:w-[60%] transition-all">
                     {/* Bilan Subtabs */}
                     {currentSubTabs && (
-                        <div className="flex-none px-3 py-2 border-b border-border bg-muted/30 overflow-x-auto">
-                            <div className="flex gap-2">
+                        <div
+                            className="flex-none border-b border-border bg-muted/30 overflow-x-auto"
+                            style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}
+                        >
+                            <div className="flex" style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
                                 {currentSubTabs.map(subTab => {
                                     const Icon = subTab.icon;
                                     const isActive = activeDocTab === subTab.id;
@@ -240,10 +244,13 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
                                         <button
                                             key={subTab.id}
                                             onClick={() => setActiveDocTab(subTab.id)}
-                                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-semibold border transition-all ${isActive
+                                            className={cn(
+                                                "inline-flex items-center font-semibold border transition-all rounded-lg",
+                                                isActive
                                                     ? "bg-primary text-primary-foreground border-primary shadow-sm"
                                                     : "bg-background text-muted-foreground border-border hover:bg-muted hover:border-primary/30"
-                                                }`}
+                                            )}
+                                            style={{ paddingInline: 'calc(var(--dash-p) / 1.5)', paddingBlock: 'calc(var(--dash-gap) / 4)', gap: 'calc(var(--dash-gap) / 4)', fontSize: 'var(--dash-label)' }}
                                         >
                                             <Icon className="w-3.5 h-3.5" />
                                             {subTab.label}
@@ -254,7 +261,10 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
                         </div>
                     )}
 
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 scroll-smooth custom-scrollbar">
+                    <div
+                        className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth custom-scrollbar"
+                        style={{ padding: 'var(--dash-p)' }}
+                    >
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={activeDocTab}
@@ -276,7 +286,7 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
 
                 {/* Preview Pane */}
                 {showPreviewPane && (
-                    <div className="w-full md:w-[42%] flex-none bg-card rounded-lg border border-border shadow-sm overflow-hidden z-10">
+                    <div className="w-full md:w-[40%] flex-none flex flex-col h-full min-h-0 bg-card rounded-lg border border-border shadow-sm overflow-hidden z-10 transition-all">
                         <DocumentPreviewSection
                             showPreview={showPrintPreview || isPreviewing}
                             pdfUrl={pdfUrl}

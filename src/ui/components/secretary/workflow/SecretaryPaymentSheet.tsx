@@ -1,6 +1,7 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/ui/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetDescription } from '@/ui/components/ui/sheet';
 import { Button } from '@/ui/components/ui/button';
-import { Check, CreditCard, Loader2 } from 'lucide-react';
+import { Separator } from '@/ui/components/ui/separator';
+import { Check, CreditCard, Loader2, Wallet } from 'lucide-react';
 import { useSecretaryPaymentLogic } from './useSecretaryPaymentLogic';
 import { PaymentDetailsSection } from './PaymentDetailsSection';
 import { NextAppointmentSection } from './NextAppointmentSection';
@@ -46,20 +47,26 @@ export function SecretaryPaymentSheet({
 
     return (
         <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <SheetContent className="w-full sm:max-w-[400px] bg-white flex flex-col">
-                <SheetHeader className="pb-6 border-b shrink-0">
-                    <SheetTitle className="flex items-center gap-2 text-xl text-slate-800">
-                        <CreditCard className="w-5 h-5 text-blue-600" />
+            <SheetContent className="w-full sm:max-w-[540px] flex flex-col p-0 gap-0 border-l bg-slate-50/80">
+                <SheetHeader className="px-6 py-5 bg-gradient-to-r from-blue-50 via-indigo-50/80 to-blue-50 border-b shrink-0">
+                    <SheetTitle className="flex items-center gap-3 text-xl font-bold text-slate-800">
+                        <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200/60">
+                            <Wallet className="w-5 h-5 text-white" />
+                        </div>
                         Paiement Consultation
                     </SheetTitle>
+                    <SheetDescription className="text-sm text-slate-500 font-medium ml-[52px]">
+                        Encaissement et suivi du prochain rendez-vous.
+                    </SheetDescription>
                 </SheetHeader>
 
                 {isLoading ? (
-                    <div className="flex-1 flex items-center justify-center">
-                        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-slate-400">
+                        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                        <span className="text-sm font-medium">Chargement des détails...</span>
                     </div>
                 ) : (
-                    <div className="flex-1 overflow-y-auto py-6 space-y-8">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
                         <PaymentDetailsSection
                             amountToPay={amountToPay}
                             setAmountToPay={setAmountToPay}
@@ -71,32 +78,34 @@ export function SecretaryPaymentSheet({
                             isInvoiceMissing={isInvoiceMissing}
                         />
 
+                        <Separator className="bg-slate-200/80" />
+
                         <NextAppointmentSection nextAppt={nextAppt} />
                     </div>
                 )}
 
-                <SheetFooter className="pt-4 border-t shrink-0">
-                    <Button variant="outline" onClick={onClose} className="flex-1">
+                <SheetFooter className="px-6 py-4 bg-white border-t shrink-0 flex gap-3">
+                    <Button variant="outline" onClick={onClose} className="flex-1 h-11 text-slate-600 border-slate-200 hover:bg-slate-50 font-medium">
                         Annuler
                     </Button>
                     <Button
                         onClick={() => payMutation.mutate()}
                         disabled={isLoading || payMutation.isPending}
-                        className={`flex-[2] text-white shadow-lg transition-all ${paymentStatus === 'creance'
-                            ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-200'
-                            : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+                        className={`flex-[2] h-11 text-white shadow-lg transition-all font-semibold text-base active:scale-[0.98] ${paymentStatus === 'creance'
+                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-amber-500/25'
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25'
                             }`}
                     >
                         {payMutation.isPending ? (
                             <Loader2 className="w-4 h-4 animate-spin mr-2" />
                         ) : paymentStatus === 'creance' ? (
-                            <div className="flex items-center">
-                                <span className="mr-2 text-lg">⚠️</span>
+                            <div className="flex items-center gap-2">
+                                <span className="text-lg">⚠️</span>
                                 Valider Créance
                             </div>
                         ) : (
-                            <div className="flex items-center">
-                                <Check className="w-4 h-4 mr-2" />
+                            <div className="flex items-center gap-2">
+                                <Check className="w-5 h-5" />
                                 Confirmer Paiement
                             </div>
                         )}

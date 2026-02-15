@@ -40,6 +40,56 @@
 		--text-2xl: 1.5rem;
 		--text-3xl: 1.875rem;
 		--text-4xl: 2.25rem;
+
+		/* Dynamic Dashboard Density */
+		--dash-p: 1rem;
+		/* 16px (was 20px) */
+		--dash-gap: 0.75rem;
+		/* 12px (was 16px) */
+		--dash-h: 2.5rem;
+		/* 40px */
+		--dash-input-p: 0.5rem;
+		--dash-label: 0.75rem;
+	}
+
+	/* Large Screen Heights (Normal) */
+	@media (max-height: 1080px) {
+		:root {
+			--dash-p: 0.75rem;
+			/* 12px */
+			--dash-gap: 0.5rem;
+			/* 8px */
+			--dash-h: 2.25rem;
+			/* 36px */
+			--dash-input-p: 0.4rem;
+		}
+	}
+
+	/* Medium Screen Heights */
+	@media (max-height: 900px) {
+		:root {
+			--dash-p: 0.5rem;
+			/* 8px */
+			--dash-gap: 0.375rem;
+			/* 6px */
+			--dash-h: 2rem;
+			/* 32px */
+			--dash-label: 0.7rem;
+		}
+	}
+
+	/* Small Screen Heights (Extreme Density) */
+	@media (max-height: 768px) {
+		:root {
+			--dash-p: 0.25rem;
+			/* 4px */
+			--dash-gap: 0.25rem;
+			/* 4px */
+			--dash-h: 1.625rem;
+			/* 26px */
+			--dash-input-p: 0.2rem;
+			--dash-label: 0.65rem;
+		}
 	}
 
 	.dark {
@@ -76,7 +126,7 @@
 
 	body {
 		@apply text-foreground;
-        background-color: transparent;
+		background-color: transparent;
 		font-family: var(--font-sans);
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;

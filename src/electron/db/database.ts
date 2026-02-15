@@ -556,7 +556,22 @@ export function seedDatabase(db: Database.Database) {
 		// Check if conversion seeded
 		if (db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='lentille_conv'").get()) {
 			const convCount = db.prepare('SELECT count(*) as count FROM lentille_conv').get() as { count: number };
-			if (convCount.count === 0) {
+
+			// SELF-HEALING: Check for known data integrity (row 5.00)
+			const checkRow = db.prepare('SELECT * FROM lentille_conv WHERE lunettes = 5.00').get();
+			let needsReseed = convCount.count === 0;
+
+			if (convCount.count > 0 && !checkRow) {
+				console.warn('⚠️ lentille_conv table corrupted (missing 5.00). Force re-seeding...');
+				try {
+					db.exec('DELETE FROM lentille_conv');
+					needsReseed = true;
+				} catch (e) {
+					console.error('Failed to clear table for reseed', e);
+				}
+			}
+
+			if (needsReseed) {
 				console.log('🌱 Seeding conversions...');
 				const seedPath = path.join(process.cwd(), 'public', 'seed', 'conversion.sql');
 				if (fs.existsSync(seedPath)) {
@@ -564,11 +579,13 @@ export function seedDatabase(db: Database.Database) {
 					// Fix Postgres schema syntax for SQLite
 					sql = sql.replace(/"public"\./g, '');
 					db.exec(sql);
-					console.log('✅ Conversions seeded.');
+					console.log('✅ Conversions seeded successfully.');
 				} else {
 					console.warn('⚠️ Conversion seed file not found at', seedPath);
 				}
 			}
+		} else {
+			try { fs.appendFileSync('C:\\Work\\projects\\logiciel - Copy\\debug_db.log', `Table lentille_conv does not exist in master.\n`); } catch (e) { }
 		}
 
 	} catch (error) {
@@ -651,6 +668,31 @@ function runMigrations(db: Database.Database, config: AppConfig) {
 	addRadiographyDocumentSchema(db, config);
 	addSharedRecordsSchema(db);
 	addDocumentsDataColumn(db);
+	addEyeToDilationsSchema(db);
+}
+
+function addEyeToDilationsSchema(db: Database.Database) {
+	const migrationName = '008_add_eye_to_dilations';
+	const exists = db.prepare('SELECT 1 FROM migrations WHERE name = ?').get(migrationName);
+
+	if (!exists) {
+		console.log(`🚀 Running migration: ${migrationName}`);
+		try {
+			db.transaction(() => {
+				const hasDilations = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='dilations'").get();
+				if (hasDilations) {
+					const tableInfo = db.prepare("PRAGMA table_info(dilations)").all() as any[];
+					if (!tableInfo.some(c => c.name === 'eye')) {
+						db.exec('ALTER TABLE dilations ADD COLUMN eye TEXT'); // 'OD', 'OG', 'ODS'
+					}
+				}
+				db.prepare('INSERT INTO migrations (name) VALUES (?)').run(migrationName);
+			})();
+			console.log(`✅ Migration ${migrationName} completed successfully`);
+		} catch (error) {
+			console.error(`❌ Migration ${migrationName} failed:`, error);
+		}
+	}
 }
 
 function addDocumentsDataColumn(db: Database.Database) {

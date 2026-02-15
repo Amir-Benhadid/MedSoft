@@ -59,13 +59,16 @@ function TonometryTab({ readOnly, data }: TonometryTabProps) {
     return (
         <div className="flex flex-col bg-white rounded-lg border-0 ring-1 ring-slate-200 shadow-sm overflow-hidden 2xl:shadow-md transition-all">
             {/* Header */}
-            <div className="px-2 py-1 xl:px-3 xl:py-1.5 2xl:py-2.5 border-b border-slate-100 bg-slate-50/90 flex items-center">
-                <span className="text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Tonométrie</span>
+            <div
+                className="border-b border-slate-100 bg-slate-50/90 flex items-center"
+                style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}
+            >
+                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Tonométrie</span>
             </div>
 
             {/* Content */}
-            <div className="p-1.5 xl:p-2 2xl:p-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 xl:gap-2 2xl:gap-4">
+            <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}>
+                <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--dash-gap)' }}>
                     {/* Right Eye (OD) */}
                     <EyeStrip
                         colorClass="text-emerald-700 bg-emerald-50/50 ring-1 ring-emerald-100/50 shadow-sm"
@@ -94,8 +97,11 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
     readOnly?: boolean
 }) {
     return (
-        <div className={cn("flex items-center gap-1.5 xl:gap-2 p-1.5 xl:p-2 2xl:p-3 rounded-lg border border-transparent hover:border-white/50 transition-all", colorClass)}>
-            <div className="flex items-center gap-1.5 xl:gap-2 flex-1">
+        <div
+            className={cn("flex items-center rounded-lg border border-transparent hover:border-white/50 transition-all", colorClass)}
+            style={{ gap: 'var(--dash-gap)', paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}
+        >
+            <div className="flex items-center flex-1" style={{ gap: 'var(--dash-gap)' }}>
                 {/* Tension (Air) */}
                 <CompactInput
                     label="Air"
@@ -138,15 +144,16 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
                 />
 
                 {/* Time */}
-                <div className="flex flex-col items-center gap-0.5 flex-none w-[60px] xl:w-[70px] 2xl:w-[80px]">
-                    <span className="text-[9px] xl:text-[10px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">Heure</span>
+                <div className="flex flex-col items-center flex-none w-[60px] xl:w-[70px] 2xl:w-[80px]" style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
+                    <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Heure</span>
                     <div className="relative w-full">
                         <input
                             type="time"
                             value={data.tensionTime || ""}
                             onChange={(e) => onChange("tensionTime", e.target.value)}
                             disabled={readOnly}
-                            className="h-6 xl:h-8 2xl:h-10 w-full text-[10px] xl:text-xs 2xl:text-sm font-bold text-slate-900 border border-slate-200 rounded-md px-1 pl-1 xl:pl-2 bg-white focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 shadow-sm transition-all text-left"
+                            className="w-full font-bold text-slate-900 border border-slate-200 rounded-md px-1 pl-1 xl:pl-2 bg-white focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 shadow-sm transition-all text-left"
+                            style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
                         />
                     </div>
                 </div>
@@ -157,16 +164,17 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
 
 function CompactInput({ label, value, onChange, width, placeholder, readOnly, bold }: any) {
     return (
-        <div className={cn("flex flex-col items-center gap-0.5", width)}>
-            <span className="text-[9px] xl:text-[10px] 2xl:text-xs font-bold text-slate-500 uppercase tracking-tight">{label}</span>
+        <div className={cn("flex flex-col items-center", width)} style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
+            <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>{label}</span>
             <Input
                 value={value || ""}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={readOnly}
                 className={cn(
-                    "h-6 xl:h-8 2xl:h-10 px-1 xl:px-1.5 text-[10px] xl:text-xs 2xl:text-sm font-bold text-slate-900 text-center bg-white border-slate-200 rounded-md shadow-sm focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 transition-all w-full",
+                    "px-1 xl:px-1.5 font-bold text-slate-900 text-center bg-white border-slate-200 rounded-md shadow-sm focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 transition-all w-full",
                     bold && "font-extrabold text-slate-900 ring-1 ring-slate-100 bg-white"
                 )}
+                style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
                 placeholder={placeholder}
             />
         </div>

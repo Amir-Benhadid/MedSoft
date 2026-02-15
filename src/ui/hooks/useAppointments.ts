@@ -24,6 +24,7 @@ export interface Appointment {
     notes?: string;
     needs_dilation: boolean;
     dilation_status?: string | null;
+    dilation_eye?: string | null;
     created_at?: string;
     updated_at?: string;
     consultation_type_id?: number;
@@ -149,8 +150,8 @@ export function useMarkPresent() {
 export function useToggleDilation() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ id, needsDilation, dilationType }: { id: string; needsDilation: boolean; dilationType?: string }) => {
-            return await orpc.appointments.toggleDilation({ id, needsDilation, dilationType });
+        mutationFn: async ({ id, needsDilation, dilationType, eye }: { id: string; needsDilation: boolean; dilationType?: string; eye?: string }) => {
+            return await orpc.appointments.toggleDilation({ id, needsDilation, dilationType, eye });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['appointments'] });

@@ -21,6 +21,7 @@ const waitlistEntrySchema = z.object({
     needs_dilation: z.boolean(),
     dilation_status: z.string().optional().nullable(),
     dilation_type: z.string().optional().nullable(),
+    dilation_eye: z.string().optional().nullable(),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
     consultation_type_id: z.number().optional(),
@@ -123,11 +124,12 @@ export const waitlistRouter = os.router({
                 id: z.string(),
                 needsDilation: z.boolean(),
                 dilationMedicine: z.string().optional(),
+                eye: z.string().optional(),
             })
         )
         .handler(async ({ input }) => {
             const repo = new WaitlistRepository();
-            const success = repo.toggleDilation(input.id, input.needsDilation, input.dilationMedicine);
+            const success = repo.toggleDilation(input.id, input.needsDilation, input.dilationMedicine, input.eye);
             if (!success) {
                 throw new Error('Waitlist entry not found');
             }

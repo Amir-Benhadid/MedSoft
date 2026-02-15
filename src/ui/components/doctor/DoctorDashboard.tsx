@@ -66,21 +66,21 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 <div className="flex-1 flex flex-col border-r h-full overflow-hidden">
                     {/* Top Section: Refraction (Auto height based on content) */}
                     <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink min-h-0 transition-all duration-300">
-                        <div className="p-2 xl:p-3 2xl:p-5">
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <RefractionTab patient={patient} />
                         </div>
                     </div>
 
                     {/* Middle Section: Tonometry (Auto height) */}
                     <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink min-h-0 transition-all duration-300">
-                        <div className="p-2 xl:p-3 2xl:p-5">
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <TonometryTab />
                         </div>
                     </div>
 
                     {/* Bottom Section: Clinical Exam (Remaining space) */}
                     <div className="flex-1 overflow-y-auto bg-slate-50/30 min-h-0">
-                        <div className="p-2 xl:p-3 2xl:p-5 h-full">
+                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <ClinicalExamTab />
                         </div>
                     </div>
@@ -90,14 +90,14 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 <div className="flex-1 flex flex-col h-full overflow-hidden border-l border-slate-200">
                     {/* Patient Info Card (Top) */}
                     <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink-0">
-                        <div className="p-3">
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}>
                             <PatientInfoCard readOnly={false} />
                         </div>
                     </div>
 
                     {/* Documents Container (Fill remaining space) */}
                     <div className="flex-1 overflow-hidden bg-slate-50/30">
-                        <div className="p-3 h-full">
+                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}>
                             <DocumentsContainer />
                         </div>
                     </div>

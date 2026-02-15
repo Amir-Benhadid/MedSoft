@@ -19,6 +19,7 @@ export interface WaitlistEntry {
     needs_dilation: boolean;
     dilation_status?: string | null;
     dilation_type?: string | null;
+    dilation_eye?: string | null;
     dilation_started_at?: string;
     created_at?: string;
     updated_at?: string;
@@ -51,7 +52,7 @@ export class WaitlistRepository {
                 SELECT 
                     w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at,
                     p.name as patient_name, p.surname as patient_surname,
-                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.created_at as dilation_started_at
+                    d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.eye as dilation_eye, d.created_at as dilation_started_at
                 FROM waitlist_entries w
                 JOIN patients p ON w.patient_id = p.id
                 LEFT JOIN dilations d ON w.id = d.waitlist_entry_id
@@ -63,7 +64,7 @@ export class WaitlistRepository {
                 SELECT 
                     w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at,
                     p.name as patient_name, p.surname as patient_surname,
-                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_started_at
+                    NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_eye, NULL as dilation_started_at
                 FROM waitlist_entries w
                 JOIN patients p ON w.patient_id = p.id
                 WHERE w.arrived_at >= ? AND w.arrived_at < ?
@@ -87,6 +88,7 @@ export class WaitlistRepository {
             needs_dilation: !!row.dilation_id,
             dilation_status: row.dilation_status,
             dilation_type: row.dilation_medicine,
+            dilation_eye: row.dilation_eye,
             dilation_started_at: row.dilation_started_at,
             consultation_type_id: row.consultation_type_id
         }));
@@ -126,9 +128,9 @@ export class WaitlistRepository {
                 if (hasDilations) {
                     const dilationId = randomUUID();
                     this.db.prepare(`
-						INSERT INTO dilations (id, waitlist_entry_id, patient_id, medicine, status)
-						VALUES (?, ?, ?, ?, 'pending')
-					`).run(dilationId, id, entry.patient_id, entry.dilation_type || null);
+						INSERT INTO dilations (id, waitlist_entry_id, patient_id, medicine, eye, status)
+						VALUES (?, ?, ?, ?, ?, 'pending')
+					`).run(dilationId, id, entry.patient_id, entry.dilation_type || null, entry.dilation_eye || null);
                 }
             }
         });
@@ -174,7 +176,7 @@ export class WaitlistRepository {
      * @param medicine - Optional medicine name for dilation
      * @returns True if operation was successful
      */
-    toggleDilation(id: string, needsDilation: boolean, medicine?: string): boolean {
+    toggleDilation(id: string, needsDilation: boolean, medicine?: string, eye?: string): boolean {
         const transaction = this.db.transaction(() => {
             const hasDilations = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='dilations'").get();
             if (!hasDilations) return;
@@ -185,14 +187,19 @@ export class WaitlistRepository {
                     const entry = this.db.prepare('SELECT patient_id FROM waitlist_entries WHERE id = ?').get(id) as any;
                     if (entry) {
                         this.db.prepare(`
-                            INSERT INTO dilations (id, waitlist_entry_id, patient_id, medicine, status)
-                            VALUES (?, ?, ?, ?, 'pending')
-                        `).run(randomUUID(), id, entry.patient_id, medicine || null);
+                            INSERT INTO dilations (id, waitlist_entry_id, patient_id, medicine, eye, status)
+                            VALUES (?, ?, ?, ?, ?, 'pending')
+                        `).run(randomUUID(), id, entry.patient_id, medicine || null, eye || null);
 
                         this.db.prepare("UPDATE waitlist_entries SET state = ?, updated_at = datetime('now', 'localtime') WHERE id = ?").run('waiting', id);
                     }
-                } else if (medicine !== undefined) {
-                    this.db.prepare('UPDATE dilations SET medicine = ? WHERE waitlist_entry_id = ?').run(medicine, id);
+                } else {
+                    if (medicine !== undefined) {
+                        this.db.prepare('UPDATE dilations SET medicine = ? WHERE waitlist_entry_id = ?').run(medicine, id);
+                    }
+                    if (eye !== undefined) {
+                        this.db.prepare('UPDATE dilations SET eye = ? WHERE waitlist_entry_id = ?').run(eye, id);
+                    }
                 }
             } else {
                 this.db.prepare('DELETE FROM dilations WHERE waitlist_entry_id = ?').run(id);

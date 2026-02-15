@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  electronmon:
+    hash: 1aaa3ecd1f7617fa9460bc6090124a339c0ddab105d79343c1c187bcab149446
+    path: patches/electronmon.patch
+
 importers:
 
   .:
@@ -227,7 +232,7 @@ importers:
         version: 2.0.0-alpha.1
       electronmon:
         specifier: ^2.0.3
-        version: 2.0.4
+        version: 2.0.4(patch_hash=1aaa3ecd1f7617fa9460bc6090124a339c0ddab105d79343c1c187bcab149446)
       eslint:
         specifier: ^9.17.0
         version: 9.39.2(jiti@1.21.7)
@@ -8843,7 +8848,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electronmon@2.0.4:
+  electronmon@2.0.4(patch_hash=1aaa3ecd1f7617fa9460bc6090124a339c0ddab105d79343c1c187bcab149446):
     dependencies:
       chalk: 3.0.0
       import-from: 3.0.0

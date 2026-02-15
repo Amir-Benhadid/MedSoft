@@ -23,6 +23,7 @@ const appointmentSchema = z.object({
     needs_dilation: z.boolean(),
     dilation_status: z.string().optional().nullable(),
     dilation_type: z.string().optional().nullable(),
+    dilation_eye: z.string().optional().nullable(),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
     consultation_type_id: z.number().optional(),
@@ -151,13 +152,15 @@ export const appointmentsRouter = os.router({
                 id: z.string(),
                 needsDilation: z.boolean(),
                 dilationType: z.string().optional(),
+                eye: z.string().optional(),
             })
         )
         .handler(async ({ input }) => {
             const repo = new AppointmentRepository();
             const success = repo.update(input.id, {
                 needs_dilation: input.needsDilation,
-                dilation_type: input.dilationType
+                dilation_type: input.dilationType,
+                dilation_eye: input.eye
             });
             if (!success) {
                 throw new Error('Appointment not found');

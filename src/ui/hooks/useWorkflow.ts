@@ -240,6 +240,7 @@ export function usePatientsNeedingDilation() {
                         dilation_status: apt.dilation_status,
                         dilation_type: apt.dilation_type,
                         dilation_started_at: apt.dilation_started_at,
+                        dilation_eye: apt.dilation_eye,
                     });
                 }
             }
@@ -266,6 +267,7 @@ export function usePatientsNeedingDilation() {
                             dilation_status: w.dilation_status,
                             dilation_type: w.dilation_type,
                             dilation_started_at: w.dilation_started_at,
+                            dilation_eye: w.dilation_eye,
                         });
                     }
                 }

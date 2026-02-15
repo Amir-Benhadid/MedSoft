@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { ConsultationRepository } from '../../db/repositories/consultation.repository.js';
 import { CreateConsultationSchema } from '../../db/schemas/consultation.schema.js';
 import { broadcastChange } from '../../lib/broadcast.js';
+import { getLocalISOString } from '../../lib/time.js';
 
 export const consultationsRouter = os.router({
     /**
@@ -89,10 +90,10 @@ export const consultationsRouter = os.router({
 
                     // Find active appointment or waitlist entry for this patient today (or recent)
                     // We assume the consultation is linked to today's activity.
-                    const today = new Date().toISOString().split('T')[0]; // Simple YYYY-MM-DD
+                    const today = getLocalISOString().split('T')[0]; // Simple YYYY-MM-DD
 
                     // Try to find active appointment
-                    const appointments = appointmentRepo.findAllInDateRange(today, today);
+                    const appointments = appointmentRepo.findAllInDateRange(today, `${today}T23:59:59`);
                     const activeAppt = appointments.find(a => a.patient_id === consultation.patient_id && a.state !== 'completed' && a.state !== 'paid');
 
                     if (activeAppt) {
@@ -100,7 +101,7 @@ export const consultationsRouter = os.router({
                         broadcastChange('appointments');
                     } else {
                         // Try waitlist
-                        const waitlist = waitlistRepo.findAllInDateRange(today, today);
+                        const waitlist = waitlistRepo.findAllInDateRange(today, `${today}T23:59:59`);
                         const activeEntry = waitlist.find(w => w.patient_id === consultation.patient_id && w.state !== 'completed' && w.state !== 'paid');
 
                         if (activeEntry) {

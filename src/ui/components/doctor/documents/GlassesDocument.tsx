@@ -85,6 +85,7 @@ const LINE_HEIGHTS = {
 	normal: 14,
 	small: 12,
 };
+const SECTION_GAP = 18; // Same spacing: OD-to-Vision de Loin, Vision de Loin-to-values, between sections
 
 
 // PDF Generation Function
@@ -195,95 +196,6 @@ export const generateGlassesPDF = async (
 	// Show title if: far vision should be shown AND at least one eye is enabled
 	const shouldShowFarVisionTitle = shouldShowFarVision && hasAnyFarVisionEye;
 
-	if (shouldShowFarVision && hasAnyFarVisionEye) {
-		// Show title
-		if (shouldShowFarVisionTitle) {
-			page.drawText('Vision de Loin:', {
-				x: colODLabel,
-				y,
-				size: TEXT_SIZES.sectionHeader,
-				font: helveticaBold,
-				color: rgb(0, 0, 0),
-			});
-			y -= 1.2 * LINE_HEIGHTS.normal;
-		}
-
-		// Store initial Y to ensure OD and OG are on same line
-		const startY = y;
-
-		// Right Eye (OD)
-		if (shouldShowRightEyeFar) {
-			const rightEmptyOption = printData?.rightEye?.emptyEyeOption || 'plan';
-
-			// Check if we have valid data (non-zero or axis present)
-			const rightSphNum = parseFloat(rightSph) || 0;
-			const rightCylNum = parseFloat(rightCyl) || 0;
-			// Axis is relevant if it exists (including 0)
-			const rightAxisExists = rightAxisRaw && rightAxisRaw.trim() !== '';
-			const rightHasVisualData = !DocumentUtils.isEmptyField(rightSph) || !DocumentUtils.isEmptyField(rightCyl) || rightAxisExists;
-			const rightIsEffectivelyZero = rightSphNum === 0 && rightCylNum === 0 && !rightAxisExists;
-
-			page.drawText("OD:", { x: colODLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
-
-			if (rightEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (rightHasVisualData && !rightIsEffectivelyZero) {
-				const rightText = formatPrescriptionLine(rightSph, rightCyl, rightAxis);
-				page.drawText(rightText, {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
-		}
-
-		// Left Eye (OG) - on same line (startY)
-		if (shouldShowLeftEyeFar) {
-			const leftEmptyOption = printData?.leftEye?.emptyEyeOption || 'plan';
-
-			const leftSphNum = parseFloat(leftSph) || 0;
-			const leftCylNum = parseFloat(leftCyl) || 0;
-			const leftAxisExists = leftAxisRaw && leftAxisRaw.trim() !== '';
-			const leftHasVisualData = !DocumentUtils.isEmptyField(leftSph) || !DocumentUtils.isEmptyField(leftCyl) || leftAxisExists;
-			const leftIsEffectivelyZero = leftSphNum === 0 && leftCylNum === 0 && !leftAxisExists;
-
-			page.drawText("OG:", { x: colOGLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
-
-			if (leftEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (leftHasVisualData && !leftIsEffectivelyZero) {
-				const leftText = formatPrescriptionLine(leftSph, leftCyl, leftAxis);
-				page.drawText(leftText, {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
-		}
-
-		// Move Y down after the row completes
-		y = startY - LINE_HEIGHTS.normal;
-		y -= 0.5 * LINE_HEIGHTS.normal; // Spacing after section
-	}
-
-	// Near vision section - use stored near vision values
-	const rightNearSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearSph);
-	const rightNearCyl = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearCyl);
-	const rightNearAxisRaw = printData?.rightEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
-	const rightNearAxis = rightNearAxisRaw.trim() !== '' ? rightNearAxisRaw : ''; // Only empty if truly empty
-	const leftNearSph = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearSph);
-	const leftNearCyl = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearCyl);
-	const leftNearAxisRaw = printData?.leftEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
-	const leftNearAxis = leftNearAxisRaw.trim() !== '' ? leftNearAxisRaw : ''; // Only empty if truly empty
-
 	// Determine if we should show near vision section
 	// Show if near vision is explicitly selected (always show OD/OG, either with data or "Plan")
 	const shouldShowNearVision = printControlFlags?.includeNearVision === true;
@@ -300,8 +212,103 @@ export const generateGlassesPDF = async (
 	// Show title if: near vision is selected AND at least one eye is enabled
 	const shouldShowNearVisionTitle = shouldShowNearVision && hasAnyNearVisionEye;
 
+	// OD and OG written once at top, aligned with value columns
+	const showAnyVision = (shouldShowFarVision && hasAnyFarVisionEye) || (shouldShowNearVision && hasAnyNearVisionEye);
+	if (showAnyVision && (shouldShowRightEyeFar || shouldShowRightEyeNear || shouldShowLeftEyeFar || shouldShowLeftEyeNear)) {
+		const headerY = y;
+		if (shouldShowRightEyeFar || shouldShowRightEyeNear) {
+			page.drawText("OD", { x: colODValue, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+		}
+		if (shouldShowLeftEyeFar || shouldShowLeftEyeNear) {
+			page.drawText("OG", { x: colOGValue, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+		}
+		y -= 2 * SECTION_GAP;
+	}
+
+	if (shouldShowFarVision && hasAnyFarVisionEye) {
+		// Vision de Loin: label on its own line, values on separate line below
+		if (shouldShowFarVisionTitle) {
+			page.drawText('Vision de Loin:', {
+				x: colODLabel,
+				y,
+				size: TEXT_SIZES.sectionHeader,
+				font: helveticaBold,
+				color: rgb(0, 0, 0),
+			});
+			y -= SECTION_GAP; // Same distance as OD-to-Vision de Loin
+		}
+
+		const valueY = y;
+
+		// Right Eye (OD) - values on separate line
+		if (shouldShowRightEyeFar) {
+			const rightEmptyOption = printData?.rightEye?.emptyEyeOption || 'plan';
+
+			const rightSphNum = parseFloat(rightSph) || 0;
+			const rightCylNum = parseFloat(rightCyl) || 0;
+			const rightAxisExists = rightAxisRaw && rightAxisRaw.trim() !== '';
+			const rightHasVisualData = !DocumentUtils.isEmptyField(rightSph) || !DocumentUtils.isEmptyField(rightCyl) || rightAxisExists;
+			const rightIsEffectivelyZero = rightSphNum === 0 && rightCylNum === 0 && !rightAxisExists;
+
+			if (rightEmptyOption === 'conserver') {
+				page.drawText('Verre en place', {
+					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			} else if (rightHasVisualData && !rightIsEffectivelyZero) {
+				const rightText = formatPrescriptionLine(rightSph, rightCyl, rightAxis);
+				page.drawText(rightText, {
+					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			} else {
+				page.drawText('Plan', {
+					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			}
+		}
+
+		// Left Eye (OG) - values on separate line
+		if (shouldShowLeftEyeFar) {
+			const leftEmptyOption = printData?.leftEye?.emptyEyeOption || 'plan';
+
+			const leftSphNum = parseFloat(leftSph) || 0;
+			const leftCylNum = parseFloat(leftCyl) || 0;
+			const leftAxisExists = leftAxisRaw && leftAxisRaw.trim() !== '';
+			const leftHasVisualData = !DocumentUtils.isEmptyField(leftSph) || !DocumentUtils.isEmptyField(leftCyl) || leftAxisExists;
+			const leftIsEffectivelyZero = leftSphNum === 0 && leftCylNum === 0 && !leftAxisExists;
+
+			if (leftEmptyOption === 'conserver') {
+				page.drawText('Verre en place', {
+					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			} else if (leftHasVisualData && !leftIsEffectivelyZero) {
+				const leftText = formatPrescriptionLine(leftSph, leftCyl, leftAxis);
+				page.drawText(leftText, {
+					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			} else {
+				page.drawText('Plan', {
+					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+				});
+			}
+		}
+
+		y = valueY - LINE_HEIGHTS.normal;
+		y -= 2 * SECTION_GAP; // Same distance between Vision de Loin block and Vision de Près
+	}
+
+	// Near vision section - use stored near vision values
+	const rightNearSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearSph);
+	const rightNearCyl = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearCyl);
+	const rightNearAxisRaw = printData?.rightEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
+	const rightNearAxis = rightNearAxisRaw.trim() !== '' ? rightNearAxisRaw : ''; // Only empty if truly empty
+	const leftNearSph = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearSph);
+	const leftNearCyl = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearCyl);
+	const leftNearAxisRaw = printData?.leftEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
+	const leftNearAxis = leftNearAxisRaw.trim() !== '' ? leftNearAxisRaw : ''; // Only empty if truly empty
+
+
 	if (shouldShowNearVision && hasAnyNearVisionEye) {
-		// Show title
+		// Vision de Près: label on its own line, values on separate line below
 		if (shouldShowNearVisionTitle) {
 			page.drawText("Vision de Près:", {
 				x: colODLabel,
@@ -310,12 +317,12 @@ export const generateGlassesPDF = async (
 				font: helveticaBold,
 				color: rgb(0, 0, 0),
 			});
-			y -= 1.2 * LINE_HEIGHTS.normal;
+			y -= SECTION_GAP; // Same distance as Vision de Loin-to-values
 		}
 
-		const startY = y;
+		const nearValueY = y;
 
-		// Right Eye (OD)
+		// Right Eye (OD) - values on separate line
 		if (shouldShowRightEyeNear) {
 			const rightNearEmptyOption = printData?.rightEye?.emptyNearEyeOption || 'plan';
 
@@ -325,25 +332,23 @@ export const generateGlassesPDF = async (
 			const rightNearHasVisualData = !DocumentUtils.isEmptyField(rightNearSph) || !DocumentUtils.isEmptyField(rightNearCyl) || rightNearAxisExists;
 			const rightNearIsEffectivelyZero = rightNearSphNum === 0 && rightNearCylNum === 0 && !rightNearAxisExists;
 
-			page.drawText("OD:", { x: colODLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
-
 			if (rightNearEmptyOption === 'conserver') {
 				page.drawText('Verre en place', {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (rightNearHasVisualData && !rightNearIsEffectivelyZero) {
 				const rightText = formatPrescriptionLine(rightNearSph, rightNearCyl, rightNearAxis);
 				page.drawText(rightText, {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: colODValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			}
 		}
 
-		// Left Eye (OG)
+		// Left Eye (OG) - values on separate line
 		if (shouldShowLeftEyeNear) {
 			const leftNearEmptyOption = printData?.leftEye?.emptyNearEyeOption || 'plan';
 
@@ -353,25 +358,23 @@ export const generateGlassesPDF = async (
 			const leftNearHasVisualData = !DocumentUtils.isEmptyField(leftNearSph) || !DocumentUtils.isEmptyField(leftNearCyl) || leftNearAxisExists;
 			const leftNearIsEffectivelyZero = leftNearSphNum === 0 && leftNearCylNum === 0 && !leftNearAxisExists;
 
-			page.drawText("OG:", { x: colOGLabel, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
-
 			if (leftNearEmptyOption === 'conserver') {
 				page.drawText('Verre en place', {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else if (leftNearHasVisualData && !leftNearIsEffectivelyZero) {
 				const leftText = formatPrescriptionLine(leftNearSph, leftNearCyl, leftNearAxis);
 				page.drawText(leftText, {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			} else {
 				page.drawText('Plan', {
-					x: colOGValue, y: startY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
 			}
 		}
 
-		y = startY - LINE_HEIGHTS.normal;
+		y = nearValueY - 2 * LINE_HEIGHTS.normal;
 	}
 
 	// Distance interpupillaire - Note: This would need to be added to printData if needed
@@ -383,7 +386,7 @@ export const generateGlassesPDF = async (
 		(!DocumentUtils.isEmptyField(rightGlassType) || !DocumentUtils.isEmptyField(leftGlassType))) {
 		y -= 10;
 		page.drawText('Type de verre:', {
-			x: col2,
+			x: colODLabel,
 			y,
 			size: TEXT_SIZES.sectionHeader,
 			font: helveticaBold,
@@ -391,7 +394,7 @@ export const generateGlassesPDF = async (
 		});
 		const displayGlassType = rightGlassType || leftGlassType;
 		page.drawText(displayGlassType, {
-			x: col2 + 90,
+			x: colODLabel + 90,
 			y,
 			size: TEXT_SIZES.sectionHeader,
 			font: helvetica,

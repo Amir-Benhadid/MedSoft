@@ -24,20 +24,70 @@ export interface LentilleConversion {
  * Service class for lens conversion operations
  */
 export class LentilleService {
+    private conversions: LentilleConversion[] | null = null;
+    private initPromise: Promise<void> | null = null;
+
     /**
-     * Fetches conversion data for a specific sphere value from the backend
-     * 
-     * @param {number} sphere - Sphere value to look up conversion for
-     * @returns {Promise<LentilleConversion | null>} Conversion data or null if not found
+     * Preloads conversion data in the background. Call early (e.g. when Documents view mounts)
+     * to avoid delay on first conversion.
+     */
+    public preload(): void {
+        this.ensureInitialized();
+    }
+
+    /**
+     * Initializes the service by fetching all conversion data.
+     * Safe to call multiple times.
+     */
+    private async ensureInitialized(): Promise<void> {
+        if (this.conversions) return;
+
+        if (!this.initPromise) {
+            this.initPromise = (async () => {
+                try {
+                    this.conversions = await orpcClient.conversion.getAll();
+                    console.log(`[LentilleService] Loaded ${this.conversions?.length} conversion records.`);
+                } catch (error) {
+                    console.error('[LentilleService] Failed to load conversions:', error);
+                    this.conversions = []; // Fallback to empty to prevent infinite retries/errors
+                } finally {
+                    this.initPromise = null;
+                }
+            })();
+        }
+
+        await this.initPromise;
+    }
+
+    /**
+     * Finds the nearest inferior conversion record for a given sphere value from the local cache.
+     * Logic: Find the record with the largest 'lunettes' value that is <= |sphere|.
      */
     public async getConversionForSphere(sphere: number): Promise<LentilleConversion | null> {
-        try {
-            const result = await orpcClient.conversion.getConversion({ sphere });
-            return result;
-        } catch (error) {
-            console.error('Error fetching conversion for sphere:', sphere, error);
+        await this.ensureInitialized();
+
+        if (!this.conversions || this.conversions.length === 0) {
             return null;
         }
+
+        const absSphere = Math.abs(sphere);
+
+        let bestMatch: LentilleConversion | null = null;
+
+        // Assuming conversions are sorted by lunettes ASC (enforced by SQL ORDER BY)
+        for (const record of this.conversions) {
+            if (record.lunettes <= absSphere) {
+                bestMatch = record;
+            } else {
+                // Once we encounter a value larger than absSphere, we stop.
+                // The previous record (bestMatch) is the "nearest inferior".
+                break;
+            }
+        }
+
+        // If absSphere is smaller than the smallest limit in the table (e.g. 0.5 vs start at 4.00),
+        // bestMatch will be null.
+        return bestMatch;
     }
 
     /**
@@ -86,12 +136,15 @@ export class LentilleService {
         axisInput: number | string,
         lensType: string
     ): Promise<{ sphere: number; cylinder: number; axis: number }> {
-        // Normalize inputs - handle strings with commas
-        const normalize = (val: any) => {
+        // Normalize inputs - handle strings with commas (e.g. "1,50" -> 1.50)
+        const normalize = (val: any): number => {
+            if (val === '' || val === undefined || val === null) return 0;
             if (typeof val === 'string') {
-                return parseFloat(val.replace(',', '.'));
+                const parsed = parseFloat(val.replace(/,/g, '.'));
+                return isNaN(parsed) ? 0 : parsed;
             }
-            return parseFloat(String(val || 0));
+            const parsed = parseFloat(String(val));
+            return isNaN(parsed) ? 0 : parsed;
         };
 
         const sph = normalize(sphInput);
@@ -108,44 +161,64 @@ export class LentilleService {
                 };
             }
 
+            console.log(`[LentilleService] Converting: Sph=${sph}, Cyl=${cyl}, Axis=${axis}, Type=${lensType}`);
+
             // Convert the sphere
             const sphereConversion = await this.getConversionForSphere(sph);
+            console.log(`[LentilleService] Sphere conversion for ${sph}:`, sphereConversion);
 
             // If no conversion found, power is low (<4.00) or out of range
             if (!sphereConversion) {
+                console.log(`[LentilleService] No conversion found for sphere ${sph}`);
                 return { sphere: sph, cylinder: cyl, axis: axis };
             }
 
+            // Helper to safely parse DB values which might be strings despite interface saying number
+            // (Maintaining this from previous fix as DB structure hasn't changed, only access method)
+            const parseVal = (val: any, fallback: number): number => {
+                if (val === undefined || val === null || val === '') return fallback;
+                const parsed = parseFloat(String(val));
+                return isNaN(parsed) ? fallback : parsed;
+            };
+
             const convertedSphere = sph < 0
-                ? (sphereConversion.lun_moins ?? sph)
-                : (sphereConversion.lun_plus ?? sph);
+                ? parseVal(sphereConversion.lun_moins, sph)
+                : parseVal(sphereConversion.lun_plus, sph);
+
+            console.log(`[LentilleService] Converted Sphere (Raw): ${convertedSphere}`);
 
             // Convert (sphere + cylinder)
             const spherePlusCylinder = sph + cyl;
             const spherePlusCylinderConversion = await this.getConversionForSphere(spherePlusCylinder);
+            console.log(`[LentilleService] Sphere+Cyl conversion for ${spherePlusCylinder}:`, spherePlusCylinderConversion);
 
             let convertedSpherePlusCylinder: number;
             if (spherePlusCylinderConversion) {
                 convertedSpherePlusCylinder = spherePlusCylinder < 0
-                    ? (spherePlusCylinderConversion.lun_moins ?? spherePlusCylinder)
-                    : (spherePlusCylinderConversion.lun_plus ?? spherePlusCylinder);
+                    ? parseVal(spherePlusCylinderConversion.lun_moins, spherePlusCylinder)
+                    : parseVal(spherePlusCylinderConversion.lun_plus, spherePlusCylinder);
             } else {
                 convertedSpherePlusCylinder = spherePlusCylinder;
             }
+            console.log(`[LentilleService] Converted Sph+Cyl: ${convertedSpherePlusCylinder}`);
 
             // Calculate new cylinder: new cylinder = convertedSpherePlusCylinder - convertedSphere
             let newCylinder = convertedSpherePlusCylinder - convertedSphere;
+            console.log(`[LentilleService] New Cylinder (before type check): ${newCylinder}`);
 
             // Start with new sphere = convertedSphere
             let newSphere = convertedSphere;
 
             // Exception: When type == "Sphérique" AND cylinder != 0.
             if (lensType === 'Sphérique' && Math.abs(cyl) > 0.01) {
+                console.log(`[LentilleService] Spherical adjustment triggered`);
                 const calculatedSphere = convertedSphere + 0.5 * newCylinder;
                 // Round to nearest 0.25 (using signs correctly for myopia/hyperopia)
                 newSphere = Math.round(calculatedSphere * 4) / 4;
                 newCylinder = 0;
             }
+
+            console.log(`[LentilleService] Final Result: Sph=${newSphere}, Cyl=${newCylinder}`);
 
             // Final safety check to ensure we return finite numbers
             return {
