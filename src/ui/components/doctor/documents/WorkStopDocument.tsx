@@ -160,8 +160,13 @@ export const generateWorkStopPDF = async (
 	y -= 10;
 
 	if (printData) {
-		const startDate = new Date(printData.startDate);
-		const endDate = new Date(printData.endDate);
+		// Ensure dates are Date objects (JSON serialization may pass strings)
+		const startDate = printData.startDate instanceof Date
+			? printData.startDate
+			: new Date(printData.startDate as string | number);
+		const endDate = printData.endDate instanceof Date
+			? printData.endDate
+			: new Date(printData.endDate as string | number);
 		const durationMs = endDate.getTime() - startDate.getTime();
 		const durationDays =
 			Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1;
@@ -192,7 +197,7 @@ export const generateWorkStopPDF = async (
 			font: helvetica,
 			color: rgb(0, 0, 0),
 		});
-		page.drawText(printData.startDate.toLocaleDateString('fr-FR'), {
+		page.drawText(startDate.toLocaleDateString('fr-FR'), {
 			x: LEFT_MARGIN + 100,
 			y,
 			size: TEXT_SIZES.normal,

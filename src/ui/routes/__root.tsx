@@ -36,9 +36,7 @@ function RootComponent() {
 		}
 	};	useEffect(() => {
 		checkSetup();
-	}, []);
-
-	const handleSetupComplete = () => {
+	}, []);	const handleSetupComplete = () => {
 		checkSetup();
 	};
 

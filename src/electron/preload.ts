@@ -216,6 +216,12 @@ try {
 		 * Deletes config and database, then relaunches.
 		 */
 		factoryReset: () => ipcRenderer.invoke('app:factoryReset'),
+
+		/**
+		 * Seeds medicines from Supabase into local database. Skips duplicates.
+		 * @returns Promise resolving to { success, message, stats? }
+		 */
+		seedMedicines: () => ipcRenderer.invoke('app:seedMedicines'),
 	};
 
 	console.log('🔧 Exposing electronAPI to main world...');

@@ -167,12 +167,6 @@ export class LentilleService {
             const sphereConversion = await this.getConversionForSphere(sph);
             console.log(`[LentilleService] Sphere conversion for ${sph}:`, sphereConversion);
 
-            // If no conversion found, power is low (<4.00) or out of range
-            if (!sphereConversion) {
-                console.log(`[LentilleService] No conversion found for sphere ${sph}`);
-                return { sphere: sph, cylinder: cyl, axis: axis };
-            }
-
             // Helper to safely parse DB values which might be strings despite interface saying number
             // (Maintaining this from previous fix as DB structure hasn't changed, only access method)
             const parseVal = (val: any, fallback: number): number => {
@@ -181,9 +175,9 @@ export class LentilleService {
                 return isNaN(parsed) ? fallback : parsed;
             };
 
-            const convertedSphere = sph < 0
-                ? parseVal(sphereConversion.lun_moins, sph)
-                : parseVal(sphereConversion.lun_plus, sph);
+            const convertedSphere = sphereConversion
+                ? (sph < 0 ? parseVal(sphereConversion.lun_moins, sph) : parseVal(sphereConversion.lun_plus, sph))
+                : sph;
 
             console.log(`[LentilleService] Converted Sphere (Raw): ${convertedSphere}`);
 

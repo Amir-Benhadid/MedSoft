@@ -18,23 +18,98 @@ export const usePrintHandlers = ({
         const documentType = activeDocTab;
         const overrides = state.documentOverrides;
 
+        // Ensure dates are Date objects (JSON serialization turns them into strings)
+        const toDate = (v: unknown): Date | undefined => {
+            if (!v) return undefined;
+            if (v instanceof Date) return v;
+            if (typeof v === 'string' || typeof v === 'number') return new Date(v);
+            return undefined;
+        };
+
+        // Normalize absence data for PDF (consultationDate must be a Date)
+        const absenceOverride = overrides.absence;
+        const normalizedAbsence = absenceOverride ? {
+            consultationDate: toDate(absenceOverride.consultationDate) || new Date(),
+        } : undefined;
+
+        // Normalize workStop data for PDF (startDate, endDate must be Date objects)
+        // Fallback to unified state when workStop key not yet synced (e.g. right after user selects date)
+        const workStopOverride = overrides.workStop ?? overrides.unifiedDocumentsState?.printStates?.printWorkStopData;
+        const normalizedWorkStop = workStopOverride ? {
+            startDate: toDate(workStopOverride.startDate) ?? new Date(),
+            endDate: toDate(workStopOverride.endDate) ?? new Date(),
+            exitAuthorized: workStopOverride.exitAuthorized ?? true,
+        } : undefined;
+
+        // Derive medicalRecord from unified state if not directly set (e.g. after load from DB)
+        const medicalRecordOverride = overrides.medicalRecord ?? (() => {
+            const unified = overrides.unifiedDocumentsState;
+            const ps = unified?.printStates;
+            const sd = ps?.selectedDiversDocument;
+            if (sd && sd !== 'documentVierge') {
+                return { documentType: sd, printData: ps?.printMedicalRecordData || {} };
+            }
+            return undefined;
+        })();
+
+        // Bilan fields: use overrides.bilan or unified state (PrintingLogic expects options.bilanFields)
+        const bilanFields = overrides.bilan ?? overrides.unifiedDocumentsState?.bilanFields;
+
         // Construct print options from store data and overrides
+        // IMPORTANT: Must match DocumentPrinter.printDocument options signature
         const printOptions = {
             leftEye: state.leftEye,
             rightEye: state.rightEye,
-            prescriptions: state.prescriptions,
-            clinicalExam: state.clinicalExam,
+            bilanFields,
+            // Map store prescriptions to PrescriptionData structure
+            prescriptionData: overrides.printPrescriptionData || {
+                treatments: state.prescriptions.map(p => ({
+                    ...p,
+                    // Ensure all required fields are present
+                    customName: p.customName || '',
+                    strength: p.strength || '',
+                    type: p.type || '',
+                    packaging: p.packaging || '',
+                    frequency: typeof p.frequency === 'string' ? { value: 1, unit: p.frequency } : p.frequency,
+                    duration: typeof p.duration === 'string' ? { value: 1, unit: p.duration } : p.duration
+                })),
+                notes: ''
+            },
+            // Map clinical exam
+            detailedClinicalExam: state.clinicalExam,
+            // Map report data from overrides
+            reportData: overrides.report,
+
+            // Other fields
+            tonometrie: {
+                left_eye: {
+                    iop: state.leftEye.tension || '',
+                    pachymetry: state.leftEye.pachymetry || '',
+                    corrected_iop: state.leftEye.corrected_iop || '',
+                    time: state.leftEye.tensionTime || ''
+                },
+                right_eye: {
+                    iop: state.rightEye.tension || '',
+                    pachymetry: state.rightEye.pachymetry || '',
+                    corrected_iop: state.rightEye.corrected_iop || '',
+                    time: state.rightEye.tensionTime || ''
+                }
+            },
+
             printControlFlags: overrides.printControlFlags || {},
             printDataOverrides: {
                 glasses: overrides.glasses,
                 contacts: overrides.contacts,
                 report: overrides.report,
-                workStop: overrides.workStop,
+                workStop: normalizedWorkStop,
                 generic: overrides.generic,
                 visualAcuity: overrides.visualAcuity,
+                certificatAcuite: overrides.certificatAcuite,
                 bilan: overrides.bilan,
-                absence: overrides.absence,
+                absence: normalizedAbsence,
                 radiography: overrides['radiography_dynamic'],
+                medicalRecord: medicalRecordOverride,
+                divers: overrides.divers,
             },
             genericConfig: documentType === 'generic'
                 ? genericRecords.find(r => r.code === overrides.selectedGenericTemplate)

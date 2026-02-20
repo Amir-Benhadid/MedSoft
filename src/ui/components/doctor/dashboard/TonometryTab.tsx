@@ -1,9 +1,21 @@
-import { memo } from 'react';
+import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { EyeData, TENSION_VALUES } from "./types";
 import { cn } from "@/ui/lib/utils";
 import { useConsultationStore } from "@/ui/store/consultationStore";
 import { Input } from "@/ui/components/ui/input";
-import { Clock } from "lucide-react";
+import { ArrowRightLeft, Clock, ChevronDown, X } from "lucide-react";
+import { Button } from "@/ui/components/ui/button";
+import { Popover, PopoverContent, PopoverAnchor } from "@/ui/components/ui/popover";
+
+export const iopValues = Array.from({ length: 46 }, (_, i) => ({
+    value: String(i + 5),
+    label: String(i + 5),
+}));
+
+export const pachymetryValues = Array.from({ length: 201 }, (_, i) => ({
+    value: String(i + 450),
+    label: String(i + 450),
+}));
 
 interface TonometryTabProps {
     readOnly?: boolean;
@@ -22,6 +34,40 @@ function TonometryTab({ readOnly, data }: TonometryTabProps) {
     const leftData = data?.leftEye || leftEyeData;
     const rightData = data?.rightEye || rightEyeData;
 
+    const [preferredSource, setPreferredSource] = useState<'air' | 'app'>('air');
+
+    const recalculateAll = (source: 'air' | 'app') => {
+        ['left', 'right'].forEach(side => {
+            const data = side === 'left' ? leftData : rightData;
+            const updateField = side === 'left' ? updateLeftEyeField : updateRightEyeField;
+
+            const t_air = parseFloat(data.tension || '0');
+            const t_app = parseFloat(data.tensionApplanation || '0');
+            let t = 0;
+
+            if (data.tension && data.tensionApplanation) {
+                t = source === 'air' ? t_air : t_app;
+            } else if (data.tension) {
+                t = t_air;
+            } else if (data.tensionApplanation) {
+                t = t_app;
+            }
+
+            const p = parseFloat(data.pachymetry || '0');
+
+            if (p > 0 && t > 0) {
+                const corrected = t - ((p - 545) / 50 * 2.5);
+                updateField('corrected_iop', corrected.toFixed(0));
+            }
+        });
+    };
+
+    const toggleSource = () => {
+        const newSource = preferredSource === 'air' ? 'app' : 'air';
+        setPreferredSource(newSource);
+        recalculateAll(newSource);
+    };
+
     const handleChange = (side: 'left' | 'right', field: keyof EyeData, value: string) => {
         if (readOnly) return;
         const updateField = side === 'left' ? updateLeftEyeField : updateRightEyeField;
@@ -36,21 +82,37 @@ function TonometryTab({ readOnly, data }: TonometryTabProps) {
 
         updateField(field, value);
 
-        // Auto-calculate corrected IOP logic remains same...
-        if (field === 'tension' || field === 'pachymetry' || field === 'corrected_iop') {
-            const t = parseFloat(field === 'tension' ? value : currentData.tension || '0');
-            const p = parseFloat(field === 'pachymetry' ? value : currentData.pachymetry || '0');
-            const c = parseFloat(field === 'corrected_iop' ? value : currentData.corrected_iop || '0');
+        // Auto-calculate corrected IOP logic
+        if (field === 'tension' || field === 'tensionApplanation' || field === 'pachymetry' || field === 'corrected_iop') {
+            const getNewValue = (f: string) => f === field ? value : currentData[f as keyof EyeData] || '';
+            const t_air_str = getNewValue('tension') as string;
+            const t_app_str = getNewValue('tensionApplanation') as string;
+
+            const p = parseFloat(getNewValue('pachymetry') as string || '0');
+            const c = parseFloat(getNewValue('corrected_iop') as string || '0');
+
+            let t = 0;
+            if (t_air_str && t_app_str) {
+                t = parseFloat(preferredSource === 'air' ? t_air_str : t_app_str);
+            } else if (t_air_str) {
+                t = parseFloat(t_air_str);
+            } else if (t_app_str) {
+                t = parseFloat(t_app_str);
+            }
 
             if (p > 0) {
-                if (field === 'tension' || field === 'pachymetry') {
+                if (field === 'tension' || field === 'tensionApplanation' || field === 'pachymetry') {
                     if (t > 0) {
                         const corrected = t - ((p - 545) / 50 * 2.5);
                         updateField('corrected_iop', corrected.toFixed(0));
                     }
                 } else if (field === 'corrected_iop') {
                     const measured = c + ((p - 545) / 50 * 2.5);
-                    updateField('tension', measured.toFixed(0));
+                    if (preferredSource === 'air' || !t_app_str) {
+                        updateField('tension', measured.toFixed(0));
+                    } else {
+                        updateField('tensionApplanation', measured.toFixed(0));
+                    }
                 }
             }
         }
@@ -60,10 +122,26 @@ function TonometryTab({ readOnly, data }: TonometryTabProps) {
         <div className="flex flex-col bg-white rounded-lg border-0 ring-1 ring-slate-200 shadow-sm overflow-hidden 2xl:shadow-md transition-all">
             {/* Header */}
             <div
-                className="border-b border-slate-100 bg-slate-50/90 flex items-center"
+                className="border-b border-slate-100 bg-slate-50/90 flex items-center justify-between"
                 style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}
             >
                 <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Tonométrie</span>
+
+                {!readOnly && (
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className={cn(
+                            "gap-1.5 px-2 h-6 xl:h-7 text-[10px] xl:text-xs transition-colors",
+                            preferredSource === 'app' ? "border-amber-200 text-amber-700 hover:bg-amber-50" : "border-slate-200 text-slate-700 hover:bg-slate-50"
+                        )}
+                        onClick={toggleSource}
+                        title="Basculer la source de calcul pour PIO Corrigée"
+                    >
+                        <ArrowRightLeft className="w-3 h-3 xl:w-3.5 xl:h-3.5" />
+                        {preferredSource === 'air' ? "Calcul via Air" : "Calcul via App"}
+                    </Button>
+                )}
             </div>
 
             {/* Content */}
@@ -103,20 +181,22 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
         >
             <div className="flex items-center flex-1" style={{ gap: 'var(--dash-gap)' }}>
                 {/* Tension (Air) */}
-                <CompactInput
+                <CompactSelectField
                     label="Air"
                     value={data.tension}
-                    onChange={(v) => onChange("tension", v)}
+                    onChange={(v: string) => onChange("tension", v)}
+                    options={iopValues}
                     width="flex-1"
                     placeholder="-"
                     readOnly={readOnly}
                 />
 
                 {/* Applanation */}
-                <CompactInput
+                <CompactSelectField
                     label="App"
                     value={data.tensionApplanation}
-                    onChange={(v) => onChange("tensionApplanation", v)}
+                    onChange={(v: string) => onChange("tensionApplanation", v)}
+                    options={iopValues}
                     width="flex-1"
                     placeholder="-"
                     readOnly={readOnly}
@@ -126,7 +206,7 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
                 <CompactInput
                     label="Cor"
                     value={data.corrected_iop}
-                    onChange={(v) => onChange("corrected_iop", v)}
+                    onChange={(v: string) => onChange("corrected_iop", v)}
                     width="flex-1"
                     placeholder="-"
                     readOnly={readOnly}
@@ -134,10 +214,11 @@ function EyeStrip({ colorClass, data, onChange, readOnly }: {
                 />
 
                 {/* Pachy */}
-                <CompactInput
+                <CompactSelectField
                     label="Pac"
                     value={data.pachymetry}
-                    onChange={(v) => onChange("pachymetry", v)}
+                    onChange={(v: string) => onChange("pachymetry", v)}
+                    options={pachymetryValues}
                     width="flex-1"
                     placeholder="-"
                     readOnly={readOnly}
@@ -180,4 +261,198 @@ function CompactInput({ label, value, onChange, width, placeholder, readOnly, bo
         </div>
     );
 }
+
+function CompactSelectField({ label, value, onChange, options, width, placeholder, readOnly, bold }: any) {
+    return (
+        <div className={cn("flex flex-col items-center", width)} style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
+            <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>{label}</span>
+            <CompactSelect
+                value={value}
+                onChange={onChange}
+                options={options}
+                disabled={readOnly}
+                placeholder={placeholder}
+                bold={bold}
+                className={cn(
+                    "px-1 xl:px-1.5 text-center transition-all w-full",
+                    bold && "font-extrabold text-slate-900 ring-1 ring-slate-100 bg-white"
+                )}
+            />
+        </div>
+    );
+}
+
+function CompactSelect({ value, onChange, options, disabled, placeholder, className, bold }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string, bold?: boolean }) {
+    const [open, setOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Internal state for the input value - ensure we never use undefined (controlled input)
+    const [inputValue, setInputValue] = useState(() => (value ?? '') === '__EMPTY__' ? '' : (value ?? ''));
+
+    // Sync state if external value changes (e.g. from store updates or "copy" actions)
+    useEffect(() => {
+        setInputValue((value ?? '') === '__EMPTY__' ? '' : (value ?? ''));
+    }, [value]);
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
+
+    // Callback ref that fires when the scroll container mounts inside the portal
+    const scrollContainerCallbackRef = useCallback((node: HTMLDivElement | null) => {
+        if (!node) return;
+        const hasVal = value && value !== '__EMPTY__';
+        const targetValue = hasVal ? value : '-0.75';
+
+        const element = node.querySelector(`[data-value="${targetValue}"]`);
+        if (element) {
+            element.scrollIntoView({ block: 'start', behavior: 'auto' });
+        } else if (!hasVal) {
+            const zeroElement = node.querySelector(`[data-value="0.00"]`);
+            if (zeroElement) zeroElement.scrollIntoView({ block: 'center' });
+        }
+    }, [value]);
+
+    // Revert clearing on focus - only open dropdown
+    const handleFocus = () => {
+        if (!disabled) setOpen(true);
+    };
+
+    const handleClear = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange('__EMPTY__');
+        setInputValue('');
+        inputRef.current?.focus();
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setInputValue(val);
+        setOpen(true);
+
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            onChange(val === '' ? '__EMPTY__' : val);
+        }, 300);
+    };
+
+    const handleSelect = (optionValue: string) => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        onChange(optionValue);
+        setInputValue(optionValue === '__EMPTY__' ? '' : optionValue);
+        setOpen(false);
+        inputRef.current?.blur();
+    };
+
+    // Filter Logic
+    const filteredOptions = useMemo(() => {
+        if (!inputValue) return options;
+
+        const cleanInput = inputValue.replace(/[+-]/g, '').trim();
+        if (!cleanInput) return options;
+
+        // Check if we should apply strict decimal logic (User: "not 20 if I type 2")
+        const isDecimalField = options.some(o => o.value.includes('.') && !o.value.includes('/')); // Exclude "10/10"
+
+        return options.filter(opt => {
+            if (opt.value === '__EMPTY__') return false;
+
+            // Text matching for non-numeric fields
+            if (!isDecimalField && !/^[+-]?\d/.test(opt.value)) {
+                return opt.label.toLowerCase().includes(inputValue.toLowerCase());
+            }
+
+            // Numeric matching
+            const optVal = opt.value;
+            const cleanOpt = optVal.replace(/[+-]/g, '');
+
+            // "Absolute value" starts with check
+            if (cleanOpt.startsWith(cleanInput)) {
+                // Strict check: if I typed "2", I don't want "20..."
+                if (isDecimalField) {
+                    // Check character after the match
+                    const charAfter = cleanOpt[cleanInput.length];
+                    // Valid if end of string or a decimal point
+                    return charAfter === undefined || charAfter === '.';
+                }
+                return true;
+            }
+            return false;
+        });
+    }, [options, inputValue]);
+
+    const hasValue = !!inputValue;
+
+    return (
+
+        <Popover open={open && !disabled}>
+            <PopoverAnchor asChild>
+                <div className={cn("relative w-full", className)} ref={containerRef}>
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        className={cn(
+                            "flex w-full rounded-md border border-slate-200 bg-white/80 font-bold text-slate-900 ring-offset-background placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50 pr-5 xl:pr-6 cursor-text hover:bg-white transition-all shadow-sm",
+                            bold && "font-extrabold text-slate-900 border-slate-300 ring-1 ring-slate-100",
+                            className
+                        )}
+                        style={{ height: 'var(--dash-h)', paddingInline: 'var(--dash-input-p)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        value={inputValue ?? ''}
+                        onChange={handleInputChange}
+                        onFocus={handleFocus}
+                        disabled={disabled}
+                        placeholder={placeholder}
+                    />
+                    {hasValue && !disabled ? (
+                        <X
+                            className="absolute right-1.5 xl:right-2 top-1/2 -translate-y-1/2 h-3 w-3 xl:h-3.5 xl:w-3.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors"
+                            onClick={handleClear}
+                        />
+                    ) : (
+                        <ChevronDown className="absolute right-1.5 xl:right-2 top-1/2 -translate-y-1/2 h-3 w-3 xl:h-3.5 xl:w-3.5 text-slate-400 pointer-events-none opacity-50" />
+                    )}
+                </div>
+            </PopoverAnchor>
+
+            <PopoverContent
+                className="p-0 w-[--radix-popover-trigger-width] min-w-[80px]"
+                align="start"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+                onInteractOutside={(e) => {
+                    // Only close if clicking outside the container (input + wrapper)
+                    if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+                        setOpen(false);
+                    }
+                }}
+            >
+                <div ref={scrollContainerCallbackRef} className="max-h-60 overflow-auto py-1">
+                    {filteredOptions.length > 0 ? (
+                        filteredOptions.map((option) => (
+                            <div
+                                key={`${option.value}-${option.label}`}
+                                data-value={option.value}
+                                className={cn(
+                                    "px-2 cursor-pointer hover:bg-slate-100 font-medium text-slate-700",
+                                    option.value === value && "bg-slate-50 text-slate-900 font-bold"
+                                )}
+                                style={{ paddingBlock: 'calc(var(--dash-p) / 2.5)', fontSize: 'var(--dash-label)' }}
+                                onClick={() => handleSelect(option.value)}
+                            >
+                                {option.label}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="px-2 py-2 text-[10px] xl:text-xs text-slate-400 text-center italic">
+                            Aucun résultat
+                        </div>
+                    )}
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
 export default memo(TonometryTab);

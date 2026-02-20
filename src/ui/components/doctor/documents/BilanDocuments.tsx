@@ -171,11 +171,11 @@ export const generateBilanPDF = async (
 			}
 		);
 
-		// Draw custom fields
+		// Draw custom fields - same style as predefined fields
 		const customFields = printBilanFields[documentType].customFields;
 		if (customFields && customFields.length > 0) {
 			customFields.forEach((customExam) => {
-				page.drawText('x', {
+				page.drawText('-', {
 					x: LEFT_MARGIN + 20,
 					y,
 					size: TEXT_SIZES.normal,
@@ -185,11 +185,11 @@ export const generateBilanPDF = async (
 				page.drawText(customExam, {
 					x: LEFT_MARGIN + 35,
 					y,
-					size: TEXT_SIZES.tiny,
+					size: TEXT_SIZES.normal,
 					font: helvetica,
 					color: rgb(0, 0, 0), // Black text
 				});
-				y -= LINE_HEIGHTS.small;
+				y -= LINE_HEIGHTS.normal;
 			});
 		}
 	}
@@ -241,8 +241,10 @@ const bilanConfigs = {
 			{ key: 'toxoplasmose', label: 'Toxoplasmose' },
 			{ key: 'idrTuberculine', label: 'IDR à la tuberculine' },
 			{ key: 'aslo', label: 'ASLO' },
-			{ key: 'hlaB27', label: 'HLA B27' },
-			{ key: 'radioThorax', label: 'Radio thorax' },
+			{ key: 'typageHla', label: 'Typage HLA B5, B27, B12' },
+			{ key: 'vdrlTpha', label: 'VDRL, TPHA' },
+			{ key: 'serologie', label: 'Sérologie (Ag HBs, HIV…)' },
+			{ key: 'radioThorax', label: 'Radio du thorax, des sacro-iliaques' },
 		],
 	},
 };

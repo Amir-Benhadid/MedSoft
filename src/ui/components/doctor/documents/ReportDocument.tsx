@@ -426,7 +426,7 @@ export const generateReportPDF = async (
 	}
 
 	// FO (Fond d'œil) - only show if not empty
-	const fondOeilValue = DocumentUtils.formatFieldDisplay(detailedClinicalExam?.fundus?.fundus_exam || reportData?.fondOeil);
+	const fondOeilValue = DocumentUtils.formatFieldDisplay(reportData?.fondOeil || detailedClinicalExam?.fundus?.fundus_exam);
 	if (!DocumentUtils.isEmptyField(fondOeilValue)) {
 		const fondOeil = `F.O : ${fondOeilValue}`;
 		const fondOeilLines = DocumentUtils.splitTextIntoLinesOptimized(
@@ -447,7 +447,7 @@ export const generateReportPDF = async (
 
 
 	// Conclusion - only show if not empty
-	const conclusionValue = DocumentUtils.formatFieldDisplay(detailedClinicalExam?.diagnosis || reportData?.conclusion);
+	const conclusionValue = DocumentUtils.formatFieldDisplay(reportData?.conclusion || detailedClinicalExam?.diagnosis);
 	if (!DocumentUtils.isEmptyField(conclusionValue)) {
 		const conclusion = `Conclusion : ${conclusionValue}`;
 		const conclusionLines = DocumentUtils.splitTextIntoLinesOptimized(

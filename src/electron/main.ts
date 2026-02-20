@@ -537,6 +537,11 @@ function setupIPC() {
 		}
 	});
 
+	ipcMain.handle('app:seedMedicines', async () => {
+		const { seedMedicinesFromSupabase } = await import('./services/supabaseSync.js');
+		return seedMedicinesFromSupabase();
+	});
+
 	ipcMain.handle('network:getServerIP', async () => {
 		const { getLocalIP } = await import('./utils/discovery.js');
 		return getLocalIP();

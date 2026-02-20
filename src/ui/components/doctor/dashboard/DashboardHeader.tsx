@@ -53,7 +53,6 @@ export const DashboardHeader = memo(function DashboardHeader({
                     <div className="grid gap-4 py-4">
                         <Input
                             type="password"
-                            placeholder="Entrez votre code PIN"
                             value={pinDialog.pin}
                             onChange={(e) => pinDialog.setPin(e.target.value)}
                             onKeyDown={pinDialog.handleKeyPress}

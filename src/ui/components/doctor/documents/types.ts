@@ -198,6 +198,7 @@ export interface EyeData {
     lensBrand: string; // For contact lens brand
     glassType: string; // For glass type selection
     contactLensType: string; // For contact lens type (spherical/toric)
+    rayon?: string;
 }
 
 export interface DiagnosisData {

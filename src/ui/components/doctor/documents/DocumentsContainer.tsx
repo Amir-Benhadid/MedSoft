@@ -24,9 +24,9 @@ const TAB_GROUPS: { PAGE_1: TabItem[], PAGE_2: TabItem[] } = {
     ],
     PAGE_2: [
         { id: 'workStop', label: 'Arrêt de travail', icon: Stethoscope },
+        { id: 'absence', label: 'Absence', icon: FileCheck },
         { id: 'bilans', label: 'Bilans', icon: Activity, isGroup: true },
         { id: 'divers', label: 'Divers', icon: LayoutGrid },
-        { id: 'absence', label: 'Absence', icon: FileCheck },
     ]
 };
 
@@ -132,9 +132,19 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
             setDocumentOverride('visualAcuity', newData.printStates.printVisualAcuityData);
             setDocumentOverride('absence', newData.printStates.printAbsenceData);
             setDocumentOverride('workStop', newData.printStates.printWorkStopData);
-            // 'generic' is likely used for Divers documents in some contexts, or 'bilan'
             setDocumentOverride('bilan', newData.bilanFields);
-            // setDocumentOverride('report', ...); // Report data is not fully managed by this hook yet
+            setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
+            setDocumentOverride('selectedGenericTemplate', newData.printStates.selectedDiversDocument);
+            // For divers tab: pass medicalRecord when a specific document is selected
+            const selectedDivers = newData.printStates.selectedDiversDocument;
+            if (selectedDivers && selectedDivers !== 'documentVierge') {
+                setDocumentOverride('medicalRecord', {
+                    documentType: selectedDivers,
+                    printData: newData.printStates.printMedicalRecordData || {},
+                });
+            } else {
+                setDocumentOverride('medicalRecord', undefined);
+            }
         }
 
         if (newData.printControlFlags) {

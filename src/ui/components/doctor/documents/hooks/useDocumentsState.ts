@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { lentilleService } from '../../../../services/LentilleService';
 import {
     EyeData,
     PrescriptionData,
@@ -10,6 +11,16 @@ import {
     AbsencePrintData,
     VisualAcuityPrintData
 } from '../types';
+
+const formatNumberWithSign = (value: number | string | undefined): string => {
+    if (value === undefined || value === null || value === '') return '';
+    const strVal = value.toString().replace(',', '.');
+    const num = parseFloat(strVal);
+    if (isNaN(num) || !isFinite(num)) return value?.toString() || '';
+    if (num === 0) return '0.00';
+    const formatted = num.toFixed(2);
+    return num > 0 ? `+${formatted}` : formatted;
+};
 
 // Define BilanFields interface to match DocumentPreview expectations
 export interface BilanFields {
@@ -278,6 +289,146 @@ export const useDocumentsState = ({
     const lastSentJsonRef = useRef<string | null>(null);
     // Track when contact lens conversion was last applied (prevents race: overwriting fresh conversion with stale saved data)
     const lastContactLensConversionAppliedRef = useRef(0);
+
+    // Track contact lens source values for automatic conversion
+    const prevRightEyeRef = useRef({
+        sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, type: rightEyeData?.contactLensType,
+        diam: rightEyeData?.diam, axis_k: rightEyeData?.axis_k, rayon: rightEyeData?.rayon, lensBrand: rightEyeData?.lensBrand, lensType: rightEyeData?.lensType
+    });
+
+    const prevLeftEyeRef = useRef({
+        sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, type: leftEyeData?.contactLensType,
+        diam: leftEyeData?.diam, axis_k: leftEyeData?.axis_k, rayon: leftEyeData?.rayon, lensBrand: leftEyeData?.lensBrand, lensType: leftEyeData?.lensType
+    });
+
+    useEffect(() => {
+        if (suppressNotifyRef.current) return;
+
+        const rightChanged =
+            rightEyeData?.sph !== prevRightEyeRef.current.sph ||
+            rightEyeData?.cyl !== prevRightEyeRef.current.cyl ||
+            rightEyeData?.axis !== prevRightEyeRef.current.axis ||
+            rightEyeData?.contactLensType !== prevRightEyeRef.current.type ||
+            rightEyeData?.diam !== prevRightEyeRef.current.diam ||
+            rightEyeData?.axis_k !== prevRightEyeRef.current.axis_k ||
+            rightEyeData?.rayon !== prevRightEyeRef.current.rayon ||
+            rightEyeData?.lensBrand !== prevRightEyeRef.current.lensBrand ||
+            rightEyeData?.lensType !== prevRightEyeRef.current.lensType;
+
+        const leftChanged =
+            leftEyeData?.sph !== prevLeftEyeRef.current.sph ||
+            leftEyeData?.cyl !== prevLeftEyeRef.current.cyl ||
+            leftEyeData?.axis !== prevLeftEyeRef.current.axis ||
+            leftEyeData?.contactLensType !== prevLeftEyeRef.current.type ||
+            leftEyeData?.diam !== prevLeftEyeRef.current.diam ||
+            leftEyeData?.axis_k !== prevLeftEyeRef.current.axis_k ||
+            leftEyeData?.rayon !== prevLeftEyeRef.current.rayon ||
+            leftEyeData?.lensBrand !== prevLeftEyeRef.current.lensBrand ||
+            leftEyeData?.lensType !== prevLeftEyeRef.current.lensType;
+
+        if (rightChanged) {
+            prevRightEyeRef.current = {
+                sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, type: rightEyeData?.contactLensType,
+                diam: rightEyeData?.diam, axis_k: rightEyeData?.axis_k, rayon: rightEyeData?.rayon, lensBrand: rightEyeData?.lensBrand, lensType: rightEyeData?.lensType
+            };
+
+            const rightType = rightEyeData?.contactLensType || 'Sphérique';
+            const isSpherical = rightType === 'Sphérique';
+
+            lentilleService.convertToContactLens(
+                rightEyeData?.sph || '',
+                rightEyeData?.cyl || '',
+                rightEyeData?.axis || '',
+                rightType
+            ).then(converted => {
+                if (converted && isFinite(converted.sphere)) {
+                    setPrintContactLensesData(prev => ({
+                        ...prev,
+                        rightEye: {
+                            ...prev.rightEye,
+                            sph: formatNumberWithSign(converted.sphere),
+                            cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
+                            axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
+                            contactLensType: rightType,
+                            diam: rightEyeData?.diam || '',
+                            axis_k: rightEyeData?.rayon || rightEyeData?.axis_k || '',
+                            lensBrand: rightEyeData?.lensBrand || '',
+                            lensType: rightEyeData?.lensType || '',
+                        }
+                    }));
+                } else {
+                    setPrintContactLensesData(prev => ({
+                        ...prev,
+                        rightEye: {
+                            ...prev.rightEye,
+                            sph: rightEyeData?.sph || '',
+                            cyl: rightEyeData?.cyl || '',
+                            axis: rightEyeData?.axis || '',
+                            contactLensType: rightType,
+                            diam: rightEyeData?.diam || '',
+                            axis_k: rightEyeData?.rayon || rightEyeData?.axis_k || '',
+                            lensBrand: rightEyeData?.lensBrand || '',
+                            lensType: rightEyeData?.lensType || '',
+                        }
+                    }));
+                }
+                lastContactLensConversionAppliedRef.current = Date.now();
+            });
+        }
+
+        if (leftChanged) {
+            prevLeftEyeRef.current = {
+                sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, type: leftEyeData?.contactLensType,
+                diam: leftEyeData?.diam, axis_k: leftEyeData?.axis_k, rayon: leftEyeData?.rayon, lensBrand: leftEyeData?.lensBrand, lensType: leftEyeData?.lensType
+            };
+
+            const leftType = leftEyeData?.contactLensType || 'Sphérique';
+            const isSpherical = leftType === 'Sphérique';
+
+            lentilleService.convertToContactLens(
+                leftEyeData?.sph || '',
+                leftEyeData?.cyl || '',
+                leftEyeData?.axis || '',
+                leftType
+            ).then(converted => {
+                if (converted && isFinite(converted.sphere)) {
+                    setPrintContactLensesData(prev => ({
+                        ...prev,
+                        leftEye: {
+                            ...prev.leftEye,
+                            sph: formatNumberWithSign(converted.sphere),
+                            cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
+                            axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
+                            contactLensType: leftType,
+                            diam: leftEyeData?.diam || '',
+                            axis_k: leftEyeData?.rayon || leftEyeData?.axis_k || '',
+                            lensBrand: leftEyeData?.lensBrand || '',
+                            lensType: leftEyeData?.lensType || '',
+                        }
+                    }));
+                } else {
+                    setPrintContactLensesData(prev => ({
+                        ...prev,
+                        leftEye: {
+                            ...prev.leftEye,
+                            sph: leftEyeData?.sph || '',
+                            cyl: leftEyeData?.cyl || '',
+                            axis: leftEyeData?.axis || '',
+                            contactLensType: leftType,
+                            diam: leftEyeData?.diam || '',
+                            axis_k: leftEyeData?.rayon || leftEyeData?.axis_k || '',
+                            lensBrand: leftEyeData?.lensBrand || '',
+                            lensType: leftEyeData?.lensType || '',
+                        }
+                    }));
+                }
+                lastContactLensConversionAppliedRef.current = Date.now();
+            });
+        }
+    }, [
+        rightEyeData?.sph, rightEyeData?.cyl, rightEyeData?.axis, rightEyeData?.contactLensType, rightEyeData?.diam, rightEyeData?.axis_k, rightEyeData?.rayon, rightEyeData?.lensBrand, rightEyeData?.lensType,
+        leftEyeData?.sph, leftEyeData?.cyl, leftEyeData?.axis, leftEyeData?.contactLensType, leftEyeData?.diam, leftEyeData?.axis_k, leftEyeData?.rayon, leftEyeData?.lensBrand, leftEyeData?.lensType,
+    ]);
 
     // Update state when initialDocumentsData changes (for loading saved data)
     // Guard against recursive updates by only setting if values actually changed

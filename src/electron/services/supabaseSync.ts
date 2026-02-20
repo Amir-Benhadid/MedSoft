@@ -7,7 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
-// ... rest of imports
+import { randomUUID } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { getDatabase } from '../db/database.js';
 import type { Database } from 'better-sqlite3';
@@ -769,5 +769,99 @@ export async function syncFromSupabase(url: string, key: string): Promise<{ succ
     } catch (error: any) {
         console.error("Supabase Sync Failed:", error);
         return { success: false, message: error.message };
+    }
+}
+
+/** Supabase URL and key from setup wizard (same database) */
+const SUPABASE_URL = 'https://oouzzscntdsqqhfsbnli.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdXp6c2NudGRzcXFoZnNibmxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzY1MTksImV4cCI6MjA3Mjc1MjUxOX0.KYcBMIqxmDhSnqBQjr_U7MLFG3Mncqsf-o_4lNrvxGw';
+
+/**
+ * Seeds medicines from Supabase into the local database.
+ * Excludes duplicates based on (medication_name, strength) - only inserts medicines
+ * that don't already exist locally.
+ *
+ * @returns Promise resolving to result with success status, message, and stats
+ */
+export async function seedMedicinesFromSupabase(): Promise<{ success: boolean; message: string; stats?: { fetched: number; inserted: number; skipped: number } }> {
+    console.log('🌱 Starting Medicines Seed from Supabase...');
+
+    try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const db = getDatabase();
+
+        // Fetch all medicines from Supabase (paginated)
+        const allMedicines: any[] = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+            const { data: rows, error } = await supabase
+                .from('medicines')
+                .select('*')
+                .range(page * pageSize, (page + 1) * pageSize - 1);
+
+            if (error) throw new Error(`Error fetching medicines: ${error.message}`);
+
+            if (rows && rows.length > 0) {
+                allMedicines.push(...rows);
+                if (rows.length < pageSize) hasMore = false;
+                else page++;
+            } else {
+                hasMore = false;
+            }
+        }
+
+        // Build set of existing local medicines: key = "medication_name|strength" for duplicate check
+        const existingKeys = new Set<string>();
+        const existingRows = db.prepare('SELECT medication_name, strength FROM medicines').all() as { medication_name: string; strength: string | null }[];
+        for (const row of existingRows) {
+            const key = `${(row.medication_name || '').trim().toLowerCase()}|${(row.strength || '').trim().toLowerCase()}`;
+            existingKeys.add(key);
+        }
+
+        const insertMedicine = db.prepare(`
+            INSERT INTO medicines (id, medication_name, strength, type, packaging, instructions, category, created_at, updated_at)
+            VALUES (@id, @medication_name, @strength, @type, @packaging, @instructions, @category, @created_at, @updated_at)
+        `);
+
+        let inserted = 0;
+        let skipped = 0;
+
+        db.transaction(() => {
+            for (const m of allMedicines) {
+                const key = `${(m.medication_name || '').trim().toLowerCase()}|${(m.strength || '').trim().toLowerCase()}`;
+                if (existingKeys.has(key)) {
+                    skipped++;
+                    continue;
+                }
+
+                insertMedicine.run({
+                    id: randomUUID(),
+                    medication_name: m.medication_name,
+                    strength: m.strength ?? null,
+                    type: m.type ?? null,
+                    packaging: m.packaging ?? null,
+                    instructions: m.instructions ?? null,
+                    category: m.category ?? null,
+                    created_at: m.created_at ?? new Date().toISOString(),
+                    updated_at: m.updated_at ?? new Date().toISOString(),
+                });
+                existingKeys.add(key);
+                inserted++;
+            }
+        });
+
+        const fetched = allMedicines.length;
+        console.log(`✅ Medicines Seed Complete: ${fetched} fetched, ${inserted} inserted, ${skipped} duplicates skipped.`);
+        return {
+            success: true,
+            message: `${fetched} médicament(s) récupéré(s), ${inserted} ajouté(s), ${skipped} doublon(s) exclu(s).`,
+            stats: { fetched, inserted, skipped },
+        };
+    } catch (error: any) {
+        console.error('Medicines Seed Failed:', error);
+        return { success: false, message: error?.message || 'Erreur lors du seed des médicaments.' };
     }
 }

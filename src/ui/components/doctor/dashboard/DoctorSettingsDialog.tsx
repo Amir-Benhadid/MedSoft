@@ -17,7 +17,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/ui/components/ui/alert-dialog";
-import { Trash2, AlertTriangle, Settings } from "lucide-react";
+import { Trash2, AlertTriangle, Settings, Database } from "lucide-react";
 import { useState } from "react";
 
 interface DoctorSettingsDialogProps {
@@ -27,6 +27,8 @@ interface DoctorSettingsDialogProps {
 
 export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialogProps) {
     const [isResetting, setIsResetting] = useState(false);
+    const [isSeeding, setIsSeeding] = useState(false);
+    const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
     const handleFactoryReset = async () => {
         setIsResetting(true);
@@ -35,6 +37,20 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
         } catch (error) {
             console.error("Factory reset failed:", error);
             setIsResetting(false);
+        }
+    };
+
+    const handleSeedMedicines = async () => {
+        setIsSeeding(true);
+        setSeedMessage(null);
+        try {
+            const result = await window.electronAPI.seedMedicines();
+            setSeedMessage(result.success ? result.message : result.message);
+        } catch (error) {
+            console.error("Seed medicines failed:", error);
+            setSeedMessage("Erreur lors du seed des médicaments.");
+        } finally {
+            setIsSeeding(false);
         }
     };
 
@@ -52,6 +68,31 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
                 </DialogHeader>
 
                 <div className="py-4 space-y-4">
+                    {/* Seed Medicines */}
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                        <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-2">
+                            <Database className="w-4 h-4" />
+                            Base de données
+                        </h3>
+                        <p className="text-sm text-slate-600 mb-4">
+                            Importez les médicaments depuis la base Supabase de l'assistant de configuration. Les doublons sont automatiquement exclus.
+                        </p>
+                        <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            onClick={handleSeedMedicines}
+                            disabled={isSeeding}
+                        >
+                            <Database className="w-4 h-4" />
+                            {isSeeding ? "Import en cours..." : "Importer les médicaments"}
+                        </Button>
+                        {seedMessage && (
+                            <p className={`text-sm mt-3 ${seedMessage.startsWith("Erreur") ? "text-red-600" : "text-green-700"}`}>
+                                {seedMessage}
+                            </p>
+                        )}
+                    </div>
+
                     {/* Danger Zone */}
                     <div className="rounded-lg border border-red-200 bg-red-50 p-4">
                         <h3 className="text-sm font-semibold text-red-900 flex items-center gap-2 mb-2">

@@ -30,8 +30,9 @@ const BilanForm: React.FC<BilanFormProps> = ({
     onAddCustomField,
     onRemoveCustomField,
 }) => {
-    const handleKeyPress = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && customFieldInput?.trim()) {
+            e.preventDefault();
             onAddCustomField();
         }
     };
@@ -73,71 +74,47 @@ const BilanForm: React.FC<BilanFormProps> = ({
                         ))}
                     </div>
 
-                    {/* Custom Fields Section */}
-                    {(customFieldInput?.trim() || (bilanFields[bilanType].customFields && bilanFields[bilanType].customFields.length > 0)) && (
-                        <div className="pt-2 border-t border-border border-dashed mt-2 space-y-2">
-                            <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">Examens personnalisés</Label>
+                    {/* Custom Fields Section - single persistent input to prevent focus loss */}
+                    <div className="pt-2 border-t border-border border-dashed mt-2 space-y-2">
+                        <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">Examens personnalisés</Label>
 
-                            {bilanFields[bilanType].customFields && bilanFields[bilanType].customFields.length > 0 && (
-                                <div className="space-y-2">
-                                    {bilanFields[bilanType].customFields.map((field, index) => (
-                                        <div key={index} className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg border border-primary/20 group">
-                                            <Checkbox checked={true} disabled className="data-[state=checked]:bg-primary data-[state=checked]:border-primary opacity-70" />
-                                            <span className="text-xs font-semibold text-foreground uppercase tracking-tight flex-1">{field}</span>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => onRemoveCustomField(index)}
-                                                className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
-                                            >
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            <div className="flex gap-2">
-                                <Input
-                                    placeholder="Ajouter un examen..."
-                                    value={customFieldInput || ''}
-                                    onChange={(e) => onCustomFieldInputChange(e.target.value)}
-                                    onKeyDown={handleKeyPress}
-                                    className="h-7 text-sm font-semibold text-foreground bg-background border-border focus:border-primary focus:ring-primary/20"
-                                />
-                                <Button
-                                    size="sm"
-                                    onClick={onAddCustomField}
-                                    disabled={!customFieldInput?.trim()}
-                                    className="h-7 px-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-tight"
-                                >
-                                    Ajouter
-                                </Button>
+                        {(bilanFields[bilanType].customFields && bilanFields[bilanType].customFields.length > 0) && (
+                            <div className="space-y-2">
+                                {bilanFields[bilanType].customFields.map((field, index) => (
+                                    <div key={`${field}-${index}`} className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg border border-primary/20 group">
+                                        <Checkbox checked={true} disabled className="data-[state=checked]:bg-primary data-[state=checked]:border-primary opacity-70" />
+                                        <span className="text-xs font-semibold text-foreground uppercase tracking-tight flex-1">{field}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onRemoveCustomField(index)}
+                                            className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {!customFieldInput?.trim() && (!bilanFields[bilanType].customFields || bilanFields[bilanType].customFields.length === 0) && (
-                        <div className="pt-2 border-t border-border border-dashed mt-2">
-                            <div className="flex gap-2">
-                                <Input
-                                    placeholder="Ajouter un examen personnalisé..."
-                                    value={customFieldInput || ''}
-                                    onChange={(e) => onCustomFieldInputChange(e.target.value)}
-                                    className="h-7 text-sm font-medium text-muted-foreground bg-muted/50 border-border focus:bg-background transition-colors"
-                                />
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={onAddCustomField}
-                                    disabled={!customFieldInput?.trim()}
-                                    className="h-7 px-3 border-border text-muted-foreground hover:text-primary hover:border-primary hover:bg-primary/10"
-                                >
-                                    Ajouter
-                                </Button>
-                            </div>
+                        <div className="flex gap-2">
+                            <Input
+                                placeholder="Ajouter un examen personnalisé..."
+                                value={customFieldInput ?? ''}
+                                onChange={(e) => onCustomFieldInputChange(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="h-7 text-sm font-semibold text-foreground bg-background border-border focus:border-primary focus:ring-primary/20"
+                            />
+                            <Button
+                                size="sm"
+                                onClick={onAddCustomField}
+                                disabled={!customFieldInput?.trim()}
+                                className="h-7 px-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs uppercase tracking-tight shrink-0"
+                            >
+                                Ajouter
+                            </Button>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -255,13 +255,17 @@ export class DocumentPrinter {
 			case 'medications':
 				return await generateMedicationsPDF(context, patient, options.prescriptionData);
 			case 'certificatAcuite':
-				// Use the visual acuity print data from printDataOverrides
-				const visualAcuityPrintData = options.printDataOverrides?.certificatAcuite ? {
-					visualAcuityVL_SC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_SC,
-					visualAcuityVL_SC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_SC,
-					visualAcuityVL_AC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_AC,
-					visualAcuityVL_AC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_AC,
-				} : undefined;
+				// Use visual acuity print data from printDataOverrides
+				// Support both: visualAcuity (flat OD/OG format from DocumentsContainer) and certificatAcuite (legacy eye format)
+				let visualAcuityPrintData = options.printDataOverrides?.visualAcuity;
+				if (!visualAcuityPrintData && options.printDataOverrides?.certificatAcuite) {
+					visualAcuityPrintData = {
+						visualAcuityVL_SC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_SC,
+						visualAcuityVL_SC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_SC,
+						visualAcuityVL_AC_OD: options.printDataOverrides.certificatAcuite.rightEye.visualAcuityVL_AC,
+						visualAcuityVL_AC_OG: options.printDataOverrides.certificatAcuite.leftEye.visualAcuityVL_AC,
+					};
+				}
 				return await generateVisualAcuityCertificatePDF(
 					context,
 					patient,
@@ -298,7 +302,7 @@ export class DocumentPrinter {
 						includeVisualAcuityWithCorrection: options.printControlFlags.includeVisualAcuityWithCorrection ?? true,
 						includeGlassType: options.printControlFlags.includeGlassType ?? false,
 						includeVisualAcuityWithoutCorrection: options.printControlFlags.includeVisualAcuityWithoutCorrection ?? true,
-						includeTonometry: false, // Default to false if not specified
+						includeTonometry: options.printControlFlags.includeTonometry ?? true,
 					} : undefined
 				);
 			case 'divers':

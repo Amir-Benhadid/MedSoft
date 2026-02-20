@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent, useMemo } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/ui/lib/utils";
 import { Badge } from "@/ui/components/ui/badge";
@@ -31,8 +31,10 @@ export function SmartMultiSelectInput({
 }: SmartMultiSelectInputProps) {
     const [inputValue, setInputValue] = useState("");
     const [open, setOpen] = useState(false);
+    const [justAddedIndex, setJustAddedIndex] = useState<number | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const extraInputRefs = useRef<Record<number, HTMLInputElement>>({});
     const queryClient = useQueryClient();
 
     // Parse current values
@@ -45,6 +47,60 @@ export function SmartMultiSelectInput({
             return orpcClient.autocomplete.list({ category });
         }
     });
+
+    const previousParsedRef = useRef<{ original: string, base: string, extra: string }[]>([]);
+
+    const parsedValues = useMemo(() => {
+        const result = selectedValues.map((val) => {
+            let base = val;
+            let extra = "";
+            let longestMatch = "";
+            for (const opt of options) {
+                const optVal = opt.value.trim();
+                if (!optVal) continue;
+                if (val.toLowerCase() === optVal.toLowerCase() ||
+                    val.toLowerCase().startsWith(optVal.toLowerCase() + " ")) {
+                    if (optVal.length > longestMatch.length) {
+                        longestMatch = optVal;
+                    }
+                }
+            }
+
+            if (longestMatch) {
+                base = val.substring(0, longestMatch.length).trim();
+                extra = val.substring(longestMatch.length).trim();
+                return { original: val, base, extra };
+            }
+
+            const prev = previousParsedRef.current.find(p =>
+                val.toLowerCase() === p.base.toLowerCase() ||
+                val.toLowerCase().startsWith(p.base.toLowerCase() + " ")
+            );
+
+            if (prev) {
+                return {
+                    original: val,
+                    base: prev.base,
+                    extra: val.substring(prev.base.length).trim()
+                };
+            }
+
+            return { original: val, base: val.trim(), extra: "" };
+        });
+
+        previousParsedRef.current = result;
+        return result;
+    }, [selectedValues, options]);
+
+    useEffect(() => {
+        if (justAddedIndex !== null) {
+            const el = extraInputRefs.current[justAddedIndex];
+            if (el) {
+                el.focus();
+                setJustAddedIndex(null);
+            }
+        }
+    }, [parsedValues, justAddedIndex]);
 
     // Increment freq
     const incrementMutation = useMutation({
@@ -74,6 +130,7 @@ export function SmartMultiSelectInput({
 
         if (changed) {
             onSelect(newSelectedValues.join(', '));
+            setJustAddedIndex(newSelectedValues.length - 1);
         }
 
         setInputValue("");
@@ -137,12 +194,42 @@ export function SmartMultiSelectInput({
                     )}
                     onClick={() => inputRef.current?.focus()}
                 >
-                    {selectedValues.map((val) => (
-                        <Badge key={val} variant="secondary" className="hover:bg-secondary/80 gap-1 pr-1 font-normal text-sm py-0.5">
-                            {val}
+                    {parsedValues.map(({ original, base, extra }, index) => (
+                        <Badge key={index} variant="secondary" className="hover:bg-secondary/80 gap-0.5 pr-1 font-normal text-sm py-0.5 flex items-center max-w-full">
+                            <span className="font-semibold px-1 truncate">{base}</span>
+                            <span className="text-muted-foreground/60 select-none">|</span>
+                            <input
+                                ref={(el) => {
+                                    if (el) {
+                                        extraInputRefs.current[index] = el;
+                                    } else {
+                                        delete extraInputRefs.current[index];
+                                    }
+                                }}
+                                type="text"
+                                className="bg-transparent border-b border-transparent focus:border-slate-300 outline-none text-xs min-w-[5ch] px-1 transition-colors"
+                                style={{ width: `${Math.max(5, extra.length + 1)}ch` }}
+                                placeholder=""
+                                value={extra}
+                                onChange={(e) => {
+                                    const newExtra = e.target.value.replace(/,/g, ' ');
+                                    const newValues = [...selectedValues];
+                                    newValues[index] = newExtra.trim() ? `${base} ${newExtra}` : base;
+                                    onSelect(newValues.join(', '));
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
+                                onKeyDown={(e) => {
+                                    e.stopPropagation();
+                                    if (e.key === 'Enter') e.preventDefault();
+                                }}
+                                disabled={disabled}
+                            />
                             <button
                                 type="button"
-                                className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                className="ml-0.5 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                 onMouseDown={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -150,7 +237,7 @@ export function SmartMultiSelectInput({
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    handleRemove(val);
+                                    handleRemove(original);
                                 }}
                             >
                                 <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />

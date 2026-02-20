@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { OptimizedTextarea } from "@/ui/components/ui/optimized-input";
+import { OptimizedTextarea, OptimizedInput } from "@/ui/components/ui/optimized-input";
 import { SmartMultiSelectInput } from "@/ui/components/shared/SmartMultiSelectInput";
 import { cn } from "@/ui/lib/utils";
 import { useConsultationStore } from "@/ui/store/consultationStore";
@@ -36,24 +36,22 @@ function ClinicalExamTab({
             {/* 1. Single-line observations - Compact height */}
             <div className="grid grid-cols-1 sm:grid-cols-2 flex-none" style={{ gap: 'var(--dash-gap)' }}>
                 <RowLayout label="INSP" title="Inspection" colorAccent="slate" bgColor="bg-slate-50/90" compact>
-                    <OptimizedTextarea
-                        rows={1}
+                    <OptimizedInput
                         value={data.inspection || ""}
                         onChange={handleFieldChange("inspection")}
                         disabled={readOnly}
-                        className="resize-none min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full bg-white shadow-sm transition-all focus:border-slate-400"
-                        style={{ height: 'var(--dash-h)', paddingBlock: 'calc(var(--dash-p) / 4)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full bg-white shadow-sm transition-all focus:border-slate-400 h-full"
+                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
                         placeholder="Rien à signaler..."
                     />
                 </RowLayout>
                 <RowLayout label="MOT" title="Motilité" colorAccent="indigo" bgColor="bg-indigo-50/40" compact>
-                    <OptimizedTextarea
-                        rows={1}
+                    <OptimizedInput
                         value={data.motilityExam || ""}
                         onChange={handleFieldChange("motilityExam")}
                         disabled={readOnly}
-                        className="resize-none min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 leading-tight placeholder:text-indigo-300/50 w-full bg-white shadow-sm transition-all focus:border-indigo-400"
-                        style={{ height: 'var(--dash-h)', paddingBlock: 'calc(var(--dash-p) / 4)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 leading-tight placeholder:text-indigo-300/50 w-full bg-white shadow-sm transition-all focus:border-indigo-400 h-full"
+                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
                         placeholder="Normal..."
                     />
                 </RowLayout>
@@ -99,13 +97,12 @@ function ClinicalExamTab({
                     </div>
                 </RowLayout>
                 <RowLayout label="TRT" title="Traitement" colorAccent="teal" bgColor="bg-teal-50/80" compact>
-                    <OptimizedTextarea
-                        rows={1}
+                    <OptimizedInput
                         value={data.treatmentPlan || ""}
                         onChange={handleFieldChange("treatmentPlan")}
                         disabled={readOnly}
-                        className="resize-none min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm"
-                        style={{ height: 'var(--dash-h)', paddingBlock: 'calc(var(--dash-p) / 4)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm h-full"
+                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
                         placeholder="Traitement prescrit..."
                     />
                 </RowLayout>
@@ -137,13 +134,14 @@ function RowLayout({ label, title, colorAccent = "slate", bgColor, compact, chil
     return (
         <div
             className={cn(
-                "flex items-start rounded-lg border border-slate-200/50",
+                "flex rounded-lg border border-slate-200/50",
+                compact ? "items-center" : "items-start",
                 bgColor,
                 className
             )}
             style={{ gap: 'var(--dash-gap)', paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}
         >
-            <div className="w-12 xl:w-16 shrink-0 flex items-center justify-center pt-1.5 cursor-help" title={title}>
+            <div className={cn("w-12 xl:w-16 shrink-0 flex items-center justify-center cursor-help", !compact && "pt-1.5")} title={title}>
                 <span
                     className={cn("font-bold uppercase tracking-tight transition-colors text-center leading-tight", colorMap[colorAccent])}
                     style={{ fontSize: 'var(--dash-label)' }}

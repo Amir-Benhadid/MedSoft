@@ -63,20 +63,18 @@ export function FinishConsultationSheet({
 
     return (
         <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <SheetContent className="w-full sm:max-w-[620px] overflow-y-auto flex flex-col p-0 gap-0 border-l bg-slate-50/80">
-                <SheetHeader className="px-6 py-5 bg-gradient-to-r from-blue-50 via-indigo-50/80 to-blue-50 border-b shrink-0">
-                    <SheetTitle className="flex items-center gap-3 text-xl font-bold text-slate-800">
-                        <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200/60">
-                            <ClipboardCheck className="w-5 h-5 text-white" />
-                        </div>
-                        Fin de Consultation
+            <SheetContent className="w-full sm:max-w-[620px] overflow-y-auto flex flex-col p-0 gap-0 border-l shadow-2xl">
+                <SheetHeader className="px-4 py-3 border-b bg-white shrink-0">
+                    <SheetTitle className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                        <ClipboardCheck className="w-4 h-4 text-slate-500" />
+                        <span>Fin de Consultation</span>
                     </SheetTitle>
-                    <SheetDescription className="text-sm text-slate-500 font-medium ml-[52px]">
+                    <SheetDescription className="text-sm text-slate-500 mt-1">
                         Validez les détails du paiement et le prochain rendez-vous.
                     </SheetDescription>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
                     <NextAppointmentSection
                         nextApptType={nextApptType}
                         setNextApptType={setNextApptType}
@@ -86,7 +84,7 @@ export function FinishConsultationSheet({
                         setNextApptTimeframe={setNextApptTimeframe}
                     />
 
-                    <Separator className="bg-slate-200/80" />
+                    <Separator className="bg-slate-200" />
 
                     <PaymentSection
                         consultationTypes={consultationTypes}
@@ -100,12 +98,12 @@ export function FinishConsultationSheet({
                     />
                 </div>
 
-                <SheetFooter className="px-6 py-4 bg-white border-t shrink-0 flex gap-3">
-                    <Button variant="outline" onClick={onClose} className="flex-1 h-11 text-slate-600 border-slate-200 hover:bg-slate-50 font-medium">
+                <SheetFooter className="px-4 py-3 bg-white border-t shrink-0 flex gap-2">
+                    <Button variant="outline" onClick={onClose} className="flex-1 h-9 text-slate-600 border-slate-200 hover:bg-slate-50 font-medium">
                         Annuler
                     </Button>
-                    <Button onClick={handleConfirm} className="flex-[2] h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 text-base font-semibold transition-all active:scale-[0.98]">
-                        <Check className="w-5 h-5 mr-2" />
+                    <Button onClick={handleConfirm} className="flex-[2] h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all active:scale-[0.98]">
+                        <Check className="w-4 h-4 mr-2" />
                         Terminer la Consultation
                     </Button>
                 </SheetFooter>

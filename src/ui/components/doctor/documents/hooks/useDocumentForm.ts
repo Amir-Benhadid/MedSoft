@@ -53,11 +53,11 @@ export function useDocumentForm() {
         };
     }, [initialDocumentsData]);
     const workStopData = useMemo(() => {
-        const data = initialDocumentsData.workStopData || { 
-            startDate: new Date(), 
-            endDate: new Date(), 
-            reason: '', 
-            exitAuthorized: true 
+        const data = initialDocumentsData.workStopData || {
+            startDate: new Date(),
+            endDate: new Date(),
+            reason: '',
+            exitAuthorized: true
         };
         // Ensure dates are Date objects, not strings
         return {
@@ -90,11 +90,11 @@ export function useDocumentForm() {
 
     const setWorkStopData = useCallback((updater: any) => {
         const currentUnifiedState = documentOverrides.unifiedDocumentsState || {};
-        const currentWorkStopData = currentUnifiedState.workStopData || { 
-            startDate: new Date(), 
-            endDate: new Date(), 
-            reason: '', 
-            exitAuthorized: true 
+        const currentWorkStopData = currentUnifiedState.workStopData || {
+            startDate: new Date(),
+            endDate: new Date(),
+            reason: '',
+            exitAuthorized: true
         };
         const newWorkStopData = typeof updater === 'function' ? updater(currentWorkStopData) : updater;
         setDocumentOverride('unifiedDocumentsState', {
@@ -135,6 +135,7 @@ export function useDocumentForm() {
             setDocumentOverride('absence', newData.printStates.printAbsenceData);
             setDocumentOverride('workStop', newData.printStates.printWorkStopData);
             setDocumentOverride('bilan', newData.bilanFields);
+            setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
         }
 
         if (newData.printControlFlags) {

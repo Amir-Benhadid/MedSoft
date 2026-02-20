@@ -19,6 +19,10 @@ interface PrescriptionItem {
     frequency: string;
     duration: string;
     instructions: string;
+    customName?: string;
+    strength?: string;
+    type?: string;
+    packaging?: string;
 }
 
 /**

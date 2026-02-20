@@ -212,15 +212,22 @@ export const generateGlassesPDF = async (
 	// Show title if: near vision is selected AND at least one eye is enabled
 	const shouldShowNearVisionTitle = shouldShowNearVision && hasAnyNearVisionEye;
 
-	// OD and OG written once at top, aligned with value columns
+	// Oeil droit / Oeil gauche written once at top, centered in their columns
 	const showAnyVision = (shouldShowFarVision && hasAnyFarVisionEye) || (shouldShowNearVision && hasAnyNearVisionEye);
 	if (showAnyVision && (shouldShowRightEyeFar || shouldShowRightEyeNear || shouldShowLeftEyeFar || shouldShowLeftEyeNear)) {
 		const headerY = y;
+		const odText = "Oeil droit";
+		const ogText = "Oeil gauche";
+		const headerSize = TEXT_SIZES.sectionHeader;
+		const colODCenter = (colODValue + width / 2) / 2;
+		const colOGCenter = (colOGValue + width - RIGHT_MARGIN) / 2;
 		if (shouldShowRightEyeFar || shouldShowRightEyeNear) {
-			page.drawText("OD", { x: colODValue, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+			const w = helveticaBold.widthOfTextAtSize(odText, headerSize);
+			page.drawText(odText, { x: colODCenter - w / 2, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		if (shouldShowLeftEyeFar || shouldShowLeftEyeNear) {
-			page.drawText("OG", { x: colOGValue, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+			const w = helveticaBold.widthOfTextAtSize(ogText, headerSize);
+			page.drawText(ogText, { x: colOGCenter - w / 2, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		y -= 2 * SECTION_GAP;
 	}
@@ -228,7 +235,7 @@ export const generateGlassesPDF = async (
 	if (shouldShowFarVision && hasAnyFarVisionEye) {
 		// Vision de Loin: label on its own line, values on separate line below
 		if (shouldShowFarVisionTitle) {
-			page.drawText('Vision de Loin:', {
+			page.drawText('Loin:', {
 				x: colODLabel,
 				y,
 				size: TEXT_SIZES.sectionHeader,
@@ -310,7 +317,7 @@ export const generateGlassesPDF = async (
 	if (shouldShowNearVision && hasAnyNearVisionEye) {
 		// Vision de Près: label on its own line, values on separate line below
 		if (shouldShowNearVisionTitle) {
-			page.drawText("Vision de Près:", {
+			page.drawText("Près:", {
 				x: colODLabel,
 				y,
 				size: TEXT_SIZES.sectionHeader,
