@@ -253,9 +253,19 @@ const SupabaseMedicineAutocomplete: React.FC<SupabaseMedicineAutocompleteProps> 
                                                 </Badge>
                                             )}
                                         </div>
-                                        {option.strength && (
+                                        {(option.strength || option.form || option.defaultDosage) && (
                                             <span className="ml-6 text-xs text-muted-foreground mt-0.5">
-                                                {option.strength} • {option.form}
+                                                {[
+                                                    option.strength,
+                                                    option.form,
+                                                    option.defaultDosage
+                                                        ? (option.defaultDosage.length > 10
+                                                            ? option.defaultDosage.slice(0, 10) + '...'
+                                                            : option.defaultDosage)
+                                                        : null,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' • ')}
                                             </span>
                                         )}
                                     </CommandItem>

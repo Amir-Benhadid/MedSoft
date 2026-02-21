@@ -80,7 +80,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
         <div className="flex flex-col transition-all duration-300" style={{ gap: 'var(--dash-gap)' }}>
             {/* Main Header */}
             <div className="bg-slate-50/90 rounded-md border border-slate-200 shadow-sm flex items-center justify-between transition-all" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}>
-                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Réfraction</span>
+                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'calc(var(--dash-label) * 1.2)' }}>Réfraction</span>
 
                 {/* Dilation Button */}
                 {!readOnly && (activeAppointment || activeWaitlist) && (

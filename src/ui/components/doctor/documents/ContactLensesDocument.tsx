@@ -161,10 +161,10 @@ export const generateContactLensesPDF = async (
 		// OD and OG written once at top - aligned with value columns
 		const headerY = y;
 		if (shouldShowRightEye) {
-			page.drawText("OD", { x: colOD, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+			page.drawText("Oeil droit", { x: colOD, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		if (shouldShowLeftEye) {
-			page.drawText("OG", { x: colOG, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
+			page.drawText("Oeil gauche", { x: colOG, y: headerY, size: TEXT_SIZES.sectionHeader, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		y -= 2 * SECTION_GAP;
 	}
@@ -226,7 +226,7 @@ export const generateContactLensesPDF = async (
 			}
 			y -= LINE_HEIGHTS.normal;
 		}
-		y -= 2 * SECTION_GAP;
+		y -= SECTION_GAP;
 	}
 
 	// Type de lentilles - same layout: row labels on left, values under OD/OG

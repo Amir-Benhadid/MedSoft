@@ -46,8 +46,8 @@ export const generateReportPDF = async (
     let y = drawTitle(context, 'COMPTE-RENDU', drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
     // Antécédents
-    const generalHistory = reportData?.generalMedicalHistory;
-    const ophthalmologicalHistory = reportData?.ophthalmologicalHistory;
+    const generalHistory = DocumentUtils.formatFieldDisplay(reportData?.generalMedicalHistory);
+    const ophthalmologicalHistory = DocumentUtils.formatFieldDisplay(reportData?.ophthalmologicalHistory);
 
     // Main statement
     const patientAge = DocumentUtils.calculateAge(patient.dob);
@@ -294,7 +294,7 @@ const MedicalReportDocument: React.FC = () => {
                         <div className="space-y-1">
                             <Label className="text-[10px] font-bold text-indigo-600/80 uppercase tracking-tight">Antécédents généraux</Label>
                             <OptimizedInput
-                                value={getValue('generalMedicalHistory', clinicalExam?.generalMedicalHistory)}
+                                value={DocumentUtils.formatFieldDisplay(getValue('generalMedicalHistory', clinicalExam?.generalMedicalHistory))}
                                 onChange={(val) => handleDataChange('generalMedicalHistory')(val)}
                                 className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
                             />
@@ -302,7 +302,7 @@ const MedicalReportDocument: React.FC = () => {
                         <div className="space-y-1">
                             <Label className="text-[10px] font-bold text-indigo-600/80 uppercase tracking-tight">Antécédents ophtalmologiques</Label>
                             <OptimizedInput
-                                value={getValue('ophthalmologicalHistory', clinicalExam?.ophthalmologicalHistory)}
+                                value={DocumentUtils.formatFieldDisplay(getValue('ophthalmologicalHistory', clinicalExam?.ophthalmologicalHistory))}
                                 onChange={(val) => handleDataChange('ophthalmologicalHistory')(val)}
                                 className="h-8 font-bold text-slate-900 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-200"
                             />

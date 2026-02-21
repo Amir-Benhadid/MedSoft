@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect, KeyboardEvent, useMemo } from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { X, Plus } from "lucide-react";
 import { cn } from "@/ui/lib/utils";
-import { Badge } from "@/ui/components/ui/badge";
 import {
     Command,
     CommandGroup,
@@ -9,8 +8,11 @@ import {
     CommandList,
 } from "@/ui/components/ui/command";
 import { orpcClient } from "@/ui/lib/orpc/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/components/ui/popover";
+
+/** Delimiter between base (option) and details. Stored in value as "Base | details" */
+const DETAILS_DELIMITER = " | ";
 
 interface SmartMultiSelectInputProps {
     category: string;
@@ -35,10 +37,9 @@ export function SmartMultiSelectInput({
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const extraInputRefs = useRef<Record<number, HTMLInputElement>>({});
-    const queryClient = useQueryClient();
 
     // Parse current values
-    const selectedValues = value.split(',').map(s => s.trim()).filter(Boolean);
+    const selectedValues = value.split(',').map(s => s.trimStart()).filter(s => s.trim() !== "");
 
     // Fetch options
     const { data: options = [], isLoading } = useQuery({
@@ -48,49 +49,34 @@ export function SmartMultiSelectInput({
         }
     });
 
-    const previousParsedRef = useRef<{ original: string, base: string, extra: string }[]>([]);
-
-    const parsedValues = useMemo(() => {
-        const result = selectedValues.map((val) => {
-            let base = val;
-            let extra = "";
-            let longestMatch = "";
-            for (const opt of options) {
-                const optVal = opt.value.trim();
-                if (!optVal) continue;
-                if (val.toLowerCase() === optVal.toLowerCase() ||
-                    val.toLowerCase().startsWith(optVal.toLowerCase() + " ")) {
-                    if (optVal.length > longestMatch.length) {
-                        longestMatch = optVal;
-                    }
-                }
+    // Parse each item: "Base | details" → { base, details }, else { base: item, details: "" }
+    // Backwards compat: legacy "Base extra text" without delimiter → match options to split
+    const parsedValues = selectedValues.map((val) => {
+        const delimIndex = val.indexOf(DETAILS_DELIMITER);
+        if (delimIndex >= 0) {
+            const base = val.slice(0, delimIndex).trim();
+            const details = val.slice(delimIndex + DETAILS_DELIMITER.length);
+            return { original: val, base: base || val, details };
+        }
+        // Legacy: no delimiter - match longest option as base
+        let base = val.trim();
+        let details = "";
+        let longestMatch = "";
+        for (const opt of options) {
+            const optVal = opt.value.trim();
+            if (!optVal) continue;
+            const optLower = optVal.toLowerCase();
+            const valLower = val.toLowerCase();
+            if ((valLower === optLower || valLower.startsWith(optLower + " ")) && optVal.length > longestMatch.length) {
+                longestMatch = optVal;
             }
-
-            if (longestMatch) {
-                base = val.substring(0, longestMatch.length).trim();
-                extra = val.substring(longestMatch.length).trim();
-                return { original: val, base, extra };
-            }
-
-            const prev = previousParsedRef.current.find(p =>
-                val.toLowerCase() === p.base.toLowerCase() ||
-                val.toLowerCase().startsWith(p.base.toLowerCase() + " ")
-            );
-
-            if (prev) {
-                return {
-                    original: val,
-                    base: prev.base,
-                    extra: val.substring(prev.base.length).trim()
-                };
-            }
-
-            return { original: val, base: val.trim(), extra: "" };
-        });
-
-        previousParsedRef.current = result;
-        return result;
-    }, [selectedValues, options]);
+        }
+        if (longestMatch) {
+            base = val.slice(0, longestMatch.length).trim();
+            details = val.slice(longestMatch.length).trimStart();
+        }
+        return { original: val, base, details };
+    });
 
     useEffect(() => {
         if (justAddedIndex !== null) {
@@ -109,20 +95,23 @@ export function SmartMultiSelectInput({
         }
     });
 
+    const getBase = (item: string) => {
+        const i = item.indexOf(DETAILS_DELIMITER);
+        return i >= 0 ? item.slice(0, i).trim() : item.trim();
+    };
+
     const handleAdd = (newValue: string, id?: string) => {
         const trimmed = newValue.trim();
         if (!trimmed) return;
 
-        // Split by comma in case user pastes a list
-        // clean up spaces
         const parts = trimmed.split(',').map(p => p.trim()).filter(Boolean);
-
         const newSelectedValues = [...selectedValues];
         let changed = false;
 
         parts.forEach(part => {
-            // check if case-insensitive match exists in current selection
-            if (!newSelectedValues.some(v => v.toLowerCase() === part.toLowerCase())) {
+            const partBase = getBase(part);
+            const alreadyExists = newSelectedValues.some(v => getBase(v).toLowerCase() === partBase.toLowerCase());
+            if (!alreadyExists) {
                 newSelectedValues.push(part);
                 changed = true;
             }
@@ -179,114 +168,112 @@ export function SmartMultiSelectInput({
     };
 
     const filteredOptions = options.filter(opt =>
-        !selectedValues.includes(opt.value) &&
+        !selectedValues.some(v => getBase(v).toLowerCase() === opt.value.toLowerCase()) &&
         opt.value.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     return (
-        <Popover open={open && (!isLoading) && (filteredOptions.length > 0 || !!inputValue)} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <div
-                    ref={containerRef}
-                    className={cn(
-                        "flex flex-wrap gap-1.5 p-2 min-h-[40px] w-full rounded-md border border-input bg-background/50 text-sm ring-offset-background cursor-text focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
-                        className
-                    )}
-                    onClick={() => inputRef.current?.focus()}
-                >
-                    {parsedValues.map(({ original, base, extra }, index) => (
-                        <Badge key={index} variant="secondary" className="hover:bg-secondary/80 gap-0.5 pr-1 font-normal text-sm py-0.5 flex items-center max-w-full">
-                            <span className="font-semibold px-1 truncate">{base}</span>
-                            <span className="text-muted-foreground/60 select-none">|</span>
-                            <input
-                                ref={(el) => {
-                                    if (el) {
-                                        extraInputRefs.current[index] = el;
-                                    } else {
-                                        delete extraInputRefs.current[index];
-                                    }
-                                }}
-                                type="text"
-                                className="bg-transparent border-b border-transparent focus:border-slate-300 outline-none text-xs min-w-[5ch] px-1 transition-colors"
-                                style={{ width: `${Math.max(5, extra.length + 1)}ch` }}
-                                placeholder=""
-                                value={extra}
-                                onChange={(e) => {
-                                    const newExtra = e.target.value.replace(/,/g, ' ');
-                                    const newValues = [...selectedValues];
-                                    newValues[index] = newExtra.trim() ? `${base} ${newExtra}` : base;
-                                    onSelect(newValues.join(', '));
-                                }}
-                                onClick={(e) => {
+        <Popover open={open && !isLoading && (filteredOptions.length > 0 || !!inputValue)} onOpenChange={setOpen}>
+            <div
+                ref={containerRef}
+                className={cn(
+                    "flex flex-wrap items-center gap-2 p-2.5 min-h-[44px] max-h-[120px] overflow-y-auto overflow-x-hidden w-full rounded-xl border border-slate-200 bg-white/90 text-sm shadow-sm cursor-text transition-[box-shadow,border-color] focus-within:ring-2 focus-within:ring-slate-300/60 focus-within:ring-offset-1 focus-within:border-slate-300 hover:border-slate-300/80",
+                    className
+                )}
+                onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (!target.closest('input') && !target.closest('button')) inputRef.current?.focus();
+                }}
+            >
+                {parsedValues.map(({ original, base, details }, index) => (
+                    <span
+                        key={index}
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50/90 pl-2.5 pr-1 py-1 text-sm shadow-sm max-w-full group/badge"
+                    >
+                        <span className="font-medium text-slate-700 truncate">{base}</span>
+                        <span className="shrink-0 w-px h-3.5 bg-slate-200 rounded-full" aria-hidden />
+                        <input
+                            ref={(el) => {
+                                if (el) extraInputRefs.current[index] = el;
+                                else delete extraInputRefs.current[index];
+                            }}
+                            type="text"
+                            autoComplete="off"
+                            className="min-w-[6ch] max-w-[200px] bg-slate-100/90 border border-slate-200/60 rounded-md outline-none text-xs px-2 py-1 text-slate-700 placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-300/40 transition-[width]"
+                            style={{ width: `${Math.max(details.length + 3, 8)}ch` }}
+                            placeholder="détails…"
+                            value={details}
+                            onChange={(e) => {
+                                const newDetails = e.target.value;
+                                const newValues = [...selectedValues];
+                                newValues[index] = newDetails !== "" ? `${base}${DETAILS_DELIMITER}${newDetails}` : base;
+                                onSelect(newValues.join(', '));
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
                                     e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                                onKeyDown={(e) => {
-                                    e.stopPropagation();
-                                    if (e.key === 'Enter') e.preventDefault();
-                                }}
-                                disabled={disabled}
-                            />
-                            <button
-                                type="button"
-                                className="ml-0.5 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleRemove(original);
-                                }}
-                            >
-                                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                            </button>
-                        </Badge>
-                    ))}
+                                    e.currentTarget.blur();
+                                }
+                                e.stopPropagation(); // Prevent cmdk/popover from capturing keys when typing in details
+                            }}
+                            disabled={disabled}
+                        />
+                        <button
+                            type="button"
+                            className="shrink-0 rounded-full p-0.5 text-slate-400 hover:bg-slate-200/80 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1 transition-colors"
+                            aria-label="Supprimer"
+                            onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(original); }}
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </button>
+                    </span>
+                ))}
+                <PopoverTrigger asChild>
                     <input
                         ref={inputRef}
                         type="text"
                         value={inputValue}
-                        onChange={(e) => {
-                            setInputValue(e.target.value);
-                            setOpen(true);
-                        }}
+                        onChange={(e) => { setInputValue(e.target.value); setOpen(true); }}
                         onKeyDown={handleKeyDown}
-                        placeholder={selectedValues.length === 0 ? placeholder : ""}
-                        className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground min-w-[120px]"
+                        placeholder={selectedValues.length === 0 ? placeholder : "Ajouter…"}
+                        className="flex-1 min-w-[100px] bg-transparent outline-none placeholder:text-slate-400 text-slate-700"
                         disabled={disabled}
                     />
-                </div>
-            </PopoverTrigger>
+                </PopoverTrigger>
+            </div>
             <PopoverContent
-                className="w-[var(--radix-popover-trigger-width)] p-0"
+                className="w-[var(--radix-popover-trigger-width)] p-1 rounded-xl border-slate-200 shadow-lg bg-white"
                 align="start"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <Command>
-                    <CommandList>
+                    <CommandList className="max-h-[280px]">
                         <CommandGroup>
-                            {filteredOptions.slice(0, 10).map((option) => (
+                            {filteredOptions.slice(0, 12).map((option) => (
                                 <CommandItem
                                     key={option.id}
                                     value={option.value}
                                     onSelect={() => handleAdd(option.value, option.id)}
+                                    className="rounded-lg py-2.5 cursor-pointer gap-2"
                                 >
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4 opacity-0"
-                                        )}
-                                    />
-                                    {option.value}
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-500">
+                                        <Plus className="h-3.5 w-3.5" />
+                                    </span>
+                                    <span className="font-medium text-slate-700">{option.value}</span>
                                 </CommandItem>
                             ))}
                             {inputValue && !filteredOptions.some(o => o.value.toLowerCase() === inputValue.toLowerCase()) && (
                                 <CommandItem
                                     value={inputValue}
                                     onSelect={() => handleAdd(inputValue)}
+                                    className="rounded-lg py-2.5 cursor-pointer gap-2 bg-amber-50/80 text-amber-900 border border-amber-200/60"
                                 >
-                                    <span className="text-muted-foreground mr-2">Ajouter</span> "{inputValue}"
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-600">
+                                        <Plus className="h-3.5 w-3.5" />
+                                    </span>
+                                    <span><span className="text-amber-700">Ajouter</span> « {inputValue} »</span>
                                 </CommandItem>
                             )}
                         </CommandGroup>

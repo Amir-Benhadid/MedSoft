@@ -289,6 +289,8 @@ export const useDocumentsState = ({
     const lastSentJsonRef = useRef<string | null>(null);
     // Track when contact lens conversion was last applied (prevents race: overwriting fresh conversion with stale saved data)
     const lastContactLensConversionAppliedRef = useRef(0);
+    // Track when glasses were last synced from refraction (same guard for Lunettes document)
+    const lastGlassesSyncFromRefractionRef = useRef(0);
 
     // Track contact lens source values for automatic conversion
     const prevRightEyeRef = useRef({
@@ -300,6 +302,92 @@ export const useDocumentsState = ({
         sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, type: leftEyeData?.contactLensType,
         diam: leftEyeData?.diam, axis_k: leftEyeData?.axis_k, rayon: leftEyeData?.rayon, lensBrand: leftEyeData?.lensBrand, lensType: leftEyeData?.lensType
     });
+
+    // Track glasses (Lunettes) source values so we sync from refraction like Lentilles
+    const prevGlassesRightRef = useRef({
+        sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, add: rightEyeData?.add, glassType: rightEyeData?.glassType
+    });
+    const prevGlassesLeftRef = useRef({
+        sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, add: leftEyeData?.add, glassType: leftEyeData?.glassType
+    });
+
+    // Sync Lunettes (glasses) document from refraction — same logic as Lentilles: when refraction changes, update print data
+    useEffect(() => {
+        if (suppressNotifyRef.current) return;
+
+        const rightGlassesChanged =
+            rightEyeData?.sph !== prevGlassesRightRef.current.sph ||
+            rightEyeData?.cyl !== prevGlassesRightRef.current.cyl ||
+            rightEyeData?.axis !== prevGlassesRightRef.current.axis ||
+            rightEyeData?.add !== prevGlassesRightRef.current.add ||
+            rightEyeData?.glassType !== prevGlassesRightRef.current.glassType;
+
+        const leftGlassesChanged =
+            leftEyeData?.sph !== prevGlassesLeftRef.current.sph ||
+            leftEyeData?.cyl !== prevGlassesLeftRef.current.cyl ||
+            leftEyeData?.axis !== prevGlassesLeftRef.current.axis ||
+            leftEyeData?.add !== prevGlassesLeftRef.current.add ||
+            leftEyeData?.glassType !== prevGlassesLeftRef.current.glassType;
+
+        if (rightGlassesChanged) {
+            prevGlassesRightRef.current = {
+                sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, add: rightEyeData?.add, glassType: rightEyeData?.glassType
+            };
+            const sph = rightEyeData?.sph ?? '';
+            const cyl = rightEyeData?.cyl ?? '';
+            const axis = rightEyeData?.axis ?? '';
+            const add = rightEyeData?.add ?? '';
+            const sphNum = parseFloat(String(sph).replace(',', '.'));
+            const addNum = parseFloat(String(add).replace(',', '.'));
+            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
+            setPrintGlassesData(prev => ({
+                ...prev,
+                rightEye: {
+                    ...prev.rightEye,
+                    sph: formatNumberWithSign(sph) || sph,
+                    cyl: formatNumberWithSign(cyl) || cyl,
+                    axis: axis,
+                    add: formatNumberWithSign(add) || add,
+                    glassType: rightEyeData?.glassType ?? prev.rightEye.glassType,
+                    nearSph,
+                    nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : prev.rightEye.nearCyl,
+                    nearAxis: axis || prev.rightEye.nearAxis,
+                }
+            }));
+            lastGlassesSyncFromRefractionRef.current = Date.now();
+        }
+
+        if (leftGlassesChanged) {
+            prevGlassesLeftRef.current = {
+                sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, add: leftEyeData?.add, glassType: leftEyeData?.glassType
+            };
+            const sph = leftEyeData?.sph ?? '';
+            const cyl = leftEyeData?.cyl ?? '';
+            const axis = leftEyeData?.axis ?? '';
+            const add = leftEyeData?.add ?? '';
+            const sphNum = parseFloat(String(sph).replace(',', '.'));
+            const addNum = parseFloat(String(add).replace(',', '.'));
+            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
+            setPrintGlassesData(prev => ({
+                ...prev,
+                leftEye: {
+                    ...prev.leftEye,
+                    sph: formatNumberWithSign(sph) || sph,
+                    cyl: formatNumberWithSign(cyl) || cyl,
+                    axis: axis,
+                    add: formatNumberWithSign(add) || add,
+                    glassType: leftEyeData?.glassType ?? prev.leftEye.glassType,
+                    nearSph,
+                    nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : prev.leftEye.nearCyl,
+                    nearAxis: axis || prev.leftEye.nearAxis,
+                }
+            }));
+            lastGlassesSyncFromRefractionRef.current = Date.now();
+        }
+    }, [
+        rightEyeData?.sph, rightEyeData?.cyl, rightEyeData?.axis, rightEyeData?.add, rightEyeData?.glassType,
+        leftEyeData?.sph, leftEyeData?.cyl, leftEyeData?.axis, leftEyeData?.add, leftEyeData?.glassType,
+    ]);
 
     useEffect(() => {
         if (suppressNotifyRef.current) return;
@@ -474,11 +562,15 @@ export const useDocumentsState = ({
                 }
                 if (printStates.printGlassesData) {
                     const newPrintGlassesData = printStates.printGlassesData;
-                    setPrintGlassesData(prev =>
-                        JSON.stringify(prev) !== JSON.stringify(newPrintGlassesData)
-                            ? newPrintGlassesData
-                            : prev
-                    );
+                    // Skip overwriting when glasses were just synced from refraction (same as contact lens guard)
+                    const msSinceGlassesSync = Date.now() - lastGlassesSyncFromRefractionRef.current;
+                    if (msSinceGlassesSync >= 400) {
+                        setPrintGlassesData(prev =>
+                            JSON.stringify(prev) !== JSON.stringify(newPrintGlassesData)
+                                ? newPrintGlassesData
+                                : prev
+                        );
+                    }
                 }
                 if (printStates.printContactLensesData) {
                     const newPrintContactLensesData = printStates.printContactLensesData;

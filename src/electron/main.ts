@@ -542,6 +542,12 @@ function setupIPC() {
 		return seedMedicinesFromSupabase();
 	});
 
+	ipcMain.handle('app:seedLentilleConversion', async () => {
+		const { getDatabase, seedLentilleConversion } = await import('./db/database.js');
+		const db = getDatabase();
+		return seedLentilleConversion(db);
+	});
+
 	ipcMain.handle('network:getServerIP', async () => {
 		const { getLocalIP } = await import('./utils/discovery.js');
 		return getLocalIP();

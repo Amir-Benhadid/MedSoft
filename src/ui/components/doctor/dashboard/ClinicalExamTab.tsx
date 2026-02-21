@@ -32,16 +32,16 @@ function ClinicalExamTab({
     }
 
     return (
-        <div className="h-full flex flex-col" style={{ gap: 'var(--dash-gap)' }}>
-            {/* 1. Single-line observations - Compact height */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 flex-none" style={{ gap: 'var(--dash-gap)' }}>
+        <div className="h-full flex flex-col min-h-0" style={{ gap: 'var(--dash-gap)' }}>
+            {/* 1. Row 1 - 1 vertical space */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 flex-1 min-h-0" style={{ gap: 'var(--dash-gap)' }}>
                 <RowLayout label="INSP" title="Inspection" colorAccent="slate" bgColor="bg-slate-50/90" compact>
                     <OptimizedInput
                         value={data.inspection || ""}
                         onChange={handleFieldChange("inspection")}
                         disabled={readOnly}
-                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full bg-white shadow-sm transition-all focus:border-slate-400 h-full"
-                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full h-full bg-white shadow-sm transition-all focus:border-slate-400"
+                        style={{ fontSize: 'calc(var(--dash-label) + 1px)' }}
                         placeholder="Rien à signaler..."
                     />
                 </RowLayout>
@@ -50,17 +50,17 @@ function ClinicalExamTab({
                         value={data.motilityExam || ""}
                         onChange={handleFieldChange("motilityExam")}
                         disabled={readOnly}
-                        className="min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 leading-tight placeholder:text-indigo-300/50 w-full bg-white shadow-sm transition-all focus:border-indigo-400 h-full"
-                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 leading-tight placeholder:text-indigo-300/50 w-full h-full bg-white shadow-sm transition-all focus:border-indigo-400"
+                        style={{ fontSize: 'calc(var(--dash-label) + 1px)' }}
                         placeholder="Normal..."
                     />
                 </RowLayout>
             </div>
 
-            {/* 2. Two-line detailed exam - Tall height */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 flex-none" style={{ gap: 'var(--dash-gap)' }}>
+            {/* 2. Row 2 - 2 vertical spaces */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 flex-[2] min-h-0" style={{ gap: 'var(--dash-gap)' }}>
                 <RowLayout label="SEG ANT" title="Segment Antérieur" colorAccent="blue" bgColor="bg-blue-50/80">
-                    <div style={{ height: 'calc(var(--dash-h) * 2.5)' }}>
+                    <div className="h-full min-h-0 overflow-hidden">
                         <SmartMultiSelectInput
                             category="anterior_segment"
                             value={data.anteriorSegment?.slit_lamp_exam || ""}
@@ -76,17 +76,17 @@ function ClinicalExamTab({
                         value={data.fundus?.fundus_exam || ""}
                         onChange={handleNestedChange("fundus", "fundus_exam")}
                         disabled={readOnly}
-                        className="resize-none border border-purple-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-purple-400 text-xs xl:text-sm 2xl:text-base leading-normal placeholder:text-purple-300/50 w-full bg-white shadow-sm"
-                        style={{ height: 'calc(var(--dash-h) * 2.5)', padding: 'calc(var(--dash-p) / 2)' }}
+                        className="resize-none h-full min-h-0 border border-purple-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-purple-400 text-xs xl:text-sm 2xl:text-base leading-normal placeholder:text-purple-300/50 w-full bg-white shadow-sm"
+                        style={{ padding: 'calc(var(--dash-p) / 2)' }}
                         placeholder="Examen du fond d'œil..."
                     />
                 </RowLayout>
             </div>
 
-            {/* 3. Single-line conclusions - Compact height */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 flex-none" style={{ gap: 'var(--dash-gap)' }}>
+            {/* 3. Row 3 - 1 vertical space */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 flex-1 min-h-0" style={{ gap: 'var(--dash-gap)' }}>
                 <RowLayout label="DIAG" title="Diagnostic" colorAccent="emerald" bgColor="bg-emerald-50/80" compact>
-                    <div style={{ height: 'var(--dash-h)' }}>
+                    <div className="h-full min-h-0 overflow-hidden">
                         <SmartMultiSelectInput
                             category="diagnostic"
                             value={data.diagnosis || ""}
@@ -96,13 +96,13 @@ function ClinicalExamTab({
                         />
                     </div>
                 </RowLayout>
-                <RowLayout label="TRT" title="Traitement" colorAccent="teal" bgColor="bg-teal-50/80" compact>
-                    <OptimizedInput
+                <RowLayout label="CDT" title="Traitement" colorAccent="teal" bgColor="bg-teal-50/80" compact>
+                    <OptimizedTextarea
                         value={data.treatmentPlan || ""}
                         onChange={handleFieldChange("treatmentPlan")}
                         disabled={readOnly}
-                        className="min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm h-full"
-                        style={{ height: 'var(--dash-h)', fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="resize-none h-full min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm"
+                        style={{ fontSize: 'calc(var(--dash-label) + 1px)', paddingBlock: 'calc(var(--dash-p) / 2)' }}
                         placeholder="Traitement prescrit..."
                     />
                 </RowLayout>
@@ -134,8 +134,8 @@ function RowLayout({ label, title, colorAccent = "slate", bgColor, compact, chil
     return (
         <div
             className={cn(
-                "flex rounded-lg border border-slate-200/50",
-                compact ? "items-center" : "items-start",
+                "flex rounded-lg border border-slate-200/50 min-h-0 overflow-hidden",
+                "items-stretch",
                 bgColor,
                 className
             )}
@@ -147,7 +147,7 @@ function RowLayout({ label, title, colorAccent = "slate", bgColor, compact, chil
                     style={{ fontSize: 'var(--dash-label)' }}
                 >{label}</span>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 min-h-0">
                 {children}
             </div>
         </div>

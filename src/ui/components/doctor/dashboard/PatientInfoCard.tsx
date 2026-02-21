@@ -104,7 +104,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
-                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                        <div style={{ height: 'calc(var(--dash-h) * 2)', minHeight: 'calc(var(--dash-h) * 2)', maxHeight: 'calc(var(--dash-h) * 2)', overflow: 'hidden' }}>
                             <SmartMultiSelectInput
                                 category="antecedent_gen"
                                 value={clinicalExam.generalMedicalHistory || ""}
@@ -122,7 +122,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                         style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
                     >
                         <Label className="font-bold text-slate-500 uppercase tracking-tight px-1" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Diagnostic</Label>
-                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                        <div style={{ height: 'calc(var(--dash-h) * 2)', minHeight: 'calc(var(--dash-h) * 2)', maxHeight: 'calc(var(--dash-h) * 2)', overflow: 'hidden' }}>
                             <SmartMultiSelectInput
                                 category="diagnostic"
                                 value={clinicalExam.diagnosis || ""}
@@ -149,7 +149,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 <Maximize2 className="w-3 h-3 2xl:w-3.5 2xl:h-3.5" />
                             </button>
                         </div>
-                        <div style={{ minHeight: 'var(--dash-h)' }}>
+                        <div style={{ height: 'calc(var(--dash-h) * 2)', minHeight: 'calc(var(--dash-h) * 2)', maxHeight: 'calc(var(--dash-h) * 2)', overflow: 'hidden' }}>
                             <SmartMultiSelectInput
                                 category="antecedent_oph"
                                 value={clinicalExam.ophthalmologicalHistory || ""}

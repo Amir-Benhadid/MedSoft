@@ -17,7 +17,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/ui/components/ui/alert-dialog";
-import { Trash2, AlertTriangle, Settings, Database } from "lucide-react";
+import { Trash2, AlertTriangle, Settings, Database, RefreshCw } from "lucide-react";
 import { useState } from "react";
 
 interface DoctorSettingsDialogProps {
@@ -29,6 +29,8 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
     const [isResetting, setIsResetting] = useState(false);
     const [isSeeding, setIsSeeding] = useState(false);
     const [seedMessage, setSeedMessage] = useState<string | null>(null);
+    const [isSeedingConversion, setIsSeedingConversion] = useState(false);
+    const [conversionMessage, setConversionMessage] = useState<string | null>(null);
 
     const handleFactoryReset = async () => {
         setIsResetting(true);
@@ -51,6 +53,20 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
             setSeedMessage("Erreur lors du seed des médicaments.");
         } finally {
             setIsSeeding(false);
+        }
+    };
+
+    const handleSeedLentilleConversion = async () => {
+        setIsSeedingConversion(true);
+        setConversionMessage(null);
+        try {
+            const result = await window.electronAPI.seedLentilleConversion();
+            setConversionMessage(result.success ? result.message : result.message);
+        } catch (error) {
+            console.error("Seed lentille conversion failed:", error);
+            setConversionMessage("Erreur lors du seed lentille_conv.");
+        } finally {
+            setIsSeedingConversion(false);
         }
     };
 
@@ -89,6 +105,23 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
                         {seedMessage && (
                             <p className={`text-sm mt-3 ${seedMessage.startsWith("Erreur") ? "text-red-600" : "text-green-700"}`}>
                                 {seedMessage}
+                            </p>
+                        )}
+                        <p className="text-sm text-slate-600 mt-4 mb-2">
+                            Remplit la table de conversion lentilles (lunettes ↔ lentilles de contact) avec les valeurs de référence.
+                        </p>
+                        <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            onClick={handleSeedLentilleConversion}
+                            disabled={isSeedingConversion}
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            {isSeedingConversion ? "Seed en cours..." : "Seed table lentille_conv"}
+                        </Button>
+                        {conversionMessage && (
+                            <p className={`text-sm mt-3 ${conversionMessage.startsWith("Erreur") || conversionMessage.includes("n'existe pas") || conversionMessage.includes("introuvable") ? "text-red-600" : "text-green-700"}`}>
+                                {conversionMessage}
                             </p>
                         )}
                     </div>

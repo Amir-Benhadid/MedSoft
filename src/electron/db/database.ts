@@ -73,6 +73,7 @@ export function getDatabase(): Database.Database {
 
 	db.pragma('journal_mode = WAL');
 	db.pragma('foreign_keys = ON');
+	db.exec('PRAGMA busy_timeout = 15000'); // Wait up to 15s for lock instead of "database is locked"
 
 	console.log('✅ Database initialized');
 
@@ -573,15 +574,25 @@ export function seedDatabase(db: Database.Database) {
 
 			if (needsReseed) {
 				console.log('🌱 Seeding conversions...');
-				const seedPath = path.join(process.cwd(), 'public', 'seed', 'conversion.sql');
-				if (fs.existsSync(seedPath)) {
+				const seedPaths = [
+					path.join(process.cwd(), 'public', 'seed', 'conversion.sql'),
+					path.join(app.getAppPath(), 'public', 'seed', 'conversion.sql'),
+				];
+				let seedPath: string | null = null;
+				for (const p of seedPaths) {
+					if (fs.existsSync(p)) {
+						seedPath = p;
+						break;
+					}
+				}
+				if (seedPath) {
 					let sql = fs.readFileSync(seedPath, 'utf-8');
-					// Fix Postgres schema syntax for SQLite
+					// Fix Postgres schema syntax for SQLite (if present)
 					sql = sql.replace(/"public"\./g, '');
 					db.exec(sql);
 					console.log('✅ Conversions seeded successfully.');
 				} else {
-					console.warn('⚠️ Conversion seed file not found at', seedPath);
+					console.warn('⚠️ Conversion seed file not found. Tried:', seedPaths.join('; '));
 				}
 			}
 		} else {
@@ -590,6 +601,51 @@ export function seedDatabase(db: Database.Database) {
 
 	} catch (error) {
 		console.error('❌ Seeding failed:', error);
+	}
+}
+
+/**
+ * Seeds the lentille_conv table from public/seed/conversion.sql.
+ * Clears existing rows and inserts the conversion data. Call from settings to seed the table.
+ *
+ * @param db - The database instance
+ * @returns { success: boolean, message: string }
+ */
+export function seedLentilleConversion(db: Database.Database): { success: boolean; message: string } {
+	try {
+		if (!db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='lentille_conv'").get()) {
+			return { success: false, message: "Table lentille_conv n'existe pas." };
+		}
+		const seedPaths = [
+			path.join(process.cwd(), 'public', 'seed', 'conversion.sql'),
+			path.join(app.getAppPath(), 'public', 'seed', 'conversion.sql'),
+		];
+		let seedPath: string | null = null;
+		for (const p of seedPaths) {
+			if (fs.existsSync(p)) {
+				seedPath = p;
+				break;
+			}
+		}
+		if (!seedPath) {
+			return { success: false, message: "Fichier conversion.sql introuvable." };
+		}
+		const transaction = db.transaction(() => {
+			db.exec('DELETE FROM lentille_conv');
+			let sql = fs.readFileSync(seedPath!, 'utf-8');
+			sql = sql.replace(/"public"\./g, '');
+			db.exec(sql);
+		});
+		transaction();
+		const count = db.prepare('SELECT count(*) as count FROM lentille_conv').get() as { count: number };
+		console.log('✅ Lentille conversion seeded:', count.count, 'rows');
+		return { success: true, message: `Table lentille_conv remplie (${count.count} lignes).` };
+	} catch (error) {
+		console.error('❌ seedLentilleConversion failed:', error);
+		return {
+			success: false,
+			message: error instanceof Error ? error.message : 'Erreur lors du seed lentille_conv.',
+		};
 	}
 }
 

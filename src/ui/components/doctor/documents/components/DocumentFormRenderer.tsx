@@ -198,7 +198,7 @@ const DocumentFormRenderer: React.FC<DocumentFormRendererProps> = ({
                 {activeDocTab === 'workStop' && <WorkStopDocument />}
                 {activeDocTab === 'absence' && <AbsenceCertificateDocument />}
                 <div className={cn(
-                    "h-full overflow-hidden",
+                    "h-full min-h-0 overflow-y-auto",
                     activeDocTab === 'report' ? 'block' : 'hidden'
                 )}>
                     <ReportDocument />

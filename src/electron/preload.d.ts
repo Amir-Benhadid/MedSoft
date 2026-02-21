@@ -23,6 +23,8 @@ export interface ElectronAPI {
 	selectFile: (filters: any[]) => Promise<string | null>;
 	copyLogo: (path: string) => Promise<string | null>;
 	factoryReset: () => Promise<boolean>;
+	seedMedicines: () => Promise<{ success: boolean; message: string; stats?: { fetched: number; inserted: number; skipped: number } }>;
+	seedLentilleConversion: () => Promise<{ success: boolean; message: string }>;
 	// Network
 	scanForServers: () => Promise<any[]>;
 	getServerIP: () => Promise<string>;

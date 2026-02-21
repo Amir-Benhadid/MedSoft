@@ -125,7 +125,7 @@ function TonometryTab({ readOnly, data }: TonometryTabProps) {
                 className="border-b border-slate-100 bg-slate-50/90 flex items-center justify-between"
                 style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}
             >
-                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'var(--dash-label)' }}>Tonométrie</span>
+                <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'calc(var(--dash-label) * 1.2)' }}>Tonométrie</span>
 
                 {!readOnly && (
                     <Button

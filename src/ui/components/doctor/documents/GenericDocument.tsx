@@ -142,7 +142,7 @@ const GenericDocument: React.FC<{ config: GenericRecordConfig }> = ({ config }) 
         if (p.type === 'fill_age' && patient?.dob) {
             return DocumentUtils.calculateAge(patient.dob).toString();
         } else if (p.type === 'fill_antecedents') {
-            return [clinicalExam.generalMedicalHistory, clinicalExam.ophthalmologicalHistory].filter(Boolean).join(', ');
+            return [DocumentUtils.formatFieldDisplay(clinicalExam.generalMedicalHistory), DocumentUtils.formatFieldDisplay(clinicalExam.ophthalmologicalHistory)].filter(Boolean).join(', ');
         } else if (p.type === 'date') {
             return format(new Date(), 'dd/MM/yyyy');
         }

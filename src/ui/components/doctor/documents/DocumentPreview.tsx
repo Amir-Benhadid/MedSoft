@@ -552,12 +552,14 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                         VERRES CORRECTEURS
                                     </p>
 
-                                    {/* Vision de Loin */}
-                                    {printControlFlags?.includeFarVision === true && (
+                                    {/* Far vision values always shown when eyes enabled; "Vision de Loin" label only when checkbox selected */}
+                                    {(printControlFlags?.includeRightEyeFar !== false || printControlFlags?.includeLeftEyeFar !== false) && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
-                                                Vision de Loin:
-                                            </p>
+                                            {printControlFlags?.includeFarVision === true && (
+                                                <p className="text-xs mb-1 font-semibold">
+                                                    Vision de Loin:
+                                                </p>
+                                            )}
                                             {printControlFlags?.includeRightEyeFar !== false && (
                                                 <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
                                                     <p className="text-xs font-medium text-blue-700">
@@ -737,11 +739,11 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                         if (antecedentsValue) {
                                             return (
                                                 <>
-                                                    <p className="text-xs mb-1 font-semibold">
+                                                    <p className="text-xs mb-1">
                                                         Antécédents:
                                                     </p>
                                                     <p className="text-xs mb-2">
-                                                        {antecedentsValue}
+                                                        {antecedentsValue.replace(/ \| /g, ' ')}
                                                     </p>
                                                 </>
                                             );
@@ -751,7 +753,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
 
                                     {reportData.inspection && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
+                                            <p className="text-xs mb-1">
                                                 Inspection:
                                             </p>
                                             <p className="text-xs mb-2">
@@ -766,7 +768,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                             reportData.visualAcuityVL_SC_OD || reportData.visualAcuityVL_SC_OG ||
                                             rightEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuityVL_SC) && (
                                             <>
-                                                <p className="text-xs mb-1 font-semibold">
+                                                <p className="text-xs mb-1">
                                                     Acuité visuelle sans correction:
                                                 </p>
                                                 <div className="flex gap-4 mb-2">
@@ -790,7 +792,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                             reportData.visualAcuityVL_AC_OD || reportData.visualAcuityVL_AC_OG ||
                                             rightEyeData?.visualAcuityVL_AC || leftEyeData?.visualAcuityVL_AC) && (
                                             <>
-                                                <p className="text-xs mb-1 font-semibold">
+                                                <p className="text-xs mb-1">
                                                     Acuité visuelle avec correction:
                                                 </p>
                                                 <div className="flex gap-4 mb-2">
@@ -811,7 +813,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                     {/* Custom fields */}
                                     {reportData.customTitle && reportData.customText && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
+                                            <p className="text-xs mb-1">
                                                 {reportData.customTitle}:
                                             </p>
                                             <p className="text-xs mb-2">
@@ -850,7 +852,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                         if (pioCorrigeeOD || pioCorrigeeOG) {
                                             return (
                                                 <>
-                                                    <p className="text-xs mb-1 font-semibold">
+                                                    <p className="text-xs mb-1">
                                                         Tonométrie:
                                                     </p>
                                                     <div className="flex gap-4 mb-2">
@@ -873,7 +875,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
 
                                     {reportData.segmentAnterieur && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
+                                            <p className="text-xs mb-1">
                                                 Segment antérieur:
                                             </p>
                                             <p className="text-xs mb-2">
@@ -884,7 +886,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
 
                                     {reportData.fondOeil && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
+                                            <p className="text-xs mb-1">
                                                 Fond d'œil:
                                             </p>
                                             <p className="text-xs mb-2">
@@ -895,7 +897,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
 
                                     {(detailedClinicalExam?.diagnosis || reportData.conclusion) && (
                                         <>
-                                            <p className="text-xs mb-1 font-semibold">
+                                            <p className="text-xs mb-1">
                                                 Conclusion:
                                             </p>
                                             <p className="text-xs">

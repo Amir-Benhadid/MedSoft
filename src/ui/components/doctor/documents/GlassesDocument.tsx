@@ -178,12 +178,6 @@ export const generateGlassesPDF = async (
 	const leftAxisRaw = printData?.leftEye?.axis || ''; // Keep raw value for axis (0 is valid)
 	const leftAxis = leftAxisRaw.trim() !== '' ? leftAxisRaw : ''; // Only empty if truly empty
 
-	// Determine if we should show far vision section
-	// Always show if far vision is explicitly selected OR if neither is selected
-	// (OD/OG will always be displayed, either with data or with "Plan" default)
-	const shouldShowFarVision = printControlFlags?.includeFarVision === true ||
-		(!printControlFlags?.includeFarVision && !printControlFlags?.includeNearVision);
-
 	// Check which eyes are enabled for far vision
 	// Explicitly check: hide only if false, show otherwise (including undefined which defaults to true)
 	const shouldShowRightEyeFar = printControlFlags?.includeRightEyeFar === false ? false : true;
@@ -192,9 +186,8 @@ export const generateGlassesPDF = async (
 	// Only show far vision section if at least one eye is enabled
 	const hasAnyFarVisionEye = shouldShowRightEyeFar || shouldShowLeftEyeFar;
 
-	// Determine if we should show far vision title
-	// Show title if: far vision should be shown AND at least one eye is enabled
-	const shouldShowFarVisionTitle = shouldShowFarVision && hasAnyFarVisionEye;
+	// Show "Loin:" title only when the Vision de Loin checkbox is selected; values always appear when eyes are enabled
+	const shouldShowFarVisionTitle = printControlFlags?.includeFarVision === true && hasAnyFarVisionEye;
 
 	// Determine if we should show near vision section
 	// Show if near vision is explicitly selected (always show OD/OG, either with data or "Plan")
@@ -213,7 +206,8 @@ export const generateGlassesPDF = async (
 	const shouldShowNearVisionTitle = shouldShowNearVision && hasAnyNearVisionEye;
 
 	// Oeil droit / Oeil gauche written once at top, centered in their columns
-	const showAnyVision = (shouldShowFarVision && hasAnyFarVisionEye) || (shouldShowNearVision && hasAnyNearVisionEye);
+	// Include far vision whenever we have far vision eyes (values always appear; "Loin" label only when checkbox is on)
+	const showAnyVision = hasAnyFarVisionEye || (shouldShowNearVision && hasAnyNearVisionEye);
 	if (showAnyVision && (shouldShowRightEyeFar || shouldShowRightEyeNear || shouldShowLeftEyeFar || shouldShowLeftEyeNear)) {
 		const headerY = y;
 		const odText = "Oeil droit";
@@ -223,17 +217,17 @@ export const generateGlassesPDF = async (
 		const colOGCenter = (colOGValue + width - RIGHT_MARGIN) / 2;
 		if (shouldShowRightEyeFar || shouldShowRightEyeNear) {
 			const w = helveticaBold.widthOfTextAtSize(odText, headerSize);
-			page.drawText(odText, { x: colODCenter - w / 2, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
+			page.drawText(odText, { x: colODValue, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		if (shouldShowLeftEyeFar || shouldShowLeftEyeNear) {
 			const w = helveticaBold.widthOfTextAtSize(ogText, headerSize);
-			page.drawText(ogText, { x: colOGCenter - w / 2, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
+			page.drawText(ogText, { x: colOGValue, y: headerY, size: headerSize, font: helveticaBold, color: rgb(0, 0, 0) });
 		}
 		y -= 2 * SECTION_GAP;
 	}
 
-	if (shouldShowFarVision && hasAnyFarVisionEye) {
-		// Vision de Loin: label on its own line, values on separate line below
+	// Far vision values: always show when eyes are enabled; "Loin:" label only when checkbox is selected
+	if (hasAnyFarVisionEye) {
 		if (shouldShowFarVisionTitle) {
 			page.drawText('Loin:', {
 				x: colODLabel,
@@ -799,17 +793,18 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 				</div>
 			</div>
 
-			{/* Vision de Loin fields */}
-			{printControlFlags.includeFarVision === true && (
-				<div className="bg-card rounded-xl p-3 border border-border shadow-sm relative space-y-2">
-					<div className="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 mb-1.5" style={{
-						background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-						boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
-					}}>
-						<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
-							Vision de Loin
-						</h4>
-					</div>
+			{/* Vision de Loin / OD-OG fields - OD/OG always shown; title only when Vision de Loin is checked */}
+			<div className="bg-card rounded-xl p-3 border border-border shadow-sm relative space-y-2">
+					{printControlFlags.includeFarVision === true && (
+						<div className="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 mb-1.5" style={{
+							background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+							boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
+						}}>
+							<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
+								Vision de Loin
+							</h4>
+						</div>
+					)}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						{/* Right Eye Far */}
 						<div className="flex flex-col gap-2 bg-blue-500/10 rounded-xl p-2.5 border-2 border-blue-300/50 shadow-sm hover:shadow-md transition-all">
@@ -1018,7 +1013,6 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 						</div>
 					</div>
 				</div>
-			)}
 
 			{/* Vision de Près fields */}
 			{printControlFlags.includeNearVision === true && (

@@ -119,12 +119,14 @@ export const generateReportPDF = async (
 	let y = drawTitle(context, 'COMPTE-RENDU', drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
 	// Antécédents and custom title data
-	const generalHistory =
+	const generalHistory = DocumentUtils.formatFieldDisplay(
 		reportData?.generalMedicalHistory ||
-		detailedClinicalExam?.generalMedicalHistory;
-	const ophthalmologicalHistory =
+		detailedClinicalExam?.generalMedicalHistory
+	);
+	const ophthalmologicalHistory = DocumentUtils.formatFieldDisplay(
 		reportData?.ophthalmologicalHistory ||
-		detailedClinicalExam?.ophthalmologicalHistory;
+		detailedClinicalExam?.ophthalmologicalHistory
+	);
 	const customTitleValue = DocumentUtils.formatFieldDisplay(reportData?.customTitle);
 
 	// Main statement - single sentence with age
@@ -213,7 +215,7 @@ export const generateReportPDF = async (
 				x: LEFT_MARGIN,
 				y,
 				size: TEXT_SIZES.sectionHeader,
-				font: helveticaBold,
+				font: helvetica,
 				color: rgb(0, 0, 0),
 			});
 			y -= LINE_HEIGHTS.normal;
@@ -265,7 +267,7 @@ export const generateReportPDF = async (
 				x: LEFT_MARGIN,
 				y,
 				size: TEXT_SIZES.sectionHeader,
-				font: helveticaBold,
+				font: helvetica,
 				color: rgb(0, 0, 0),
 			});
 			y -= LINE_HEIGHTS.normal;
@@ -767,7 +769,7 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 						<div className="flex items-center gap-2">
 							<Label className="text-[10px] font-semibold text-indigo-600 uppercase tracking-tight w-12 shrink-0">gén</Label>
 							<Textarea
-								value={reportData.generalMedicalHistory || ''}
+								value={DocumentUtils.formatFieldDisplay(reportData.generalMedicalHistory || '')}
 								onChange={handleReportDataChange('generalMedicalHistory')}
 								rows={1}
 								className="flex-1 min-h-[32px] bg-white border-indigo-200/60 focus:border-indigo-400 focus:ring-indigo-400 text-sm shadow-sm"
@@ -777,7 +779,7 @@ const ReportDocument: React.FC<ReportDocumentProps> = () => {
 						<div className="flex items-center gap-2">
 							<Label className="text-[10px] font-semibold text-indigo-600 uppercase tracking-tight w-12 shrink-0">oph</Label>
 							<Textarea
-								value={reportData.ophthalmologicalHistory || ''}
+								value={DocumentUtils.formatFieldDisplay(reportData.ophthalmologicalHistory || '')}
 								onChange={handleReportDataChange('ophthalmologicalHistory')}
 								rows={1}
 								className="flex-1 min-h-[32px] bg-white border-indigo-200/60 focus:border-indigo-400 focus:ring-indigo-400 text-sm shadow-sm"

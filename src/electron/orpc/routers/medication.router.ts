@@ -33,19 +33,21 @@ export const medicationRouter = os.router({
      * Searches medications by name.
      *
      * @param input.query - Search query string
-     * @param input.limit - Maximum number of results (default: 20)
+     * @param input.limit - Maximum number of results (default: 50)
+     * @param input.offset - Number of results to skip (default: 0)
      * @returns Array of matching medications
      */
     search: os
         .input(
             z.object({
                 query: z.string(),
-                limit: z.number().default(20),
+                limit: z.number().default(50),
+                offset: z.number().default(0),
             })
         )
         .output(z.array(MedicineSchema))
         .handler(async ({ input }) => {
-            return MedicationRepository.search(input.query, input.limit);
+            return MedicationRepository.search(input.query, input.limit, input.offset);
         }),
 
     /**

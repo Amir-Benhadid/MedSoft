@@ -54,10 +54,11 @@ export const MedicationRepository = {
    * Searches medications by name, prioritizing exact matches.
    *
    * @param query - Search query string
-   * @param limit - Maximum number of results (default: 20)
+   * @param limit - Maximum number of results (default: 50)
+   * @param offset - Number of results to skip (default: 0)
    * @returns Array of matching medications
    */
-  search: (query: string, limit = 20) => {
+  search: (query: string, limit = 50, offset = 0) => {
     const db = getDatabase();
     const stmt = db.prepare(`
       SELECT * FROM medicines 
@@ -68,11 +69,11 @@ export const MedicationRepository = {
           ELSE 2 
         END,
         medication_name ASC
-      LIMIT ?
+      LIMIT ? OFFSET ?
     `);
     const searchPattern = `%${query}%`;
     const exactStartPattern = `${query}%`;
-    return stmt.all(searchPattern, exactStartPattern, limit) as Medicine[];
+    return stmt.all(searchPattern, exactStartPattern, limit, offset) as Medicine[];
   },
 
   /**

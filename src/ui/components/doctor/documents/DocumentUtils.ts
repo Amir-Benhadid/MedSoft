@@ -115,7 +115,7 @@ export const DocumentUtils = {
 		if (DocumentUtils.isEmptyField(value)) {
 			return '';
 		}
-		return value?.toString().trim() || '';
+		return value?.toString().replace(/ \| /g, ' ').trim() || '';
 	},
 
 	// Helper function to calculate equal column positions based on number of visible fields

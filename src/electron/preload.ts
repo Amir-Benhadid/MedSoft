@@ -222,6 +222,11 @@ try {
 		 * @returns Promise resolving to { success, message, stats? }
 		 */
 		seedMedicines: () => ipcRenderer.invoke('app:seedMedicines'),
+		/**
+		 * Seeds lentille_conv table from conversion.sql. Clears table and inserts seed data.
+		 * @returns Promise resolving to { success, message }
+		 */
+		seedLentilleConversion: () => ipcRenderer.invoke('app:seedLentilleConversion'),
 	};
 
 	console.log('🔧 Exposing electronAPI to main world...');
