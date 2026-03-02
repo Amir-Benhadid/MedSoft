@@ -4,6 +4,7 @@ import { Label } from '@/ui/components/ui/label';
 import { Input } from '@/ui/components/ui/input';
 import { Button } from '@/ui/components/ui/button';
 import { Card } from '@/ui/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import { ConsultationType } from '@/ui/hooks/useConsultationTypes';
 import { cn } from '@/ui/lib/utils';
 import { Badge } from '@/ui/components/ui/badge';
@@ -41,77 +42,49 @@ export function PaymentSection({
                 </div>
             </div>
 
-            <Card className="p-0 overflow-hidden shadow-sm border-slate-200">
+            <Card className="p-0 overflow-hidden shadow-sm border border-slate-200 rounded-xl">
                 {/* Section: Type de Consultation */}
-                <div className="p-5 border-b border-slate-100 bg-slate-50/30">
-                    <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">
+                <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                    <Label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2.5 block">
                         Type de Consultation
                     </Label>
-                    <div className="grid grid-cols-2 gap-2.5">
-                        {consultationTypes.map((type) => {
-                            const isSelected = consultationTypeId === type.id.toString();
-                            return (
-                                <button
-                                    key={type.id}
-                                    onClick={() => onTypeChange(type.id.toString())}
-                                    className={cn(
-                                        "relative group flex items-center justify-between p-3.5 rounded-xl border-2 transition-all duration-200 text-left outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1",
-                                        isSelected
-                                            ? "bg-blue-50/80 border-blue-500 shadow-sm shadow-blue-100"
-                                            : "bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm"
-                                    )}
-                                >
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className={cn(
-                                            "font-bold text-sm transition-colors",
-                                            isSelected ? "text-blue-700" : "text-slate-700"
-                                        )}>
-                                            {type.label}
-                                        </span>
-                                        <span className={cn(
-                                            "text-[11px] font-medium transition-colors",
-                                            isSelected ? "text-blue-500" : "text-slate-400"
-                                        )}>
-                                            Tarif recommandé
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col items-end gap-1">
-                                        <Badge variant="secondary" className={cn(
-                                            "font-bold text-xs transition-colors",
-                                            isSelected ? "bg-blue-100 text-blue-700 hover:bg-blue-100" : "bg-slate-100 text-slate-600"
-                                        )}>
+                    <Select value={consultationTypeId} onValueChange={onTypeChange}>
+                        <SelectTrigger className="w-full bg-white border-slate-200">
+                            <SelectValue placeholder="Sélectionner un type de consultation" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                            {consultationTypes.map((type) => (
+                                <SelectItem key={type.id} value={type.id.toString()}>
+                                    <span className="flex items-center gap-2">
+                                        <span className="font-medium text-slate-700">{type.label}</span>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md font-semibold bg-slate-100 text-slate-500">
                                             {type.amount} DA
-                                        </Badge>
-                                        {isSelected && (
-                                            <div className="absolute top-0 right-0 p-1 bg-blue-500 rounded-bl-lg rounded-tr-[10px]">
-                                                <Check className="w-3 h-3 text-white" />
-                                            </div>
-                                        )}
-                                    </div>
-                                </button>
-                            );
-                        })}
-                    </div>
+                                        </span>
+                                    </span>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 {/* Section: Détails du Paiement */}
-                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <div className="p-4 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     {/* Colonne Gauche: Montant */}
-                    <div className="space-y-3">
+                    <div className="flex-1 w-full space-y-3">
                         <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            <Label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                                 Montant à Encaisser
                             </Label>
                             {status === 'gratuit' && (
-                                <Badge variant="secondary" className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100">
-                                    Gratuité Appliquée
+                                <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded">
+                                    Gratuité Actée
                                 </Badge>
                             )}
                         </div>
 
                         <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Banknote className={cn("w-5 h-5 transition-colors", status === 'gratuit' ? "text-slate-300" : "text-slate-400 group-focus-within:text-blue-500")} />
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <Banknote className={cn("w-4 h-4 transition-colors", status === 'gratuit' ? "text-slate-300" : "text-slate-400 group-focus-within:text-blue-500")} />
                             </div>
                             <Input
                                 type="number"
@@ -120,79 +93,75 @@ export function PaymentSection({
                                 onChange={onAmountChange}
                                 disabled={status === 'gratuit'}
                                 className={cn(
-                                    "pl-12 pr-16 h-14 text-3xl font-black tracking-tight border-2 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-xl",
+                                    "pl-10 pr-12 h-11 text-xl font-bold tracking-tight border transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-lg",
                                     status === 'gratuit'
-                                        ? "bg-slate-50 border-slate-200 text-slate-400"
-                                        : "bg-white border-slate-200 focus:border-blue-500 focus:shadow-md focus:shadow-blue-50 text-slate-800"
+                                        ? "bg-slate-50/80 border-slate-200/80 text-slate-400 opacity-80"
+                                        : "bg-white border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 shadow-sm"
                                 )}
                                 placeholder="0"
                             />
-                            <div className="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
-                                <span className={cn("text-base font-bold", status === 'gratuit' ? "text-slate-300" : "text-slate-400")}>DZD</span>
+                            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <span className={cn("text-xs font-bold", status === 'gratuit' ? "text-slate-300" : "text-slate-400")}>DZD</span>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-1.5">
-                            {[500, 1000, 2000].map((val) => (
-                                <Button
-                                    key={val}
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setAmount((prev) => (prev === '' ? 0 : Number(prev)) + val)}
-                                    disabled={status === 'gratuit'}
-                                    className="h-8 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/80 active:scale-[0.97] transition-all"
-                                >
-                                    +{val}
-                                </Button>
-                            ))}
-                        </div>
-                        <div className="flex justify-end">
+                        <div className="grid grid-cols-2 gap-2 mt-2">
                             <Button
                                 type="button"
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 onClick={() => setAmount((prev) => Math.max(0, (prev === '' ? 0 : Number(prev)) - 500))}
                                 disabled={status === 'gratuit'}
-                                className="text-xs text-red-500 hover:text-red-700 hover:bg-red-50 h-7 px-2"
+                                className="h-8 text-[11px] font-medium text-slate-600 hover:text-red-700 hover:border-red-200 hover:bg-red-50 focus:ring-2 focus:ring-red-100 transition-colors shadow-sm"
                             >
-                                -500 Correction
+                                -500 DZD
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setAmount((prev) => (prev === '' ? 0 : Number(prev)) + 500)}
+                                disabled={status === 'gratuit'}
+                                className="h-8 text-[11px] font-medium text-slate-600 hover:text-emerald-700 hover:border-emerald-200 hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-100 transition-colors shadow-sm"
+                            >
+                                +500 DZD
                             </Button>
                         </div>
                     </div>
 
+                    {/* Ligne séparatrice sur desktop */}
+                    <div className="hidden md:block w-px h-28 bg-slate-100 mt-2 self-stretch" />
+
                     {/* Colonne Droite: Statut */}
-                    <div className="space-y-3">
-                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
+                    <div className="w-full md:w-[220px] shrink-0 space-y-3">
+                        <Label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
                             Statut du Paiement
                         </Label>
 
-                        <div className="grid grid-cols-1 gap-2.5">
+                        <div className="flex flex-col gap-2">
                             <button
                                 type="button"
                                 onClick={() => setStatus('standard')}
                                 className={cn(
-                                    "flex items-center gap-3.5 p-3.5 rounded-xl border-2 text-left transition-all active:scale-[0.98]",
+                                    "flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all group",
                                     status === 'standard'
-                                        ? "bg-blue-50/80 border-blue-500 ring-1 ring-blue-500/20"
-                                        : "bg-white border-slate-200 hover:border-blue-300 hover:bg-slate-50"
+                                        ? "bg-blue-50/80 border-blue-500/50 ring-1 ring-blue-500/50 shadow-sm"
+                                        : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50"
                                 )}
                             >
                                 <div className={cn(
-                                    "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                                    status === 'standard' ? "bg-blue-500 text-white shadow-md shadow-blue-200" : "bg-slate-100 text-slate-400"
+                                    "p-1.5 rounded-md transition-colors",
+                                    status === 'standard' ? "bg-blue-500 text-white shadow-sm shadow-blue-200" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-500"
                                 )}>
-                                    <CreditCard className="w-4 h-4" />
+                                    <CreditCard className="w-3.5 h-3.5" />
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className={cn("font-bold text-sm", status === 'standard' ? "text-blue-900" : "text-slate-700")}>
-                                        Paiement Standard
-                                    </span>
-                                    <span className={cn("text-[11px]", status === 'standard' ? "text-blue-600" : "text-slate-400")}>
-                                        Encaisser le montant indiqué
-                                    </span>
-                                </div>
-                                {status === 'standard' && <div className="ml-auto w-2.5 h-2.5 rounded-full bg-blue-500" />}
+                                <span className={cn(
+                                    "font-semibold text-sm transition-colors",
+                                    status === 'standard' ? "text-blue-900" : "text-slate-600 group-hover:text-slate-800"
+                                )}>
+                                    Standard
+                                </span>
+                                {status === 'standard' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}
                             </button>
 
                             <button
@@ -202,27 +171,25 @@ export function PaymentSection({
                                     setAmount(0);
                                 }}
                                 className={cn(
-                                    "flex items-center gap-3.5 p-3.5 rounded-xl border-2 text-left transition-all active:scale-[0.98]",
+                                    "flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all group",
                                     status === 'gratuit'
-                                        ? "bg-emerald-50/80 border-emerald-500 ring-1 ring-emerald-500/20"
-                                        : "bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
+                                        ? "bg-emerald-50/80 border-emerald-500/50 ring-1 ring-emerald-500/50 shadow-sm"
+                                        : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50"
                                 )}
                             >
                                 <div className={cn(
-                                    "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                                    status === 'gratuit' ? "bg-emerald-500 text-white shadow-md shadow-emerald-200" : "bg-slate-100 text-slate-400"
+                                    "p-1.5 rounded-md transition-colors",
+                                    status === 'gratuit' ? "bg-emerald-500 text-white shadow-sm shadow-emerald-200" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-500"
                                 )}>
-                                    <Stethoscope className="w-4 h-4" />
+                                    <Stethoscope className="w-3.5 h-3.5" />
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className={cn("font-bold text-sm", status === 'gratuit' ? "text-emerald-900" : "text-slate-700")}>
-                                        Acte Gratuit
-                                    </span>
-                                    <span className={cn("text-[11px]", status === 'gratuit' ? "text-emerald-600" : "text-slate-400")}>
-                                        Aucun encaissement requis
-                                    </span>
-                                </div>
-                                {status === 'gratuit' && <div className="ml-auto w-2.5 h-2.5 rounded-full bg-emerald-500" />}
+                                <span className={cn(
+                                    "font-semibold text-sm transition-colors",
+                                    status === 'gratuit' ? "text-emerald-900" : "text-slate-600 group-hover:text-slate-800"
+                                )}>
+                                    Acte Gratuit
+                                </span>
+                                {status === 'gratuit' && <Check className="w-3.5 h-3.5 text-emerald-500 ml-auto" />}
                             </button>
                         </div>
                     </div>

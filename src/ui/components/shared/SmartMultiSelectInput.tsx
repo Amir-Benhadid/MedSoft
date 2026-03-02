@@ -177,7 +177,7 @@ export function SmartMultiSelectInput({
             <div
                 ref={containerRef}
                 className={cn(
-                    "flex flex-wrap items-center gap-2 p-2.5 min-h-[44px] max-h-[120px] overflow-y-auto overflow-x-hidden w-full rounded-xl border border-slate-200 bg-white/90 text-sm shadow-sm cursor-text transition-[box-shadow,border-color] focus-within:ring-2 focus-within:ring-slate-300/60 focus-within:ring-offset-1 focus-within:border-slate-300 hover:border-slate-300/80",
+                    "flex flex-wrap items-center gap-1.5 p-2 min-h-[38px] max-h-[120px] overflow-y-auto overflow-x-hidden w-full rounded-lg border border-slate-200 bg-white/90 text-sm shadow-sm cursor-text transition-all focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400 hover:border-slate-300",
                     className
                 )}
                 onClick={(e) => {
@@ -188,10 +188,14 @@ export function SmartMultiSelectInput({
                 {parsedValues.map(({ original, base, details }, index) => (
                     <span
                         key={index}
-                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50/90 pl-2.5 pr-1 py-1 text-sm shadow-sm max-w-full group/badge"
+                        className="inline-flex items-center gap-0.5 rounded-md border border-slate-200/80 bg-slate-50/80 pl-2 pr-0.5 py-0.5 text-xs max-w-full group/badge"
                     >
-                        <span className="font-medium text-slate-700 truncate">{base}</span>
-                        <span className="shrink-0 w-px h-3.5 bg-slate-200 rounded-full" aria-hidden />
+                        <span className="font-medium text-slate-700 truncate max-w-[130px]" title={base}>{base}</span>
+                        {details || document.activeElement === extraInputRefs.current[index] ? (
+                            <span className="shrink-0 w-px h-2.5 bg-slate-300/80 mx-1 rounded-full" aria-hidden />
+                        ) : (
+                            <span className="w-1" />
+                        )}
                         <input
                             ref={(el) => {
                                 if (el) extraInputRefs.current[index] = el;
@@ -199,9 +203,9 @@ export function SmartMultiSelectInput({
                             }}
                             type="text"
                             autoComplete="off"
-                            className="min-w-[6ch] max-w-[200px] bg-slate-100/90 border border-slate-200/60 rounded-md outline-none text-xs px-2 py-1 text-slate-700 placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-300/40 transition-[width]"
-                            style={{ width: `${Math.max(details.length + 3, 8)}ch` }}
-                            placeholder="détails…"
+                            className="bg-transparent outline-none text-[11px] px-1 py-0.5 text-slate-600 placeholder:text-slate-400/70 focus:bg-white focus:ring-1 focus:ring-slate-300 rounded-[3px] transition-all"
+                            style={{ width: `${Math.max(details.length + 1, 6)}ch`, maxWidth: '100px' }}
+                            placeholder="détail..."
                             value={details}
                             onChange={(e) => {
                                 const newDetails = e.target.value;
@@ -221,12 +225,12 @@ export function SmartMultiSelectInput({
                         />
                         <button
                             type="button"
-                            className="shrink-0 rounded-full p-0.5 text-slate-400 hover:bg-slate-200/80 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1 transition-colors"
+                            className="shrink-0 rounded-[4px] ml-0.5 p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors focus:outline-none"
                             aria-label="Supprimer"
                             onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(original); }}
                         >
-                            <X className="h-3.5 w-3.5" />
+                            <X className="h-3 w-3" />
                         </button>
                     </span>
                 ))}

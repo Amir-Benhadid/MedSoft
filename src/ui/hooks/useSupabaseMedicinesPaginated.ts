@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { supabaseMedicineService } from '../services/supabaseMedicineService';
+import { orpcClient } from '@/ui/lib/orpc/client';
 import { MedicineOption } from './useMedicinesPaginated';
 
 interface UseSupabaseMedicinesPaginatedReturn {
@@ -56,23 +56,49 @@ export const useSupabaseMedicinesPaginated = (
             setError(null);
 
             try {
-                const result = await supabaseMedicineService.searchMedicines(
-                    search.trim() || '',
-                    initialPageSize,
-                    offset
-                );
-
-                if (append) {
-                    setMedicines((prev) => [...prev, ...result.medicines]);
+                let data;
+                if (search.trim()) {
+                    data = await orpcClient.medications.search({
+                        query: search.trim(),
+                        limit: initialPageSize,
+                        offset
+                    });
                 } else {
-                    setMedicines(result.medicines);
+                    data = await orpcClient.medications.list({
+                        limit: initialPageSize,
+                        offset
+                    });
                 }
 
-                setHasMore(result.hasMore);
-                setTotal(result.total);
+                const mappedMedicines: MedicineOption[] = data.map((med: any) => ({
+                    value: med.medication_name,
+                    label: med.strength
+                        ? `${med.medication_name} - ${med.strength}`
+                        : med.medication_name,
+                    category: med.category || 'Other',
+                    form: med.type || '',
+                    strength: med.strength || '',
+                    defaultDosage: med.instructions || '',
+                    prescriptionRequired: true,
+                    packaging: med.packaging || '',
+                    id: med.id,
+                    manufacturer: '',
+                    activeIngredient: '',
+                }));
+
+                const hasMoreData = data.length === initialPageSize;
+
+                if (append) {
+                    setMedicines((prev) => [...prev, ...mappedMedicines]);
+                } else {
+                    setMedicines(mappedMedicines);
+                }
+
+                setHasMore(hasMoreData);
+                setTotal(0); // Optional: not usually retrievable easily from list without count
                 setCurrentOffset(offset);
             } catch (err) {
-                console.error('Error loading medicines from Supabase:', err);
+                console.error('Error loading medicines from local DB:', err);
                 setError(err instanceof Error ? err.message : 'Failed to load medicines');
 
                 // Reset state on error
@@ -103,7 +129,7 @@ export const useSupabaseMedicinesPaginated = (
         await loadMedicines(0, currentSearchRef.current, false);
     }, [loadMedicines]);
 
-    // Add new medicine to Supabase
+    // Add new medicine to local DB
     const addMedicine = useCallback(
         async (medicine: {
             medicationName: string;
@@ -120,7 +146,14 @@ export const useSupabaseMedicinesPaginated = (
                 setLoading(true);
                 setError(null);
 
-                await supabaseMedicineService.addMedicine(medicine);
+                await orpcClient.medications.create({
+                    medication_name: medicine.medicationName,
+                    strength: medicine.strength || null,
+                    type: medicine.type || null,
+                    packaging: medicine.packaging || null,
+                    instructions: medicine.instructions || null,
+                    category: medicine.category || null,
+                });
 
                 // Refresh the list to include the new medicine
                 setCurrentOffset(0);
