@@ -59,39 +59,33 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
                             )}
 
                             {/* Age */}
-                            {item.patient?.dob && (
-                                <span className="text-xs text-emerald-600/80 w-[10%] min-w-[40px]">
-                                    {getAge(item.patient.dob)}
-                                </span>
-                            )}
+                            <span className="text-xs text-emerald-600/80 w-[10%] min-w-[40px]">
+                                {item.patient?.dob ? getAge(item.patient.dob) : '-'}
+                            </span>
 
                             {/* Phone */}
-                            {item.patient?.phone && (
-                                <span className="text-xs text-emerald-600/80 w-[15%] min-w-[80px]">
-                                    {item.patient.phone}
-                                </span>
-                            )}
+                            <span className="text-xs text-emerald-600/80 w-[15%] min-w-[80px]">
+                                {item.patient?.phone || '-'}
+                            </span>
 
                             {/* City */}
-                            {item.patient?.address?.city && (
-                                <span className="text-xs text-emerald-600/80 w-[15%] min-w-[60px] truncate">
-                                    {item.patient.address.city}
-                                </span>
-                            )}
+                            <span className="text-xs text-emerald-600/80 w-[15%] min-w-[60px] truncate">
+                                {item.patient?.address?.city || '-'}
+                            </span>
 
                             {/* Dilation badge */}
-                            {item.needsDilation && (
-                                <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 shrink-0 font-semibold">
-                                    Dil.
-                                </Badge>
-                            )}
+                            <div className="w-[40px] shrink-0 flex items-center justify-center">
+                                {item.needsDilation && (
+                                    <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 font-semibold">
+                                        Dil.
+                                    </Badge>
+                                )}
+                            </div>
 
                             {/* Notes */}
-                            {item.notes && (
-                                <span className="text-[11px] text-emerald-600/70 italic truncate max-w-[150px] shrink-0">
-                                    {item.notes}
-                                </span>
-                            )}
+                            <span className="text-[11px] text-emerald-600/70 italic truncate w-[150px] shrink-0">
+                                {item.notes || ''}
+                            </span>
                         </div>
                     ))}
 
@@ -165,39 +159,33 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
                                     )}
 
                                     {/* Age */}
-                                    {item.patient?.dob && (
-                                        <span className={cn("text-xs w-[10%] min-w-[40px]", secondaryTextColor)}>
-                                            {getAge(item.patient.dob)}
-                                        </span>
-                                    )}
+                                    <span className={cn("text-xs w-[10%] min-w-[40px]", secondaryTextColor)}>
+                                        {item.patient?.dob ? getAge(item.patient.dob) : '-'}
+                                    </span>
 
                                     {/* Phone */}
-                                    {item.patient?.phone && (
-                                        <span className={cn("text-xs w-[15%] min-w-[80px]", secondaryTextColor)}>
-                                            {item.patient.phone}
-                                        </span>
-                                    )}
+                                    <span className={cn("text-xs w-[15%] min-w-[80px]", secondaryTextColor)}>
+                                        {item.patient?.phone || '-'}
+                                    </span>
 
                                     {/* City */}
-                                    {item.patient?.address?.city && (
-                                        <span className={cn("text-xs w-[15%] min-w-[60px] truncate", secondaryTextColor)}>
-                                            {item.patient.address.city}
-                                        </span>
-                                    )}
+                                    <span className={cn("text-xs w-[15%] min-w-[60px] truncate", secondaryTextColor)}>
+                                        {item.patient?.address?.city || '-'}
+                                    </span>
 
                                     {/* Dilation badge */}
-                                    {item.needsDilation && (
-                                        <Badge className="h-5 px-2.5 text-[10px] bg-purple-100 text-purple-700 border-0 shrink-0 font-semibold">
-                                            Dil.
-                                        </Badge>
-                                    )}
+                                    <div className="w-[40px] shrink-0 flex items-center justify-center">
+                                        {item.needsDilation && (
+                                            <Badge className="h-5 px-2.5 text-[10px] bg-purple-100 text-purple-700 border-0 font-semibold">
+                                                Dil.
+                                            </Badge>
+                                        )}
+                                    </div>
 
                                     {/* Notes */}
-                                    {item.notes && (
-                                        <span className={cn("text-[11px] italic truncate max-w-[150px] shrink-0", secondaryTextColor)}>
-                                            {item.notes}
-                                        </span>
-                                    )}
+                                    <span className={cn("text-[11px] italic truncate w-[150px] shrink-0", secondaryTextColor)}>
+                                        {item.notes || ''}
+                                    </span>
                                 </div>
                             );
                         })

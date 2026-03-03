@@ -71,10 +71,10 @@ interface ContactLensesDocumentProps { }
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
+	title: 11,
+	sectionHeader: 10,
 	normal: 10,
-	small: 8,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -169,7 +169,7 @@ export const generateContactLensesPDF = async (
 		y -= 2 * SECTION_GAP;
 	}
 
-	// Format prescription like Glasses: sphere D or sphere (cylinder à axe°)
+	// Format prescription like Glasses: sphere d or sphere (cylinder à axe°)
 	const formatPrescriptionLikeGlasses = (sph: string, cyl: string, axisRaw: string, isSpherical: boolean): string => {
 		const sphNum = parseFloat(sph) || 0;
 		const cylNum = parseFloat(cyl) || 0;
@@ -179,10 +179,10 @@ export const generateContactLensesPDF = async (
 		}
 		const sphText = DocumentUtils.formatNumberWithSignOrEmpty(sph);
 		if (isSpherical) {
-			return `${sphText} D`;
+			return `${sphText} d`;
 		}
 		if (Math.abs(cylNum) < 0.01 && !axisExists) {
-			return `${sphText} D`;
+			return `${sphText} d`;
 		}
 		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
 		const axisText = axisExists ? axisRaw : '0';

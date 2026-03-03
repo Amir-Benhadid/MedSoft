@@ -16,6 +16,8 @@ interface EyeData {
 	visualAcuityVL_SC?: string;
 	visualAcuity?: string;
 	visualAcuityVL_AC?: string;
+	visualAcuityVP_SC?: string;
+	visualAcuityVP_AC?: string;
 }
 
 interface ReportData {
@@ -30,11 +32,19 @@ interface ReportData {
 	visualAcuityVL_SC_OG?: string;
 	visualAcuityVL_AC_OD?: string;
 	visualAcuityVL_AC_OG?: string;
+	visualAcuityVP_SC_OD?: string;
+	visualAcuityVP_SC_OG?: string;
+	visualAcuityVP_AC_OD?: string;
+	visualAcuityVP_AC_OG?: string;
 	// Print-specific overrides
 	printVisualAcuityVL_SC_OD?: string;
 	printVisualAcuityVL_SC_OG?: string;
 	printVisualAcuityVL_AC_OD?: string;
 	printVisualAcuityVL_AC_OG?: string;
+	printVisualAcuityVP_SC_OD?: string;
+	printVisualAcuityVP_SC_OG?: string;
+	printVisualAcuityVP_AC_OD?: string;
+	printVisualAcuityVP_AC_OG?: string;
 	// Tonometry fields
 	tonometryOD?: string;
 	tonometryOG?: string;
@@ -68,10 +78,10 @@ interface ReportDocumentProps { }
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
+	title: 11,
+	sectionHeader: 10,
 	normal: 10,
-	small: 8,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -105,12 +115,12 @@ export const generateReportPDF = async (
 	const originalTextSizes = context.TEXT_SIZES;
 	context.TEXT_SIZES = {
 		...originalTextSizes,
-		title: 9, // was 10
-		header: 11, // Keep header same size (patient name/age) - already increased in PdfUtils
-		sectionHeader: 9, // was 10
+		title: 11, // was 10
+		header: 10, // Keep header same size (patient name/age) - already increased in PdfUtils
+		sectionHeader: 10, // was 10
 		normal: 10, // was 11
-		small: 8, // was 9
-		tiny: 7, // was 8
+		small: 10, // was 9
+		tiny: 10, // was 8
 	};
 
 	// Use the modified context for all drawing operations
@@ -134,8 +144,8 @@ export const generateReportPDF = async (
 	const ageText = patientAge === 1 ? '1 an' : `${patientAge} ans`;
 	const mainStatementText = `Le(a) patient(e) sus-nommé(e) âgé(e) de ${ageText} présente à l'examen du jour:`;
 
-	const mainStatementWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
-	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - 20; // For use in other sections
+	const mainStatementWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
+	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN; // For use in other sections
 	const mainStatementLines = DocumentUtils.splitTextIntoLinesOptimized(
 		mainStatementText,
 		mainStatementWidth
@@ -183,7 +193,6 @@ export const generateReportPDF = async (
 	if (!DocumentUtils.isEmptyField(inspectionValue)) {
 		const inspection = `Inspection : ${inspectionValue}`;
 
-		const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - 20; // 40 for indentation
 		const inspectionLines = DocumentUtils.splitTextIntoLinesOptimized(
 			inspection,
 			availableWidth
@@ -211,7 +220,7 @@ export const generateReportPDF = async (
 
 		// Only show section if at least one eye has data
 		if (!DocumentUtils.isEmptyField(avscOD) || !DocumentUtils.isEmptyField(avscOG)) {
-			page.drawText('Acuité visuelle sans correction :', {
+			page.drawText('Acuité visuelle sans correction (Loin):', {
 				x: LEFT_MARGIN,
 				y,
 				size: TEXT_SIZES.sectionHeader,
@@ -252,6 +261,44 @@ export const generateReportPDF = async (
 		}
 	}
 
+	// Acuité visuelle sans correction PRÈS - conditional
+	if (printControlFlags?.includeVisualAcuityWithoutCorrection !== false) {
+		const avscOD = DocumentUtils.formatFieldDisplay(
+			reportData?.printVisualAcuityVP_SC_OD || reportData?.visualAcuityVP_SC_OD || rightEye?.visualAcuityVP_SC
+		);
+		const avscOG = DocumentUtils.formatFieldDisplay(
+			reportData?.printVisualAcuityVP_SC_OG || reportData?.visualAcuityVP_SC_OG || leftEye?.visualAcuityVP_SC
+		);
+
+		if (!DocumentUtils.isEmptyField(avscOD) || !DocumentUtils.isEmptyField(avscOG)) {
+			page.drawText('Acuité visuelle sans correction (Près) :', {
+				x: LEFT_MARGIN,
+				y,
+				size: TEXT_SIZES.sectionHeader,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.normal;
+
+			const usableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - 200;
+			const visibleColumns: string[] = [];
+			if (!DocumentUtils.isEmptyField(avscOD)) visibleColumns.push('OD');
+			if (!DocumentUtils.isEmptyField(avscOG)) visibleColumns.push('OG');
+
+			const columnWidth = visibleColumns.length > 0 ? usableWidth / visibleColumns.length : usableWidth;
+			let currentX = LEFT_MARGIN + 50;
+
+			if (!DocumentUtils.isEmptyField(avscOD)) {
+				page.drawText(`OD: ${avscOD}`, { x: currentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+				currentX += columnWidth;
+			}
+			if (!DocumentUtils.isEmptyField(avscOG)) {
+				page.drawText(`OG: ${avscOG}`, { x: currentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+			}
+			y -= LINE_HEIGHTS.normal;
+		}
+	}
+
 	// Acuité visuelle avec correction with inline OD/OG - conditional
 	if (printControlFlags?.includeVisualAcuityWithCorrection !== false) {
 		const avacOD = DocumentUtils.formatFieldDisplay(
@@ -263,7 +310,7 @@ export const generateReportPDF = async (
 
 		// Only show section if at least one eye has data
 		if (!DocumentUtils.isEmptyField(avacOD) || !DocumentUtils.isEmptyField(avacOG)) {
-			page.drawText('Acuité visuelle avec correction :', {
+			page.drawText('Acuité visuelle avec correction (Loin):', {
 				x: LEFT_MARGIN,
 				y,
 				size: TEXT_SIZES.sectionHeader,
@@ -299,6 +346,44 @@ export const generateReportPDF = async (
 					font: helvetica,
 					color: rgb(0, 0, 0),
 				});
+			}
+			y -= LINE_HEIGHTS.normal;
+		}
+	}
+
+	// Acuité visuelle avec correction PRÈS - conditional
+	if (printControlFlags?.includeVisualAcuityWithCorrection !== false) {
+		const avacOD = DocumentUtils.formatFieldDisplay(
+			reportData?.printVisualAcuityVP_AC_OD || reportData?.visualAcuityVP_AC_OD || rightEye?.visualAcuityVP_AC
+		);
+		const avacOG = DocumentUtils.formatFieldDisplay(
+			reportData?.printVisualAcuityVP_AC_OG || reportData?.visualAcuityVP_AC_OG || leftEye?.visualAcuityVP_AC
+		);
+
+		if (!DocumentUtils.isEmptyField(avacOD) || !DocumentUtils.isEmptyField(avacOG)) {
+			page.drawText('Acuité visuelle avec correction (Près) :', {
+				x: LEFT_MARGIN,
+				y,
+				size: TEXT_SIZES.sectionHeader,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.normal;
+
+			const usableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - 200;
+			const visibleColumns: string[] = [];
+			if (!DocumentUtils.isEmptyField(avacOD)) visibleColumns.push('OD');
+			if (!DocumentUtils.isEmptyField(avacOG)) visibleColumns.push('OG');
+
+			const columnWidth = visibleColumns.length > 0 ? usableWidth / visibleColumns.length : usableWidth;
+			let currentX = LEFT_MARGIN + 50;
+
+			if (!DocumentUtils.isEmptyField(avacOD)) {
+				page.drawText(`OD: ${avacOD}`, { x: currentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
+				currentX += columnWidth;
+			}
+			if (!DocumentUtils.isEmptyField(avacOG)) {
+				page.drawText(`OG: ${avacOG}`, { x: currentX, y, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0) });
 			}
 			y -= LINE_HEIGHTS.normal;
 		}

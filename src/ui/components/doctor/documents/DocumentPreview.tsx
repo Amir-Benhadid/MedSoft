@@ -181,7 +181,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                          * @returns Formatted string with sign
                                          */
                                         const formatNumberWithSign = (value: string | undefined | null): string => {
-                                            if (!value || value === '__EMPTY__') return '-';
+                                            if (!value || value === '') return '-';
                                             const normalizedValue = value.toString().replace(',', '.');
                                             const num = parseFloat(normalizedValue);
                                             if (isNaN(num)) return value; // Show original if not a number
@@ -234,10 +234,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                         {rightContactRx && (
                                                             <div className="flex mb-2 text-xs p-1.5 bg-blue-50/30 rounded border border-blue-200">
                                                                 <div className="w-[60px] font-medium text-blue-700">OD</div>
-                                                                <div className="w-[80px]">{formatNumberWithSign(rightContactRx.sphere)} D</div>
+                                                                <div className="w-[80px]">{formatNumberWithSign(rightContactRx.sphere)} d</div>
                                                                 {!rightIsSpherical && (
                                                                     <>
-                                                                        <div className="w-[80px]">{formatNumberWithSign(rightContactRx.cylinder)} D</div>
+                                                                        <div className="w-[80px]">{formatNumberWithSign(rightContactRx.cylinder)} d</div>
                                                                         <div className="w-[60px]">{rightContactRx.axis}°</div>
                                                                     </>
                                                                 )}
@@ -249,10 +249,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                         {leftContactRx && (
                                                             <div className="flex mb-2 text-xs p-1.5 bg-green-50/30 rounded border border-green-200">
                                                                 <div className="w-[60px] font-medium text-green-700">OG</div>
-                                                                <div className="w-[80px]">{formatNumberWithSign(leftContactRx.sphere)} D</div>
+                                                                <div className="w-[80px]">{formatNumberWithSign(leftContactRx.sphere)} d</div>
                                                                 {!leftIsSpherical && (
                                                                     <>
-                                                                        <div className="w-[80px]">{formatNumberWithSign(leftContactRx.cylinder)} D</div>
+                                                                        <div className="w-[80px]">{formatNumberWithSign(leftContactRx.cylinder)} d</div>
                                                                         <div className="w-[60px]">{leftContactRx.axis}°</div>
                                                                     </>
                                                                 )}
@@ -564,20 +564,22 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
                                                     <p className="text-xs font-medium text-blue-700">
                                                         OD: {(() => {
-                                                            const hasData = glassesPrintData?.rightEye?.sph &&
+                                                            const hasData = glassesPrintData?.rightEye?.sph && glassesPrintData.rightEye.sph !== '' &&
                                                                 (parseFloat(glassesPrintData.rightEye.sph) !== 0 ||
-                                                                    (glassesPrintData.rightEye.cyl && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
-                                                                    (glassesPrintData.rightEye.axis && parseFloat(glassesPrintData.rightEye.axis) !== 0));
+                                                                    (glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '' && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
+                                                                    (glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '' && parseFloat(glassesPrintData.rightEye.axis) !== 0));
                                                             const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                const s = glassesPrintData.rightEye.sph;
-                                                                const c = glassesPrintData.rightEye.cyl;
-                                                                const a = glassesPrintData.rightEye.axis;
+                                                                const s = glassesPrintData.rightEye.sph === '' ? '' : glassesPrintData.rightEye.sph;
+                                                                const c = glassesPrintData.rightEye.cyl === '' ? '' : glassesPrintData.rightEye.cyl;
+                                                                const a = glassesPrintData.rightEye.axis === '' ? '' : glassesPrintData.rightEye.axis;
 
                                                                 const formatVal = (v: string) => {
+                                                                    if (!v || v === '') return '';
                                                                     const n = parseFloat(v?.toString().replace(',', '.') || '0');
                                                                     if (isNaN(n)) return v || '';
+                                                                    if (n === 0) return '0.00';
                                                                     return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
                                                                 };
 
@@ -602,20 +604,22 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
                                                     <p className="text-xs font-medium text-green-700">
                                                         OG: {(() => {
-                                                            const hasData = glassesPrintData?.leftEye?.sph &&
+                                                            const hasData = glassesPrintData?.leftEye?.sph && glassesPrintData?.leftEye?.sph !== '' &&
                                                                 (parseFloat(glassesPrintData.leftEye.sph) !== 0 ||
-                                                                    (glassesPrintData.leftEye.cyl && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
-                                                                    (glassesPrintData.leftEye.axis && parseFloat(glassesPrintData.leftEye.axis) !== 0));
+                                                                    (glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '' && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
+                                                                    (glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '' && parseFloat(glassesPrintData.leftEye.axis) !== 0));
                                                             const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                const s = glassesPrintData.leftEye.sph;
-                                                                const c = glassesPrintData.leftEye.cyl;
-                                                                const a = glassesPrintData.leftEye.axis;
+                                                                const s = glassesPrintData.leftEye.sph === '' ? '' : glassesPrintData.leftEye.sph;
+                                                                const c = glassesPrintData.leftEye.cyl === '' ? '' : glassesPrintData.leftEye.cyl;
+                                                                const a = glassesPrintData.leftEye.axis === '' ? '' : glassesPrintData.leftEye.axis;
 
                                                                 const formatVal = (v: string) => {
+                                                                    if (!v || v === '') return '';
                                                                     const n = parseFloat(v?.toString().replace(',', '.') || '0');
                                                                     if (isNaN(n)) return v || '';
+                                                                    if (n === 0) return '0.00';
                                                                     return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
                                                                 };
 
@@ -648,14 +652,17 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
                                                     <p className="text-xs font-medium text-blue-700">
                                                         OD: {(() => {
-                                                            const hasData = glassesPrintData?.rightEye?.nearSph &&
+                                                            const hasData = glassesPrintData?.rightEye?.nearSph && glassesPrintData?.rightEye?.nearSph !== '' &&
                                                                 (parseFloat(glassesPrintData.rightEye.nearSph) !== 0 ||
-                                                                    (glassesPrintData.rightEye.nearCyl && parseFloat(glassesPrintData.rightEye.nearCyl) !== 0) ||
-                                                                    (glassesPrintData.rightEye.nearAxis && parseFloat(glassesPrintData.rightEye.nearAxis) !== 0));
+                                                                    (glassesPrintData.rightEye.nearCyl && glassesPrintData.rightEye.nearCyl !== '' && parseFloat(glassesPrintData.rightEye.nearCyl) !== 0) ||
+                                                                    (glassesPrintData.rightEye.nearAxis && glassesPrintData.rightEye.nearAxis !== '' && parseFloat(glassesPrintData.rightEye.nearAxis) !== 0));
                                                             const emptyOption = glassesPrintData?.rightEye?.emptyNearEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                return `${glassesPrintData.rightEye.nearSph ? (parseFloat(glassesPrintData.rightEye.nearSph) > 0 ? `+${glassesPrintData.rightEye.nearSph}` : glassesPrintData.rightEye.nearSph) : '0.00'}${glassesPrintData.rightEye.nearCyl && glassesPrintData.rightEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.rightEye.nearCyl) > 0 ? `+${glassesPrintData.rightEye.nearCyl}` : glassesPrintData.rightEye.nearCyl})` : ''}${glassesPrintData.rightEye.nearAxis && glassesPrintData.rightEye.nearAxis !== '0' ? ` ${glassesPrintData.rightEye.nearAxis}°` : ''}`;
+                                                                const s = glassesPrintData.rightEye.nearSph === '' ? '' : glassesPrintData.rightEye.nearSph;
+                                                                const c = glassesPrintData.rightEye.nearCyl === '' ? '' : glassesPrintData.rightEye.nearCyl;
+                                                                const a = glassesPrintData.rightEye.nearAxis === '' ? '' : glassesPrintData.rightEye.nearAxis;
+                                                                return `${s ? (parseFloat(s) > 0 ? `+${s}` : s) : '0.00'}${c && c !== '0.00' ? ` (${parseFloat(c) > 0 ? `+${c}` : c})` : ''}${a && a !== '0' ? ` ${a}°` : ''}`;
                                                             } else if (emptyOption === 'conserver') {
                                                                 return 'Verre en place';
                                                             } else {
@@ -670,14 +677,17 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
                                                     <p className="text-xs font-medium text-green-700">
                                                         OG: {(() => {
-                                                            const hasData = glassesPrintData?.leftEye?.nearSph &&
+                                                            const hasData = glassesPrintData?.leftEye?.nearSph && glassesPrintData?.leftEye?.nearSph !== '' &&
                                                                 (parseFloat(glassesPrintData.leftEye.nearSph) !== 0 ||
-                                                                    (glassesPrintData.leftEye.nearCyl && parseFloat(glassesPrintData.leftEye.nearCyl) !== 0) ||
-                                                                    (glassesPrintData.leftEye.nearAxis && parseFloat(glassesPrintData.leftEye.nearAxis) !== 0));
+                                                                    (glassesPrintData.leftEye.nearCyl && glassesPrintData.leftEye.nearCyl !== '' && parseFloat(glassesPrintData.leftEye.nearCyl) !== 0) ||
+                                                                    (glassesPrintData.leftEye.nearAxis && glassesPrintData.leftEye.nearAxis !== '' && parseFloat(glassesPrintData.leftEye.nearAxis) !== 0));
                                                             const emptyOption = glassesPrintData?.leftEye?.emptyNearEyeOption || 'plan';
 
                                                             if (hasData) {
-                                                                return `${glassesPrintData.leftEye.nearSph ? (parseFloat(glassesPrintData.leftEye.nearSph) > 0 ? `+${glassesPrintData.leftEye.nearSph}` : glassesPrintData.leftEye.nearSph) : '0.00'}${glassesPrintData.leftEye.nearCyl && glassesPrintData.leftEye.nearCyl !== '0.00' ? ` (${parseFloat(glassesPrintData.leftEye.nearCyl) > 0 ? `+${glassesPrintData.leftEye.nearCyl}` : glassesPrintData.leftEye.nearCyl})` : ''}${glassesPrintData.leftEye.nearAxis && glassesPrintData.leftEye.nearAxis !== '0' ? ` ${glassesPrintData.leftEye.nearAxis}°` : ''}`;
+                                                                const s = glassesPrintData.leftEye.nearSph === '' ? '' : glassesPrintData.leftEye.nearSph;
+                                                                const c = glassesPrintData.leftEye.nearCyl === '' ? '' : glassesPrintData.leftEye.nearCyl;
+                                                                const a = glassesPrintData.leftEye.nearAxis === '' ? '' : glassesPrintData.leftEye.nearAxis;
+                                                                return `${s ? (parseFloat(s) > 0 ? `+${s}` : s) : '0.00'}${c && c !== '0.00' ? ` (${parseFloat(c) > 0 ? `+${c}` : c})` : ''}${a && a !== '0' ? ` ${a}°` : ''}`;
                                                             } else if (emptyOption === 'conserver') {
                                                                 return 'Verre en place';
                                                             } else {

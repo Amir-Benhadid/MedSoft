@@ -135,13 +135,29 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         if (consultationData && (consultationData.id === currentConsultationId || consultationData.id === consultationId) && consultationData.id !== loadedConsultationId) {
             console.log("Loading fresh consultation data into store", consultationData.id);
 
+            // Find previous consultation to carry over fields for new consultations
+            let previousConsultation: any = null;
+            if (history && history.length > 0) {
+                // history is usually sorted by date desc. Find the most recent one that is not the current one
+                previousConsultation = history.find(c => c.id !== consultationData.id);
+            }
+
             // If the consultation history is empty but patient has history, pre-fill it in the store
             const mergedConsultation = {
                 ...consultationData,
+                left_eye: {
+                    ...(consultationData.left_eye || {}),
+                    pachymetry: consultationData.left_eye?.pachymetry || previousConsultation?.left_eye?.pachymetry || '',
+                },
+                right_eye: {
+                    ...(consultationData.right_eye || {}),
+                    pachymetry: consultationData.right_eye?.pachymetry || previousConsultation?.right_eye?.pachymetry || '',
+                },
                 clinical_exam: {
                     ...consultationData.clinical_exam,
-                    generalMedicalHistory: consultationData.clinical_exam?.generalMedicalHistory || patient?.gen_ants || '',
-                    ophthalmologicalHistory: consultationData.clinical_exam?.ophthalmologicalHistory || patient?.oph_ants || '',
+                    generalMedicalHistory: consultationData.clinical_exam?.generalMedicalHistory || previousConsultation?.clinical_exam?.generalMedicalHistory || patient?.gen_ants || '',
+                    ophthalmologicalHistory: consultationData.clinical_exam?.ophthalmologicalHistory || previousConsultation?.clinical_exam?.ophthalmologicalHistory || patient?.oph_ants || '',
+                    profile: consultationData.clinical_exam?.profile || previousConsultation?.clinical_exam?.profile || '',
                 }
             };
 
@@ -149,7 +165,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             // Also sync state ID if differ
             if (currentConsultationId !== consultationData.id) setCurrentConsultationId(consultationData.id);
         }
-    }, [consultationData, currentConsultationId, loadConsultation, loadedConsultationId, patient, consultationId]);
+    }, [consultationData, currentConsultationId, loadConsultation, loadedConsultationId, patient, consultationId, history]);
 
     // F3 Shortcut
     useEffect(() => {

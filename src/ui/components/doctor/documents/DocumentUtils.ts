@@ -96,7 +96,7 @@ export const DocumentUtils = {
 
 	splitTextIntoLinesOptimized: (text: string, availableWidth: number) => {
 		// Simple implementation - could be enhanced with actual text measurement
-		const maxChars = Math.floor(availableWidth / 6); // Approximate character width
+		const maxChars = Math.floor(availableWidth / 4.8); // Approximate character width for 10pt font
 		return DocumentUtils.splitTextIntoLines(text, maxChars);
 	},
 

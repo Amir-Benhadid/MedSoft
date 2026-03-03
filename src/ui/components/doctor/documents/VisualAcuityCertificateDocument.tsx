@@ -29,16 +29,16 @@ interface VisualAcuityPrintData {
 	visualAcuityVL_AC_OG: string;
 }
 
-interface VisualAcuityCertificateDocumentProps {}
+interface VisualAcuityCertificateDocumentProps { }
 
 // PDF Generation Constants
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
-	normal: 11,
-	small: 8,
+	title: 11,
+	sectionHeader: 10,
+	normal: 10,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -92,7 +92,7 @@ export const generateVisualAcuityCertificatePDF = async (
 
 		// Only show section if at least one eye has data
 		if (!DocumentUtils.isEmptyField(odValue) || !DocumentUtils.isEmptyField(ogValue)) {
-			page.drawText('Acuité visuelle sans correction:', {
+			page.drawText('Acuité visuelle sans correction (Loin):', {
 				x: LEFT_MARGIN + 20,
 				y,
 				size: TEXT_SIZES.sectionHeader,
@@ -140,7 +140,7 @@ export const generateVisualAcuityCertificatePDF = async (
 
 		// Only show section if at least one eye has data
 		if (!DocumentUtils.isEmptyField(odValue) || !DocumentUtils.isEmptyField(ogValue)) {
-			page.drawText('Acuité visuelle avec correction:', {
+			page.drawText('Acuité visuelle avec correction (Loin):', {
 				x: LEFT_MARGIN + 20,
 				y,
 				size: TEXT_SIZES.sectionHeader,
@@ -177,9 +177,11 @@ export const generateVisualAcuityCertificatePDF = async (
 					color: rgb(0, 0, 0),
 				});
 			}
-			y -= LINE_HEIGHTS.normal;
+			y -= 2 * LINE_HEIGHTS.header;
 		}
 	}
+
+	y -= LINE_HEIGHTS.normal;
 
 	const pdfBytes = await context.pdfDoc.save();
 	return pdfBytes;
@@ -204,23 +206,7 @@ const VisualAcuityCertificateDocument: React.FC<VisualAcuityCertificateDocumentP
 		}));
 	};
 
-	// Update print data when eye data changes
-	React.useEffect(() => {
-		setPrintData((prev) => {
-			const newData = {
-				visualAcuityVL_SC_OD: rightEyeData?.visualAcuityVL_SC || rightEyeData?.visualAcuity || '',
-				visualAcuityVL_SC_OG: leftEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuity || '',
-				visualAcuityVL_AC_OD: rightEyeData?.visualAcuityVL_AC || '',
-				visualAcuityVL_AC_OG: leftEyeData?.visualAcuityVL_AC || '',
-			};
 
-			// Only update if values actually changed
-			if (JSON.stringify(prev) === JSON.stringify(newData)) {
-				return prev;
-			}
-			return newData;
-		});
-	}, [rightEyeData, leftEyeData]);
 
 	return (
 		<div className="space-y-3 font-sans text-sm pb-4">
@@ -274,7 +260,10 @@ const VisualAcuityCertificateDocument: React.FC<VisualAcuityCertificateDocumentP
 							OD
 						</h4>
 					</div>
-					<div className="space-y-2">
+
+					{/* VL (Loin) */}
+					<div className="space-y-2 pt-1">
+						<span className="text-[10px] font-bold text-blue-800 uppercase bg-blue-100 px-2 py-0.5 rounded px-2">Loin (VL)</span>
 						{printControlFlags.includeVisualAcuityWithoutCorrection && (
 							<div className="space-y-1">
 								<Label htmlFor="va-sc-od" className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block">Sans correction</Label>
@@ -310,7 +299,10 @@ const VisualAcuityCertificateDocument: React.FC<VisualAcuityCertificateDocumentP
 							OG
 						</h4>
 					</div>
-					<div className="space-y-2">
+
+					{/* VL (Loin) */}
+					<div className="space-y-2 pt-1">
+						<span className="text-[10px] font-bold text-green-800 uppercase bg-green-100 px-2 py-0.5 rounded px-2">Loin (VL)</span>
 						{printControlFlags.includeVisualAcuityWithoutCorrection && (
 							<div className="space-y-1">
 								<Label htmlFor="va-sc-og" className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block">Sans correction</Label>

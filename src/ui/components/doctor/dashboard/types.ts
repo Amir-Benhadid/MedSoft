@@ -12,7 +12,7 @@ export interface OptionType {
 export const VISUAL_ACUITY_OPTIONS_DISTANCE_SC: OptionType[] = [
     { value: '12/10', label: '12/10' },
     { value: '11/10', label: '11/10' },
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: '10/10', label: '10/10' },
     { value: '9/10', label: '9/10' },
     { value: '8/10', label: '8/10' },
@@ -34,7 +34,7 @@ export const VISUAL_ACUITY_OPTIONS_DISTANCE_SC: OptionType[] = [
 ];
 
 export const VISUAL_ACUITY_OPTIONS_DISTANCE_AC: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: '10/10', label: '10/10' },
     { value: '9/10', label: '9/10' },
     { value: '8/10', label: '8/10' },
@@ -53,7 +53,7 @@ export const VISUAL_ACUITY_OPTIONS_DISTANCE_AC: OptionType[] = [
 ];
 
 export const VISUAL_ACUITY_OPTIONS_NEAR: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: 'P1', label: 'P1' },
     { value: 'P2', label: 'P2' },
     { value: 'P3', label: 'P3' },
@@ -80,7 +80,7 @@ export const SPHERE_VALUES = (() => {
     }
 
     // Empty option in the middle (between negatives and zero)
-    values.push({ value: '__EMPTY__', label: ' ' });
+    values.push({ value: '', label: ' ' });
 
     // Zero
     values.push({ value: '0.00', label: '0.00' });
@@ -110,7 +110,7 @@ export const CYLINDER_VALUES = (() => {
     }
 
     // Empty option in the middle
-    values.push({ value: '__EMPTY__', label: ' ' });
+    values.push({ value: '', label: ' ' });
 
     // Zero
     values.push({ value: '0.00', label: '0.00' });
@@ -125,7 +125,7 @@ export const CYLINDER_VALUES = (() => {
 })();
 
 export const AXIS_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }];
+    const values: OptionType[] = [{ value: '', label: ' ' }];
     for (let i = 0; i <= 180; i += 5) {
         values.push({ value: i.toString(), label: i.toString() + '°' });
     }
@@ -133,7 +133,7 @@ export const AXIS_VALUES = (() => {
 })();
 
 export const ADD_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }];
+    const values: OptionType[] = [{ value: '', label: ' ' }];
     for (let i = 0.75; i <= 4.0; i += 0.25) {
         const formatted = `+${i.toFixed(2)}`;
         values.push({ value: formatted, label: formatted });
@@ -142,7 +142,7 @@ export const ADD_VALUES = (() => {
 })();
 
 export const TENSION_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }];
+    const values: OptionType[] = [{ value: '', label: ' ' }];
     for (let i = 0; i <= 60; i++) {
         values.push({ value: i.toString(), label: i.toString() });
     }
@@ -150,7 +150,7 @@ export const TENSION_VALUES = (() => {
 })();
 
 export const KERATOMETRY_VALUES = (() => {
-    const values: OptionType[] = [{ value: '__EMPTY__', label: ' ' }];
+    const values: OptionType[] = [{ value: '', label: ' ' }];
     for (let i = 30; i <= 60; i += 0.25) {
         const formatted = i.toFixed(2);
         values.push({ value: formatted, label: formatted });
@@ -159,7 +159,7 @@ export const KERATOMETRY_VALUES = (() => {
 })();
 
 export const LENS_TYPE_OPTIONS: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: 'Souple hydrogel', label: 'Souple hydrogel' },
     { value: 'Souple silicone-hydrogel', label: 'Souple silicone-hydrogel' },
     { value: 'RGP', label: 'RGP' },
@@ -170,7 +170,7 @@ export const LENS_TYPE_OPTIONS: OptionType[] = [
 ];
 
 export const LENS_BRAND_OPTIONS: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: 'Acuvue', label: 'Acuvue' },
     { value: 'Air Optix', label: 'Air Optix' },
     { value: 'Biofinity', label: 'Biofinity' },
@@ -186,7 +186,7 @@ export const LENS_BRAND_OPTIONS: OptionType[] = [
 ];
 
 export const GLASS_TYPE_OPTIONS: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: 'Verres anti-reflets', label: 'Verres anti-reflets' },
     { value: 'Anti Lumière bleue', label: 'Anti Lumière bleue' },
     { value: 'Anti-UV', label: 'Anti-UV' },
@@ -202,7 +202,7 @@ export const GLASS_TYPE_OPTIONS: OptionType[] = [
 ];
 
 export const CONTACT_LENS_TYPE_OPTIONS: OptionType[] = [
-    { value: '__EMPTY__', label: ' ' },
+    { value: '', label: ' ' },
     { value: 'Sphérique', label: 'Sphérique' },
     { value: 'Torique', label: 'Torique' },
 ];

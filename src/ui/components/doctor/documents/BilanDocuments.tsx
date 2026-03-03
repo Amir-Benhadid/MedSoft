@@ -87,11 +87,11 @@ interface BilanDocumentProps {
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
-	normal: 11,
-	small: 8,
-	tiny: 8,
+	title: 11,
+	sectionHeader: 10,
+	normal: 10,
+	small: 10,
+	tiny: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -121,7 +121,7 @@ export const generateBilanPDF = async (
 
 	// Main statement - split into multiple lines for better formatting
 	const mainStatementText = "Prière faire:";
-	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
+	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	const mainStatementLines = DocumentUtils.splitTextIntoLinesOptimized(
 		mainStatementText,
 		availableWidth
@@ -209,7 +209,7 @@ const bilanConfigs = {
 			{ key: 'glycemie', label: 'Glycémie à jeun' },
 			{ key: 'ureeCreatinine', label: 'Urée - Créatinine' },
 			{ key: 'bilanHepatique', label: 'Bilan hépatique' },
-			{ key: 'ecgCardiologie', label: 'ECG - Cardiologie' },
+			{ key: 'ecgCardiologie', label: 'ECG - avis de Cardiologie' },
 		],
 	},
 	bilanDiabete: {
@@ -237,7 +237,7 @@ const bilanConfigs = {
 		fields: [
 			{ key: 'fns', label: 'FNS' },
 			{ key: 'vsCrp', label: 'VS - CRP' },
-			{ key: 'electrophorese', label: 'Électrophorèse des protéines' },
+			{ key: 'electrophorese', label: 'Électrophorèse de protéines' },
 			{ key: 'toxoplasmose', label: 'Toxoplasmose' },
 			{ key: 'idrTuberculine', label: 'IDR à la tuberculine' },
 			{ key: 'aslo', label: 'ASLO' },

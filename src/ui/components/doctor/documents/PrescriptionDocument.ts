@@ -22,13 +22,13 @@ export interface PrescriptionPrintData {
 }
 
 const TEXT_SIZES = {
-    title: 16,
-    header: 11,
-    medicationName: 12,
+    title: 11,
+    header: 10,
+    medicationName: 10,
     details: 10,
     normal: 10,
-    small: 8,
-    footer: 9,
+    small: 10,
+    footer: 10,
 };
 
 const LINE_HEIGHTS = {

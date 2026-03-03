@@ -20,8 +20,8 @@ interface GuestCertificateSheetProps {
 function CompactSelect({ value, onChange, options, disabled, placeholder, className }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string }) {
     const nativeOptions = options.map(o => ({
         ...o,
-        value: o.value === '__EMPTY__' ? '' : o.value,
-        label: o.value === '__EMPTY__' ? (placeholder || ' ') : o.label
+        value: o.value === '' ? '' : o.value,
+        label: o.value === '' ? (placeholder || ' ') : o.label
     }));
 
     return (

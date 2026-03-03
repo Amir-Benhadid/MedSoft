@@ -129,11 +129,19 @@ export interface ReportData {
     visualAcuityVL_SC_OG?: string;
     visualAcuityVL_AC_OD?: string;
     visualAcuityVL_AC_OG?: string;
+    visualAcuityVP_SC_OD?: string;
+    visualAcuityVP_SC_OG?: string;
+    visualAcuityVP_AC_OD?: string;
+    visualAcuityVP_AC_OG?: string;
     // Print-specific overrides
     printVisualAcuityVL_SC_OD?: string;
     printVisualAcuityVL_SC_OG?: string;
     printVisualAcuityVL_AC_OD?: string;
     printVisualAcuityVL_AC_OG?: string;
+    printVisualAcuityVP_SC_OD?: string;
+    printVisualAcuityVP_SC_OG?: string;
+    printVisualAcuityVP_AC_OD?: string;
+    printVisualAcuityVP_AC_OG?: string;
     // Tonometry fields
     tonometryOD?: string;
     tonometryOG?: string;

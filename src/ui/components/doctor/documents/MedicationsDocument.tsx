@@ -13,10 +13,10 @@ interface MedicationsDocumentProps {}
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
-	normal: 9,
-	small: 8,
+	title: 11,
+	sectionHeader: 10,
+	normal: 10,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,

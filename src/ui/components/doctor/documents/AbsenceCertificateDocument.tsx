@@ -32,10 +32,10 @@ interface AbsenceCertificateDocumentProps { }
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
-	normal: 11,
-	small: 8,
+	title: 11,
+	sectionHeader: 10,
+	normal: 10,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -79,7 +79,7 @@ export const generateAbsenceCertificatePDF = async (
 ): Promise<Uint8Array> => {
 	const { page, width, helvetica, helveticaBold, LEFT_MARGIN, RIGHT_MARGIN, TEXT_SIZES, LINE_HEIGHTS } = context;
 
-	let y = drawTitle(context, 'CERTIFICAT DE CONSULTATION', drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
+	let y = drawTitle(context, "JUSTIFICATION D'ABSENCE", drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
 	const today = new Date();
 	const consultationDate = printData?.consultationDate || today;
@@ -98,7 +98,7 @@ export const generateAbsenceCertificatePDF = async (
 		absenceText = `Je soussignée certifie que le(a) sus-nommé(e) s'est présenté(e) à notre consultation le ${dateInLetters} pour un problème ophthalmologique.`;
 	}
 
-	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN + 20;
+	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	const absenceLines = splitTextIntoLinesOptimized(
 		absenceText,
 		availableWidth

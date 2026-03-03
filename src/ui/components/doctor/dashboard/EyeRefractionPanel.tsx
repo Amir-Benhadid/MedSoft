@@ -193,11 +193,11 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
     const inputRef = useRef<HTMLInputElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     // Internal state for the input value - ensure we never use undefined (controlled input)
-    const [inputValue, setInputValue] = useState(() => (value ?? '') === '__EMPTY__' ? '' : (value ?? ''));
+    const [inputValue, setInputValue] = useState(() => (value ?? '') === '' ? '' : (value ?? ''));
 
     // Sync state if external value changes (e.g. from store updates or "copy" actions)
     useEffect(() => {
-        setInputValue((value ?? '') === '__EMPTY__' ? '' : (value ?? ''));
+        setInputValue((value ?? '') === '' ? '' : (value ?? ''));
     }, [value]);
 
     useEffect(() => {
@@ -209,7 +209,7 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
     // Callback ref that fires when the scroll container mounts inside the portal
     const scrollContainerCallbackRef = useCallback((node: HTMLDivElement | null) => {
         if (!node) return;
-        const hasVal = value && value !== '__EMPTY__';
+        const hasVal = value && value !== '';
         const targetValue = hasVal ? value : '-0.75';
 
         const element = node.querySelector(`[data-value="${targetValue}"]`);
@@ -228,7 +228,7 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
 
     const handleClear = (e: React.MouseEvent) => {
         e.stopPropagation();
-        onChange('__EMPTY__');
+        onChange('');
         setInputValue('');
         inputRef.current?.focus();
     };
@@ -240,14 +240,14 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
 
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
-            onChange(val === '' ? '__EMPTY__' : val);
+            onChange(val === '' ? '' : val);
         }, 300);
     };
 
     const handleSelect = (optionValue: string) => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         onChange(optionValue);
-        setInputValue(optionValue === '__EMPTY__' ? '' : optionValue);
+        setInputValue(optionValue === '' ? '' : optionValue);
         setOpen(false);
         inputRef.current?.blur();
     };
@@ -263,7 +263,7 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
         const isDecimalField = options.some(o => o.value.includes('.') && !o.value.includes('/')); // Exclude "10/10"
 
         return options.filter(opt => {
-            if (opt.value === '__EMPTY__') return false;
+            if (opt.value === '') return false;
 
             // Text matching for non-numeric fields
             if (!isDecimalField && !/^[+-]?\d/.test(opt.value)) {

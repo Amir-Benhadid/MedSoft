@@ -39,11 +39,11 @@ interface ClinicalDataSheetProps {
 }
 
 function CompactSelect({ value, onChange, options, disabled, placeholder, className }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string }) {
-    // Transform options for NativeSelect if they contain __EMPTY__
+    // Transform options for NativeSelect if they are empty
     const nativeOptions = options.map(o => ({
         ...o,
-        value: o.value === '__EMPTY__' ? '' : o.value,
-        label: o.value === '__EMPTY__' ? (placeholder || ' ') : o.label
+        value: o.value === '' ? '' : o.value,
+        label: o.value === '' ? (placeholder || ' ') : o.label
     }));
 
     const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -74,10 +74,10 @@ interface GlassesDocumentProps { }
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
+	title: 11,
+	sectionHeader: 10,
 	normal: 10,
-	small: 8,
+	small: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
@@ -138,8 +138,8 @@ export const generateGlassesPDF = async (
 	const columnWidth = usableWidth / columnCount;
 
 	// Column positions
-	const colODLabel = LEFT_MARGIN;
-	const colODValue = LEFT_MARGIN + 35;
+	const colODLabel = LEFT_MARGIN + 10;
+	const colODValue = LEFT_MARGIN + 50;
 	const colOGLabel = width / 2 + 10;
 	const colOGValue = width / 2 + 45;
 
@@ -154,7 +154,7 @@ export const generateGlassesPDF = async (
 
 		// Case: Sphere only (Cyl is 0 and Axis is empty/0)
 		if (Math.abs(cylNum) < 0.01 && !axisExists) {
-			return `${sphText} D`;
+			return `${sphText} d`;
 		}
 
 		// Case: Cylinder present
@@ -230,13 +230,12 @@ export const generateGlassesPDF = async (
 	if (hasAnyFarVisionEye) {
 		if (shouldShowFarVisionTitle) {
 			page.drawText('Loin:', {
-				x: colODLabel,
+				x: LEFT_MARGIN + 10,
 				y,
 				size: TEXT_SIZES.sectionHeader,
 				font: helveticaBold,
 				color: rgb(0, 0, 0),
 			});
-			y -= SECTION_GAP; // Same distance as OD-to-Vision de Loin
 		}
 
 		const valueY = y;
@@ -312,13 +311,12 @@ export const generateGlassesPDF = async (
 		// Vision de Près: label on its own line, values on separate line below
 		if (shouldShowNearVisionTitle) {
 			page.drawText("Près:", {
-				x: colODLabel,
+				x: LEFT_MARGIN + 10,
 				y,
 				size: TEXT_SIZES.sectionHeader,
 				font: helveticaBold,
 				color: rgb(0, 0, 0),
 			});
-			y -= SECTION_GAP; // Same distance as Vision de Loin-to-values
 		}
 
 		const nearValueY = y;
@@ -795,224 +793,224 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 
 			{/* Vision de Loin / OD-OG fields - OD/OG always shown; title only when Vision de Loin is checked */}
 			<div className="bg-card rounded-xl p-3 border border-border shadow-sm relative space-y-2">
-					{printControlFlags.includeFarVision === true && (
-						<div className="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 mb-1.5" style={{
-							background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-							boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
-						}}>
+				{printControlFlags.includeFarVision === true && (
+					<div className="px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 mb-1.5" style={{
+						background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+						boxShadow: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
+					}}>
+						<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
+							Vision de Loin
+						</h4>
+					</div>
+				)}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+					{/* Right Eye Far */}
+					<div className="flex flex-col gap-2 bg-blue-500/10 rounded-xl p-2.5 border-2 border-blue-300/50 shadow-sm hover:shadow-md transition-all">
+						{/* OD Checkbox - Title Box */}
+						<div
+							onClick={() =>
+								setPrintControlFlags((prev) => ({ ...prev, includeRightEyeFar: !(prev.includeRightEyeFar !== false) }))
+							}
+							className={cn(
+								"px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 cursor-pointer transition-all",
+								printControlFlags.includeRightEyeFar === false ? "opacity-50" : "opacity-100"
+							)}
+							style={{
+								background: printControlFlags.includeRightEyeFar === false
+									? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
+									: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+								boxShadow: printControlFlags.includeRightEyeFar === false
+									? '0 2px 6px -2px rgba(107, 114, 128, 0.2)'
+									: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
+							}}
+						>
+							<Checkbox
+								id="includeRightEyeFar"
+								checked={printControlFlags.includeRightEyeFar !== false}
+								onCheckedChange={(checked) =>
+									setPrintControlFlags((prev) => ({ ...prev, includeRightEyeFar: checked === true }))
+								}
+								className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+								onClick={(e) => e.stopPropagation()}
+							/>
 							<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
-								Vision de Loin
+								OD
 							</h4>
 						</div>
-					)}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-						{/* Right Eye Far */}
-						<div className="flex flex-col gap-2 bg-blue-500/10 rounded-xl p-2.5 border-2 border-blue-300/50 shadow-sm hover:shadow-md transition-all">
-							{/* OD Checkbox - Title Box */}
-							<div
-								onClick={() =>
-									setPrintControlFlags((prev) => ({ ...prev, includeRightEyeFar: !(prev.includeRightEyeFar !== false) }))
-								}
-								className={cn(
-									"px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 cursor-pointer transition-all",
-									printControlFlags.includeRightEyeFar === false ? "opacity-50" : "opacity-100"
-								)}
-								style={{
-									background: printControlFlags.includeRightEyeFar === false
-										? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
-										: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-									boxShadow: printControlFlags.includeRightEyeFar === false
-										? '0 2px 6px -2px rgba(107, 114, 128, 0.2)'
-										: '0 4px 12px -2px rgba(59, 130, 246, 0.3)'
-								}}
-							>
-								<Checkbox
-									id="includeRightEyeFar"
-									checked={printControlFlags.includeRightEyeFar !== false}
-									onCheckedChange={(checked) =>
-										setPrintControlFlags((prev) => ({ ...prev, includeRightEyeFar: checked === true }))
-									}
-									className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
-									onClick={(e) => e.stopPropagation()}
+
+						{/* Input Fields */}
+						<div className="grid grid-cols-3 gap-2">
+							<div>
+								<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Sphère</Label>
+								<Input
+									value={printData.rightEye.sph || ''}
+									onChange={(e) => handlePrintDataChange('rightEye', 'sph')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
 								/>
-								<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
-									OD
-								</h4>
 							</div>
-
-							{/* Input Fields */}
-							<div className="grid grid-cols-3 gap-2">
-								<div>
-									<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Sphère</Label>
-									<Input
-										value={printData.rightEye.sph || ''}
-										onChange={(e) => handlePrintDataChange('rightEye', 'sph')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
-									/>
-								</div>
-								<div>
-									<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Cylindre</Label>
-									<Input
-										value={printData.rightEye.cyl || ''}
-										onChange={(e) => handlePrintDataChange('rightEye', 'cyl')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
-									/>
-								</div>
-								<div>
-									<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Axe</Label>
-									<Input
-										value={printData.rightEye.axis || ''}
-										onChange={(e) => handlePrintDataChange('rightEye', 'axis')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
-									/>
-								</div>
+							<div>
+								<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Cylindre</Label>
+								<Input
+									value={printData.rightEye.cyl || ''}
+									onChange={(e) => handlePrintDataChange('rightEye', 'cyl')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
+								/>
 							</div>
-
-							{/* Options Right Eye - Inline Compact */}
-							<div className="pt-0.5">
-								{(() => {
-									const rightHasData = (printData.rightEye.sph && parseFloat(printData.rightEye.sph) !== 0) ||
-										(printData.rightEye.cyl && parseFloat(printData.rightEye.cyl) !== 0) ||
-										(printData.rightEye.axis && parseFloat(printData.rightEye.axis) !== 0);
-
-									if (rightHasData) {
-										return (
-											<div className="flex items-center space-x-2">
-												<Checkbox
-													id="rightEyeEmptyOptionConserver"
-													checked={printData.rightEye.emptyEyeOption === 'conserver'}
-													onCheckedChange={(checked) => handlePrintDataChange('rightEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
-													className="h-4 w-4 border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-												/>
-												<Label htmlFor="rightEyeEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Verre en place</Label>
-											</div>
-										);
-									} else {
-										return (
-											<RadioGroup
-												value={printData.rightEye.emptyEyeOption || 'plan'}
-												onValueChange={(value) => handlePrintDataChange('rightEye', 'emptyEyeOption')(value as 'plan' | 'conserver')}
-												className="flex flex-row space-x-4"
-											>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="plan" id="right-plan" className="h-4 w-4 border-blue-400 text-blue-600" />
-													<Label htmlFor="right-plan" className="text-xs font-semibold text-blue-700 cursor-pointer">Plan</Label>
-												</div>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="conserver" id="right-conserver" className="h-4 w-4 border-blue-400 text-blue-600" />
-													<Label htmlFor="right-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">En place</Label>
-												</div>
-											</RadioGroup>
-										);
-									}
-								})()}
+							<div>
+								<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Axe</Label>
+								<Input
+									value={printData.rightEye.axis || ''}
+									onChange={(e) => handlePrintDataChange('rightEye', 'axis')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
+								/>
 							</div>
 						</div>
 
-						{/* Left Eye Far */}
-						<div className="flex flex-col gap-2 bg-green-500/10 rounded-xl p-2.5 border-2 border-green-300/50 shadow-sm hover:shadow-md transition-all">
-							{/* OG Checkbox - Title Box */}
-							<div
-								onClick={() =>
-									setPrintControlFlags((prev) => ({ ...prev, includeLeftEyeFar: !(prev.includeLeftEyeFar !== false) }))
-								}
-								className={cn(
-									"px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 cursor-pointer transition-all",
-									printControlFlags.includeLeftEyeFar === false ? "opacity-50" : "opacity-100"
-								)}
-								style={{
-									background: printControlFlags.includeLeftEyeFar === false
-										? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
-										: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-									boxShadow: printControlFlags.includeLeftEyeFar === false
-										? '0 2px 6px -2px rgba(107, 114, 128, 0.2)'
-										: '0 4px 12px -2px rgba(16, 185, 129, 0.3)'
-								}}
-							>
-								<Checkbox
-									id="includeLeftEyeFar"
-									checked={printControlFlags.includeLeftEyeFar !== false}
-									onCheckedChange={(checked) =>
-										setPrintControlFlags((prev) => ({ ...prev, includeLeftEyeFar: checked === true }))
-									}
-									className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
-									onClick={(e) => e.stopPropagation()}
-								/>
-								<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
-									OG
-								</h4>
-							</div>
+						{/* Options Right Eye - Inline Compact */}
+						<div className="pt-0.5">
+							{(() => {
+								const rightHasData = (printData.rightEye.sph && parseFloat(printData.rightEye.sph) !== 0) ||
+									(printData.rightEye.cyl && parseFloat(printData.rightEye.cyl) !== 0) ||
+									(printData.rightEye.axis && parseFloat(printData.rightEye.axis) !== 0);
 
-							{/* Input Fields */}
-							<div className="grid grid-cols-3 gap-2">
-								<div>
-									<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Sphère</Label>
-									<Input
-										value={printData.leftEye.sph || ''}
-										onChange={(e) => handlePrintDataChange('leftEye', 'sph')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
-									/>
-								</div>
-								<div>
-									<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Cylindre</Label>
-									<Input
-										value={printData.leftEye.cyl || ''}
-										onChange={(e) => handlePrintDataChange('leftEye', 'cyl')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
-									/>
-								</div>
-								<div>
-									<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Axe</Label>
-									<Input
-										value={printData.leftEye.axis || ''}
-										onChange={(e) => handlePrintDataChange('leftEye', 'axis')(e.target.value)}
-										className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
-									/>
-								</div>
-							</div>
-
-							{/* Options Left Eye */}
-							<div className="pt-1">
-								{(() => {
-									const leftHasData = (printData.leftEye.sph && parseFloat(printData.leftEye.sph) !== 0) ||
-										(printData.leftEye.cyl && parseFloat(printData.leftEye.cyl) !== 0) ||
-										(printData.leftEye.axis && parseFloat(printData.leftEye.axis) !== 0);
-
-									if (leftHasData) {
-										return (
+								if (rightHasData) {
+									return (
+										<div className="flex items-center space-x-2">
+											<Checkbox
+												id="rightEyeEmptyOptionConserver"
+												checked={printData.rightEye.emptyEyeOption === 'conserver'}
+												onCheckedChange={(checked) => handlePrintDataChange('rightEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
+												className="h-4 w-4 border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+											/>
+											<Label htmlFor="rightEyeEmptyOptionConserver" className="text-xs font-semibold text-blue-700 cursor-pointer">Verre en place</Label>
+										</div>
+									);
+								} else {
+									return (
+										<RadioGroup
+											value={printData.rightEye.emptyEyeOption || 'plan'}
+											onValueChange={(value) => handlePrintDataChange('rightEye', 'emptyEyeOption')(value as 'plan' | 'conserver')}
+											className="flex flex-row space-x-4"
+										>
 											<div className="flex items-center space-x-2">
-												<Checkbox
-													id="leftEyeEmptyOptionConserver"
-													checked={printData.leftEye.emptyEyeOption === 'conserver'}
-													onCheckedChange={(checked) => handlePrintDataChange('leftEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
-													className="h-4 w-4 border-green-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-												/>
-												<Label htmlFor="leftEyeEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Verre en place</Label>
+												<RadioGroupItem value="plan" id="right-plan" className="h-4 w-4 border-blue-400 text-blue-600" />
+												<Label htmlFor="right-plan" className="text-xs font-semibold text-blue-700 cursor-pointer">Plan</Label>
 											</div>
-										);
-									} else {
-										return (
-											<RadioGroup
-												value={printData.leftEye.emptyEyeOption || 'plan'}
-												onValueChange={(value) => handlePrintDataChange('leftEye', 'emptyEyeOption')(value as 'plan' | 'conserver')}
-												className="flex flex-row space-x-4"
-											>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="plan" id="left-plan" className="h-4 w-4 border-green-400 text-green-600" />
-													<Label htmlFor="left-plan" className="text-xs font-semibold text-green-700 cursor-pointer">Plan</Label>
-												</div>
-												<div className="flex items-center space-x-2">
-													<RadioGroupItem value="conserver" id="left-conserver" className="h-4 w-4 border-green-400 text-green-600" />
-													<Label htmlFor="left-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">En place</Label>
-												</div>
-											</RadioGroup>
-										);
-									}
-								})()}
+											<div className="flex items-center space-x-2">
+												<RadioGroupItem value="conserver" id="right-conserver" className="h-4 w-4 border-blue-400 text-blue-600" />
+												<Label htmlFor="right-conserver" className="text-xs font-semibold text-blue-700 cursor-pointer">En place</Label>
+											</div>
+										</RadioGroup>
+									);
+								}
+							})()}
+						</div>
+					</div>
+
+					{/* Left Eye Far */}
+					<div className="flex flex-col gap-2 bg-green-500/10 rounded-xl p-2.5 border-2 border-green-300/50 shadow-sm hover:shadow-md transition-all">
+						{/* OG Checkbox - Title Box */}
+						<div
+							onClick={() =>
+								setPrintControlFlags((prev) => ({ ...prev, includeLeftEyeFar: !(prev.includeLeftEyeFar !== false) }))
+							}
+							className={cn(
+								"px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-2 cursor-pointer transition-all",
+								printControlFlags.includeLeftEyeFar === false ? "opacity-50" : "opacity-100"
+							)}
+							style={{
+								background: printControlFlags.includeLeftEyeFar === false
+									? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
+									: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+								boxShadow: printControlFlags.includeLeftEyeFar === false
+									? '0 2px 6px -2px rgba(107, 114, 128, 0.2)'
+									: '0 4px 12px -2px rgba(16, 185, 129, 0.3)'
+							}}
+						>
+							<Checkbox
+								id="includeLeftEyeFar"
+								checked={printControlFlags.includeLeftEyeFar !== false}
+								onCheckedChange={(checked) =>
+									setPrintControlFlags((prev) => ({ ...prev, includeLeftEyeFar: checked === true }))
+								}
+								className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-white data-[state=checked]:border-white"
+								onClick={(e) => e.stopPropagation()}
+							/>
+							<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
+								OG
+							</h4>
+						</div>
+
+						{/* Input Fields */}
+						<div className="grid grid-cols-3 gap-2">
+							<div>
+								<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Sphère</Label>
+								<Input
+									value={printData.leftEye.sph || ''}
+									onChange={(e) => handlePrintDataChange('leftEye', 'sph')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
+								/>
 							</div>
+							<div>
+								<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Cylindre</Label>
+								<Input
+									value={printData.leftEye.cyl || ''}
+									onChange={(e) => handlePrintDataChange('leftEye', 'cyl')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
+								/>
+							</div>
+							<div>
+								<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Axe</Label>
+								<Input
+									value={printData.leftEye.axis || ''}
+									onChange={(e) => handlePrintDataChange('leftEye', 'axis')(e.target.value)}
+									className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
+								/>
+							</div>
+						</div>
+
+						{/* Options Left Eye */}
+						<div className="pt-1">
+							{(() => {
+								const leftHasData = (printData.leftEye.sph && parseFloat(printData.leftEye.sph) !== 0) ||
+									(printData.leftEye.cyl && parseFloat(printData.leftEye.cyl) !== 0) ||
+									(printData.leftEye.axis && parseFloat(printData.leftEye.axis) !== 0);
+
+								if (leftHasData) {
+									return (
+										<div className="flex items-center space-x-2">
+											<Checkbox
+												id="leftEyeEmptyOptionConserver"
+												checked={printData.leftEye.emptyEyeOption === 'conserver'}
+												onCheckedChange={(checked) => handlePrintDataChange('leftEye', 'emptyEyeOption')(checked ? 'conserver' : 'plan')}
+												className="h-4 w-4 border-green-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+											/>
+											<Label htmlFor="leftEyeEmptyOptionConserver" className="text-xs font-semibold text-green-700 cursor-pointer">Verre en place</Label>
+										</div>
+									);
+								} else {
+									return (
+										<RadioGroup
+											value={printData.leftEye.emptyEyeOption || 'plan'}
+											onValueChange={(value) => handlePrintDataChange('leftEye', 'emptyEyeOption')(value as 'plan' | 'conserver')}
+											className="flex flex-row space-x-4"
+										>
+											<div className="flex items-center space-x-2">
+												<RadioGroupItem value="plan" id="left-plan" className="h-4 w-4 border-green-400 text-green-600" />
+												<Label htmlFor="left-plan" className="text-xs font-semibold text-green-700 cursor-pointer">Plan</Label>
+											</div>
+											<div className="flex items-center space-x-2">
+												<RadioGroupItem value="conserver" id="left-conserver" className="h-4 w-4 border-green-400 text-green-600" />
+												<Label htmlFor="left-conserver" className="text-xs font-semibold text-green-700 cursor-pointer">En place</Label>
+											</div>
+										</RadioGroup>
+									);
+								}
+							})()}
 						</div>
 					</div>
 				</div>
+			</div>
 
 			{/* Vision de Près fields */}
 			{printControlFlags.includeNearVision === true && (

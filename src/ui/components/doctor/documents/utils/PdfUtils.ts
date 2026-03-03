@@ -40,12 +40,12 @@ export const createPdfContext = async (): Promise<PdfGenerationContext> => {
     const LEFT_MARGIN = 60.35; // 1cm in points (1cm = 28.35 points)
     const RIGHT_MARGIN = 30;
     const TEXT_SIZES = {
-        title: 10,
-        header: 11, // Increased by 1 for patient name/age
+        title: 11,
+        header: 10, // Increased by 1 for patient name/age
         sectionHeader: 10,
-        normal: 11,
-        small: 9,
-        tiny: 8,
+        normal: 10,
+        small: 10,
+        tiny: 10,
     };
     const LINE_HEIGHTS = {
         title: 35,
@@ -72,9 +72,10 @@ export const createPdfContext = async (): Promise<PdfGenerationContext> => {
 
 export const drawTitle = (context: PdfGenerationContext, title: string, yPos: number) => {
     const { page, width, helveticaBold, TEXT_SIZES, LINE_HEIGHTS } = context;
+    const titleCased = title.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
-    page.drawText(title, {
-        x: width / 2 - title.length * 3, // Better centering calculation
+    page.drawText(titleCased, {
+        x: width / 2 - titleCased.length * 3, // Better centering calculation
         y: yPos,
         size: TEXT_SIZES.title,
         font: helveticaBold,
@@ -101,8 +102,11 @@ export const drawDocumentHeader = (
     });
 
     // Patient name and age on the line below
+    const surnameCased = patient.surname.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const nameCased = patient.name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
     page.drawText(
-        `${patient.surname} ${patient.name}, ${calculateAge(patient.dob) === 1
+        `${surnameCased} ${nameCased}, ${calculateAge(patient.dob) === 1
             ? '1 an'
             : `${calculateAge(patient.dob)} ans`
         }`,

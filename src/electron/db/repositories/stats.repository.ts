@@ -86,7 +86,27 @@ export class StatsRepository {
         // We use the invoices table as the primary source of truth for the daily resume.
         // This ensures we capture all financial activity, including invoices created without a full consultation record.
         console.log('[StatsRepository:getStats] Querying INVOICES for range:', start, endDate);
-        const rows = this.db.prepare(`
+
+        const config = getConfig();
+        const isSecretary = config.appMode === 'secretary';
+
+        const query = isSecretary ? `
+            SELECT 
+                i.id as invoice_id,
+                i.consultation_id,
+                i.created_at as created_at,
+                i.type,
+                p.name as patient_name, 
+                p.surname as patient_surname,
+                i.total as amount,
+                i.paid as paid,
+                i.method as payment_method,
+                'completed' as consultation_status
+            FROM invoices i
+            LEFT JOIN patients p ON i.patient_id = p.id
+            WHERE i.created_at >= ? AND i.created_at <= ?
+            ORDER BY i.created_at DESC
+        ` : `
             SELECT 
                 i.id as invoice_id,
                 i.consultation_id,
@@ -103,7 +123,9 @@ export class StatsRepository {
             LEFT JOIN consultations c ON i.consultation_id = c.id
             WHERE i.created_at >= ? AND i.created_at <= ?
             ORDER BY i.created_at DESC
-        `).all(start, end) as any[];
+        `;
+
+        const rows = this.db.prepare(query).all(start, end) as any[];
         console.log(`[StatsRepository:getStats] Found ${rows.length} invoices/records.`);
 
         const consultationCount = rows.length;

@@ -20,12 +20,12 @@ interface RadiographyData {
 
 // PDF Generation Constants
 const TEXT_SIZES = {
-    title: 9,
-    header: 11,
+    title: 11,
+    header: 10,
     sectionHeader: 10,
     normal: 10,
-    small: 8,
-    tiny: 7,
+    small: 10,
+    tiny: 10,
 };
 const LINE_HEIGHTS = {
     title: 20,

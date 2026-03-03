@@ -269,7 +269,7 @@ export const useDocumentsState = ({
             includeTonometry: true,
             includeGlassType: false,
             includeNearVision: false,
-            includeFarVision: true,
+            includeFarVision: false,
             includeRightEyeFar: true,
             includeLeftEyeFar: true,
             includeRightEyeNear: true,
@@ -310,6 +310,17 @@ export const useDocumentsState = ({
     const prevGlassesLeftRef = useRef({
         sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, add: leftEyeData?.add, glassType: leftEyeData?.glassType
     });
+
+    // Track visual acuity source values so we sync from refraction
+    const prevVARightRef = useRef({
+        sc_vl: rightEyeData?.visualAcuityVL_SC || rightEyeData?.visualAcuity,
+        ac_vl: rightEyeData?.visualAcuityVL_AC,
+    });
+    const prevVALeftRef = useRef({
+        sc_vl: leftEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuity,
+        ac_vl: leftEyeData?.visualAcuityVL_AC,
+    });
+    const lastVASyncFromRefractionRef = useRef(0);
 
     // Sync Lunettes (glasses) document from refraction — same logic as Lentilles: when refraction changes, update print data
     useEffect(() => {
@@ -387,6 +398,48 @@ export const useDocumentsState = ({
     }, [
         rightEyeData?.sph, rightEyeData?.cyl, rightEyeData?.axis, rightEyeData?.add, rightEyeData?.glassType,
         leftEyeData?.sph, leftEyeData?.cyl, leftEyeData?.axis, leftEyeData?.add, leftEyeData?.glassType,
+    ]);
+
+    // Sync Certificat (visual acuity) from refraction
+    useEffect(() => {
+        if (suppressNotifyRef.current) return;
+
+        const currentRightSC_VL = rightEyeData?.visualAcuityVL_SC || rightEyeData?.visualAcuity;
+        const currentRightAC_VL = rightEyeData?.visualAcuityVL_AC;
+
+        const currentLeftSC_VL = leftEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuity;
+        const currentLeftAC_VL = leftEyeData?.visualAcuityVL_AC;
+
+        const rightVAChanged =
+            currentRightSC_VL !== prevVARightRef.current.sc_vl ||
+            currentRightAC_VL !== prevVARightRef.current.ac_vl;
+
+        const leftVAChanged =
+            currentLeftSC_VL !== prevVALeftRef.current.sc_vl ||
+            currentLeftAC_VL !== prevVALeftRef.current.ac_vl;
+
+        if (rightVAChanged) {
+            prevVARightRef.current = { sc_vl: currentRightSC_VL, ac_vl: currentRightAC_VL };
+            setPrintVisualAcuityData(prev => ({
+                ...prev,
+                visualAcuityVL_SC_OD: currentRightSC_VL ?? '',
+                visualAcuityVL_AC_OD: currentRightAC_VL ?? '',
+            }));
+            lastVASyncFromRefractionRef.current = Date.now();
+        }
+
+        if (leftVAChanged) {
+            prevVALeftRef.current = { sc_vl: currentLeftSC_VL, ac_vl: currentLeftAC_VL };
+            setPrintVisualAcuityData(prev => ({
+                ...prev,
+                visualAcuityVL_SC_OG: currentLeftSC_VL ?? '',
+                visualAcuityVL_AC_OG: currentLeftAC_VL ?? '',
+            }));
+            lastVASyncFromRefractionRef.current = Date.now();
+        }
+    }, [
+        rightEyeData?.visualAcuityVL_SC, rightEyeData?.visualAcuity, rightEyeData?.visualAcuityVL_AC,
+        leftEyeData?.visualAcuityVL_SC, leftEyeData?.visualAcuity, leftEyeData?.visualAcuityVL_AC,
     ]);
 
     useEffect(() => {
@@ -593,11 +646,14 @@ export const useDocumentsState = ({
                 }
                 if (printStates.printVisualAcuityData) {
                     const newPrintVisualAcuityData = printStates.printVisualAcuityData;
-                    setPrintVisualAcuityData(prev =>
-                        JSON.stringify(prev) !== JSON.stringify(newPrintVisualAcuityData)
-                            ? newPrintVisualAcuityData
-                            : prev
-                    );
+                    const msSinceVASync = Date.now() - lastVASyncFromRefractionRef.current;
+                    if (msSinceVASync >= 400) {
+                        setPrintVisualAcuityData(prev =>
+                            JSON.stringify(prev) !== JSON.stringify(newPrintVisualAcuityData)
+                                ? newPrintVisualAcuityData
+                                : prev
+                        );
+                    }
                 }
                 if (printStates.printAbsenceData) {
                     const newPrintAbsenceData = printStates.printAbsenceData;

@@ -77,32 +77,28 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
                             </span>
 
                             {/* Age */}
-                            {activePatientInConsultation.patient?.dob && (
-                                <span className="text-xs font-bold text-emerald-600/80 w-[10%] min-w-[40px]">
-                                    {getAge(activePatientInConsultation.patient.dob)}
-                                </span>
-                            )}
+                            <span className="text-xs font-bold text-emerald-600/80 w-[10%] min-w-[40px]">
+                                {activePatientInConsultation.patient?.dob ? getAge(activePatientInConsultation.patient.dob) : '-'}
+                            </span>
 
                             {/* Phone */}
-                            {activePatientInConsultation.patient?.phone && (
-                                <span className="text-xs font-bold text-emerald-600/80 w-[15%] min-w-[80px]">
-                                    {activePatientInConsultation.patient.phone}
-                                </span>
-                            )}
+                            <span className="text-xs font-bold text-emerald-600/80 w-[15%] min-w-[80px]">
+                                {activePatientInConsultation.patient?.phone || '-'}
+                            </span>
 
                             {/* Dilation badge */}
-                            {activePatientInConsultation.needsDilation && (
-                                <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 shrink-0 font-black uppercase">
-                                    Dilatation
-                                </Badge>
-                            )}
+                            <div className="w-[80px] shrink-0 flex items-center justify-center">
+                                {activePatientInConsultation.needsDilation && (
+                                    <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 font-black uppercase">
+                                        Dilatation
+                                    </Badge>
+                                )}
+                            </div>
 
                             {/* Notes */}
-                            {activePatientInConsultation.notes && (
-                                <span className="text-[11px] text-emerald-600/70 font-bold italic truncate max-w-[200px] shrink-0">
-                                    🩺 {activePatientInConsultation.notes}
-                                </span>
-                            )}
+                            <span className="text-[11px] text-emerald-600/70 font-bold italic truncate w-[200px] shrink-0">
+                                {activePatientInConsultation.notes ? `🩺 ${activePatientInConsultation.notes}` : ''}
+                            </span>
                         </div>
                     </div>
                 )}

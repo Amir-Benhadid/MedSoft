@@ -54,11 +54,11 @@ interface MedicalRecordDocumentProps {
 const LEFT_MARGIN = 50;
 const RIGHT_MARGIN = 50;
 const TEXT_SIZES = {
-	title: 16,
-	sectionHeader: 12,
-	normal: 11,
+	title: 11,
+	sectionHeader: 10,
+	normal: 10,
 	small: 10,
-	tiny: 8,
+	tiny: 10,
 };
 const LINE_HEIGHTS = {
 	title: 20,
