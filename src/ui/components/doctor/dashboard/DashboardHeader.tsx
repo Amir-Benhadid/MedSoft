@@ -21,6 +21,7 @@ interface DashboardHeaderProps {
     setIsFinishSheetOpen: (val: boolean) => void;
     isFinishSheetOpen: boolean;
     onOpenHistory: () => void;
+    onOpenPaymentHistory: () => void;
     showFinishButton?: boolean;
 }
 
@@ -31,6 +32,7 @@ export const DashboardHeader = memo(function DashboardHeader({
     setIsFinishSheetOpen,
     isFinishSheetOpen,
     onOpenHistory,
+    onOpenPaymentHistory,
     showFinishButton = true
 }: DashboardHeaderProps) {
     if (!patient) return null;
@@ -103,15 +105,27 @@ export const DashboardHeader = memo(function DashboardHeader({
                         <Settings className="w-5 h-5" />
                     </Button>
                     <UpdateIndicator />
-                    {/* History Button */}
+
+                    {/* Payment History Button */}
                     <Button
-                        size="sm"
+                        size="icon"
                         variant="ghost"
-                        className="gap-2"
+                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                        onClick={onOpenPaymentHistory}
+                        title="Historique des paiements et créances"
+                    >
+                        <span className="text-xl">💳</span>
+                    </Button>
+
+                    {/* History Button (Symbol only) */}
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-slate-600 hover:text-blue-600 hover:bg-blue-50"
                         onClick={onOpenHistory}
+                        title="Historique des consultations"
                     >
                         <span className="text-xl">📅</span>
-                        Historique
                     </Button>
 
                     {/* Manual Save Button */}

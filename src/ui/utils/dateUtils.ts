@@ -134,7 +134,7 @@ export function getTodayISO(): string {
  * Extract date part (YYYY-MM-DD) from a date string or Date object without timezone conversion
  * This ensures dates are compared correctly regardless of timezone
  * 
- * IMPORTANT: For date strings from Supabase (ISO format with time), we extract the date part
+ * IMPORTANT: For date strings from database (ISO format with time), we extract the date part
  * directly without parsing as Date object to avoid timezone conversion issues.
  */
 export function extractLocalDate(dateInput: Date | string): string {

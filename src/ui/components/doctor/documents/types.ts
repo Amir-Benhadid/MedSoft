@@ -156,10 +156,16 @@ export interface ReportPrintControlFlags {
     includeTonometry: boolean;
 }
 
+export interface GenericPrintData {
+    title: string;
+    text: string;
+}
+
 export interface WorkStopPrintData {
     startDate?: Date;
     endDate?: Date;
     exitAuthorized: boolean;
+    isProlongation?: boolean;
 }
 
 export interface AbsencePrintData {
@@ -177,6 +183,7 @@ export interface WorkStopData {
     startDate: Date;
     endDate: Date;
     exitAuthorized: boolean;
+    isProlongation?: boolean;
 }
 
 export interface EyeData {

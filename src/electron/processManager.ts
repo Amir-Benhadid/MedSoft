@@ -348,13 +348,13 @@ export class ProcessManager {
 	}
 
 	/**
-	 * Checks server health endpoint.
-	 * Currently disabled as the app uses Supabase instead of local server.
+	 * Checks server health.
+	 * Currently disabled / relies on IPC or other mechanisms check.
 	 *
 	 * @returns Promise resolving to true (always returns true)
 	 */
 	private async checkServerHealth(): Promise<boolean> {
-		console.log('[HEALTH CHECK] Server health check disabled - using Supabase');
+		console.log('[HEALTH CHECK] Server health check bypass');
 		return true;
 	}
 

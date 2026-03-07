@@ -13,6 +13,7 @@ import { Button } from '@/ui/components/ui/button';
 import { cn } from '@/ui/lib/utils';
 import BilanFormsContainer from './BilanFormsContainer';
 import DiversDocumentForm from './DiversDocumentForm';
+import GenericDocumentForm from './GenericDocumentForm';
 import { useDocumentForm } from '../hooks/useDocumentForm';
 import {
     ContactLensesDocument,
@@ -205,6 +206,7 @@ const DocumentFormRenderer: React.FC<DocumentFormRendererProps> = ({
                 </div>
                 {activeDocTab === 'certificatAcuite' && <VisualAcuityCertificateDocument />}
                 {activeDocTab === 'medications' && <MedicationsDocument />}
+                {activeDocTab === 'generic' && <GenericDocumentForm />}
             </PersistentEyeDocumentWrapper>
         </FormWrapper>
     );

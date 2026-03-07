@@ -27,6 +27,7 @@ declare global {
             selectFile: (filters: any[]) => Promise<string | null>;
             copyLogo: (path: string) => Promise<string | null>;
             factoryReset: () => Promise<boolean>;
+            seedLentilleConversion: () => Promise<{ success: boolean; message: string }>;
 
             // Network / Discovery
             scanForServers: () => Promise<Array<{ ip: string; port: number; name: string }>>;

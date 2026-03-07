@@ -27,6 +27,7 @@ const TAB_GROUPS: { PAGE_1: TabItem[], PAGE_2: TabItem[] } = {
         { id: 'absence', label: 'Absence', icon: FileCheck },
         { id: 'bilans', label: 'Bilans', icon: Activity, isGroup: true },
         { id: 'divers', label: 'Divers', icon: LayoutGrid },
+        { id: 'generic', label: 'Libre', icon: FileText },
     ]
 };
 

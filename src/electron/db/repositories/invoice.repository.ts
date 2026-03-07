@@ -85,6 +85,24 @@ export class InvoiceRepository {
     }
 
     /**
+     * Finds invoices by Patient ID.
+     *
+     * @param patientId - Patient ID
+     * @returns Array of Invoices
+     */
+    findByPatientId(patientId: string): Invoice[] {
+        // Find all invoices linked to this patient's consultations, or directly on the invoice
+        const rows = this.db.prepare(`
+            SELECT DISTINCT i.* 
+            FROM invoices i 
+            LEFT JOIN consultations c ON i.consultation_id = c.id 
+            WHERE i.patient_id = ? OR c.patient_id = ?
+            ORDER BY i.created_at DESC
+        `).all(patientId, patientId);
+        return rows.map(r => InvoiceSchema.parse(r));
+    }
+
+    /**
      * Updates an invoice by ID.
      *
      * @param id - Invoice ID

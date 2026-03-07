@@ -27,8 +27,6 @@ interface DoctorSettingsDialogProps {
 
 export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialogProps) {
     const [isResetting, setIsResetting] = useState(false);
-    const [isSeeding, setIsSeeding] = useState(false);
-    const [seedMessage, setSeedMessage] = useState<string | null>(null);
     const [isSeedingConversion, setIsSeedingConversion] = useState(false);
     const [conversionMessage, setConversionMessage] = useState<string | null>(null);
 
@@ -39,20 +37,6 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
         } catch (error) {
             console.error("Factory reset failed:", error);
             setIsResetting(false);
-        }
-    };
-
-    const handleSeedMedicines = async () => {
-        setIsSeeding(true);
-        setSeedMessage(null);
-        try {
-            const result = await window.electronAPI.seedMedicines();
-            setSeedMessage(result.success ? result.message : result.message);
-        } catch (error) {
-            console.error("Seed medicines failed:", error);
-            setSeedMessage("Erreur lors du seed des médicaments.");
-        } finally {
-            setIsSeeding(false);
         }
     };
 
@@ -90,23 +74,6 @@ export function DoctorSettingsDialog({ open, onOpenChange }: DoctorSettingsDialo
                             <Database className="w-4 h-4" />
                             Base de données
                         </h3>
-                        <p className="text-sm text-slate-600 mb-4">
-                            Importez les médicaments depuis la base Supabase de l'assistant de configuration. Les doublons sont automatiquement exclus.
-                        </p>
-                        <Button
-                            variant="outline"
-                            className="w-full gap-2"
-                            onClick={handleSeedMedicines}
-                            disabled={isSeeding}
-                        >
-                            <Database className="w-4 h-4" />
-                            {isSeeding ? "Import en cours..." : "Importer les médicaments"}
-                        </Button>
-                        {seedMessage && (
-                            <p className={`text-sm mt-3 ${seedMessage.startsWith("Erreur") ? "text-red-600" : "text-green-700"}`}>
-                                {seedMessage}
-                            </p>
-                        )}
                         <p className="text-sm text-slate-600 mt-4 mb-2">
                             Remplit la table de conversion lentilles (lunettes ↔ lentilles de contact) avec les valeurs de référence.
                         </p>

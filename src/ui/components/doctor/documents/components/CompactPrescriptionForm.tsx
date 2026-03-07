@@ -31,13 +31,13 @@ import {
 import { Textarea } from "@/ui/components/ui/textarea";
 
 import React, { useState, useCallback, useMemo, memo, useRef, useEffect } from 'react';
-import { MedicineOption } from '../../../../hooks/useMedicinesPaginated';
-import SupabaseMedicineAutocomplete from '@/ui/components/doctor/documents/components/SupabaseMedicineAutocomplete';
+import { MedicineOption, useMedicinesPaginated } from '../../../../hooks/useMedicinesPaginated';
+import PaginatedMedicineAutocomplete from '@/ui/components/doctor/documents/components/PaginatedMedicineAutocomplete';
 import { PrescriptionData, Treatment } from '../types';
-import { useSupabaseMedicinesPaginated } from '../../../../hooks/useSupabaseMedicinesPaginated';
 import { cn } from "@/ui/lib/utils";
 import { useDocumentForm } from '../hooks/useDocumentForm';
 import { DocumentUtils } from '../DocumentUtils';
+import { useLocation } from '@tanstack/react-router';
 
 interface CompactPrescriptionFormProps {
     prescriptionData?: PrescriptionData;
@@ -325,7 +325,7 @@ const TreatmentItem = memo<{
                         {/* Medicine Name */}
                         <div className="col-span-6">
                             <Label className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight mb-1 block">Nom du médicament</Label>
-                            <SupabaseMedicineAutocomplete
+                            <PaginatedMedicineAutocomplete
                                 value={localTreatment.customName || localTreatment.name || ''}
                                 onChange={handleMedicineSelectLocal}
                                 placeholder="Rechercher..."
@@ -426,7 +426,13 @@ const CompactPrescriptionForm = ({
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null); // Track expanded item
     const [saveDialogOpen, setSaveDialogOpen] = useState(false);
     const [medicineToSave, setMedicineToSave] = useState<Treatment | null>(null);
-    const { addMedicine } = useSupabaseMedicinesPaginated(100);
+    const { addMedicine } = useMedicinesPaginated(100);
+    const location = useLocation();
+
+    // Guard against zombies when unmounting during an active portal
+    useEffect(() => {
+        setSaveDialogOpen(false);
+    }, [location.pathname, location.search]);
 
     /** Creates a new blank treatment */
     const createNewTreatment = (): Treatment & { order: number; isNew: boolean } => ({

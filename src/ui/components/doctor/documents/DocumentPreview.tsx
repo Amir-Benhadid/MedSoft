@@ -41,6 +41,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
         visualAcuityPrintData,
         absencePrintData,
         workStopPrintData,
+        printGenericData,
         tonometrie,
     } = useDocumentPreview({ activeDocTab });
 
@@ -387,16 +388,21 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                     <div className="mt-1">
                         <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
                             <CardContent className="p-0">
-                                <p className="text-xs mb-2 font-semibold">
-                                    ARRÊT DE TRAVAIL
-                                </p>
+                                {/* Title is rendered below conditionally now to be able to extract values first */}
 
                                 {(() => {
                                     const startDate = workStopPrintData?.startDate || workStopData?.startDate;
                                     const endDate = workStopPrintData?.endDate || workStopData?.endDate;
                                     const exitAuthorized = workStopPrintData?.exitAuthorized ?? workStopData?.exitAuthorized;
+                                    const isProlongation = workStopPrintData?.isProlongation ?? workStopData?.isProlongation;
 
                                     if (!startDate || !endDate) return null;
+
+                                    // Render Title conditionally based on isProlongation
+                                    const titleText = isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL';
+                                    const descriptionText = isProlongation
+                                        ? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
+                                        : "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail";
 
                                     // Calculate duration in days
                                     const start = new Date(startDate);
@@ -425,8 +431,11 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
 
                                     return (
                                         <div className="space-y-2">
+                                            <p className="text-xs mb-2 font-semibold">
+                                                {titleText}
+                                            </p>
                                             <p className="text-xs">
-                                                Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail
+                                                {descriptionText}
                                             </p>
                                             <p className="text-xs">
                                                 de: {numberToFrenchWords(durationDays)} ( {durationDays.toString().padStart(2, '0')} ) jours
@@ -919,6 +928,21 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                             </Card>
                         </div>
                     )}
+
+                {activeDocTab === 'generic' && (
+                    <div className="mt-1">
+                        <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
+                            <CardContent className="p-0">
+                                <p className="text-xs mb-2 font-semibold text-primary">
+                                    {(printGenericData?.title || 'DOCUMENT VIERGE').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                </p>
+                                <div className="text-xs leading-relaxed text-foreground whitespace-pre-wrap">
+                                    {printGenericData?.text || 'Ce document ne contient pas de texte personnalisé.'}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
             </div>
         </ScrollArea >
     );

@@ -11,6 +11,12 @@ import { useConsultationStore } from '@/ui/store/consultationStore';
 import { useDocumentsState } from './useDocumentsState';
 import { EyeData, PrescriptionData, DetailedClinicalExamData, TonometrieData } from '../types';
 
+const safeDate = (val: any, fallback?: Date | undefined): any => {
+    if (!val) return fallback;
+    const d = val instanceof Date ? val : new Date(val);
+    return isNaN(d.getTime()) ? fallback : d;
+};
+
 /**
  * Hook to access all form data for document form components
  * 
@@ -46,10 +52,10 @@ export function useDocumentForm() {
     const initialDocumentsData = useMemo(() => documentOverrides.unifiedDocumentsState || {}, [documentOverrides]);
     const absenceData = useMemo(() => {
         const data = initialDocumentsData.absenceData || { date: new Date(), reason: '' };
-        // Ensure date is a Date object, not a string
+        // Ensure date is a Date object, not a string, and valid
         return {
             ...data,
-            date: data.date instanceof Date ? data.date : new Date(data.date),
+            date: safeDate(data.date, new Date()),
         };
     }, [initialDocumentsData]);
     const workStopData = useMemo(() => {
@@ -57,13 +63,14 @@ export function useDocumentForm() {
             startDate: new Date(),
             endDate: new Date(),
             reason: '',
-            exitAuthorized: true
+            exitAuthorized: true,
+            isProlongation: false
         };
-        // Ensure dates are Date objects, not strings
+        // Ensure dates are Date objects, not strings, and valid
         return {
             ...data,
-            startDate: data.startDate instanceof Date ? data.startDate : new Date(data.startDate),
-            endDate: data.endDate instanceof Date ? data.endDate : new Date(data.endDate),
+            startDate: safeDate(data.startDate, undefined),
+            endDate: safeDate(data.endDate, undefined),
         };
     }, [initialDocumentsData]);
 
@@ -94,7 +101,8 @@ export function useDocumentForm() {
             startDate: new Date(),
             endDate: new Date(),
             reason: '',
-            exitAuthorized: true
+            exitAuthorized: true,
+            isProlongation: false
         };
         const newWorkStopData = typeof updater === 'function' ? updater(currentWorkStopData) : updater;
         setDocumentOverride('unifiedDocumentsState', {
@@ -159,7 +167,6 @@ export function useDocumentForm() {
         setPrintGlassesData,
         printContactLensesData,
         setPrintContactLensesData,
-        markContactLensConversionApplied,
         printVisualAcuityData,
         setPrintVisualAcuityData,
         printWorkStopData: printWorkStopDataFromHook,
@@ -168,6 +175,8 @@ export function useDocumentForm() {
         setPrintAbsenceData,
         printMedicalRecordData,
         setPrintMedicalRecordData,
+        printGenericData,
+        setPrintGenericData,
     } = useDocumentsState({
         prescriptionData: prescriptionData,
         rightEyeData: rightEye,
@@ -206,7 +215,6 @@ export function useDocumentForm() {
         setPrintGlassesData,
         printContactLensesData,
         setPrintContactLensesData,
-        markContactLensConversionApplied,
         printVisualAcuityData,
         setPrintVisualAcuityData,
         printWorkStopData: printWorkStopDataFromHook,
@@ -221,6 +229,8 @@ export function useDocumentForm() {
         setSelectedDiversDocument,
         printMedicalRecordData,
         setPrintMedicalRecordData,
+        printGenericData,
+        setPrintGenericData,
         // Base data
         patient,
         rightEyeData: rightEye,
@@ -244,7 +254,6 @@ export function useDocumentForm() {
         setPrintGlassesData,
         printContactLensesData,
         setPrintContactLensesData,
-        markContactLensConversionApplied,
         printVisualAcuityData,
         setPrintVisualAcuityData,
         printWorkStopDataFromHook,
@@ -259,6 +268,8 @@ export function useDocumentForm() {
         setSelectedDiversDocument,
         printMedicalRecordData,
         setPrintMedicalRecordData,
+        printGenericData,
+        setPrintGenericData,
         patient,
         rightEye,
         leftEye,

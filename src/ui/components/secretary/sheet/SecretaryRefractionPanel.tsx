@@ -83,6 +83,7 @@ export function SecretaryRefractionPanel({ lastRefractionData, showRefraction, p
 
                 {lastRefractionData && (
                     <Button
+                        type="button"
                         size="sm"
                         variant="outline"
                         className="gap-2 h-8 bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:text-purple-800"

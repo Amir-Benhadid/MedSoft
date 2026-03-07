@@ -8,6 +8,247 @@
 
 import { create } from 'zustand';
 import { EyeData, DetailedClinicalExamData } from '@/ui/components/doctor/dashboard/types';
+import { lentilleService } from '@/ui/services/LentilleService';
+
+// --- Helpers for formatting and syncing ---
+export const formatNumberWithSign = (value: number | string | undefined): string => {
+    if (value === undefined || value === null || value === '') return '';
+    const strVal = value.toString().replace(',', '.');
+    const num = parseFloat(strVal);
+    if (isNaN(num) || !isFinite(num)) return value?.toString() || '';
+    if (num === 0) return '0.00';
+    const formatted = num.toFixed(2);
+    return num > 0 ? `+${formatted}` : formatted;
+};
+
+export const mergeTags = (newSourceTags: string, previousSourceTags: string, currentDocumentTags: string): string => {
+    const newSourceList = (newSourceTags || '').split(',').map(s => s.trim()).filter(Boolean);
+    const previousSourceList = (previousSourceTags || '').split(',').map(s => s.trim()).filter(Boolean);
+    const currentDocumentList = (currentDocumentTags || '').split(',').map(s => s.trim()).filter(Boolean);
+    const manualAdditions = currentDocumentList.filter(tag =>
+        !previousSourceList.some(st => st.toLowerCase() === tag.toLowerCase())
+    );
+    const merged = [...manualAdditions];
+    newSourceList.forEach(tag => {
+        if (!merged.some(t => t.toLowerCase() === tag.toLowerCase())) {
+            merged.push(tag);
+        }
+    });
+    return merged.join(', ');
+};
+
+const syncDocuments = (set: any, get: any, prevState: any) => {
+    const newState = get();
+    const newOverrides = { ...newState.documentOverrides };
+    let overridesChanged = false;
+
+    // Prepare unified document state properly
+    const unified = newOverrides.unifiedDocumentsState ? { ...newOverrides.unifiedDocumentsState } : { printStates: {} };
+    const printStates = unified.printStates ? { ...unified.printStates } : {};
+    const printGlassesData = printStates.printGlassesData ? { ...printStates.printGlassesData } : { leftEye: {}, rightEye: {} };
+    const printVisualAcuityData = printStates.printVisualAcuityData ? { ...printStates.printVisualAcuityData } : {};
+    const reportData = newOverrides.report ? { ...newOverrides.report } : {};
+
+    // --- REPORT SYNC ---
+    const prevExam = prevState.clinicalExam;
+    const newExam = newState.clinicalExam;
+
+    // sync inspection
+    if (prevExam.inspection !== newExam.inspection) {
+        const prevDoc = reportData.inspection || '';
+        if (prevDoc === (prevExam.inspection || '') || (!prevExam.inspection && !prevDoc)) {
+            reportData.inspection = newExam.inspection || '';
+            overridesChanged = true;
+        }
+    }
+
+    // sync fondOeil
+    if (prevExam.fundus?.fundus_exam !== newExam.fundus?.fundus_exam) {
+        const prevDoc = reportData.fondOeil || '';
+        if (prevDoc === (prevExam.fundus?.fundus_exam || '') || (!prevExam.fundus?.fundus_exam && !prevDoc)) {
+            reportData.fondOeil = newExam.fundus?.fundus_exam || '';
+            overridesChanged = true;
+        }
+    }
+
+    // sync segmentAnterieur
+    if (prevExam.anteriorSegment?.slit_lamp_exam !== newExam.anteriorSegment?.slit_lamp_exam) {
+        reportData.segmentAnterieur = mergeTags(
+            newExam.anteriorSegment?.slit_lamp_exam || '',
+            prevExam.anteriorSegment?.slit_lamp_exam || '',
+            reportData.segmentAnterieur || ''
+        );
+        overridesChanged = true;
+    }
+
+    // sync conclusion / diagnosis
+    if (prevExam.diagnosis !== newExam.diagnosis) {
+        reportData.conclusion = mergeTags(
+            newExam.diagnosis || '',
+            prevExam.diagnosis || '',
+            reportData.conclusion || ''
+        );
+        overridesChanged = true;
+    }
+
+    // sync generalMedicalHistory
+    if (prevExam.generalMedicalHistory !== newExam.generalMedicalHistory) {
+        const prevDoc = reportData.generalMedicalHistory || '';
+        if (prevDoc === (prevExam.generalMedicalHistory || '') || (!prevExam.generalMedicalHistory && !prevDoc)) {
+            reportData.generalMedicalHistory = newExam.generalMedicalHistory || '';
+            overridesChanged = true;
+        }
+    }
+
+    // sync ophthalmologicalHistory
+    if (prevExam.ophthalmologicalHistory !== newExam.ophthalmologicalHistory) {
+        const prevDoc = reportData.ophthalmologicalHistory || '';
+        if (prevDoc === (prevExam.ophthalmologicalHistory || '') || (!prevExam.ophthalmologicalHistory && !prevDoc)) {
+            reportData.ophthalmologicalHistory = newExam.ophthalmologicalHistory || '';
+            overridesChanged = true;
+        }
+    }
+
+    // --- GLASSES SYNC ---
+    const syncGlasses = (eye: 'right' | 'left', fieldPrefix: 'rightEye' | 'leftEye') => {
+        const prevEye = prevState[eye === 'right' ? 'rightEye' : 'leftEye'];
+        const newEye = newState[eye === 'right' ? 'rightEye' : 'leftEye'];
+
+        if (
+            prevEye.sph !== newEye.sph ||
+            prevEye.cyl !== newEye.cyl ||
+            prevEye.axis !== newEye.axis ||
+            prevEye.add !== newEye.add ||
+            prevEye.glassType !== newEye.glassType
+        ) {
+            const sph = newEye.sph ?? '';
+            const cyl = newEye.cyl ?? '';
+            const axis = newEye.axis ?? '';
+            const add = newEye.add ?? '';
+            const sphNum = parseFloat(String(sph).replace(',', '.'));
+            const addNum = parseFloat(String(add).replace(',', '.'));
+            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
+
+            printGlassesData[fieldPrefix] = {
+                ...(printGlassesData[fieldPrefix] || {}),
+                sph: formatNumberWithSign(sph) || sph,
+                cyl: formatNumberWithSign(cyl) || cyl,
+                axis: axis,
+                add: formatNumberWithSign(add) || add,
+                glassType: newEye.glassType ?? (printGlassesData[fieldPrefix]?.glassType || ''),
+                nearSph,
+                nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : (printGlassesData[fieldPrefix]?.nearCyl || ''),
+                nearAxis: axis || (printGlassesData[fieldPrefix]?.nearAxis || ''),
+            };
+            overridesChanged = true;
+        }
+    };
+    syncGlasses('right', 'rightEye');
+    syncGlasses('left', 'leftEye');
+
+    // --- VISUAL ACUITY SYNC ---
+    const syncVisualAcuity = (eye: 'right' | 'left') => {
+        const prevEye = prevState[eye === 'right' ? 'rightEye' : 'leftEye'];
+        const newEye = newState[eye === 'right' ? 'rightEye' : 'leftEye'];
+
+        const sc_vl = newEye.visualAcuityVL_SC || newEye.visualAcuity;
+        const ac_vl = newEye.visualAcuityVL_AC;
+        const prev_sc_vl = prevEye.visualAcuityVL_SC || prevEye.visualAcuity;
+        const prev_ac_vl = prevEye.visualAcuityVL_AC;
+
+        if (sc_vl !== prev_sc_vl || ac_vl !== prev_ac_vl) {
+            if (eye === 'right') {
+                printVisualAcuityData.visualAcuityVL_SC_OD = sc_vl ?? '';
+                printVisualAcuityData.visualAcuityVL_AC_OD = ac_vl ?? '';
+            } else {
+                printVisualAcuityData.visualAcuityVL_SC_OG = sc_vl ?? '';
+                printVisualAcuityData.visualAcuityVL_AC_OG = ac_vl ?? '';
+            }
+            overridesChanged = true;
+        }
+    };
+    syncVisualAcuity('right');
+    syncVisualAcuity('left');
+
+    if (overridesChanged) {
+        newOverrides.report = reportData;
+        printStates.printGlassesData = printGlassesData;
+        printStates.printVisualAcuityData = printVisualAcuityData;
+        unified.printStates = printStates;
+        newOverrides.unifiedDocumentsState = unified;
+
+        set({ documentOverrides: newOverrides });
+    }
+
+    // --- CONTACT LENSES SYNC (ASYNC) ---
+    const syncContactLenses = (eye: 'right' | 'left', fieldPrefix: 'rightEye' | 'leftEye') => {
+        const prevEye = prevState[eye === 'right' ? 'rightEye' : 'leftEye'];
+        const newEye = newState[eye === 'right' ? 'rightEye' : 'leftEye'];
+
+        if (
+            prevEye.sph !== newEye.sph ||
+            prevEye.cyl !== newEye.cyl ||
+            prevEye.axis !== newEye.axis ||
+            prevEye.contactLensType !== newEye.contactLensType ||
+            prevEye.diam !== newEye.diam ||
+            prevEye.axis_k !== newEye.axis_k ||
+            prevEye.rayon !== newEye.rayon ||
+            prevEye.lensBrand !== newEye.lensBrand ||
+            prevEye.lensType !== newEye.lensType
+        ) {
+            const type = newEye.contactLensType || 'Sphérique';
+            const isSpherical = type === 'Sphérique';
+
+            lentilleService.convertToContactLens(
+                newEye.sph || '',
+                newEye.cyl || '',
+                newEye.axis || '',
+                type
+            ).then(converted => {
+                const currentStoreState = get();
+                const latestOverrides = { ...currentStoreState.documentOverrides };
+                const latestUnified = latestOverrides.unifiedDocumentsState ? { ...latestOverrides.unifiedDocumentsState } : { printStates: {} };
+                const latestPrintStates = latestUnified.printStates ? { ...latestUnified.printStates } : {};
+                const latestContactsData = latestPrintStates.printContactLensesData ? { ...latestPrintStates.printContactLensesData } : { leftEye: {}, rightEye: {} };
+
+                if (converted && isFinite(converted.sphere)) {
+                    latestContactsData[fieldPrefix] = {
+                        ...(latestContactsData[fieldPrefix] || {}),
+                        sph: formatNumberWithSign(converted.sphere),
+                        cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
+                        axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
+                        contactLensType: type,
+                        diam: newEye.diam || '',
+                        axis_k: newEye.rayon || newEye.axis_k || '',
+                        lensBrand: newEye.lensBrand || '',
+                        lensType: newEye.lensType || '',
+                    };
+                } else {
+                    latestContactsData[fieldPrefix] = {
+                        ...(latestContactsData[fieldPrefix] || {}),
+                        sph: newEye.sph || '',
+                        cyl: newEye.cyl || '',
+                        axis: newEye.axis || '',
+                        contactLensType: type,
+                        diam: newEye.diam || '',
+                        axis_k: newEye.rayon || newEye.axis_k || '',
+                        lensBrand: newEye.lensBrand || '',
+                        lensType: newEye.lensType || '',
+                    };
+                }
+
+                latestPrintStates.printContactLensesData = latestContactsData;
+                latestUnified.printStates = latestPrintStates;
+                latestOverrides.unifiedDocumentsState = latestUnified;
+
+                set({ documentOverrides: latestOverrides });
+            });
+        }
+    };
+    syncContactLenses('right', 'rightEye');
+    syncContactLenses('left', 'leftEye');
+};
+
 
 /**
  * Prescription item interface
@@ -27,8 +268,6 @@ interface PrescriptionItem {
 
 /**
  * Consultation state interface
- * Contains all data for a consultation including patient info, eye data,
- * clinical exam, prescriptions, and document overrides
  */
 interface ConsultationState {
     leftEye: EyeData;
@@ -41,9 +280,8 @@ interface ConsultationState {
     consultationId: string | null;
     patient: any | null;
 
-    documentOverrides: Record<string, any>; // Store manual overrides for documents (e.g. glasses, contacts)
+    documentOverrides: Record<string, any>;
 
-    // Actions
     setPatientId: (id: string | null) => void;
     setPatient: (patient: any | null) => void;
     setLeftEye: (data: Partial<EyeData>) => void;
@@ -67,9 +305,6 @@ interface ConsultationState {
     updateDocumentOverride: (docId: string, field: string, value: any) => void;
 }
 
-/**
- * Default empty eye data structure
- */
 const defaultEyeData: EyeData = {
     visualAcuity: '', visualAcuityVL_SC: '', visualAcuityVL_AC: '', visualAcuityVP_SC: '', visualAcuityVP_AC: '',
     sph: '', cyl: '', axis: '', add: '', tension: '', tensionTime: '', pachymetry: '', corrected_iop: '', tensionApplanation: '', k1: '', k2: '', axis_k: '',
@@ -77,9 +312,6 @@ const defaultEyeData: EyeData = {
     glassType: '', contactLensType: ''
 };
 
-/**
- * Default empty clinical exam data structure
- */
 const defaultClinicalExam: DetailedClinicalExamData = {
     consultationReason: '', generalMedicalHistory: '', ophthalmologicalHistory: '', inspection: '', inspectionOD: '', inspectionOG: '',
     motilityExam: '', motilityExamOD: '', motilityExamOG: '', diagnosis: '', diagnosisOD: '', diagnosisOG: '', treatmentPlan: '',
@@ -89,20 +321,7 @@ const defaultClinicalExam: DetailedClinicalExamData = {
     nextAppointment: { timeframe: '', reason: '', date: '' }
 };
 
-/**
- * Zustand store for consultation state management
- * 
- * Provides state and actions for:
- * - Patient information (ID, patient object)
- * - Eye data (left and right eye measurements)
- * - Clinical exam data (with automatic mirroring for OD/OG fields)
- * - Prescriptions (add, update, remove)
- * - Document overrides (for customizing document data)
- * - Consultation loading and reset
- * 
- * @returns {ConsultationState} Store state and actions
- */
-export const useConsultationStore = create<ConsultationState>((set) => ({
+export const useConsultationStore = create<ConsultationState>((set, get) => ({
     leftEye: defaultEyeData,
     rightEye: defaultEyeData,
     clinicalExam: defaultClinicalExam,
@@ -116,126 +335,95 @@ export const useConsultationStore = create<ConsultationState>((set) => ({
     setPatientId: (id) => set({ patientId: id }),
     setPatient: (patient) => set({ patient: patient }),
 
-    setLeftEye: (data) => set((state) => ({ leftEye: { ...state.leftEye, ...data } })),
-    setRightEye: (data) => set((state) => ({ rightEye: { ...state.rightEye, ...data } })),
+    setLeftEye: (data) => {
+        const prevState = get();
+        set((state) => ({ leftEye: { ...state.leftEye, ...data } }));
+        syncDocuments(set, get, prevState);
+    },
+    setRightEye: (data) => {
+        const prevState = get();
+        set((state) => ({ rightEye: { ...state.rightEye, ...data } }));
+        syncDocuments(set, get, prevState);
+    },
 
-    updateLeftEyeField: (field, value) => set((state) => ({
-        leftEye: { ...state.leftEye, [field]: value },
-        ...(field === 'glassType' ? { rightEye: { ...state.rightEye, [field]: value } } : {})
-    })),
+    updateLeftEyeField: (field, value) => {
+        const prevState = get();
+        set((state) => ({
+            leftEye: { ...state.leftEye, [field]: value },
+            ...(field === 'glassType' ? { rightEye: { ...state.rightEye, [field]: value } } : {})
+        }));
+        syncDocuments(set, get, prevState);
+    },
 
-    updateRightEyeField: (field, value) => set((state) => ({
-        rightEye: { ...state.rightEye, [field]: value },
-        ...(field === 'glassType' ? { leftEye: { ...state.leftEye, [field]: value } } : {})
-    })),
+    updateRightEyeField: (field, value) => {
+        const prevState = get();
+        set((state) => ({
+            rightEye: { ...state.rightEye, [field]: value },
+            ...(field === 'glassType' ? { leftEye: { ...state.leftEye, [field]: value } } : {})
+        }));
+        syncDocuments(set, get, prevState);
+    },
 
-    setClinicalExam: (data) => set((state) => ({ clinicalExam: { ...state.clinicalExam, ...data } })),
+    setClinicalExam: (data) => {
+        const prevState = get();
+        set((state) => ({ clinicalExam: { ...state.clinicalExam, ...data } }));
+        syncDocuments(set, get, prevState);
+    },
 
-    updateClinicalExamField: (field, value) => set((state) => {
-        // Handle nested fields if necessary or simple fields
-        // Previously we had complex logic for mirroring OD/OG. Let's keep it simple here.
-        // If the caller passes "anteriorSegment.slit_lamp_exam", we need to parse it?
-        // Or we strictly use the structure defined in types.
-
-        let newExam = { ...state.clinicalExam };
-
-        if (field.includes('.')) {
-            const parts = field.split('.');
-            // simple 1-level nesting support
-            const parent = parts[0] as keyof DetailedClinicalExamData;
-            const child = parts[1];
-
-            if (typeof newExam[parent] === 'object' && newExam[parent] !== null) {
+    updateClinicalExamField: (field, value) => {
+        const prevState = get();
+        set((state) => {
+            let newExam = { ...state.clinicalExam };
+            if (field.includes('.')) {
+                const parts = field.split('.');
+                const parent = parts[0] as keyof DetailedClinicalExamData;
+                const child = parts[1];
+                if (typeof newExam[parent] === 'object' && newExam[parent] !== null) {
+                    // @ts-ignore
+                    newExam[parent] = { ...newExam[parent], [child]: value };
+                }
+                if (parts[0] === 'anteriorSegment' && parts[1] === 'slit_lamp_exam') {
+                    newExam.anteriorSegmentOD = value;
+                    newExam.anteriorSegmentOG = value;
+                }
+                if (parts[0] === 'fundus' && parts[1] === 'fundus_exam') {
+                    newExam.fundusOD = value;
+                    newExam.fundusOG = value;
+                }
+            } else {
                 // @ts-ignore
-                newExam[parent] = { ...newExam[parent], [child]: value };
+                newExam[field] = value;
+                if (field === 'inspection') { newExam.inspectionOD = value; newExam.inspectionOG = value; }
+                if (field === 'motilityExam') { newExam.motilityExamOD = value; newExam.motilityExamOG = value; }
+                if (field === 'diagnosis') { newExam.diagnosisOD = value; newExam.diagnosisOG = value; }
+                if (field === 'treatmentPlan') { newExam.treatmentPlanOD = value; newExam.treatmentPlanOG = value; }
             }
-
-            // Mirror logic moved here to store
-            if (parts[0] === 'anteriorSegment' && parts[1] === 'slit_lamp_exam') {
-                newExam.anteriorSegmentOD = value;
-                newExam.anteriorSegmentOG = value;
-            }
-            if (parts[0] === 'fundus' && parts[1] === 'fundus_exam') {
-                newExam.fundusOD = value;
-                newExam.fundusOG = value;
-            }
-        } else {
-            // @ts-ignore
-            newExam[field] = value;
-            // Mirror logic
-            if (field === 'inspection') { newExam.inspectionOD = value; newExam.inspectionOG = value; }
-            if (field === 'motilityExam') { newExam.motilityExamOD = value; newExam.motilityExamOG = value; }
-            if (field === 'diagnosis') { newExam.diagnosisOD = value; newExam.diagnosisOG = value; }
-            if (field === 'treatmentPlan') { newExam.treatmentPlanOD = value; newExam.treatmentPlanOG = value; }
-        }
-
-        return { clinicalExam: newExam };
-    }),
+            return { clinicalExam: newExam };
+        });
+        syncDocuments(set, get, prevState);
+    },
 
     setDilatationRequired: (required) => set({ dilatationRequired: required }),
-
-    addPrescription: () => set((state) => ({
-        prescriptions: [
-            { id: Math.random().toString(), name: "", dosage: "", frequency: "", duration: "", instructions: "" },
-            ...state.prescriptions
-        ]
-    })),
-
-    updatePrescription: (id, field, value) => set((state) => ({
-        prescriptions: state.prescriptions.map(p => p.id === id ? { ...p, [field]: value } : p)
-    })),
-
-    removePrescription: (id) => set((state) => ({
-        prescriptions: state.prescriptions.filter(p => p.id !== id)
-    })),
-
+    addPrescription: () => set((state) => ({ prescriptions: [{ id: Math.random().toString(), name: "", dosage: "", frequency: "", duration: "", instructions: "" }, ...state.prescriptions] })),
+    updatePrescription: (id, field, value) => set((state) => ({ prescriptions: state.prescriptions.map(p => p.id === id ? { ...p, [field]: value } : p) })),
+    removePrescription: (id) => set((state) => ({ prescriptions: state.prescriptions.filter(p => p.id !== id) })),
     setPrescriptions: (items) => set({ prescriptions: items }),
-
-    setDocumentOverride: (docId, data) => set((state) => ({
-        documentOverrides: { ...state.documentOverrides, [docId]: data }
-    })),
-
+    setDocumentOverride: (docId, data) => set((state) => ({ documentOverrides: { ...state.documentOverrides, [docId]: data } })),
     updateDocumentOverride: (docId, field, value) => set((state) => {
         const currentDoc = state.documentOverrides[docId] || {};
-        return {
-            documentOverrides: {
-                ...state.documentOverrides,
-                [docId]: { ...currentDoc, [field]: value }
-            }
-        };
+        return { documentOverrides: { ...state.documentOverrides, [docId]: { ...currentDoc, [field]: value } } };
     }),
 
-    reset: () => set({
-        leftEye: defaultEyeData,
-        rightEye: defaultEyeData,
-        clinicalExam: defaultClinicalExam,
-        dilatationRequired: false,
-        prescriptions: [],
-        patientId: null,
-        consultationId: null,
-        patient: null,
-        documentOverrides: {}
-    }),
+    reset: () => set({ leftEye: defaultEyeData, rightEye: defaultEyeData, clinicalExam: defaultClinicalExam, dilatationRequired: false, prescriptions: [], patientId: null, consultationId: null, patient: null, documentOverrides: {} }),
 
     loadConsultation: (data: any) => set({
         patientId: data.patient_id,
         consultationId: data.id,
-        // If data.date exists, we could store it, but the store doesn't have a date field? 
-        // It seems the store is mostly for the EXAM data, not metadata like date/status.
-
         leftEye: { ...defaultEyeData, ...data.left_eye },
         rightEye: { ...defaultEyeData, ...data.right_eye },
         clinicalExam: { ...defaultClinicalExam, ...data.clinical_exam },
-        // Prescriptions from DB are { treatments: [], notes: '' }
-        // Store expects prescriptions: PrescriptionItem[]
         prescriptions: data.prescription?.treatments || [],
-
-        // Handle dilatation if we decide to store it in clinical_exam later, 
-        // but for now, if it's not saved, we can't load it. 
-        // If we want to persist it, we should ideally move it to clinical_exam.
-        // For now, let's leave it as false or check if it's in clinical_exam.
         dilatationRequired: data.clinical_exam?.dilatationRequired || false,
-
         documentOverrides: data.documents_data || {}
     })
 }));

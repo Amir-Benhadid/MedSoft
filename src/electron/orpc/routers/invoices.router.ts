@@ -25,6 +25,19 @@ export const invoicesRouter = os.router({
         }),
 
     /**
+     * Lists all invoices for a specific patient.
+     *
+     * @param input.patientId - Patient ID
+     * @returns Array of invoices for the patient
+     */
+    listByPatientId: os
+        .input(z.object({ patientId: z.string() }))
+        .handler(async ({ input }) => {
+            const repo = new InvoiceRepository();
+            return repo.findByPatientId(input.patientId);
+        }),
+
+    /**
      * Updates an invoice.
      *
      * @param input.id - Invoice ID

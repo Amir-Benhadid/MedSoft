@@ -77,6 +77,7 @@ interface WorkStopData {
 	endDate: Date;
 	reason: string;
 	exitAuthorized: boolean;
+	isProlongation?: boolean;
 }
 
 interface ReportData {
@@ -99,6 +100,7 @@ interface PrintControlFlags {
 	includeLeftEyeFar?: boolean;
 	includeRightEyeNear?: boolean;
 	includeLeftEyeNear?: boolean;
+	includeTonometry?: boolean;
 }
 
 interface PrintDataOverrides {
@@ -142,6 +144,12 @@ interface PrintDataOverrides {
 			glassType: string;
 		};
 	};
+	visualAcuity?: {
+		visualAcuityVL_SC_OD: string;
+		visualAcuityVL_SC_OG: string;
+		visualAcuityVL_AC_OD: string;
+		visualAcuityVL_AC_OG: string;
+	};
 	contacts?: {
 		rightEye: {
 			contactLensType: string;
@@ -182,9 +190,14 @@ interface PrintDataOverrides {
 		startDate: Date;
 		endDate: Date;
 		exitAuthorized: boolean;
+		isProlongation?: boolean;
 	};
 	absence?: {
 		consultationDate: Date;
+	};
+	customGeneric?: {
+		title: string;
+		text: string;
 	};
 }
 
@@ -281,6 +294,7 @@ export class DocumentPrinter {
 					startDate: options.printDataOverrides.workStop.startDate,
 					endDate: options.printDataOverrides.workStop.endDate,
 					exitAuthorized: options.printDataOverrides.workStop.exitAuthorized,
+					isProlongation: options.printDataOverrides.workStop.isProlongation,
 				} : undefined;
 				return await generateWorkStopPDF(context, patient, workStopPrintData);
 			case 'absence':
@@ -372,15 +386,54 @@ export class DocumentPrinter {
 					drawDocumentHeader(context, patient, DocumentUtils.calculateAge);
 				}
 				return await context.pdfDoc.save();
+			case 'generic':
+				// Draw standard header
+				drawDocumentHeader(context, patient, DocumentUtils.calculateAge);
+
+				const genericData = options.printDataOverrides?.customGeneric;
+				if (genericData && genericData.title) {
+					// Draw custom title
+					let y = drawTitle(context, genericData.title.toUpperCase(), drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
+
+					// Draw custom body text
+					if (genericData.text) {
+						const bodyLines = DocumentUtils.splitTextIntoLinesOptimized(
+							genericData.text,
+							context.width - context.LEFT_MARGIN - context.RIGHT_MARGIN
+						);
+
+						for (const line of bodyLines) {
+							if (y < 50) {
+								// Basic page overflow handling if text is too long
+								break;
+							}
+							context.page.drawText(line, {
+								x: context.LEFT_MARGIN,
+								y: y,
+								size: context.TEXT_SIZES.normal,
+								font: context.helvetica,
+								color: rgb(0, 0, 0),
+							});
+							y -= context.LINE_HEIGHTS.normal;
+						}
+					}
+				} else {
+					// Blank document if no title
+					context.page.drawText('Document Vierge', {
+						x: context.LEFT_MARGIN,
+						y: context.height - 200,
+						size: context.TEXT_SIZES.header,
+						font: context.helveticaBold,
+						color: rgb(0.5, 0.5, 0.5),
+					});
+				}
+				return await context.pdfDoc.save();
 			case 'bilanPreOp':
 			case 'bilanDiabete':
 			case 'bilanInflammatoire':
 			case 'bilanUveite':
 				return await generateBilanPDF(context, patient, documentType as any, options.bilanFields as any);
 			default:
-				// Check if it's a medical record document
-
-
 				// Fallback for unknown document types
 				context.page.drawText('Document en cours de préparation...', {
 					x: context.LEFT_MARGIN,

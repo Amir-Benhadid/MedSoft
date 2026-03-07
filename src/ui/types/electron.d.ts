@@ -22,6 +22,9 @@ export interface ElectronAPI {
     onUpdateError: (callback: (error: any) => void) => () => void;
     quitAndInstall: () => Promise<void>;
     factoryReset: () => Promise<void>;
+    seedMedicines: () => Promise<{ success: boolean; message: string; stats?: any }>;
+    seedLentilleConversion: () => Promise<{ success: boolean; message: string }>;
+    scanForServers: () => Promise<any[]>;
 }
 
 declare global {

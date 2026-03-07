@@ -10,6 +10,8 @@ import { DashboardHeader } from './dashboard/DashboardHeader';
 import { ClinicalExamHeader } from './dashboard/ClinicalExamHeader';
 import { useConsultationStore } from '@/ui/store/consultationStore';
 import { HistorySheet } from './history/HistorySheet';
+import { PaymentHistorySheet } from './history/PaymentHistorySheet';
+import { useState } from 'react';
 
 interface DoctorDashboardProps {
     patientId: string;
@@ -36,6 +38,8 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
         isActiveConsultationToday
     } = useDoctorDashboardLogic({ patientId, onBack, consultationId });
 
+    const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+
     const nextAppointmentData = useConsultationStore(state => state.clinicalExam.nextAppointment);
 
     if (isPatientLoading || (isConsultationLoading && !consultationData)) {
@@ -58,6 +62,7 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 setIsFinishSheetOpen={setIsFinishSheetOpen}
                 isFinishSheetOpen={isFinishSheetOpen}
                 onOpenHistory={() => setIsHistoryOpen(true)}
+                onOpenPaymentHistory={() => setIsPaymentHistoryOpen(true)}
                 showFinishButton={isActiveConsultationToday}
             />
 
@@ -114,13 +119,19 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 consultationTypes={consultationTypes}
             />
 
-            {/* History Sheet */}
             <HistorySheet
                 isOpen={isHistoryOpen}
                 onOpenChange={setIsHistoryOpen}
                 consultations={history}
                 currentConsultationId={currentConsultationId}
                 onSelectConsultation={handleSwitchConsultation}
+            />
+
+            {/* Payment History Sheet */}
+            <PaymentHistorySheet
+                isOpen={isPaymentHistoryOpen}
+                onOpenChange={setIsPaymentHistoryOpen}
+                patientId={patientId}
             />
         </div>
     );

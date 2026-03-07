@@ -25,12 +25,14 @@ interface WorkStopData {
 	startDate: Date;
 	endDate: Date;
 	exitAuthorized: boolean;
+	isProlongation?: boolean;
 }
 
 interface WorkStopPrintData {
 	startDate: Date;
 	endDate: Date;
 	exitAuthorized: boolean;
+	isProlongation?: boolean;
 }
 
 interface WorkStopDocumentProps { }
@@ -137,10 +139,12 @@ export const generateWorkStopPDF = async (
 ): Promise<Uint8Array> => {
 	const { page, width, helvetica, helveticaBold, LEFT_MARGIN, RIGHT_MARGIN, TEXT_SIZES, LINE_HEIGHTS } = context;
 
-	let y = drawTitle(context, 'ARRÊT DE TRAVAIL', drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
+	const titleText = printData?.isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL';
+	let y = drawTitle(context, titleText, drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
-	const workStopText =
-		'Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail';
+	const workStopText = printData?.isProlongation
+		? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
+		: 'Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail';
 	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	const workStopLines = splitTextIntoLinesOptimized(
 		workStopText,
@@ -159,7 +163,7 @@ export const generateWorkStopPDF = async (
 	});
 	y -= 10;
 
-	if (printData) {
+	if (printData && printData.startDate && printData.endDate) {
 		// Ensure dates are Date objects (JSON serialization may pass strings)
 		const startDate = printData.startDate instanceof Date
 			? printData.startDate
@@ -237,13 +241,15 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 		setPrintWorkStopData: setPrintData,
 	} = useDocumentForm();
 	// Calculate number of days between start and end date
-	const calculateDays = (start: Date, end: Date): number => {
+	const calculateDays = (start: Date | undefined, end: Date | undefined): number => {
+		if (!start || !end) return 1;
 		const durationMs = end.getTime() - start.getTime();
 		return Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
 	};
 
 	// Calculate end date from start date and number of days
-	const calculateEndDate = (start: Date, days: number): Date => {
+	const calculateEndDate = (start: Date | undefined, days: number): Date | undefined => {
+		if (!start) return undefined;
 		const endDate = new Date(start);
 		endDate.setDate(start.getDate() + days - 1); // -1 because we include both start and end dates
 		return endDate;
@@ -265,6 +271,7 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 				startDate,
 				endDate,
 				exitAuthorized: workStopData.exitAuthorized ?? true,
+				isProlongation: workStopData.isProlongation ?? false,
 			});
 			setNumberOfDays(calculateDays(startDate, endDate).toString());
 		} else if (printData.startDate && printData.endDate) {
@@ -421,23 +428,45 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 				</div>
 			</div>
 
-			{/* Exit Authorized Checkbox */}
-			<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
-				<Checkbox
-					id="exit-authorized"
-					checked={printData.exitAuthorized}
-					onCheckedChange={(checked) => {
-						const newValue = checked === true;
-						setPrintData((prev) => ({
-							...prev,
-							exitAuthorized: newValue,
-						}));
-					}}
-					className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
-				/>
-				<Label htmlFor="exit-authorized" className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">
-					Sortie autorisée
-				</Label>
+			{/* Options */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				{/* Exit Authorized Checkbox */}
+				<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
+					<Checkbox
+						id="exit-authorized"
+						checked={printData.exitAuthorized || false}
+						onCheckedChange={(checked) => {
+							const newValue = checked === true;
+							setPrintData((prev) => ({
+								...prev,
+								exitAuthorized: newValue,
+							}));
+						}}
+						className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+					/>
+					<Label htmlFor="exit-authorized" className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">
+						Sortie autorisée
+					</Label>
+				</div>
+
+				{/* Prolongation Checkbox */}
+				<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
+					<Checkbox
+						id="is-prolongation"
+						checked={printData.isProlongation || false}
+						onCheckedChange={(checked) => {
+							const newValue = checked === true;
+							setPrintData((prev) => ({
+								...prev,
+								isProlongation: newValue,
+							}));
+						}}
+						className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+					/>
+					<Label htmlFor="is-prolongation" className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">
+						Prolongation
+					</Label>
+				</div>
 			</div>
 		</div>
 	);

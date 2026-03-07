@@ -9,8 +9,15 @@ import {
     ContactLensesPrintData,
     WorkStopPrintData,
     AbsencePrintData,
-    VisualAcuityPrintData
+    VisualAcuityPrintData,
+    GenericPrintData
 } from '../types';
+
+const safeDate = (val: any, fallback?: Date | undefined): any => {
+    if (!val) return fallback;
+    const d = val instanceof Date ? val : new Date(val);
+    return isNaN(d.getTime()) ? fallback : d;
+};
 
 const formatNumberWithSign = (value: number | string | undefined): string => {
     if (value === undefined || value === null || value === '') return '';
@@ -81,6 +88,7 @@ interface PrintStates {
     printControlFlags: any;
     selectedDiversDocument: string;
     printMedicalRecordData: any;
+    printGenericData: GenericPrintData;
 }
 
 interface UseDocumentsStateProps {
@@ -93,6 +101,7 @@ interface UseDocumentsStateProps {
         endDate?: Date;
         reason?: string;
         exitAuthorized?: boolean;
+        isProlongation?: boolean;
     };
     initialBilanFields?: InternalBilanFields;
     initialDocumentsData?: {
@@ -196,14 +205,19 @@ export const useDocumentsState = ({
         visualAcuityVL_AC_OG: leftEyeData?.visualAcuityVL_AC || '',
     });
     const [printWorkStopData, setPrintWorkStopData] = useState<WorkStopPrintData>({
-        startDate: workStopData.startDate,
-        endDate: workStopData.endDate,
+        startDate: safeDate(workStopData.startDate, undefined),
+        endDate: safeDate(workStopData.endDate, undefined),
         exitAuthorized: workStopData.exitAuthorized ?? true,
+        isProlongation: workStopData.isProlongation ?? false,
     });
     const [printAbsenceData, setPrintAbsenceData] = useState<AbsencePrintData>({
-        consultationDate: absenceData.date,
+        consultationDate: safeDate(absenceData.date, new Date()),
     });
     const [printMedicalRecordData, setPrintMedicalRecordData] = useState<any>({});
+    const [printGenericData, setPrintGenericData] = useState<GenericPrintData>({
+        title: '',
+        text: '',
+    });
 
     // State for bilan field selections - use initial data if provided
     const [bilanFields, setBilanFields] = useState<InternalBilanFields>(
@@ -287,289 +301,9 @@ export const useDocumentsState = ({
     const suppressNotifyRef = useRef(false);
     // Track last sent payload to avoid sending identical updates repeatedly
     const lastSentJsonRef = useRef<string | null>(null);
-    // Track when contact lens conversion was last applied (prevents race: overwriting fresh conversion with stale saved data)
-    const lastContactLensConversionAppliedRef = useRef(0);
     // Track when glasses were last synced from refraction (same guard for Lunettes document)
     const lastGlassesSyncFromRefractionRef = useRef(0);
-
-    // Track contact lens source values for automatic conversion
-    const prevRightEyeRef = useRef({
-        sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, type: rightEyeData?.contactLensType,
-        diam: rightEyeData?.diam, axis_k: rightEyeData?.axis_k, rayon: rightEyeData?.rayon, lensBrand: rightEyeData?.lensBrand, lensType: rightEyeData?.lensType
-    });
-
-    const prevLeftEyeRef = useRef({
-        sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, type: leftEyeData?.contactLensType,
-        diam: leftEyeData?.diam, axis_k: leftEyeData?.axis_k, rayon: leftEyeData?.rayon, lensBrand: leftEyeData?.lensBrand, lensType: leftEyeData?.lensType
-    });
-
-    // Track glasses (Lunettes) source values so we sync from refraction like Lentilles
-    const prevGlassesRightRef = useRef({
-        sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, add: rightEyeData?.add, glassType: rightEyeData?.glassType
-    });
-    const prevGlassesLeftRef = useRef({
-        sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, add: leftEyeData?.add, glassType: leftEyeData?.glassType
-    });
-
-    // Track visual acuity source values so we sync from refraction
-    const prevVARightRef = useRef({
-        sc_vl: rightEyeData?.visualAcuityVL_SC || rightEyeData?.visualAcuity,
-        ac_vl: rightEyeData?.visualAcuityVL_AC,
-    });
-    const prevVALeftRef = useRef({
-        sc_vl: leftEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuity,
-        ac_vl: leftEyeData?.visualAcuityVL_AC,
-    });
     const lastVASyncFromRefractionRef = useRef(0);
-
-    // Sync Lunettes (glasses) document from refraction — same logic as Lentilles: when refraction changes, update print data
-    useEffect(() => {
-        if (suppressNotifyRef.current) return;
-
-        const rightGlassesChanged =
-            rightEyeData?.sph !== prevGlassesRightRef.current.sph ||
-            rightEyeData?.cyl !== prevGlassesRightRef.current.cyl ||
-            rightEyeData?.axis !== prevGlassesRightRef.current.axis ||
-            rightEyeData?.add !== prevGlassesRightRef.current.add ||
-            rightEyeData?.glassType !== prevGlassesRightRef.current.glassType;
-
-        const leftGlassesChanged =
-            leftEyeData?.sph !== prevGlassesLeftRef.current.sph ||
-            leftEyeData?.cyl !== prevGlassesLeftRef.current.cyl ||
-            leftEyeData?.axis !== prevGlassesLeftRef.current.axis ||
-            leftEyeData?.add !== prevGlassesLeftRef.current.add ||
-            leftEyeData?.glassType !== prevGlassesLeftRef.current.glassType;
-
-        if (rightGlassesChanged) {
-            prevGlassesRightRef.current = {
-                sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, add: rightEyeData?.add, glassType: rightEyeData?.glassType
-            };
-            const sph = rightEyeData?.sph ?? '';
-            const cyl = rightEyeData?.cyl ?? '';
-            const axis = rightEyeData?.axis ?? '';
-            const add = rightEyeData?.add ?? '';
-            const sphNum = parseFloat(String(sph).replace(',', '.'));
-            const addNum = parseFloat(String(add).replace(',', '.'));
-            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
-            setPrintGlassesData(prev => ({
-                ...prev,
-                rightEye: {
-                    ...prev.rightEye,
-                    sph: formatNumberWithSign(sph) || sph,
-                    cyl: formatNumberWithSign(cyl) || cyl,
-                    axis: axis,
-                    add: formatNumberWithSign(add) || add,
-                    glassType: rightEyeData?.glassType ?? prev.rightEye.glassType,
-                    nearSph,
-                    nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : prev.rightEye.nearCyl,
-                    nearAxis: axis || prev.rightEye.nearAxis,
-                }
-            }));
-            lastGlassesSyncFromRefractionRef.current = Date.now();
-        }
-
-        if (leftGlassesChanged) {
-            prevGlassesLeftRef.current = {
-                sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, add: leftEyeData?.add, glassType: leftEyeData?.glassType
-            };
-            const sph = leftEyeData?.sph ?? '';
-            const cyl = leftEyeData?.cyl ?? '';
-            const axis = leftEyeData?.axis ?? '';
-            const add = leftEyeData?.add ?? '';
-            const sphNum = parseFloat(String(sph).replace(',', '.'));
-            const addNum = parseFloat(String(add).replace(',', '.'));
-            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
-            setPrintGlassesData(prev => ({
-                ...prev,
-                leftEye: {
-                    ...prev.leftEye,
-                    sph: formatNumberWithSign(sph) || sph,
-                    cyl: formatNumberWithSign(cyl) || cyl,
-                    axis: axis,
-                    add: formatNumberWithSign(add) || add,
-                    glassType: leftEyeData?.glassType ?? prev.leftEye.glassType,
-                    nearSph,
-                    nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : prev.leftEye.nearCyl,
-                    nearAxis: axis || prev.leftEye.nearAxis,
-                }
-            }));
-            lastGlassesSyncFromRefractionRef.current = Date.now();
-        }
-    }, [
-        rightEyeData?.sph, rightEyeData?.cyl, rightEyeData?.axis, rightEyeData?.add, rightEyeData?.glassType,
-        leftEyeData?.sph, leftEyeData?.cyl, leftEyeData?.axis, leftEyeData?.add, leftEyeData?.glassType,
-    ]);
-
-    // Sync Certificat (visual acuity) from refraction
-    useEffect(() => {
-        if (suppressNotifyRef.current) return;
-
-        const currentRightSC_VL = rightEyeData?.visualAcuityVL_SC || rightEyeData?.visualAcuity;
-        const currentRightAC_VL = rightEyeData?.visualAcuityVL_AC;
-
-        const currentLeftSC_VL = leftEyeData?.visualAcuityVL_SC || leftEyeData?.visualAcuity;
-        const currentLeftAC_VL = leftEyeData?.visualAcuityVL_AC;
-
-        const rightVAChanged =
-            currentRightSC_VL !== prevVARightRef.current.sc_vl ||
-            currentRightAC_VL !== prevVARightRef.current.ac_vl;
-
-        const leftVAChanged =
-            currentLeftSC_VL !== prevVALeftRef.current.sc_vl ||
-            currentLeftAC_VL !== prevVALeftRef.current.ac_vl;
-
-        if (rightVAChanged) {
-            prevVARightRef.current = { sc_vl: currentRightSC_VL, ac_vl: currentRightAC_VL };
-            setPrintVisualAcuityData(prev => ({
-                ...prev,
-                visualAcuityVL_SC_OD: currentRightSC_VL ?? '',
-                visualAcuityVL_AC_OD: currentRightAC_VL ?? '',
-            }));
-            lastVASyncFromRefractionRef.current = Date.now();
-        }
-
-        if (leftVAChanged) {
-            prevVALeftRef.current = { sc_vl: currentLeftSC_VL, ac_vl: currentLeftAC_VL };
-            setPrintVisualAcuityData(prev => ({
-                ...prev,
-                visualAcuityVL_SC_OG: currentLeftSC_VL ?? '',
-                visualAcuityVL_AC_OG: currentLeftAC_VL ?? '',
-            }));
-            lastVASyncFromRefractionRef.current = Date.now();
-        }
-    }, [
-        rightEyeData?.visualAcuityVL_SC, rightEyeData?.visualAcuity, rightEyeData?.visualAcuityVL_AC,
-        leftEyeData?.visualAcuityVL_SC, leftEyeData?.visualAcuity, leftEyeData?.visualAcuityVL_AC,
-    ]);
-
-    useEffect(() => {
-        if (suppressNotifyRef.current) return;
-
-        const rightChanged =
-            rightEyeData?.sph !== prevRightEyeRef.current.sph ||
-            rightEyeData?.cyl !== prevRightEyeRef.current.cyl ||
-            rightEyeData?.axis !== prevRightEyeRef.current.axis ||
-            rightEyeData?.contactLensType !== prevRightEyeRef.current.type ||
-            rightEyeData?.diam !== prevRightEyeRef.current.diam ||
-            rightEyeData?.axis_k !== prevRightEyeRef.current.axis_k ||
-            rightEyeData?.rayon !== prevRightEyeRef.current.rayon ||
-            rightEyeData?.lensBrand !== prevRightEyeRef.current.lensBrand ||
-            rightEyeData?.lensType !== prevRightEyeRef.current.lensType;
-
-        const leftChanged =
-            leftEyeData?.sph !== prevLeftEyeRef.current.sph ||
-            leftEyeData?.cyl !== prevLeftEyeRef.current.cyl ||
-            leftEyeData?.axis !== prevLeftEyeRef.current.axis ||
-            leftEyeData?.contactLensType !== prevLeftEyeRef.current.type ||
-            leftEyeData?.diam !== prevLeftEyeRef.current.diam ||
-            leftEyeData?.axis_k !== prevLeftEyeRef.current.axis_k ||
-            leftEyeData?.rayon !== prevLeftEyeRef.current.rayon ||
-            leftEyeData?.lensBrand !== prevLeftEyeRef.current.lensBrand ||
-            leftEyeData?.lensType !== prevLeftEyeRef.current.lensType;
-
-        if (rightChanged) {
-            prevRightEyeRef.current = {
-                sph: rightEyeData?.sph, cyl: rightEyeData?.cyl, axis: rightEyeData?.axis, type: rightEyeData?.contactLensType,
-                diam: rightEyeData?.diam, axis_k: rightEyeData?.axis_k, rayon: rightEyeData?.rayon, lensBrand: rightEyeData?.lensBrand, lensType: rightEyeData?.lensType
-            };
-
-            const rightType = rightEyeData?.contactLensType || 'Sphérique';
-            const isSpherical = rightType === 'Sphérique';
-
-            lentilleService.convertToContactLens(
-                rightEyeData?.sph || '',
-                rightEyeData?.cyl || '',
-                rightEyeData?.axis || '',
-                rightType
-            ).then(converted => {
-                if (converted && isFinite(converted.sphere)) {
-                    setPrintContactLensesData(prev => ({
-                        ...prev,
-                        rightEye: {
-                            ...prev.rightEye,
-                            sph: formatNumberWithSign(converted.sphere),
-                            cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
-                            axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
-                            contactLensType: rightType,
-                            diam: rightEyeData?.diam || '',
-                            axis_k: rightEyeData?.rayon || rightEyeData?.axis_k || '',
-                            lensBrand: rightEyeData?.lensBrand || '',
-                            lensType: rightEyeData?.lensType || '',
-                        }
-                    }));
-                } else {
-                    setPrintContactLensesData(prev => ({
-                        ...prev,
-                        rightEye: {
-                            ...prev.rightEye,
-                            sph: rightEyeData?.sph || '',
-                            cyl: rightEyeData?.cyl || '',
-                            axis: rightEyeData?.axis || '',
-                            contactLensType: rightType,
-                            diam: rightEyeData?.diam || '',
-                            axis_k: rightEyeData?.rayon || rightEyeData?.axis_k || '',
-                            lensBrand: rightEyeData?.lensBrand || '',
-                            lensType: rightEyeData?.lensType || '',
-                        }
-                    }));
-                }
-                lastContactLensConversionAppliedRef.current = Date.now();
-            });
-        }
-
-        if (leftChanged) {
-            prevLeftEyeRef.current = {
-                sph: leftEyeData?.sph, cyl: leftEyeData?.cyl, axis: leftEyeData?.axis, type: leftEyeData?.contactLensType,
-                diam: leftEyeData?.diam, axis_k: leftEyeData?.axis_k, rayon: leftEyeData?.rayon, lensBrand: leftEyeData?.lensBrand, lensType: leftEyeData?.lensType
-            };
-
-            const leftType = leftEyeData?.contactLensType || 'Sphérique';
-            const isSpherical = leftType === 'Sphérique';
-
-            lentilleService.convertToContactLens(
-                leftEyeData?.sph || '',
-                leftEyeData?.cyl || '',
-                leftEyeData?.axis || '',
-                leftType
-            ).then(converted => {
-                if (converted && isFinite(converted.sphere)) {
-                    setPrintContactLensesData(prev => ({
-                        ...prev,
-                        leftEye: {
-                            ...prev.leftEye,
-                            sph: formatNumberWithSign(converted.sphere),
-                            cyl: isSpherical ? '' : formatNumberWithSign(converted.cylinder),
-                            axis: isSpherical ? '' : (converted.axis ? converted.axis.toString() : ''),
-                            contactLensType: leftType,
-                            diam: leftEyeData?.diam || '',
-                            axis_k: leftEyeData?.rayon || leftEyeData?.axis_k || '',
-                            lensBrand: leftEyeData?.lensBrand || '',
-                            lensType: leftEyeData?.lensType || '',
-                        }
-                    }));
-                } else {
-                    setPrintContactLensesData(prev => ({
-                        ...prev,
-                        leftEye: {
-                            ...prev.leftEye,
-                            sph: leftEyeData?.sph || '',
-                            cyl: leftEyeData?.cyl || '',
-                            axis: leftEyeData?.axis || '',
-                            contactLensType: leftType,
-                            diam: leftEyeData?.diam || '',
-                            axis_k: leftEyeData?.rayon || leftEyeData?.axis_k || '',
-                            lensBrand: leftEyeData?.lensBrand || '',
-                            lensType: leftEyeData?.lensType || '',
-                        }
-                    }));
-                }
-                lastContactLensConversionAppliedRef.current = Date.now();
-            });
-        }
-    }, [
-        rightEyeData?.sph, rightEyeData?.cyl, rightEyeData?.axis, rightEyeData?.contactLensType, rightEyeData?.diam, rightEyeData?.axis_k, rightEyeData?.rayon, rightEyeData?.lensBrand, rightEyeData?.lensType,
-        leftEyeData?.sph, leftEyeData?.cyl, leftEyeData?.axis, leftEyeData?.contactLensType, leftEyeData?.diam, leftEyeData?.axis_k, leftEyeData?.rayon, leftEyeData?.lensBrand, leftEyeData?.lensType,
-    ]);
 
     // Update state when initialDocumentsData changes (for loading saved data)
     // Guard against recursive updates by only setting if values actually changed
@@ -615,48 +349,34 @@ export const useDocumentsState = ({
                 }
                 if (printStates.printGlassesData) {
                     const newPrintGlassesData = printStates.printGlassesData;
-                    // Skip overwriting when glasses were just synced from refraction (same as contact lens guard)
-                    const msSinceGlassesSync = Date.now() - lastGlassesSyncFromRefractionRef.current;
-                    if (msSinceGlassesSync >= 400) {
-                        setPrintGlassesData(prev =>
-                            JSON.stringify(prev) !== JSON.stringify(newPrintGlassesData)
-                                ? newPrintGlassesData
-                                : prev
-                        );
-                    }
+                    setPrintGlassesData(prev =>
+                        JSON.stringify(prev) !== JSON.stringify(newPrintGlassesData)
+                            ? newPrintGlassesData
+                            : prev
+                    );
                 }
                 if (printStates.printContactLensesData) {
                     const newPrintContactLensesData = printStates.printContactLensesData;
-                    // Skip overwriting when a conversion was just applied (Contact Lenses tab + refraction change):
-                    // the conversion updates printData, but the debounced save hasn't fired yet, so
-                    // initialDocumentsData can contain stale data that would revert the fresh conversion.
-                    const msSinceConversion = Date.now() - lastContactLensConversionAppliedRef.current;
-                    if (msSinceConversion < 400) {
-                        // Conversion was applied recently; avoid overwriting with possibly stale data
-                        // (save will fire at ~200ms and then this effect would run with correct data - but
-                        // in rare cases another update path could run first with stale data)
-                        // Fall through without updating
-                    } else {
-                        setPrintContactLensesData(prev =>
-                            JSON.stringify(prev) !== JSON.stringify(newPrintContactLensesData)
-                                ? newPrintContactLensesData
-                                : prev
-                        );
-                    }
+                    setPrintContactLensesData(prev =>
+                        JSON.stringify(prev) !== JSON.stringify(newPrintContactLensesData)
+                            ? newPrintContactLensesData
+                            : prev
+                    );
                 }
                 if (printStates.printVisualAcuityData) {
                     const newPrintVisualAcuityData = printStates.printVisualAcuityData;
-                    const msSinceVASync = Date.now() - lastVASyncFromRefractionRef.current;
-                    if (msSinceVASync >= 400) {
-                        setPrintVisualAcuityData(prev =>
-                            JSON.stringify(prev) !== JSON.stringify(newPrintVisualAcuityData)
-                                ? newPrintVisualAcuityData
-                                : prev
-                        );
-                    }
+                    setPrintVisualAcuityData(prev =>
+                        JSON.stringify(prev) !== JSON.stringify(newPrintVisualAcuityData)
+                            ? newPrintVisualAcuityData
+                            : prev
+                    );
                 }
                 if (printStates.printAbsenceData) {
-                    const newPrintAbsenceData = printStates.printAbsenceData;
+                    const rawData = printStates.printAbsenceData;
+                    const newPrintAbsenceData = {
+                        ...rawData,
+                        consultationDate: safeDate(rawData.consultationDate, new Date())
+                    };
                     setPrintAbsenceData(prev =>
                         JSON.stringify(prev) !== JSON.stringify(newPrintAbsenceData)
                             ? newPrintAbsenceData
@@ -664,7 +384,13 @@ export const useDocumentsState = ({
                     );
                 }
                 if (printStates.printWorkStopData) {
-                    const newPrintWorkStopData = printStates.printWorkStopData;
+                    const rawData = printStates.printWorkStopData;
+                    const newPrintWorkStopData = {
+                        ...rawData,
+                        startDate: safeDate(rawData.startDate, undefined),
+                        endDate: safeDate(rawData.endDate, undefined),
+                        isProlongation: rawData.isProlongation ?? false,
+                    };
                     setPrintWorkStopData(prev =>
                         JSON.stringify(prev) !== JSON.stringify(newPrintWorkStopData)
                             ? newPrintWorkStopData
@@ -676,6 +402,14 @@ export const useDocumentsState = ({
                     setPrintMedicalRecordData((prev: any) =>
                         JSON.stringify(prev) !== JSON.stringify(newPrintMedicalRecordData)
                             ? newPrintMedicalRecordData
+                            : prev
+                    );
+                }
+                if (printStates.printGenericData) {
+                    const newPrintGenericData = printStates.printGenericData;
+                    setPrintGenericData(prev =>
+                        JSON.stringify(prev) !== JSON.stringify(newPrintGenericData)
+                            ? newPrintGenericData
                             : prev
                     );
                 }
@@ -724,6 +458,7 @@ export const useDocumentsState = ({
             printWorkStopData,
             selectedDiversDocument,
             printMedicalRecordData,
+            printGenericData,
         },
     }), [
         bilanFields,
@@ -737,6 +472,7 @@ export const useDocumentsState = ({
         printWorkStopData,
         selectedDiversDocument,
         printMedicalRecordData,
+        printGenericData,
     ]);
 
     // Notify parent component when bilanFields change (backward compatibility)
@@ -766,10 +502,6 @@ export const useDocumentsState = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [documentsDataToSend, onDocumentsDataChange]);
 
-    const markContactLensConversionApplied = useCallback(() => {
-        lastContactLensConversionAppliedRef.current = Date.now();
-    }, []);
-
     return {
         // States
         bilanFields,
@@ -787,7 +519,6 @@ export const useDocumentsState = ({
         setPrintGlassesData,
         printContactLensesData,
         setPrintContactLensesData,
-        markContactLensConversionApplied,
         printVisualAcuityData,
         setPrintVisualAcuityData,
         printWorkStopData,
@@ -796,5 +527,7 @@ export const useDocumentsState = ({
         setPrintAbsenceData,
         printMedicalRecordData,
         setPrintMedicalRecordData,
+        printGenericData,
+        setPrintGenericData,
     };
 };

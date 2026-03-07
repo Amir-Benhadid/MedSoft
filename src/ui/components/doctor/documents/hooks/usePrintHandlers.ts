@@ -39,6 +39,7 @@ export const usePrintHandlers = ({
             startDate: toDate(workStopOverride.startDate) ?? new Date(),
             endDate: toDate(workStopOverride.endDate) ?? new Date(),
             exitAuthorized: workStopOverride.exitAuthorized ?? true,
+            isProlongation: workStopOverride.isProlongation ?? false,
         } : undefined;
 
         // Derive medicalRecord from unified state if not directly set (e.g. after load from DB)
@@ -110,6 +111,7 @@ export const usePrintHandlers = ({
                 radiography: overrides['radiography_dynamic'],
                 medicalRecord: medicalRecordOverride,
                 divers: overrides.divers,
+                customGeneric: overrides.customGeneric ?? overrides.unifiedDocumentsState?.printStates?.printGenericData,
             },
             genericConfig: documentType === 'generic'
                 ? genericRecords.find(r => r.code === overrides.selectedGenericTemplate)

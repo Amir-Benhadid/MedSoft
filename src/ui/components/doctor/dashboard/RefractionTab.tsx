@@ -66,14 +66,16 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
         setIsDilationDialogOpen(false);
     };
 
-    const copyToLeft = () => {
+    const copyToLeft = (e?: React.MouseEvent) => {
+        e?.preventDefault();
         const rightEye = useConsultationStore.getState().rightEye;
-        setLeftEye(rightEye);
+        setLeftEye({ ...rightEye });
     };
 
-    const copyToRight = () => {
+    const copyToRight = (e?: React.MouseEvent) => {
+        e?.preventDefault();
         const leftEye = useConsultationStore.getState().leftEye;
-        setRightEye(leftEye);
+        setRightEye({ ...leftEye });
     };
 
     return (
@@ -85,6 +87,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                 {/* Dilation Button */}
                 {!readOnly && (activeAppointment || activeWaitlist) && (
                     <Button
+                        type="button"
                         size="sm"
                         variant={isDilating ? "secondary" : "outline"}
                         className={cn(
@@ -107,7 +110,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                     data={data?.rightEye}
                     action={
                         !readOnly && (
-                            <Button variant="ghost" size="sm" onClick={copyToRight} title="Copier OG vers OD" className="h-5 xl:h-6 2xl:h-8 px-1.5 xl:px-2 text-[10px] xl:text-xs 2xl:text-sm hover:bg-green-100">
+                            <Button type="button" variant="ghost" size="sm" onClick={copyToRight} title="Copier OG vers OD" className="h-5 xl:h-6 2xl:h-8 px-1.5 xl:px-2 text-[10px] xl:text-xs 2xl:text-sm hover:bg-green-100">
                                 <Copy className="w-3 h-3 xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4 mr-1" /> OG &#8594; OD
                             </Button>
                         )
@@ -119,7 +122,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                     data={data?.leftEye}
                     action={
                         !readOnly && (
-                            <Button variant="ghost" size="sm" onClick={copyToLeft} title="Copier OD vers OG" className="h-5 xl:h-6 2xl:h-8 px-1.5 xl:px-2 text-[10px] xl:text-xs 2xl:text-sm hover:bg-blue-100">
+                            <Button type="button" variant="ghost" size="sm" onClick={copyToLeft} title="Copier OD vers OG" className="h-5 xl:h-6 2xl:h-8 px-1.5 xl:px-2 text-[10px] xl:text-xs 2xl:text-sm hover:bg-blue-100">
                                 <Copy className="w-3 h-3 xl:w-3.5 xl:h-3.5 2xl:w-4 2xl:h-4 mr-1" /> OD &#8594; OG
                             </Button>
                         )
