@@ -126,8 +126,8 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
             const axis = newEye.axis ?? '';
             const add = newEye.add ?? '';
             const sphNum = parseFloat(String(sph).replace(',', '.'));
-            const addNum = parseFloat(String(add).replace(',', '.'));
-            const nearSph = (!isNaN(sphNum) && !isNaN(addNum)) ? (sphNum + addNum).toFixed(2) : '';
+            const addNum = parseFloat(String(add).replace(',', '.')) || 0;
+            const nearSph = !isNaN(sphNum) ? (sphNum + addNum).toFixed(2) : '';
 
             printGlassesData[fieldPrefix] = {
                 ...(printGlassesData[fieldPrefix] || {}),
@@ -348,19 +348,35 @@ export const useConsultationStore = create<ConsultationState>((set, get) => ({
 
     updateLeftEyeField: (field, value) => {
         const prevState = get();
-        set((state) => ({
-            leftEye: { ...state.leftEye, [field]: value },
-            ...(field === 'glassType' ? { rightEye: { ...state.rightEye, [field]: value } } : {})
-        }));
+        set((state) => {
+            const updates: Partial<EyeData> = { [field]: value };
+            if (field === 'objSph') updates.sph = value;
+            if (field === 'objCyl') updates.cyl = value;
+            if (field === 'objAxis') updates.axis = value;
+            if (field === 'objAdd') updates.add = value;
+
+            return {
+                leftEye: { ...state.leftEye, ...updates },
+                ...(field === 'glassType' ? { rightEye: { ...state.rightEye, [field]: value } } : {})
+            };
+        });
         syncDocuments(set, get, prevState);
     },
 
     updateRightEyeField: (field, value) => {
         const prevState = get();
-        set((state) => ({
-            rightEye: { ...state.rightEye, [field]: value },
-            ...(field === 'glassType' ? { leftEye: { ...state.leftEye, [field]: value } } : {})
-        }));
+        set((state) => {
+            const updates: Partial<EyeData> = { [field]: value };
+            if (field === 'objSph') updates.sph = value;
+            if (field === 'objCyl') updates.cyl = value;
+            if (field === 'objAxis') updates.axis = value;
+            if (field === 'objAdd') updates.add = value;
+
+            return {
+                rightEye: { ...state.rightEye, ...updates },
+                ...(field === 'glassType' ? { leftEye: { ...state.leftEye, [field]: value } } : {})
+            };
+        });
         syncDocuments(set, get, prevState);
     },
 

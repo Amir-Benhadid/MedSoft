@@ -153,7 +153,9 @@ export function SmartMultiSelectInput({
     };
 
     const handleTextareaClick = () => {
-        if (open) {
+        // If it's already open, clicking inside the textarea should usually stay open
+        // unless we want to hide it. Let's make it stay open if search is active.
+        if (open && searchQuery.length === 0) {
             setOpen(false);
             setIsSuppressed(true);
         }
@@ -169,7 +171,7 @@ export function SmartMultiSelectInput({
             <PopoverTrigger asChild>
                 <div
                     className={cn(
-                        "flex flex-col min-h-[38px] w-full rounded-lg border border-slate-200 bg-white/90 text-sm shadow-sm cursor-text transition-all focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-400 hover:border-slate-300",
+                        "flex flex-col min-h-[38px] w-full rounded-md border border-slate-200 bg-white text-sm xl:text-base shadow-sm cursor-text transition-all focus-within:ring-2 focus-within:ring-blue-400/30 focus-within:border-blue-400 hover:border-slate-300",
                         className
                     )}
                     onClick={handleOuterClick}
@@ -182,7 +184,7 @@ export function SmartMultiSelectInput({
                         onClick={handleTextareaClick}
                         placeholder={placeholder}
                         disabled={disabled}
-                        className="flex-1 w-full h-full bg-transparent outline-none placeholder:text-slate-400 text-slate-700 resize-none p-2"
+                        className="flex-1 w-full h-full bg-transparent outline-none placeholder:text-slate-400 text-slate-700 resize-none p-2 font-normal selection:bg-blue-100/60"
                         style={{ overflowY: 'auto' }}
                     />
                 </div>

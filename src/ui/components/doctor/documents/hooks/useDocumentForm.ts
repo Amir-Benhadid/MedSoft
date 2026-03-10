@@ -64,7 +64,8 @@ export function useDocumentForm() {
             endDate: new Date(),
             reason: '',
             exitAuthorized: true,
-            isProlongation: false
+            isProlongation: false,
+            isReprise: false
         };
         // Ensure dates are Date objects, not strings, and valid
         return {
@@ -102,7 +103,8 @@ export function useDocumentForm() {
             endDate: new Date(),
             reason: '',
             exitAuthorized: true,
-            isProlongation: false
+            isProlongation: false,
+            isReprise: false
         };
         const newWorkStopData = typeof updater === 'function' ? updater(currentWorkStopData) : updater;
         setDocumentOverride('unifiedDocumentsState', {
@@ -144,6 +146,7 @@ export function useDocumentForm() {
             setDocumentOverride('workStop', newData.printStates.printWorkStopData);
             setDocumentOverride('bilan', newData.bilanFields);
             setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
+            setDocumentOverride('customGeneric', newData.printStates.printGenericData);
         }
 
         if (newData.printControlFlags) {

@@ -40,8 +40,7 @@ function ClinicalExamTab({
                         value={data.inspection || ""}
                         onChange={handleFieldChange("inspection")}
                         disabled={readOnly}
-                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full h-full bg-white shadow-sm transition-all focus:border-slate-400"
-                        style={{ fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full h-full bg-white shadow-sm transition-all focus:border-slate-400 text-sm xl:text-base font-normal"
                         placeholder="Rien à signaler..."
                     />
                 </RowLayout>
@@ -50,8 +49,7 @@ function ClinicalExamTab({
                         value={data.motilityExam || ""}
                         onChange={handleFieldChange("motilityExam")}
                         disabled={readOnly}
-                        className="min-h-0 border border-indigo-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-indigo-400 px-2 leading-tight placeholder:text-indigo-300/50 w-full h-full bg-white shadow-sm transition-all focus:border-indigo-400"
-                        style={{ fontSize: 'calc(var(--dash-label) + 1px)' }}
+                        className="min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full h-full bg-white shadow-sm transition-all focus:border-slate-400 text-sm xl:text-base font-normal"
                         placeholder="Normal..."
                     />
                 </RowLayout>
@@ -66,7 +64,7 @@ function ClinicalExamTab({
                             value={data.anteriorSegment?.slit_lamp_exam || ""}
                             onSelect={handleNestedChange("anteriorSegment", "slit_lamp_exam")}
                             placeholder="Examen segment antérieur..."
-                            className="border border-blue-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-blue-400 text-xs xl:text-sm 2xl:text-base leading-normal whitespace-normal bg-white w-full h-full shadow-sm content-start items-start"
+                            className="h-full border-slate-200 focus-within:ring-slate-400 focus-within:border-slate-400"
                         />
                     </div>
                 </RowLayout>
@@ -76,8 +74,7 @@ function ClinicalExamTab({
                         value={data.fundus?.fundus_exam || ""}
                         onChange={handleNestedChange("fundus", "fundus_exam")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-0 border border-purple-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-purple-400 text-xs xl:text-sm 2xl:text-base leading-normal placeholder:text-purple-300/50 w-full bg-white shadow-sm"
-                        style={{ padding: 'calc(var(--dash-p) / 2)' }}
+                        className="resize-none h-full min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 text-sm xl:text-base font-normal leading-normal placeholder:text-slate-300 w-full bg-white shadow-sm p-2"
                         placeholder="Examen du fond d'œil..."
                     />
                 </RowLayout>
@@ -92,7 +89,7 @@ function ClinicalExamTab({
                             value={data.diagnosis || ""}
                             onSelect={handleFieldChange("diagnosis")}
                             placeholder="Diagnostic..."
-                            className="min-h-0 border border-emerald-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-emerald-400 px-2 font-bold text-slate-700 leading-tight whitespace-normal bg-white w-full h-full shadow-sm"
+                            className="h-full border-slate-200 focus-within:ring-slate-400 focus-within:border-slate-400"
                         />
                     </div>
                 </RowLayout>
@@ -101,8 +98,7 @@ function ClinicalExamTab({
                         value={data.treatmentPlan || ""}
                         onChange={handleFieldChange("treatmentPlan")}
                         disabled={readOnly}
-                        className="resize-none h-full min-h-0 border border-teal-200/60 rounded-md focus-visible:ring-2 focus-visible:ring-teal-400 px-2 leading-tight placeholder:text-teal-300/50 w-full bg-white shadow-sm"
-                        style={{ fontSize: 'calc(var(--dash-label) + 1px)', paddingBlock: 'calc(var(--dash-p) / 2)' }}
+                        className="resize-none h-full min-h-0 border border-slate-200 rounded-md focus-visible:ring-2 focus-visible:ring-slate-400 px-2 leading-tight placeholder:text-slate-300 w-full bg-white shadow-sm text-sm xl:text-base font-normal p-2"
                         placeholder="Traitement prescrit..."
                     />
                 </RowLayout>

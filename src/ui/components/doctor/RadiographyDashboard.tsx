@@ -83,6 +83,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                 setIsFinishSheetOpen={setIsFinishSheetOpen}
                 isFinishSheetOpen={isFinishSheetOpen}
                 onOpenHistory={() => setIsHistoryOpen(true)}
+                onOpenPaymentHistory={() => { }}
                 showFinishButton={isActiveConsultationToday}
             />
 

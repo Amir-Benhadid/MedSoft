@@ -126,9 +126,9 @@ export const generateContactLensesPDF = async (
 	const rightIsSpherical = rightContactLensType === 'Sphérique';
 	const leftIsSpherical = leftContactLensType === 'Sphérique';
 
-	// Check if we have prescription data (raw values for existence)
-	const hasRightEyeData = rightSph || rightCyl || rightAxisRaw;
-	const hasLeftEyeData = leftSph || leftCyl || leftAxisRaw;
+	// Check if we have prescription data
+	const hasRightEyeData = rightSph || rightCyl || rightAxisRaw || rightDiam || rightAxisK;
+	const hasLeftEyeData = leftSph || leftCyl || leftAxisRaw || leftDiam || leftAxisK;
 
 	// Calculate equal column distribution across page width
 	const usableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
@@ -288,19 +288,11 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 		rightEyeData,
 		leftEyeData,
 		patient,
+		printControlFlags,
+		setPrintControlFlags,
 		printContactLensesData: printData,
 		setPrintContactLensesData: setPrintData,
 	} = useDocumentForm();
-
-	// Internal state for print control flags
-	const [internalPrintControlFlags, setInternalPrintControlFlags] = React.useState<ContactLensesPrintControlFlags>({
-		includeRightEye: true,
-		includeLeftEye: true,
-	});
-
-	// Use external flags if provided, otherwise use internal state
-	const printControlFlags = internalPrintControlFlags;
-	const setPrintControlFlags = setInternalPrintControlFlags;
 
 	// Handler for print data changes
 	const handlePrintDataChange = (eye: 'rightEye' | 'leftEye', field: keyof ContactLensesPrintData['rightEye']) => (value: string) => {

@@ -78,6 +78,7 @@ interface WorkStopData {
 	reason: string;
 	exitAuthorized: boolean;
 	isProlongation?: boolean;
+	isReprise?: boolean;
 }
 
 interface ReportData {
@@ -191,6 +192,7 @@ interface PrintDataOverrides {
 		endDate: Date;
 		exitAuthorized: boolean;
 		isProlongation?: boolean;
+		isReprise?: boolean;
 	};
 	absence?: {
 		consultationDate: Date;
@@ -295,6 +297,7 @@ export class DocumentPrinter {
 					endDate: options.printDataOverrides.workStop.endDate,
 					exitAuthorized: options.printDataOverrides.workStop.exitAuthorized,
 					isProlongation: options.printDataOverrides.workStop.isProlongation,
+					isReprise: options.printDataOverrides.workStop.isReprise,
 				} : undefined;
 				return await generateWorkStopPDF(context, patient, workStopPrintData);
 			case 'absence':
@@ -387,13 +390,17 @@ export class DocumentPrinter {
 				}
 				return await context.pdfDoc.save();
 			case 'generic':
-				// Draw standard header
-				drawDocumentHeader(context, patient, DocumentUtils.calculateAge);
-
 				const genericData = options.printDataOverrides?.customGeneric;
-				if (genericData && genericData.title) {
-					// Draw custom title
-					let y = drawTitle(context, genericData.title.toUpperCase(), drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
+
+				// Calculate initial y pos from header
+				let headerY = drawDocumentHeader(context, patient, DocumentUtils.calculateAge);
+
+				if (genericData?.title || genericData?.text) {
+					// Draw custom title or default to DOCUMENT LIBRE if there's text but no title
+					const titleToDraw = genericData.title ? genericData.title.toUpperCase() : 'DOCUMENT LIBRE';
+					let y = drawTitle(context, titleToDraw, headerY);
+
+					y -= 10; // Extra padding between title and text
 
 					// Draw custom body text
 					if (genericData.text) {
@@ -418,7 +425,7 @@ export class DocumentPrinter {
 						}
 					}
 				} else {
-					// Blank document if no title
+					// Blank document if no title and no text specified
 					context.page.drawText('Document Vierge', {
 						x: context.LEFT_MARGIN,
 						y: context.height - 200,

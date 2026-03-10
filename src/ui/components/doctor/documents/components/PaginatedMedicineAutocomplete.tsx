@@ -249,31 +249,26 @@ const PaginatedMedicineAutocomplete: React.FC<PaginatedMedicineAutocompleteProps
                                         key={option.id || index}
                                         value={option.value}
                                         onSelect={() => handleSelectOption(option)}
-                                        className="flex flex-col items-start py-2 cursor-pointer"
+                                        className="flex flex-col items-start py-2 cursor-pointer px-3"
                                     >
-                                        <div className="flex w-full items-center">
-                                            <Pill className="mr-2 h-4 w-4 text-muted-foreground" />
-                                            <span className="font-medium flex-1">{option.value}</span>
+                                        <div className="flex w-full items-baseline justify-between">
+                                            <span className="font-semibold text-sm text-foreground">{option.value}</span>
                                             {option.category && (
-                                                <Badge variant="outline" className="ml-2 text-[10px] h-5">
+                                                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
                                                     {option.category}
-                                                </Badge>
+                                                </span>
                                             )}
                                         </div>
                                         {(option.strength || option.form || option.defaultDosage) && (
-                                            <span className="ml-6 text-xs text-muted-foreground mt-0.5">
-                                                {[
-                                                    option.strength,
-                                                    option.form,
-                                                    option.defaultDosage
-                                                        ? (option.defaultDosage.length > 10
-                                                            ? option.defaultDosage.slice(0, 10) + '...'
-                                                            : option.defaultDosage)
-                                                        : null,
-                                                ]
-                                                    .filter(Boolean)
-                                                    .join(' • ')}
-                                            </span>
+                                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                                {option.form && <span className="font-medium text-slate-600">{option.form}</span>}
+                                                {option.strength && <span>{option.strength}</span>}
+                                                {option.defaultDosage && (
+                                                    <span className="truncate max-w-[200px] italic">
+                                                        - {option.defaultDosage}
+                                                    </span>
+                                                )}
+                                            </div>
                                         )}
                                     </CommandItem>
                                 ))}

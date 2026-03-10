@@ -28,13 +28,13 @@ export const OptimizedInput = React.forwardRef<HTMLInputElement, OptimizedInputP
         }
 
         const input = (
-            <div className="relative w-full">
+            <div className={cn("relative w-full", className?.includes('h-full') && "h-full")}>
                 <Input
                     ref={ref}
                     value={localValue}
                     onChange={(e) => setLocalValue(e.target.value)}
                     onBlur={handleBlur}
-                    className={cn(className, suffix && "pr-8")}
+                    className={cn("selection:bg-blue-100/60", className, suffix && "pr-8")}
                     {...props}
                 />
                 {suffix && (
@@ -65,7 +65,7 @@ interface OptimizedTextareaProps extends Omit<TextareaProps, 'onChange'> {
 }
 
 export const OptimizedTextarea = React.forwardRef<HTMLTextAreaElement, OptimizedTextareaProps>(
-    ({ value, onChange, ...props }, ref) => {
+    ({ value, onChange, className, ...props }, ref) => {
         const [localValue, setLocalValue] = React.useState<string>(value || "");
 
         React.useEffect(() => {
@@ -84,6 +84,7 @@ export const OptimizedTextarea = React.forwardRef<HTMLTextAreaElement, Optimized
                 value={localValue}
                 onChange={(e) => setLocalValue(e.target.value)}
                 onBlur={handleBlur}
+                className={cn("selection:bg-blue-100/60", className)}
                 {...props}
             />
         );

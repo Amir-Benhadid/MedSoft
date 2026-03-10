@@ -109,7 +109,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 category="antecedent_gen"
                                 value={clinicalExam.generalMedicalHistory || ""}
                                 onSelect={(val) => updateClinicalExamField("generalMedicalHistory", val)}
-                                className="bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20 h-full"
+                                className="bg-white border-slate-200 focus-within:ring-slate-400 focus-within:border-slate-400 h-full"
                                 disabled={readOnly}
                                 placeholder="-"
                             />
@@ -127,7 +127,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 category="diagnostic"
                                 value={clinicalExam.diagnosis || ""}
                                 onSelect={(val) => updateClinicalExamField("diagnosis", val)}
-                                className="bg-slate-50/50 text-xs 2xl:text-sm font-bold text-slate-800 border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-blue-400/20 h-full"
+                                className="bg-white border-slate-200 focus-within:ring-slate-400 focus-within:border-slate-400 h-full"
                                 placeholder="-"
                             />
                         </div>
@@ -154,7 +154,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                                 category="antecedent_oph"
                                 value={clinicalExam.ophthalmologicalHistory || ""}
                                 onSelect={(val) => updateClinicalExamField("ophthalmologicalHistory", val)}
-                                className="bg-slate-50/50 text-xs 2xl:text-sm font-medium border-slate-200 shadow-none focus-within:ring-2 focus-within:ring-amber-400/20 h-full"
+                                className="bg-white border-slate-200 focus-within:ring-slate-400 focus-within:border-slate-400 h-full"
                                 disabled={readOnly}
                                 placeholder="-"
                             />
@@ -167,14 +167,15 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                         style={{ gap: 'calc(var(--dash-gap) / 4)', padding: 'calc(var(--dash-p) / 1.5)' }}
                     >
                         <Label className="font-bold text-slate-500 uppercase tracking-tight px-1" style={{ fontSize: 'calc(var(--dash-label) - 1px)' }}>Note</Label>
-                        <OptimizedTextarea
-                            value={clinicalExam.profile || ""}
-                            onChange={(val) => updateClinicalExamField("profile", val)}
-                            className="flex-1 resize-none bg-slate-50/50 h-auto border-slate-200 shadow-none focus:ring-2 focus:ring-slate-400/20"
-                            style={{ minHeight: 'var(--dash-h)', fontSize: 'var(--dash-label)', paddingBlock: 'calc(var(--dash-gap) / 4)' }}
-                            disabled={readOnly}
-                            placeholder="-"
-                        />
+                        <div style={{ height: 'calc(var(--dash-h) * 2)', minHeight: 'calc(var(--dash-h) * 2)', maxHeight: 'calc(var(--dash-h) * 2)' }}>
+                            <OptimizedTextarea
+                                value={clinicalExam.profile || ""}
+                                onChange={(val) => updateClinicalExamField("profile", val)}
+                                className="flex-1 resize-none bg-white h-full border-slate-200 shadow-none focus:ring-2 focus:ring-slate-400/20 text-sm xl:text-base font-normal p-2"
+                                disabled={readOnly}
+                                placeholder="-"
+                            />
+                        </div>
                     </div>
                 </div>
 

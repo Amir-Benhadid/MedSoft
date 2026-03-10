@@ -217,8 +217,8 @@ export const DocumentUtils = {
 
     calculateNearSph: (sph: string, add: string): string => {
         const sphNum = parseFloat(sph || '0');
-        const addNum = parseFloat(add || '0');
-        if (isNaN(sphNum) || isNaN(addNum)) return '';
+        const addNum = parseFloat(add || '0') || 0;
+        if (isNaN(sphNum)) return '';
         return (sphNum + addNum).toFixed(2);
     },
 };

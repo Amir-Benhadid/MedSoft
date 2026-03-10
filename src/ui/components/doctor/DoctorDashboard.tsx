@@ -68,23 +68,23 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
 
             {/* Main Content - No Tabs, just Consultation View */}
             <div className="flex-1 flex overflow-hidden">
-                <div className="flex-1 flex flex-col border-r h-full overflow-hidden">
-                    {/* Top Section: Refraction (Auto height based on content) */}
-                    <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink min-h-0 transition-all duration-300">
-                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
+                <div className="flex-1 border-r h-full overflow-hidden grid grid-rows-[6fr_auto_3fr]">
+                    {/* Top Section: Refraction (6 parts of available height) */}
+                    <div className="min-h-0 overflow-hidden border-b border-slate-200/50 bg-slate-50/50">
+                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <RefractionTab patient={patient} />
                         </div>
                     </div>
 
-                    {/* Middle Section: Tonometry (Auto height) */}
-                    <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink min-h-0 transition-all duration-300">
+                    {/* Middle Section: Tonometry (natural height) */}
+                    <div className="overflow-hidden border-b border-slate-200/50 bg-slate-50/50">
                         <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <TonometryTab />
                         </div>
                     </div>
 
-                    {/* Bottom Section: Clinical Exam (Remaining space) */}
-                    <div className="flex-1 overflow-y-auto bg-slate-50/30 min-h-0">
+                    {/* Bottom Section: Clinical Exam (3 parts of available height) */}
+                    <div className="min-h-0 overflow-hidden bg-slate-50/30">
                         <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <ClinicalExamTab />
                         </div>

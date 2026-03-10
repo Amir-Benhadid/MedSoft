@@ -178,16 +178,23 @@ export const generateGlassesPDF = async (
 	const leftAxisRaw = printData?.leftEye?.axis || ''; // Keep raw value for axis (0 is valid)
 	const leftAxis = leftAxisRaw.trim() !== '' ? leftAxisRaw : ''; // Only empty if truly empty
 
+	// Determine if we should show far vision section
+	const includeFarVision = printControlFlags?.includeFarVision === true;
+	const includeNearVision = printControlFlags?.includeNearVision === true;
+
 	// Check which eyes are enabled for far vision
 	// Explicitly check: hide only if false, show otherwise (including undefined which defaults to true)
 	const shouldShowRightEyeFar = printControlFlags?.includeRightEyeFar === false ? false : true;
 	const shouldShowLeftEyeFar = printControlFlags?.includeLeftEyeFar === false ? false : true;
 
-	// Only show far vision section if at least one eye is enabled
+	// Only show far vision data if at least one eye is enabled
 	const hasAnyFarVisionEye = shouldShowRightEyeFar || shouldShowLeftEyeFar;
 
-	// Show "Loin:" title only when the Vision de Loin checkbox is selected; values always appear when eyes are enabled
-	const shouldShowFarVisionTitle = printControlFlags?.includeFarVision === true && hasAnyFarVisionEye;
+	// Logic: Far vision data is shown if (!) either (Loin is checked) OR (Près is UNchecked)
+	const shouldShowFarVisionData = includeFarVision || !includeNearVision;
+
+	// Show "Loin:" title only when the Vision de Loin checkbox is selected
+	const shouldShowFarVisionTitle = includeFarVision && hasAnyFarVisionEye;
 
 	// Determine if we should show near vision section
 	// Show if near vision is explicitly selected (always show OD/OG, either with data or "Plan")
@@ -227,7 +234,7 @@ export const generateGlassesPDF = async (
 	}
 
 	// Far vision values: always show when eyes are enabled; "Loin:" label only when checkbox is selected
-	if (hasAnyFarVisionEye) {
+	if (hasAnyFarVisionEye && shouldShowFarVisionData) {
 		if (shouldShowFarVisionTitle) {
 			page.drawText('Loin:', {
 				x: LEFT_MARGIN + 10,
@@ -244,17 +251,13 @@ export const generateGlassesPDF = async (
 		if (shouldShowRightEyeFar) {
 			const rightEmptyOption = printData?.rightEye?.emptyEyeOption || 'plan';
 
-			const rightSphNum = parseFloat(rightSph) || 0;
-			const rightCylNum = parseFloat(rightCyl) || 0;
 			const rightAxisExists = rightAxisRaw && rightAxisRaw.trim() !== '';
-			const rightHasVisualData = !DocumentUtils.isEmptyField(rightSph) || !DocumentUtils.isEmptyField(rightCyl) || rightAxisExists;
-			const rightIsEffectivelyZero = rightSphNum === 0 && rightCylNum === 0 && !rightAxisExists;
 
 			if (rightEmptyOption === 'conserver') {
 				page.drawText('Verre en place', {
 					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
-			} else if (rightHasVisualData && !rightIsEffectivelyZero) {
+			} else if (rightSph !== '' || rightCyl !== '' || rightAxisExists) {
 				const rightText = formatPrescriptionLine(rightSph, rightCyl, rightAxis);
 				page.drawText(rightText, {
 					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
@@ -269,18 +272,13 @@ export const generateGlassesPDF = async (
 		// Left Eye (OG) - values on separate line
 		if (shouldShowLeftEyeFar) {
 			const leftEmptyOption = printData?.leftEye?.emptyEyeOption || 'plan';
-
-			const leftSphNum = parseFloat(leftSph) || 0;
-			const leftCylNum = parseFloat(leftCyl) || 0;
 			const leftAxisExists = leftAxisRaw && leftAxisRaw.trim() !== '';
-			const leftHasVisualData = !DocumentUtils.isEmptyField(leftSph) || !DocumentUtils.isEmptyField(leftCyl) || leftAxisExists;
-			const leftIsEffectivelyZero = leftSphNum === 0 && leftCylNum === 0 && !leftAxisExists;
 
 			if (leftEmptyOption === 'conserver') {
 				page.drawText('Verre en place', {
 					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
 				});
-			} else if (leftHasVisualData && !leftIsEffectivelyZero) {
+			} else if (leftSph !== '' || leftCyl !== '' || leftAxisExists) {
 				const leftText = formatPrescriptionLine(leftSph, leftCyl, leftAxis);
 				page.drawText(leftText, {
 					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)

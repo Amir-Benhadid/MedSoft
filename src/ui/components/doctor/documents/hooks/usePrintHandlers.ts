@@ -99,14 +99,14 @@ export const usePrintHandlers = ({
 
             printControlFlags: overrides.printControlFlags || {},
             printDataOverrides: {
-                glasses: overrides.glasses,
-                contacts: overrides.contacts,
+                glasses: overrides.glasses ?? overrides.unifiedDocumentsState?.printStates?.printGlassesData,
+                contacts: overrides.contacts ?? overrides.unifiedDocumentsState?.printStates?.printContactLensesData,
                 report: overrides.report,
                 workStop: normalizedWorkStop,
                 generic: overrides.generic,
-                visualAcuity: overrides.visualAcuity,
+                visualAcuity: overrides.visualAcuity ?? overrides.unifiedDocumentsState?.printStates?.printVisualAcuityData,
                 certificatAcuite: overrides.certificatAcuite,
-                bilan: overrides.bilan,
+                bilan: overrides.bilan ?? overrides.unifiedDocumentsState?.bilanFields,
                 absence: normalizedAbsence,
                 radiography: overrides['radiography_dynamic'],
                 medicalRecord: medicalRecordOverride,

@@ -132,6 +132,8 @@ export const generateAbsenceCertificatePDF = async (
 
 // UI Component
 const AbsenceCertificateDocument: React.FC<AbsenceCertificateDocumentProps> = () => {
+	const [dateOpen, setDateOpen] = React.useState(false);
+
 	// Get form data from hook
 	const {
 		absenceData: absenceDataFromHook,
@@ -159,6 +161,7 @@ const AbsenceCertificateDocument: React.FC<AbsenceCertificateDocumentProps> = ()
 			...prev,
 			consultationDate: newDate,
 		}));
+		setDateOpen(false);
 	};
 
 	return (
@@ -168,7 +171,7 @@ const AbsenceCertificateDocument: React.FC<AbsenceCertificateDocumentProps> = ()
 					<Label className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight">
 						Date de consultation
 					</Label>
-					<Popover>
+					<Popover open={dateOpen} onOpenChange={setDateOpen}>
 						<PopoverTrigger asChild>
 							<Button
 								variant={"outline"}

@@ -168,8 +168,8 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                 )}
 
                 {activeDocTab === 'contacts' &&
-                    ((printControlFlags?.includeRightEye !== false && contactLensesPrintData?.rightEye?.sph) ||
-                        (printControlFlags?.includeLeftEye !== false && contactLensesPrintData?.leftEye?.sph)) && (
+                    ((printControlFlags?.includeRightEye !== false && (contactLensesPrintData?.rightEye?.sph || contactLensesPrintData?.rightEye?.diam || contactLensesPrintData?.rightEye?.axis_k)) ||
+                        (printControlFlags?.includeLeftEye !== false && (contactLensesPrintData?.leftEye?.sph || contactLensesPrintData?.leftEye?.diam || contactLensesPrintData?.leftEye?.axis_k))) && (
                         <div className="mt-1">
                             <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
                                 <CardContent className="p-0 space-y-2">
@@ -194,19 +194,23 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                         const showRightEye = printControlFlags?.includeRightEye !== false;
                                         const showLeftEye = printControlFlags?.includeLeftEye !== false;
 
-                                        const rightContactRx = (showRightEye && contactLensesPrintData?.rightEye?.sph)
+                                        const rightContactRx = (showRightEye && (contactLensesPrintData?.rightEye?.sph || contactLensesPrintData?.rightEye?.cyl || contactLensesPrintData?.rightEye?.axis || contactLensesPrintData?.rightEye?.diam || contactLensesPrintData?.rightEye?.axis_k))
                                             ? {
                                                 sphere: contactLensesPrintData.rightEye.sph,
                                                 cylinder: contactLensesPrintData.rightEye.cyl,
                                                 axis: contactLensesPrintData.rightEye.axis,
+                                                diam: contactLensesPrintData.rightEye.diam,
+                                                axis_k: contactLensesPrintData.rightEye.axis_k,
                                             }
                                             : null;
 
-                                        const leftContactRx = (showLeftEye && contactLensesPrintData?.leftEye?.sph)
+                                        const leftContactRx = (showLeftEye && (contactLensesPrintData?.leftEye?.sph || contactLensesPrintData?.leftEye?.cyl || contactLensesPrintData?.leftEye?.axis || contactLensesPrintData?.leftEye?.diam || contactLensesPrintData?.leftEye?.axis_k))
                                             ? {
                                                 sphere: contactLensesPrintData.leftEye.sph,
                                                 cylinder: contactLensesPrintData.leftEye.cyl,
                                                 axis: contactLensesPrintData.leftEye.axis,
+                                                diam: contactLensesPrintData.leftEye.diam,
+                                                axis_k: contactLensesPrintData.leftEye.axis_k,
                                             }
                                             : null;
 
@@ -395,14 +399,17 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                     const endDate = workStopPrintData?.endDate || workStopData?.endDate;
                                     const exitAuthorized = workStopPrintData?.exitAuthorized ?? workStopData?.exitAuthorized;
                                     const isProlongation = workStopPrintData?.isProlongation ?? workStopData?.isProlongation;
+                                    const isReprise = workStopPrintData?.isReprise ?? workStopData?.isReprise;
 
                                     if (!startDate || !endDate) return null;
 
-                                    // Render Title conditionally based on isProlongation
-                                    const titleText = isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL';
-                                    const descriptionText = isProlongation
-                                        ? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
-                                        : "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail";
+                                    // Render Title conditionally
+                                    const titleText = isReprise ? "CERTIFICAT DE REPRISE DE TRAVAIL" : (isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL');
+                                    const descriptionText = isReprise
+                                        ? "Je certifie que l'état oculaire du (de la) patient(e) sus-nommé(e) lui permet de reprendre son travail."
+                                        : (isProlongation
+                                            ? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
+                                            : "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail");
 
                                     // Calculate duration in days
                                     const start = new Date(startDate);
@@ -437,13 +444,15 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                             <p className="text-xs">
                                                 {descriptionText}
                                             </p>
-                                            <p className="text-xs">
-                                                de: {numberToFrenchWords(durationDays)} ( {durationDays.toString().padStart(2, '0')} ) jours
-                                            </p>
+                                            {!isReprise && (
+                                                <p className="text-xs">
+                                                    de: {numberToFrenchWords(durationDays)} ( {durationDays.toString().padStart(2, '0')} ) jours
+                                                </p>
+                                            )}
                                             <p className="text-xs">
                                                 à compter du: {start.toLocaleDateString('fr-FR')}
                                             </p>
-                                            {exitAuthorized && (
+                                            {!isReprise && exitAuthorized && (
                                                 <p className="text-xs">
                                                     sortie autorisée
                                                 </p>
@@ -561,95 +570,96 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                         VERRES CORRECTEURS
                                     </p>
 
-                                    {/* Far vision values always shown when eyes enabled; "Vision de Loin" label only when checkbox selected */}
-                                    {(printControlFlags?.includeRightEyeFar !== false || printControlFlags?.includeLeftEyeFar !== false) && (
-                                        <>
-                                            {printControlFlags?.includeFarVision === true && (
-                                                <p className="text-xs mb-1 font-semibold">
-                                                    Vision de Loin:
-                                                </p>
-                                            )}
-                                            {printControlFlags?.includeRightEyeFar !== false && (
-                                                <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
-                                                    <p className="text-xs font-medium text-blue-700">
-                                                        OD: {(() => {
-                                                            const hasData = glassesPrintData?.rightEye?.sph && glassesPrintData.rightEye.sph !== '' &&
-                                                                (parseFloat(glassesPrintData.rightEye.sph) !== 0 ||
-                                                                    (glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '' && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
-                                                                    (glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '' && parseFloat(glassesPrintData.rightEye.axis) !== 0));
-                                                            const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
-
-                                                            if (hasData) {
-                                                                const s = glassesPrintData.rightEye.sph === '' ? '' : glassesPrintData.rightEye.sph;
-                                                                const c = glassesPrintData.rightEye.cyl === '' ? '' : glassesPrintData.rightEye.cyl;
-                                                                const a = glassesPrintData.rightEye.axis === '' ? '' : glassesPrintData.rightEye.axis;
-
-                                                                const formatVal = (v: string) => {
-                                                                    if (!v || v === '') return '';
-                                                                    const n = parseFloat(v?.toString().replace(',', '.') || '0');
-                                                                    if (isNaN(n)) return v || '';
-                                                                    if (n === 0) return '0.00';
-                                                                    return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
-                                                                };
-
-                                                                const sphFormatted = formatVal(s);
-                                                                const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
-                                                                    ? ` (${formatVal(c)})`
-                                                                    : '';
-                                                                const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
-
-                                                                return `${sphFormatted}${cylFormatted}${axisFormatted}`;
-                                                            } else if (emptyOption === 'conserver') {
-                                                                return 'Verre en place';
-                                                            } else {
-                                                                return 'Plan';
-                                                            }
-                                                        })()}
+                                    {/* Far vision values shown if (!) neither checked OR Loin checked; "Vision de Loin" label only when checkbox selected */}
+                                    {(printControlFlags?.includeRightEyeFar !== false || printControlFlags?.includeLeftEyeFar !== false) &&
+                                        (printControlFlags?.includeFarVision === true || printControlFlags?.includeNearVision !== true) && (
+                                            <>
+                                                {printControlFlags?.includeFarVision === true && (
+                                                    <p className="text-xs mb-1 font-semibold">
+                                                        Vision de Loin:
                                                     </p>
-                                                </div>
-                                            )}
+                                                )}
+                                                {printControlFlags?.includeRightEyeFar !== false && (
+                                                    <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
+                                                        <p className="text-xs font-medium text-blue-700">
+                                                            OD: {(() => {
+                                                                const hasData = glassesPrintData?.rightEye?.sph && glassesPrintData.rightEye.sph !== '' &&
+                                                                    (parseFloat(glassesPrintData.rightEye.sph) !== 0 ||
+                                                                        (glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '' && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
+                                                                        (glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '' && parseFloat(glassesPrintData.rightEye.axis) !== 0));
+                                                                const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
 
-                                            {printControlFlags?.includeLeftEyeFar !== false && (
-                                                <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
-                                                    <p className="text-xs font-medium text-green-700">
-                                                        OG: {(() => {
-                                                            const hasData = glassesPrintData?.leftEye?.sph && glassesPrintData?.leftEye?.sph !== '' &&
-                                                                (parseFloat(glassesPrintData.leftEye.sph) !== 0 ||
-                                                                    (glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '' && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
-                                                                    (glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '' && parseFloat(glassesPrintData.leftEye.axis) !== 0));
-                                                            const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
+                                                                if (hasData) {
+                                                                    const s = glassesPrintData.rightEye.sph === '' ? '' : glassesPrintData.rightEye.sph;
+                                                                    const c = glassesPrintData.rightEye.cyl === '' ? '' : glassesPrintData.rightEye.cyl;
+                                                                    const a = glassesPrintData.rightEye.axis === '' ? '' : glassesPrintData.rightEye.axis;
 
-                                                            if (hasData) {
-                                                                const s = glassesPrintData.leftEye.sph === '' ? '' : glassesPrintData.leftEye.sph;
-                                                                const c = glassesPrintData.leftEye.cyl === '' ? '' : glassesPrintData.leftEye.cyl;
-                                                                const a = glassesPrintData.leftEye.axis === '' ? '' : glassesPrintData.leftEye.axis;
+                                                                    const formatVal = (v: string) => {
+                                                                        if (!v || v === '') return '';
+                                                                        const n = parseFloat(v?.toString().replace(',', '.') || '0');
+                                                                        if (isNaN(n)) return v || '';
+                                                                        if (n === 0) return '0.00';
+                                                                        return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
+                                                                    };
 
-                                                                const formatVal = (v: string) => {
-                                                                    if (!v || v === '') return '';
-                                                                    const n = parseFloat(v?.toString().replace(',', '.') || '0');
-                                                                    if (isNaN(n)) return v || '';
-                                                                    if (n === 0) return '0.00';
-                                                                    return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
-                                                                };
+                                                                    const sphFormatted = formatVal(s);
+                                                                    const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
+                                                                        ? ` (${formatVal(c)})`
+                                                                        : '';
+                                                                    const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
 
-                                                                const sphFormatted = formatVal(s);
-                                                                const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
-                                                                    ? ` (${formatVal(c)})`
-                                                                    : '';
-                                                                const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
+                                                                    return `${sphFormatted}${cylFormatted}${axisFormatted}`;
+                                                                } else if (emptyOption === 'conserver') {
+                                                                    return 'Verre en place';
+                                                                } else {
+                                                                    return 'Plan';
+                                                                }
+                                                            })()}
+                                                        </p>
+                                                    </div>
+                                                )}
 
-                                                                return `${sphFormatted}${cylFormatted}${axisFormatted}`;
-                                                            } else if (emptyOption === 'conserver') {
-                                                                return 'Verre en place';
-                                                            } else {
-                                                                return 'Plan';
-                                                            }
-                                                        })()}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
+                                                {printControlFlags?.includeLeftEyeFar !== false && (
+                                                    <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
+                                                        <p className="text-xs font-medium text-green-700">
+                                                            OG: {(() => {
+                                                                const hasData = glassesPrintData?.leftEye?.sph && glassesPrintData?.leftEye?.sph !== '' &&
+                                                                    (parseFloat(glassesPrintData.leftEye.sph) !== 0 ||
+                                                                        (glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '' && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
+                                                                        (glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '' && parseFloat(glassesPrintData.leftEye.axis) !== 0));
+                                                                const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
+
+                                                                if (hasData) {
+                                                                    const s = glassesPrintData.leftEye.sph === '' ? '' : glassesPrintData.leftEye.sph;
+                                                                    const c = glassesPrintData.leftEye.cyl === '' ? '' : glassesPrintData.leftEye.cyl;
+                                                                    const a = glassesPrintData.leftEye.axis === '' ? '' : glassesPrintData.leftEye.axis;
+
+                                                                    const formatVal = (v: string) => {
+                                                                        if (!v || v === '') return '';
+                                                                        const n = parseFloat(v?.toString().replace(',', '.') || '0');
+                                                                        if (isNaN(n)) return v || '';
+                                                                        if (n === 0) return '0.00';
+                                                                        return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
+                                                                    };
+
+                                                                    const sphFormatted = formatVal(s);
+                                                                    const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
+                                                                        ? ` (${formatVal(c)})`
+                                                                        : '';
+                                                                    const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
+
+                                                                    return `${sphFormatted}${cylFormatted}${axisFormatted}`;
+                                                                } else if (emptyOption === 'conserver') {
+                                                                    return 'Verre en place';
+                                                                } else {
+                                                                    return 'Plan';
+                                                                }
+                                                            })()}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
 
                                     {/* Vision de Près - only if includeNearVision is explicitly true */}
                                     {printControlFlags?.includeNearVision === true && (
@@ -934,7 +944,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                         <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
                             <CardContent className="p-0">
                                 <p className="text-xs mb-2 font-semibold text-primary">
-                                    {(printGenericData?.title || 'DOCUMENT VIERGE').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                    {(printGenericData?.title || 'DOCUMENT LIBRE').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                                 </p>
                                 <div className="text-xs leading-relaxed text-foreground whitespace-pre-wrap">
                                     {printGenericData?.text || 'Ce document ne contient pas de texte personnalisé.'}

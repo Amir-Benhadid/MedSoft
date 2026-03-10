@@ -102,6 +102,7 @@ interface UseDocumentsStateProps {
         reason?: string;
         exitAuthorized?: boolean;
         isProlongation?: boolean;
+        isReprise?: boolean;
     };
     initialBilanFields?: InternalBilanFields;
     initialDocumentsData?: {
@@ -209,6 +210,7 @@ export const useDocumentsState = ({
         endDate: safeDate(workStopData.endDate, undefined),
         exitAuthorized: workStopData.exitAuthorized ?? true,
         isProlongation: workStopData.isProlongation ?? false,
+        isReprise: workStopData.isReprise ?? false,
     });
     const [printAbsenceData, setPrintAbsenceData] = useState<AbsencePrintData>({
         consultationDate: safeDate(absenceData.date, new Date()),
@@ -390,6 +392,7 @@ export const useDocumentsState = ({
                         startDate: safeDate(rawData.startDate, undefined),
                         endDate: safeDate(rawData.endDate, undefined),
                         isProlongation: rawData.isProlongation ?? false,
+                        isReprise: rawData.isReprise ?? false,
                     };
                     setPrintWorkStopData(prev =>
                         JSON.stringify(prev) !== JSON.stringify(newPrintWorkStopData)

@@ -79,7 +79,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
     };
 
     return (
-        <div className="flex flex-col transition-all duration-300" style={{ gap: 'var(--dash-gap)' }}>
+        <div className="h-full flex flex-col transition-all duration-300" style={{ gap: 'var(--dash-gap)' }}>
             {/* Main Header */}
             <div className="bg-slate-50/90 rounded-md border border-slate-200 shadow-sm flex items-center justify-between transition-all" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 3)' }}>
                 <span className="font-bold text-slate-500 uppercase tracking-tight" style={{ fontSize: 'calc(var(--dash-label) * 1.2)' }}>Réfraction</span>
@@ -103,7 +103,7 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2" style={{ gap: 'var(--dash-gap)' }}>
+            <div className="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-2 xl:grid-rows-1" style={{ gap: 'var(--dash-gap)' }}>
                 <EyeRefractionPanel
                     side="right"
                     readOnly={readOnly}

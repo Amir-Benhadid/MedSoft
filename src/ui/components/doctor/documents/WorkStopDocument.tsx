@@ -33,6 +33,7 @@ interface WorkStopPrintData {
 	endDate: Date;
 	exitAuthorized: boolean;
 	isProlongation?: boolean;
+	isReprise?: boolean;
 }
 
 interface WorkStopDocumentProps { }
@@ -139,12 +140,14 @@ export const generateWorkStopPDF = async (
 ): Promise<Uint8Array> => {
 	const { page, width, helvetica, helveticaBold, LEFT_MARGIN, RIGHT_MARGIN, TEXT_SIZES, LINE_HEIGHTS } = context;
 
-	const titleText = printData?.isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL';
+	const titleText = printData?.isReprise ? "CERTIFICAT DE REPRISE DE TRAVAIL" : (printData?.isProlongation ? "Prolongation d'arrêt de travail" : 'ARRÊT DE TRAVAIL');
 	let y = drawTitle(context, titleText, drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
-	const workStopText = printData?.isProlongation
-		? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
-		: 'Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail';
+	const workStopText = printData?.isReprise
+		? "Je certifie que l'état oculaire du (de la) patient(e) sus-nommé(e) lui permet de reprendre son travail."
+		: (printData?.isProlongation
+			? "Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant une prolongation d'arrêt de travail"
+			: 'Je certifie que le(a) patient(e) sus-nommé(e) présente un état oculaire nécessitant un arrêt de travail');
 	const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
 	const workStopLines = splitTextIntoLinesOptimized(
 		workStopText,
@@ -175,56 +178,75 @@ export const generateWorkStopPDF = async (
 		const durationDays =
 			Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1;
 
-		page.drawText('De:', {
-			x: LEFT_MARGIN + 20,
-			y,
-			size: TEXT_SIZES.normal,
-			font: helvetica,
-			color: rgb(0, 0, 0),
-		});
-		const durationText = `${numberToFrenchWords(
-			durationDays
-		)} ( ${durationDays.toString().padStart(2, '0')} ) jours`;
-		page.drawText(durationText, {
-			x: LEFT_MARGIN + 45,
-			y,
-			size: TEXT_SIZES.normal,
-			font: helvetica,
-			color: rgb(0, 0, 0),
-		});
-		y -= LINE_HEIGHTS.header;
+		if (printData.isReprise) {
+			page.drawText('À compter du:', {
+				x: LEFT_MARGIN + 20,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			page.drawText(startDate.toLocaleDateString('fr-FR'), {
+				x: LEFT_MARGIN + 100,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.header;
+		} else {
+			const durationText = `${numberToFrenchWords(
+				durationDays
+			)} ( ${durationDays.toString().padStart(2, '0')} ) jours`;
+			page.drawText('De:', {
+				x: LEFT_MARGIN + 20,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			page.drawText(durationText, {
+				x: LEFT_MARGIN + 45,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.header;
 
-		page.drawText('À compter du:', {
-			x: LEFT_MARGIN + 20,
-			y,
-			size: TEXT_SIZES.normal,
-			font: helvetica,
-			color: rgb(0, 0, 0),
-		});
-		page.drawText(startDate.toLocaleDateString('fr-FR'), {
-			x: LEFT_MARGIN + 100,
-			y,
-			size: TEXT_SIZES.normal,
-			font: helvetica,
-			color: rgb(0, 0, 0),
-		});
-		y -= LINE_HEIGHTS.header;
+			page.drawText('À compter du:', {
+				x: LEFT_MARGIN + 20,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			page.drawText(startDate.toLocaleDateString('fr-FR'), {
+				x: LEFT_MARGIN + 100,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.header;
 
-		const exitText =
-			printData.exitAuthorized !== undefined
-				? printData.exitAuthorized
-					? 'Sortie autorisée'
-					: 'Sortie non-autorisée'
-				: 'Sortie autorisée';
+			const exitText =
+				printData.exitAuthorized !== undefined
+					? printData.exitAuthorized
+						? 'Sortie autorisée'
+						: 'Sortie non-autorisée'
+					: 'Sortie autorisée';
 
-		page.drawText(exitText, {
-			x: LEFT_MARGIN + 20,
-			y,
-			size: TEXT_SIZES.normal,
-			font: helvetica,
-			color: rgb(0, 0, 0),
-		});
-		y -= LINE_HEIGHTS.normal;
+			page.drawText(exitText, {
+				x: LEFT_MARGIN + 20,
+				y,
+				size: TEXT_SIZES.normal,
+				font: helvetica,
+				color: rgb(0, 0, 0),
+			});
+			y -= LINE_HEIGHTS.normal;
+		}
+
 	}
 
 	const pdfBytes = await context.pdfDoc.save();
@@ -233,6 +255,9 @@ export const generateWorkStopPDF = async (
 
 // UI Component
 const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
+	const [startDateOpen, setStartDateOpen] = React.useState(false);
+	const [endDateOpen, setEndDateOpen] = React.useState(false);
+
 	// Get form data from hook
 	const {
 		workStopData,
@@ -298,7 +323,6 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 			startDate: newDate,
 		}));
 
-
 		// Recalculate end date based on current number of days
 		const days = parseInt(numberOfDays);
 		if (!isNaN(days) && days > 0) {
@@ -308,11 +332,8 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 				...prev,
 				endDate: newEndDate,
 			}));
-			setWorkStopData((prev) => ({
-				...prev,
-				endDate: newEndDate,
-			}));
 		}
+		setStartDateOpen(false);
 	};
 
 	const handleEndDateSelect = (date: Date | undefined) => {
@@ -328,6 +349,7 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 
 		const days = calculateDays(startDate, newDate);
 		setNumberOfDays(days.toString());
+		setEndDateOpen(false);
 	};
 
 	const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -352,7 +374,7 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 					{/* Start Date */}
 					<div className="flex flex-col space-y-1">
 						<Label className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight">Date de début</Label>
-						<Popover>
+						<Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
 							<PopoverTrigger asChild>
 								<Button
 									variant={"outline"}
@@ -390,6 +412,7 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 							max={365}
 							value={numberOfDays}
 							onChange={handleDaysChange}
+							disabled={printData.isReprise}
 							className="h-7 text-sm font-semibold text-foreground bg-background border-border focus:border-primary focus:ring-primary/20"
 						/>
 					</div>
@@ -398,43 +421,47 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 				{/* End Date */}
 				<div className="flex flex-col space-y-1">
 					<Label className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight">Date de fin (calculée automatiquement)</Label>
-					<Popover>
+					<Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
 						<PopoverTrigger asChild>
 							<Button
 								variant={"outline"}
+								disabled={printData.isReprise}
 								className={cn(
 									"w-full justify-start text-left text-sm font-semibold text-foreground bg-background border-border h-7",
 									!printData.endDate && "text-muted-foreground"
 								)}
 							>
 								<CalendarIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-								{printData.endDate ? (
+								{printData.endDate && !printData.isReprise ? (
 									format(printData.endDate, "PPP", { locale: fr })
 								) : (
 									<span className="font-normal text-muted-foreground">Choisir une date</span>
 								)}
 							</Button>
 						</PopoverTrigger>
-						<PopoverContent className="w-auto p-0" align="start">
-							<Calendar
-								mode="single"
-								selected={printData.endDate}
-								onSelect={handleEndDateSelect}
-								disabled={(date) => date < (printData.startDate || new Date())}
-								initialFocus
-							/>
-						</PopoverContent>
+						{!printData.isReprise && (
+							<PopoverContent className="w-auto p-0" align="start">
+								<Calendar
+									mode="single"
+									selected={printData.endDate}
+									onSelect={handleEndDateSelect}
+									disabled={(date) => date < (printData.startDate || new Date())}
+									initialFocus
+								/>
+							</PopoverContent>
+						)}
 					</Popover>
 				</div>
 			</div>
 
 			{/* Options */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+			<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
 				{/* Exit Authorized Checkbox */}
-				<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
+				<div className={cn("bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2 transition-opacity", printData.isReprise && "opacity-50 pointer-events-none")}>
 					<Checkbox
 						id="exit-authorized"
 						checked={printData.exitAuthorized || false}
+						disabled={printData.isReprise}
 						onCheckedChange={(checked) => {
 							const newValue = checked === true;
 							setPrintData((prev) => ({
@@ -450,21 +477,43 @@ const WorkStopDocument: React.FC<WorkStopDocumentProps> = () => {
 				</div>
 
 				{/* Prolongation Checkbox */}
-				<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
+				<div className={cn("bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2 transition-opacity", printData.isReprise && "opacity-50 pointer-events-none")}>
 					<Checkbox
 						id="is-prolongation"
 						checked={printData.isProlongation || false}
+						disabled={printData.isReprise}
 						onCheckedChange={(checked) => {
 							const newValue = checked === true;
 							setPrintData((prev) => ({
 								...prev,
 								isProlongation: newValue,
+								...(newValue ? { isReprise: false } : {})
 							}));
 						}}
 						className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
 					/>
 					<Label htmlFor="is-prolongation" className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">
 						Prolongation
+					</Label>
+				</div>
+
+				{/* Reprise Checkbox */}
+				<div className="bg-card rounded-xl p-2.5 border border-border shadow-sm flex items-center space-x-2">
+					<Checkbox
+						id="is-reprise"
+						checked={printData.isReprise || false}
+						onCheckedChange={(checked) => {
+							const newValue = checked === true;
+							setPrintData((prev) => ({
+								...prev,
+								isReprise: newValue,
+								...(newValue ? { isProlongation: false } : {})
+							}));
+						}}
+						className="data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800 border-slate-300"
+					/>
+					<Label htmlFor="is-reprise" className="text-[10px] font-semibold text-slate-600 uppercase tracking-tight cursor-pointer hover:text-slate-900 transition-colors">
+						Reprise
 					</Label>
 				</div>
 			</div>

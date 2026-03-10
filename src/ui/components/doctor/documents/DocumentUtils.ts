@@ -100,12 +100,11 @@ export const DocumentUtils = {
 		return DocumentUtils.splitTextIntoLines(text, maxChars);
 	},
 
-	// Helper function to check if a field is empty or contains only zeros/defaults
+	// Helper function to check if a field is empty or contains defaults
 	isEmptyField: (value: string | undefined | null): boolean => {
-		if (!value) return true;
+		if (value === undefined || value === null) return true;
 		const trimmed = value.toString().trim();
 		if (trimmed === '') return true;
-		if (trimmed === '0' || trimmed === '0.00' || trimmed === '0.0') return true;
 		if (trimmed === '-' || trimmed === 'N/A' || trimmed === 'n/a') return true;
 		return false;
 	},
@@ -138,7 +137,7 @@ export const DocumentUtils = {
 		return positions;
 	},
 
-	// Helper function to format number with sign, returning empty string for zero/empty values
+	// Helper function to format number with sign, returning empty string for empty values
 	formatNumberWithSignOrEmpty: (value: string | undefined | null): string => {
 		if (DocumentUtils.isEmptyField(value)) {
 			return '';
@@ -152,7 +151,7 @@ export const DocumentUtils = {
 			return value || ''; // Return original string if it's not a number (e.g. "10/10")
 		}
 
-		if (num === 0) return '';
+		if (num === 0) return '0.00';
 		return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
 	},
 };

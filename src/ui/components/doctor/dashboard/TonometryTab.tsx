@@ -12,9 +12,9 @@ export const iopValues = Array.from({ length: 46 }, (_, i) => ({
     label: String(i + 5),
 }));
 
-export const pachymetryValues = Array.from({ length: 201 }, (_, i) => ({
-    value: String(i + 450),
-    label: String(i + 450),
+export const pachymetryValues = Array.from({ length: 301 }, (_, i) => ({
+    value: String(i + 400),
+    label: String(i + 400),
 }));
 
 interface TonometryTabProps {

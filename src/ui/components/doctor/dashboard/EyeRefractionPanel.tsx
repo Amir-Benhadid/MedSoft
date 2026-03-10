@@ -32,11 +32,6 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
     const handleChange = (field: keyof EyeData, value: string) => {
         if (readOnly) return;
         updateField(field, value);
-        // Auto-copy objective to subjective refraction
-        if (field === 'objSph') updateField('sph', value);
-        if (field === 'objCyl') updateField('cyl', value);
-        if (field === 'objAxis') updateField('axis', value);
-        if (field === 'objAdd') updateField('add', value);
 
         // Auto-fill R0 and DL for certain contact lens types
         if (field === 'contactLensType' && (value === 'Sphérique' || value === 'Torique')) {
@@ -46,7 +41,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
     };
 
     return (
-        <Card className={cn("h-auto flex flex-col shadow-sm border ring-1 transition-all", themeBg, themeBorder, themeRing)}>
+        <Card className={cn("h-full flex flex-col shadow-sm border ring-1 transition-all overflow-hidden", themeBg, themeBorder, themeRing)}>
             {/* Header */}
             <div
                 className={cn("rounded-t-lg flex justify-between items-center border-b border-white/40 bg-white/30 backdrop-blur-[2px]")}
@@ -58,7 +53,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                 {action && <div className="-my-1">{action}</div>}
             </div>
 
-            <div className="flex-1 flex flex-col" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'var(--dash-gap)', gap: 'var(--dash-gap)' }}>
+            <div className="flex-1 flex flex-col justify-between min-h-0" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'var(--dash-gap)', gap: 'var(--dash-gap)' }}>
 
                 {/* Visual Acuity Card */}
                 <div

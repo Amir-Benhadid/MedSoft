@@ -7,28 +7,35 @@
  * Split text into lines with max character limit
  */
 export function splitTextIntoLines(text: string, maxChars = 80): string[] {
-    const words = text.split(' ');
-    const lines: string[] = [];
-    let currentLine = '';
+    if (!text) return [];
+    const sourceLines = text.split(/\r?\n/);
+    const finalLines: string[] = [];
 
-    for (const word of words) {
-        if ((currentLine + word).length <= maxChars) {
-            currentLine += (currentLine ? ' ' : '') + word;
-        } else {
-            if (currentLine) {
-                lines.push(currentLine);
+    for (const sourceLine of sourceLines) {
+        if (!sourceLine) {
+            finalLines.push('');
+            continue;
+        }
+
+        const words = sourceLine.split(' ');
+        let currentLine = '';
+
+        for (const word of words) {
+            if (!currentLine) {
                 currentLine = word;
+            } else if ((currentLine + ' ' + word).length <= maxChars) {
+                currentLine += ' ' + word;
             } else {
-                lines.push(word);
+                finalLines.push(currentLine);
+                currentLine = word;
             }
+        }
+        if (currentLine) {
+            finalLines.push(currentLine);
         }
     }
 
-    if (currentLine) {
-        lines.push(currentLine);
-    }
-
-    return lines;
+    return finalLines;
 }
 
 /**

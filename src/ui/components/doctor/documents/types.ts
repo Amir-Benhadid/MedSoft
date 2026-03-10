@@ -166,6 +166,7 @@ export interface WorkStopPrintData {
     endDate?: Date;
     exitAuthorized: boolean;
     isProlongation?: boolean;
+    isReprise?: boolean;
 }
 
 export interface AbsencePrintData {
@@ -184,6 +185,7 @@ export interface WorkStopData {
     endDate: Date;
     exitAuthorized: boolean;
     isProlongation?: boolean;
+    isReprise?: boolean;
 }
 
 export interface EyeData {
@@ -374,6 +376,8 @@ export interface DetailedClinicalExamData {
             endDate?: Date;
             reason?: string;
             exitAuthorized?: boolean;
+            isProlongation?: boolean;
+            isReprise?: boolean;
         };
         bilanFields?: any; // Internal bilan fields structure
     };

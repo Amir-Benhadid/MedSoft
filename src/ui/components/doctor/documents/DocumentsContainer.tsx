@@ -136,6 +136,7 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
             setDocumentOverride('bilan', newData.bilanFields);
             setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
             setDocumentOverride('selectedGenericTemplate', newData.printStates.selectedDiversDocument);
+            setDocumentOverride('customGeneric', newData.printStates.printGenericData);
             // For divers tab: pass medicalRecord when a specific document is selected
             const selectedDivers = newData.printStates.selectedDiversDocument;
             if (selectedDivers && selectedDivers !== 'documentVierge') {
