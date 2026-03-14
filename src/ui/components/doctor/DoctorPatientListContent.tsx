@@ -39,7 +39,8 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
 
     const handleSelect = (item: UnifiedPatientItem) => {
         // Determine target mode based on consultation type
-        const consultationType = consultationTypes.find(t => t.id === item.consultationTypeId);
+        const typeId = item.consultationTypeId ? Number(item.consultationTypeId) : undefined;
+        const consultationType = consultationTypes.find(t => t.id === typeId);
         const targetMode = (consultationType?.nature === 'radiography') ? 'radiography' : 'normal';
 
         onSelectPatient(item.patientId, targetMode);

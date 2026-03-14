@@ -50,7 +50,7 @@ export class WaitlistRepository {
         if (hasDilations) {
             query = `
                 SELECT 
-                    w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at,
+                    w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at, w.consultation_type_id,
                     p.name as patient_name, p.surname as patient_surname,
                     d.id as dilation_id, d.status as dilation_status, d.medicine as dilation_medicine, d.eye as dilation_eye, d.created_at as dilation_started_at
                 FROM waitlist_entries w
@@ -62,7 +62,7 @@ export class WaitlistRepository {
         } else {
             query = `
                 SELECT 
-                    w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at,
+                    w.id, w.patient_id, w.arrived_at, w.state, w.type, w.notes, w.created_at, w.updated_at, w.consultation_type_id,
                     p.name as patient_name, p.surname as patient_surname,
                     NULL as dilation_id, NULL as dilation_status, NULL as dilation_medicine, NULL as dilation_eye, NULL as dilation_started_at
                 FROM waitlist_entries w

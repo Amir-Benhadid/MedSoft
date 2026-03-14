@@ -1,4 +1,3 @@
-
 import { Loader2, Eye, FlaskConical } from 'lucide-react';
 import PatientInfoCard from './dashboard/PatientInfoCard';
 import DocumentsContainer from '@/ui/components/doctor/documents/DocumentsContainer';
@@ -17,6 +16,14 @@ interface DoctorDashboardProps {
     consultationId?: string;
     onBack?: () => void;
 }
+
+const RADIOGRAPHY_TABS = [
+    'radiography',
+    'medications', 'glasses', 'report', 'contacts', 'visualAcuity',
+    'workStop', 'absence',
+    'bilanPreOp', 'bilanDiabete', 'bilanCardio', 'bilanCnas', 'bilanCtf', 'bilanBiometrie', 'bilanInfectieux',
+    'generic'
+];
 
 export default function RadiographyDashboard({ patientId, consultationId, onBack }: DoctorDashboardProps) {
     const {
@@ -40,20 +47,14 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
     const nextAppointmentData = useConsultationStore(state => state.clinicalExam.nextAppointment);
 
     // Fetch Last Completed Consultation for ReadOnly Left Panel
-    // Real-time updates handled by useRealtime hook
     const { data: lastConsultation } = useQuery({
         queryKey: ['consultations', 'last-completed', patientId],
         queryFn: async () => {
             const list = await orpcClient.consultations.listByPatient({ patientId });
-            console.log('📊 All consultations for patient:', list);
-            // sort descending by date and find first completed
-            // If we are currently in a consultation, we want the LAST one (not this one if it's pending)
             const completed = list
                 .filter(c => c.status === 'completed')
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            console.log('✅ Completed consultations:', completed);
-            console.log('🎯 Last completed:', completed[0] || null);
-            return completed[0] || null; // Return null instead of undefined
+            return completed[0] || null;
         },
         enabled: !!patientId,
     });
@@ -67,11 +68,6 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
     }
 
     if (!patient) return <div>Patient introuvable</div>;
-
-    console.log('🔍 RadiographyDashboard - lastConsultation:', lastConsultation);
-    console.log('🔍 RadiographyDashboard - lastConsultation.left_eye:', lastConsultation?.left_eye);
-    console.log('🔍 RadiographyDashboard - lastConsultation.right_eye:', lastConsultation?.right_eye);
-    console.log('🔍 RadiographyDashboard - lastConsultation.clinical_exam:', lastConsultation?.clinical_exam);
 
     return (
         <div className="flex flex-col h-full bg-slate-50">
@@ -90,11 +86,11 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
             {/* Main Content - 50/50 Split */}
             <div className="flex-1 flex overflow-hidden">
                 {/* LEFT PANE: Read-Only Previous Data (50%) */}
-                <div className="flex-1 flex flex-col border-r bg-slate-50 h-full overflow-hidden">
+                <div className="flex-1 flex flex-col border-r bg-slate-50 min-h-0 overflow-hidden">
 
                     {/* Top Section: Refraction (50%) */}
                     <div className="h-[50%] overflow-hidden border-b bg-white relative flex flex-col">
-                        <div className="p-3 border-b bg-slate-50/50 flex items-center justify-between sticky top-0 z-10">
+                        <div className="border-b bg-slate-50/50 flex items-center justify-between sticky top-0 z-10" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <div className="flex items-center gap-2">
                                 <Eye className="w-4 h-4 text-slate-500" />
                                 <h3 className="font-medium text-slate-700 text-sm">Réfraction (Précédente)</h3>
@@ -105,7 +101,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                                 </span>
                             )}
                         </div>
-                        <div className="flex-1 p-4 overflow-y-auto">
+                        <div className="flex-1 overflow-y-auto" style={{ padding: 'var(--dash-p)' }}>
                             <ReadOnlyRefractionDisplay
                                 data={lastConsultation ? {
                                     leftEye: lastConsultation.left_eye,
@@ -117,13 +113,13 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
 
                     {/* Bottom Section: Clinical Exam (50%) */}
                     <div className="flex-1 overflow-y-auto bg-slate-50 relative flex flex-col">
-                        <div className="p-3 border-b bg-slate-50/50 flex items-center justify-between sticky top-0 z-10">
+                        <div className="border-b bg-slate-50/50 flex items-center justify-between sticky top-0 z-10" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <div className="flex items-center gap-2">
                                 <Eye className="w-4 h-4 text-slate-500" />
                                 <h3 className="font-medium text-slate-700 text-sm">Examen Clinique (Précédent)</h3>
                             </div>
                         </div>
-                        <div className="p-4 flex flex-col gap-4">
+                        <div className="flex flex-col" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)', gap: 'var(--dash-gap)' }}>
                             <ReadOnlyClinicalExamDisplay
                                 data={lastConsultation?.clinical_exam}
                             />
@@ -132,23 +128,19 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                 </div>
 
                 {/* RIGHT PANE: Active Documents Workspace (50%) */}
-                <div className="flex-1 flex flex-col bg-white h-full overflow-hidden border-l border-slate-200">
+                <div className="flex-1 flex flex-col bg-white min-h-0 overflow-hidden border-l border-slate-200">
                     {/* Patient Info Card (Top) */}
-                    <div className="bg-slate-50/50 p-4 border-b">
-                        <PatientInfoCard readOnly={false} />
+                    <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink-0">
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
+                            <PatientInfoCard readOnly={false} />
+                        </div>
                     </div>
 
-                    {/* Documents Container (Fill remaining space) */}
-                    <div className="flex-1 overflow-hidden">
-                        <DocumentsContainer
-                            allowedTabs={[
-                                'radiography',
-                                'medications', 'glasses', 'report', 'contacts', 'visualAcuity',
-                                'workStop', 'absence',
-                                'bilanPreOp', 'bilanDiabete', 'bilanCardio', 'bilanCnas', 'bilanCtf', 'bilanBiometrie', 'bilanInfectieux',
-                                'generic'
-                            ]}
-                        />
+                    {/* Active Document Section */}
+                    <div className="flex-1 overflow-hidden relative bg-slate-50/30">
+                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
+                            <DocumentsContainer allowedTabs={RADIOGRAPHY_TABS} />
+                        </div>
                     </div>
                 </div>
             </div>

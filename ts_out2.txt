@@ -1,3 +1,0 @@
-src/ui/components/doctor/documents/PrintingLogic.ts(260,61): error TS2339: Property 'visualAcuity' does not exist on type 'PrintDataOverrides'.
-src/ui/components/doctor/documents/PrintingLogic.ts(305,51): error TS2339: Property 'includeTonometry' does not exist on type 'PrintControlFlags'.
-src/ui/components/doctor/RadiographyDashboard.tsx(79,14): error TS2741: Property 'onOpenPaymentHistory' is missing in type '{ patient: Patient; onBack: (() => void) | undefined; saveMutation: UseMutationResult<{ success: boolean; }, Error, { paymentData?: any; finish: boolean; }, unknown>; setIsFinishSheetOpen: Dispatch<...>; isFinishSheetOpen: boolean; onOpenHistory: () => void; showFinishButton: boolean; }' but required in type 'DashboardHeaderProps'.

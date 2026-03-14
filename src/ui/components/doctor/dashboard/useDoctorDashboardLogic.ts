@@ -57,38 +57,70 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         queryFn: async () => {
             // Logic 0: If specific ID requested, fetch that
             if (consultationId) {
-                // We might need a direct get if list doesn't have it, but list is safer for permissions/context
                 const all = await orpcClient.consultations.listByPatient({ patientId });
                 const found = all.find(c => c.id === consultationId);
                 if (found) return found;
-                // fallthrough if not found (shouldn't happen)
             }
 
             const consultations = await orpcClient.consultations.listByPatient({ patientId });
-
-            // Logic 1: Open TODAY'S consultation matching the mode
             const today = getLocalTodayDate();
             const { start, end } = getDayRangeEncoded(today);
-            const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
+            
+            // Logic 1: Find existing today's consultation
+            // Check specifically for the current mode first if provided
+            if (mode) {
+                const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
+                const specificToday = consultations.find(c =>
+                    c.date >= start &&
+                    c.date <= end &&
+                    (c.type === targetType || (!c.type && targetType === 'Consultation'))
+                );
+                if (specificToday) return specificToday;
+            }
 
-            // Find today's consultation of the specific type
-            const todayConsultation = consultations.find(c =>
-                c.date >= start &&
-                c.date <= end &&
-                (c.type === targetType || (!c.type && targetType === 'Consultation')) // Handle legacy/default
-            );
+            // Logic 1.5: If NO match for targetType or mode not provided, check if ANY consultation exists today
+            const anyToday = consultations.find(c => c.date >= start && c.date <= end);
+            if (anyToday) return anyToday;
 
-            if (todayConsultation) return todayConsultation;
+            // Logic 2: Determine type from today's waitlist/appointments before creating new
+            // This is CRITICAL for search results or mode-less landings
+            let detectedType = mode === 'radiography' ? 'Radiography' : 'Consultation';
+            
+            try {
+                // Check waitlist for this patient today
+                const waitlist = await orpcClient.waitlist.list({ start, end });
+                const entry = waitlist.find(w => w.patient_id === patientId);
+                if (entry?.consultation_type_id) {
+                    const types = await orpcClient.consultationTypes.list();
+                    const cType = types.find(t => t.id === entry.consultation_type_id);
+                    if (cType?.nature === 'radiography') {
+                        detectedType = 'Radiography';
+                    } else if (cType?.nature === 'normal') {
+                        detectedType = 'Consultation';
+                    }
+                } else {
+                    // Check appointments if not in waitlist
+                    const appointments = await orpcClient.appointments.list({ start, end });
+                    const appt = appointments.find(a => a.patient_id === patientId);
+                    if (appt?.consultation_type_id) {
+                        const types = await orpcClient.consultationTypes.list();
+                        const cType = types.find(t => t.id === appt.consultation_type_id);
+                        if (cType?.nature === 'radiography') {
+                            detectedType = 'Radiography';
+                        } else if (cType?.nature === 'normal') {
+                            detectedType = 'Consultation';
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to detect consultation type from scheduling:", e);
+            }
 
-            // Logic 2: REMOVED - We do not want to automatically open old pending consultations.
-            // If a consultation is pending from a previous day, it should be accessed via History.
-            // We only want to open TODAY'S consultation (Logic 1) or create a NEW one (Logic 3).
-
-            // Logic 3: Create NEW consultation
+            // Logic 3: Create NEW consultation with DETECTED type
             return await orpcClient.consultations.create({
                 patient_id: patientId,
                 date: getLocalISOString(),
-                type: targetType,
+                type: detectedType,
                 status: 'pending',
             });
         },
@@ -97,6 +129,25 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         refetchOnWindowFocus: false,
         gcTime: 30 * 60 * 1000,
     });
+
+    // 1.1 Auto-Mode Sync: If fetched consultation type doesn't match current mode, redirect
+    useEffect(() => {
+        if (consultationData && !consultationId) {
+            const detectedMode = consultationData.type === 'Radiography' ? 'radiography' : 'normal';
+            // Only redirect if explicitly different or if mode was undefined
+            if (detectedMode !== mode) {
+                console.log(`🔄 Mode mismatch detected: URL Mode="${mode}", Detected Mode="${detectedMode}" (from consultation type "${consultationData.type}")`);
+                console.log(`🚀 Redirecting to correct mode...`);
+                navigate({
+                    search: (prev: any) => ({
+                        ...prev,
+                        mode: detectedMode
+                    }),
+                    replace: true
+                });
+            }
+        }
+    }, [consultationData, mode, consultationId, navigate]);
 
     // 2. Fetch History (All Consultations)
     const { data: history = [], isLoading: isHistoryLoading } = useQuery({

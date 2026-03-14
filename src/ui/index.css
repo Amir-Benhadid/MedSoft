@@ -42,14 +42,14 @@
 		--text-4xl: 2.25rem;
 
 		/* Dynamic Dashboard Density */
-		--dash-p: 1rem;
-		/* 16px (was 20px) */
-		--dash-gap: 0.75rem;
+		--dash-p: 0.75rem;
 		/* 12px (was 16px) */
-		--dash-h: 2.5rem;
-		/* 40px */
-		--dash-input-p: 0.5rem;
-		--dash-label: 0.75rem;
+		--dash-gap: 0.5rem;
+		/* 8px (was 12px) */
+		--dash-h: 2.25rem;
+		/* 36px (was 40px) */
+		--dash-input-p: 0.4rem;
+		--dash-label: 0.7rem;
 	}
 
 	/* Large Screen Heights (Normal) */

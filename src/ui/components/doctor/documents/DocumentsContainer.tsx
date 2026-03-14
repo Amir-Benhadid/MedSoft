@@ -9,13 +9,14 @@ import { DocumentToolbar } from './components/DocumentToolbar';
 import { TabItem } from './components/DocumentTabs';
 import {
     Pill, Eye, FileSpreadsheet, FileCheck, Stethoscope, Activity, LayoutGrid,
-    FileHeart, FileText
+    FileHeart, FileText, FlaskConical
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Tab Definitions
 const TAB_GROUPS: { PAGE_1: TabItem[], PAGE_2: TabItem[] } = {
     PAGE_1: [
+        { id: 'radiography', label: 'Exploration', icon: FlaskConical },
         { id: 'medications', label: 'Ordonnance', icon: Pill },
         { id: 'glasses', label: 'Lunettes', icon: Eye },
         { id: 'contacts', label: 'Lentilles', icon: Eye },
@@ -216,7 +217,14 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
         return null;
     }, [activeDocTab]);
 
-    const currentTabList = page === 0 ? TAB_GROUPS.PAGE_1 : TAB_GROUPS.PAGE_2;
+    const currentTabList = useMemo(() => {
+        const fullList = page === 0 ? TAB_GROUPS.PAGE_1 : TAB_GROUPS.PAGE_2;
+        if (!allowedTabs) {
+            // Hide specialized radiography tab in normal mode
+            return fullList.filter(tab => tab.id !== 'radiography');
+        }
+        return fullList.filter(tab => allowedTabs.includes(tab.id) || (tab.isGroup && tab.id === 'bilans' && allowedTabs.some(at => at.startsWith('bilan'))));
+    }, [page, allowedTabs]);
 
     return (
         <div className="flex flex-col h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden">

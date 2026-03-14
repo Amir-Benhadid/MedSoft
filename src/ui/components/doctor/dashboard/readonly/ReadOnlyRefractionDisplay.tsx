@@ -45,15 +45,15 @@ function EyeDisplay({ side, data }: { side: 'left' | 'right', data?: EyeData }) 
     const hasTonometry = data.tension || data.pachymetry;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {/* Eye Title */}
-            <div className={cn("text-sm font-semibold pb-2 border-b", accentColor, borderColor)}>
+            <div className={cn("text-sm font-semibold pb-1 border-b", accentColor, borderColor)}>
                 {title}
             </div>
 
             {/* Visual Acuity */}
             {hasVisualAcuity && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                     <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                         Acuité Visuelle
                     </div>
@@ -76,7 +76,7 @@ function EyeDisplay({ side, data }: { side: 'left' | 'right', data?: EyeData }) 
 
             {/* Refraction */}
             {hasRefraction && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                     <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                         Réfraction
                     </div>
@@ -99,7 +99,7 @@ function EyeDisplay({ side, data }: { side: 'left' | 'right', data?: EyeData }) 
 
             {/* Tonometry */}
             {hasTonometry && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                     <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                         Tonométrie
                     </div>

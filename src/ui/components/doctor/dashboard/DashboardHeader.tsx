@@ -78,16 +78,16 @@ export const DashboardHeader = memo(function DashboardHeader({
                 </DialogContent>
             </Dialog>
 
-            <header className="bg-white border-b px-6 py-3 shadow-sm flex justify-between items-center sticky top-0 z-20">
+            <header className="bg-white border-b px-6 py-0.5 shadow-sm flex justify-between items-center sticky top-0 z-20">
                 <div className="flex items-center gap-4">
                     {onBack && (
-                        <Button variant="ghost" size="icon" onClick={onBack} className="mr-2 h-9 w-9">
-                            <ArrowLeft className="w-5 h-5" />
+                        <Button variant="ghost" size="icon" onClick={onBack} className="mr-2 h-8 w-8">
+                            <ArrowLeft className="w-4 h-4" />
                         </Button>
                     )}
                     <div className="flex items-center gap-4">
                         <div>
-                            <h1 className="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
+                            <h1 className="text-lg font-bold text-slate-900 leading-tight flex items-center gap-2">
                                 {patient.name} {patient.surname}
                             </h1>
                         </div>
@@ -99,10 +99,10 @@ export const DashboardHeader = memo(function DashboardHeader({
                     <Button
                         size="icon"
                         variant="ghost"
-                        className="text-slate-400 hover:text-slate-600"
+                        className="text-slate-400 hover:text-slate-600 h-8 w-8"
                         onClick={() => pinDialog.openDialog('settings')}
                     >
-                        <Settings className="w-5 h-5" />
+                        <Settings className="w-4 h-4" />
                     </Button>
                     <UpdateIndicator />
 
@@ -110,22 +110,22 @@ export const DashboardHeader = memo(function DashboardHeader({
                     <Button
                         size="icon"
                         variant="ghost"
-                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 h-8 w-8"
                         onClick={onOpenPaymentHistory}
                         title="Historique des paiements et créances"
                     >
-                        <span className="text-xl">💳</span>
+                        <span className="text-lg">💳</span>
                     </Button>
 
                     {/* History Button (Symbol only) */}
                     <Button
                         size="icon"
                         variant="ghost"
-                        className="text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                        className="text-slate-600 hover:text-blue-600 hover:bg-blue-50 h-8 w-8"
                         onClick={onOpenHistory}
                         title="Historique des consultations"
                     >
-                        <span className="text-xl">📅</span>
+                        <span className="text-lg">📅</span>
                     </Button>
 
                     {/* Manual Save Button */}

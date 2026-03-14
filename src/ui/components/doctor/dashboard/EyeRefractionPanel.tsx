@@ -53,7 +53,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                 {action && <div className="-my-1">{action}</div>}
             </div>
 
-            <div className="flex-1 flex flex-col justify-between min-h-0" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'var(--dash-gap)', gap: 'var(--dash-gap)' }}>
+            <div className="flex flex-col min-h-0" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'var(--dash-gap)', gap: 'var(--dash-gap)' }}>
 
                 {/* Visual Acuity Card */}
                 <div

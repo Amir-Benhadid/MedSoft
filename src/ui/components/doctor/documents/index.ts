@@ -8,8 +8,10 @@ export { default as AbsenceCertificateDocument, generateAbsenceCertificatePDF } 
 export { default as ReportDocument, generateReportPDF } from './ReportDocument';
 export { default as BilanDocument, generateBilanPDF } from './BilanDocuments';
 export { default as MedicalRecordDocument, generateMedicalRecordPDF } from './MedicalRecordDocument';
+export { DynamicDocumentEditor } from './DynamicDocumentEditor';
+export { generateRadiographyPDF } from './RadiographyDocument';
 
 // Individual Medical Record Documents
 // Document Types
 export type BilanType = 'bilanPreOp' | 'bilanDiabete' | 'bilanInflammatoire' | 'bilanUveite';
-export type DocumentType = 'contacts' | 'glasses' | 'medications' | 'certificatAcuite' | 'workStop' | 'absence' | 'report' | BilanType | 'divers';
+export type DocumentType = 'contacts' | 'glasses' | 'medications' | 'certificatAcuite' | 'workStop' | 'absence' | 'report' | BilanType | 'divers' | 'radiography' | 'generic';

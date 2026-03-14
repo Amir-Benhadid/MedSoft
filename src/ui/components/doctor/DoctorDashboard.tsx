@@ -68,23 +68,23 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
 
             {/* Main Content - No Tabs, just Consultation View */}
             <div className="flex-1 flex overflow-hidden">
-                <div className="flex-1 border-r h-full overflow-hidden grid grid-rows-[6fr_auto_3fr]">
-                    {/* Top Section: Refraction (6 parts of available height) */}
-                    <div className="min-h-0 overflow-hidden border-b border-slate-200/50 bg-slate-50/50">
-                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
+                <div className="flex-1 border-r min-h-0 grid grid-rows-[auto_auto_minmax(0,1fr)] overflow-y-auto">
+                    {/* Top Section: Refraction (adapts to content) */}
+                    <div className="border-b border-slate-200/50 bg-slate-50/50">
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <RefractionTab patient={patient} />
                         </div>
                     </div>
 
                     {/* Middle Section: Tonometry (natural height) */}
-                    <div className="overflow-hidden border-b border-slate-200/50 bg-slate-50/50">
+                    <div className="border-b border-slate-200/50 bg-slate-50/50">
                         <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <TonometryTab />
                         </div>
                     </div>
 
                     {/* Bottom Section: Clinical Exam (3 parts of available height) */}
-                    <div className="min-h-0 overflow-hidden bg-slate-50/30">
+                    <div className="min-h-0 bg-slate-50/30">
                         <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <ClinicalExamTab />
                         </div>
@@ -92,17 +92,17 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 </div>
 
                 {/* RIGHT PANE: Patient Info & Documents (50%) */}
-                <div className="flex-1 flex flex-col h-full overflow-hidden border-l border-slate-200">
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden border-l border-slate-200">
                     {/* Patient Info Card (Top) */}
                     <div className="flex-none border-b border-slate-200/50 bg-slate-50/50 overflow-hidden flex flex-col shrink-0">
-                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}>
+                        <div style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <PatientInfoCard readOnly={false} />
                         </div>
                     </div>
 
                     {/* Documents Container (Fill remaining space) */}
                     <div className="flex-1 overflow-hidden bg-slate-50/30">
-                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 1.5)' }}>
+                        <div className="h-full" style={{ paddingInline: 'var(--dash-p)', paddingBlock: 'calc(var(--dash-gap) / 2)' }}>
                             <DocumentsContainer />
                         </div>
                     </div>

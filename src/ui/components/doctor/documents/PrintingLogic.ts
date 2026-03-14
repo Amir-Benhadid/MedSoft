@@ -9,6 +9,7 @@ import { generateAbsenceCertificatePDF } from './AbsenceCertificateDocument';
 import { generateReportPDF } from './ReportDocument';
 import { generateBilanPDF } from './BilanDocuments';
 import { generateMedicalRecordPDF } from './MedicalRecordDocument';
+import { generateRadiographyPDF } from './RadiographyDocument';
 
 import { drawTitle, drawDocumentHeader } from './PdfUtils';
 import { DocumentUtils } from './DocumentUtils';
@@ -197,6 +198,7 @@ interface PrintDataOverrides {
 	absence?: {
 		consultationDate: Date;
 	};
+	radiography?: any;
 	customGeneric?: {
 		title: string;
 		text: string;
@@ -269,6 +271,12 @@ export class DocumentPrinter {
 				);
 			case 'medications':
 				return await generateMedicationsPDF(context, patient, options.prescriptionData);
+			case 'radiography':
+				return await generateRadiographyPDF(
+					context,
+					patient,
+					options.printDataOverrides?.radiography
+				);
 			case 'certificatAcuite':
 				// Use visual acuity print data from printDataOverrides
 				// Support both: visualAcuity (flat OD/OG format from DocumentsContainer) and certificatAcuite (legacy eye format)

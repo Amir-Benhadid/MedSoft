@@ -26,7 +26,7 @@ export function UpdateIndicator({ className, mini }: UpdateIndicatorProps) {
 
     if (status === 'downloading') {
         return (
-            <div className={cn("flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium animate-pulse border border-blue-100", className)}>
+            <div className={cn("flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium animate-pulse border border-blue-100", className)}>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span className="hidden sm:inline">Téléchargement {progress.toFixed(0)}%</span>
             </div>
@@ -50,7 +50,7 @@ export function UpdateIndicator({ className, mini }: UpdateIndicatorProps) {
 
     if (status === 'available') {
         return (
-            <div className={cn("flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-100", className)}>
+            <div className={cn("flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium border border-indigo-100", className)}>
                 <DownloadCloud className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Mise à jour disponible</span>
             </div>

@@ -47,11 +47,11 @@ export function ReadOnlyClinicalExamDisplay({ data }: ReadOnlyClinicalExamDispla
 
 function Section({ title, content }: { title: string; content: string }) {
     return (
-        <div className="space-y-2">
+        <div className="space-y-1">
             <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                 {title}
             </div>
-            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap bg-slate-50/50 border border-slate-100 rounded p-3">
+            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap bg-slate-50/50 border border-slate-100 rounded p-2">
                 {content}
             </div>
         </div>

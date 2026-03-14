@@ -24,6 +24,7 @@ import {
     AbsenceCertificateDocument,
     ReportDocument,
     MedicalRecordDocument,
+    DynamicDocumentEditor,
 } from '../../documents';
 import medicalRecords from '../../documents/medical_records_structured.json';
 
@@ -206,6 +207,7 @@ const DocumentFormRenderer: React.FC<DocumentFormRendererProps> = ({
                 </div>
                 {activeDocTab === 'certificatAcuite' && <VisualAcuityCertificateDocument />}
                 {activeDocTab === 'medications' && <MedicationsDocument />}
+                {activeDocTab === 'radiography' && <DynamicDocumentEditor />}
                 {activeDocTab === 'generic' && <GenericDocumentForm />}
             </PersistentEyeDocumentWrapper>
         </FormWrapper>
