@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm test:*)",
+      "Bash(find C:/Work/projects/medsoft-orpc/tests -name *.spec.ts)",
+      "Bash(ls:*)"
+    ]
+  }
+}

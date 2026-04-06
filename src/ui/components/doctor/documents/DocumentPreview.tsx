@@ -12,6 +12,8 @@ import { Card, CardContent } from '@/ui/components/ui/card';
 import { ScrollArea } from '@/ui/components/ui/scroll-area';
 import { cn } from '@/ui/lib/utils';
 import { useDocumentPreview } from './hooks/useDocumentPreview';
+import { DocumentUtils } from './DocumentUtils';
+import medicalRecords from './medical_records_structured.json';
 
 interface DocumentPreviewProps {
     activeDocTab: string;
@@ -43,6 +45,8 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
         workStopPrintData,
         printGenericData,
         tonometrie,
+        printMedicalRecordData,
+        selectedDiversDocument,
     } = useDocumentPreview({ activeDocTab });
 
     // No accordion state needed - preview shows all medications fully expanded
@@ -305,11 +309,41 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                     <div className="mt-1">
                         <Card className="p-3 bg-card rounded-lg border border-border shadow-sm">
                             <CardContent className="p-0 space-y-2">
-                                <p className="text-xs mb-2 font-semibold">Document vierge</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Document avec en-tête patient uniquement - espace libre pour
-                                    écriture manuelle
-                                </p>
+                                {(() => {
+                                    if (selectedDiversDocument && selectedDiversDocument !== 'documentVierge') {
+                                        const selectedRecord = medicalRecords.find((record: any) => record.code === selectedDiversDocument);
+                                        if (selectedRecord) {
+                                            return (
+                                                <div className="space-y-2">
+                                                    <p className="text-xs mb-2 font-semibold uppercase">{selectedRecord.code}</p>
+                                                    <div className="text-xs text-foreground space-y-2">
+                                                        {selectedRecord.header && <p>{DocumentUtils.processText(selectedRecord.header, printMedicalRecordData)}</p>}
+                                                        {selectedRecord.body && <p>{DocumentUtils.processText(selectedRecord.body, printMedicalRecordData)}</p>}
+                                                        {selectedRecord.exam && (
+                                                            <ul className="list-disc pl-4 space-y-1">
+                                                                {selectedRecord.exam.items.map((item: string, i: number) => (
+                                                                    <li key={i}>{DocumentUtils.processText(item, printMedicalRecordData)}</li>
+                                                                ))}
+                                                            </ul>
+                                                        )}
+                                                        {selectedRecord.conclusion && <p className="font-semibold">{DocumentUtils.processText(selectedRecord.conclusion, printMedicalRecordData)}</p>}
+                                                        {selectedRecord.legal_note && <p className="italic text-[10px] text-muted-foreground">{DocumentUtils.processText(selectedRecord.legal_note, printMedicalRecordData)}</p>}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    }
+
+                                    return (
+                                        <>
+                                            <p className="text-xs mb-2 font-semibold">Document vierge</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                Document avec en-tête patient uniquement - espace libre pour
+                                                écriture manuelle
+                                            </p>
+                                        </>
+                                    );
+                                })()}
                             </CardContent>
                         </Card>
                     </div>

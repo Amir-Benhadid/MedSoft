@@ -117,12 +117,17 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             }
 
             // Logic 3: Create NEW consultation with DETECTED type
-            return await orpcClient.consultations.create({
+            const newConsultation = await orpcClient.consultations.create({
                 patient_id: patientId,
                 date: getLocalISOString(),
                 type: detectedType,
                 status: 'pending',
             });
+
+            // IMPORTANT: Invalidate history so it appears in the list immediately
+            queryClient.invalidateQueries({ queryKey: ['consultations', patientId] });
+
+            return newConsultation;
         },
         enabled: !!patientId,
         staleTime: 5 * 60 * 1000,
@@ -183,7 +188,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
 
         // Initial Store Load (only once when we find our target consultation)
         // Or if the consultationId matches (explicit switch)
-        if (consultationData && (consultationData.id === currentConsultationId || consultationData.id === consultationId) && consultationData.id !== loadedConsultationId) {
+        if (consultationData && !isHistoryLoading && (consultationData.id === currentConsultationId || consultationData.id === consultationId) && consultationData.id !== loadedConsultationId) {
             console.log("Loading fresh consultation data into store", consultationData.id);
 
             // Find previous consultation to carry over fields for new consultations
@@ -216,7 +221,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             // Also sync state ID if differ
             if (currentConsultationId !== consultationData.id) setCurrentConsultationId(consultationData.id);
         }
-    }, [consultationData, currentConsultationId, loadConsultation, loadedConsultationId, patient, consultationId, history]);
+    }, [consultationData, currentConsultationId, loadConsultation, loadedConsultationId, patient, consultationId, history, isHistoryLoading]);
 
     // F3 Shortcut
     useEffect(() => {

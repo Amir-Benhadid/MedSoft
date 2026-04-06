@@ -68,59 +68,6 @@ const LINE_HEIGHTS = {
 	header: 18,
 };
 
-// Helper: Replace placeholders in text
-const processText = (text: string, printData?: MedicalRecordPrintData) => {
-	if (!text || !printData) return text;
-	let processed = text;
-
-	// Handle {{fill ...}} pattern
-	// First check simple keys in printData
-	Object.keys(printData).forEach(key => {
-		// Exact match for simple placeholders if any
-		// But the new schema uses specific placeholder list strings mostly for input generation
-		// The text usually contains {{fill ...}} which we need to parse or map
-	});
-
-	// For specific placeholders defined in the text like {{fill from EyeData: visualAcuity_OD}}
-	// We will try to replace them with values from printData if the key matches a sanitized version
-	// OR if we map specific placeholder patterns to printData keys.
-
-	// Strategy: The printData keys are derived from the 'placeholders' array in the JSON.
-	// We need to map the patterns in the text to these keys.
-
-	// Common replacements based on potentially known patterns:
-	const replacements: Record<string, string> = {
-		'{{fill from EyeData: visualAcuity_OD}}': printData['EyeData.visualAcuity_OD'] || '______',
-		'{{fill from EyeData: visualAcuity_OG}}': printData['EyeData.visualAcuity_OG'] || '______',
-		'{{fill number between 1 and 4}}': printData['retinopathie_stade'] || '___',
-		'{{fill: droit/gauche}}': printData['oeil_droit_gauche'] || '______', // generic side
-		'{{fill age}}': printData['age'] || '___',
-		'{{fill antecedents}}': printData['antecedents'] || '____________________',
-		'{{fill date}}': printData['date_reprise'] || '___/___/______',
-		'{{fill indication}}': printData['indication'] || '____________________',
-		'{{fill: droite/gauche}}': printData['cote_droite_gauche'] || '______',
-		'(voir diagnostic)': printData['diagnostic'] ? `(${printData['diagnostic']})` : '(voir diagnostic)',
-		'(voir ATCD)': printData['ATCD'] ? `(${printData['ATCD']})` : '(voir ATCD)',
-	};
-
-	// Apply known replacements
-	Object.entries(replacements).forEach(([pattern, value]) => {
-		processed = processed.split(pattern).join(value);
-	});
-
-	// Also try to replace direct keys if they exist in curly braces similar to previous logic
-	// e.g. if user manually added {{diagnostic}}
-	if (printData) {
-		Object.keys(printData).forEach(key => {
-			const bracketPattern = `{{${key}}}`;
-			if (processed.includes(bracketPattern)) {
-				processed = processed.split(bracketPattern).join(printData[key]);
-			}
-		});
-	}
-
-	return processed;
-};
 
 // PDF Generation Function
 export const generateMedicalRecordPDF = async (
@@ -141,7 +88,7 @@ export const generateMedicalRecordPDF = async (
 	let y = drawTitle(context, displayTitle, drawDocumentHeader(context, patient, DocumentUtils.calculateAge));
 
 	const drawWrappedText = (text: string, size: number = TEXT_SIZES.normal, font = helvetica, indent = 0) => {
-		const processedText = processText(text, printData);
+		const processedText = DocumentUtils.processText(text, printData);
 		const availableWidth = width - LEFT_MARGIN - RIGHT_MARGIN - indent + 20;
 		const lines = DocumentUtils.splitTextIntoLinesOptimized(processedText, availableWidth);
 		lines.forEach(line => {
@@ -188,7 +135,7 @@ export const generateMedicalRecordPDF = async (
 
 	// Indication (for CNAS mainly)
 	if (medicalRecord.indication) {
-		const indicationText = `Indication : ${processText(medicalRecord.indication, printData)}`;
+		const indicationText = `Indication : ${DocumentUtils.processText(medicalRecord.indication, printData)}`;
 		drawWrappedText(indicationText);
 		y -= 10;
 	}
@@ -392,12 +339,12 @@ const MedicalRecordDocument: React.FC<MedicalRecordDocumentProps> = ({
 					Aperçu du contenu
 				</h4>
 				<div className="text-xs text-slate-600 leading-relaxed space-y-2 font-serif">
-					{medicalRecord.header && <p>{processText(medicalRecord.header, printData)}</p>}
-					{medicalRecord.body && <p>{processText(medicalRecord.body, printData)}</p>}
+					{medicalRecord.header && <p>{DocumentUtils.processText(medicalRecord.header, printData)}</p>}
+					{medicalRecord.body && <p>{DocumentUtils.processText(medicalRecord.body, printData)}</p>}
 					{medicalRecord.exam && (
 						<ul className="list-disc pl-4 space-y-1">
 							{medicalRecord.exam.items.map((item, i) => (
-								<li key={i}>{processText(item, printData)}</li>
+								<li key={i}>{DocumentUtils.processText(item, printData)}</li>
 							))}
 						</ul>
 					)}

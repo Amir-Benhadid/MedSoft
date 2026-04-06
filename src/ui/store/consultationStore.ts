@@ -37,6 +37,9 @@ export const mergeTags = (newSourceTags: string, previousSourceTags: string, cur
     return merged.join(', ');
 };
 
+let lastContactLensSyncIdRight = 0;
+let lastContactLensSyncIdLeft = 0;
+
 const syncDocuments = (set: any, get: any, prevState: any) => {
     const newState = get();
     const newOverrides = { ...newState.documentOverrides };
@@ -176,6 +179,8 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
         printStates.printVisualAcuityData = printVisualAcuityData;
         unified.printStates = printStates;
         newOverrides.unifiedDocumentsState = unified;
+        newOverrides.glasses = printGlassesData;
+        newOverrides.visualAcuity = printVisualAcuityData;
 
         set({ documentOverrides: newOverrides });
     }
@@ -199,12 +204,18 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
             const type = newEye.contactLensType || 'Sphérique';
             const isSpherical = type === 'Sphérique';
 
+            // Use sequence tracking to prevent stale resolves
+            const currentSyncId = eye === 'right' ? ++lastContactLensSyncIdRight : ++lastContactLensSyncIdLeft;
+
             lentilleService.convertToContactLens(
                 newEye.sph || '',
                 newEye.cyl || '',
                 newEye.axis || '',
                 type
             ).then(converted => {
+                const latestSyncId = eye === 'right' ? lastContactLensSyncIdRight : lastContactLensSyncIdLeft;
+                if (currentSyncId !== latestSyncId) return; // Prevent stale overwrites
+
                 const currentStoreState = get();
                 const latestOverrides = { ...currentStoreState.documentOverrides };
                 const latestUnified = latestOverrides.unifiedDocumentsState ? { ...latestOverrides.unifiedDocumentsState } : { printStates: {} };
@@ -240,6 +251,7 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
                 latestPrintStates.printContactLensesData = latestContactsData;
                 latestUnified.printStates = latestPrintStates;
                 latestOverrides.unifiedDocumentsState = latestUnified;
+                latestOverrides.contacts = latestContactsData;
 
                 set({ documentOverrides: latestOverrides });
             });

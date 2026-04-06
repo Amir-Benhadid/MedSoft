@@ -31,7 +31,7 @@ export class ConsultationRepository {
         return getDatabase();
     }
 
-    constructor() {}
+    constructor() { }
 
     /**
      * Checks if a table exists in the database.
@@ -226,7 +226,21 @@ export class ConsultationRepository {
 
             const transaction = this.db.transaction(() => {
                 try {
+                    // DEFENSIVE: Before creating, check if a pending consultation for this patient already exists today
+                    // This prevents double-creation if the frontend query retries rapidly.
                     if (hasConsultations && !isSecretary) {
+                        const today = (data.date || now).split('T')[0];
+                        const existing = this.db.prepare(`
+                            SELECT id FROM consultations 
+                            WHERE patient_id = ? AND date LIKE ? AND status = 'pending' AND type = ?
+                            LIMIT 1
+                        `).get(data.patient_id, `${today}%`, data.type || 'Consultation') as any;
+
+                        if (existing) {
+                            console.log(`⚠️ Prevented duplicate consultation creation for ${data.patient_id}. Returning existing: ${existing.id}`);
+                            return existing.id; // Corrected: Transaction should return the ID for the caller to fetch
+                        }
+
                         this.db.prepare(`
                             INSERT INTO consultations (
                                 id, patient_id, date, type, status,
@@ -395,12 +409,13 @@ export class ConsultationRepository {
                         );
                     }
                 }
+                return id;
             });
 
-            transaction();
+            const finalId = transaction() as string;
             if (isSecretary) {
                 return {
-                    id: id,
+                    id: finalId,
                     patient_id: data.patient_id,
                     date: data.date,
                     type: data.type || 'Consultation',
@@ -417,7 +432,7 @@ export class ConsultationRepository {
                     prescription: { treatments: [], notes: '' }
                 };
             }
-            return this.findById(id);
+            return this.findById(finalId);
         } catch (error: any) {
             console.error('Failed to create consultation:', error);
             if (error.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
@@ -533,7 +548,7 @@ export class ConsultationRepository {
                             now,
                             existingInvoice.id
                         );
-                        } else {
+                    } else {
                         const invoiceId = randomUUID();
                         let patientId = updates.patient_id;
                         if (!patientId && existingInvoice) {

@@ -96,6 +96,7 @@ export function useDocumentPreview({ activeDocTab }: UseDocumentPreviewOptions) 
         printControlFlags,
         printGenericData,
         selectedDiversDocument,
+        printMedicalRecordData,
     } = useDocumentsState({
         prescriptionData,
         rightEyeData: rightEye,
@@ -181,6 +182,7 @@ export function useDocumentPreview({ activeDocTab }: UseDocumentPreviewOptions) 
         workStopPrintData: printWorkStopData,
         printGenericData,
         selectedDiversDocument,
+        printMedicalRecordData,
         tonometrie,
     }), [
         patient,
@@ -201,6 +203,7 @@ export function useDocumentPreview({ activeDocTab }: UseDocumentPreviewOptions) 
         printWorkStopData,
         printGenericData,
         selectedDiversDocument,
+        printMedicalRecordData,
         tonometrie,
     ]);
 }

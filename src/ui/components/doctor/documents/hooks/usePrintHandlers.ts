@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { DocumentPrinter } from '../PrintingLogic';
 import { useConsultationStore } from '@/ui/store/consultationStore';
+import { useQueryClient } from '@tanstack/react-query';
 import genericRecords from '../medical_records_structured.json';
 
 export const usePrintHandlers = ({
     activeDocTab,
 }: any = {}) => {
     const patient = useConsultationStore(state => state.patient);
+    const queryClient = useQueryClient();
 
     const [isPrinting, setIsPrinting] = useState(false);
     const [isPreviewing, setIsPreviewing] = useState(false);
@@ -118,6 +120,13 @@ export const usePrintHandlers = ({
                 : undefined,
         };
 
+        console.group('[PDF Print/Preview] getPrintOptions Debugging');
+        console.log('1. documentType:', documentType);
+        console.log('2. original leftEye/rightEye from store:', { left: state.leftEye, right: state.rightEye });
+        console.log('3. overrides.glasses explicitly:', overrides.glasses);
+        console.log('4. printDataOverrides extracted:', printOptions.printDataOverrides);
+        console.groupEnd();
+
         return { documentType, patient, printOptions };
     }, [activeDocTab, patient]);
 
@@ -128,6 +137,7 @@ export const usePrintHandlers = ({
         try {
             const { documentType, patient: patientData, printOptions } = getPrintOptions();
             if (patientData) {
+                console.log(`[PDF Preview Triggered] Generating for: ${documentType}`, { patientData, printOptions });
                 const url = await DocumentPrinter.generatePreviewUrl(documentType, patientData, printOptions);
                 setPdfUrl(url);
                 setShowPreview(true);
@@ -146,6 +156,7 @@ export const usePrintHandlers = ({
         try {
             const { documentType, patient: patientData, printOptions } = getPrintOptions();
             if (patientData) {
+                console.log(`[PDF Print Triggered] Generating for: ${documentType}`, { patientData, printOptions });
                 await DocumentPrinter.printDocument(documentType, patientData, printOptions);
 
                 // Mark as printed in the database
@@ -163,7 +174,6 @@ export const usePrintHandlers = ({
                         state.setDocumentOverride('printed', newPrinted);
 
                         // Update on server
-                        // Dynamic import to avoid circular dependencies if any, though standard import is fine usually.
                         const { orpcClient } = await import('@/ui/lib/orpc/client');
                         await orpcClient.consultations.update({
                             id: consultationId,
@@ -171,6 +181,9 @@ export const usePrintHandlers = ({
                                 documents_data: newDocs
                             }
                         });
+
+                        // Invalidate cache immediately so that other screens (like history) show it as printed
+                        queryClient.invalidateQueries({ queryKey: ['consultations'] });
                     }
                 }
             }
