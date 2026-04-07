@@ -478,7 +478,7 @@ const CompactPrescriptionForm = ({
         setPrescriptionData(prev => {
             return {
                 ...prev,
-                treatments: [newTreatment, ...prev.treatments]
+                treatments: [newTreatment, ...(prev?.treatments || [])]
             };
         });
         setEditingIndex(0); // make it editable immediately

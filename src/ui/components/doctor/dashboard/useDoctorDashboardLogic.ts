@@ -53,16 +53,18 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     }, [reset]);
 
     // 1. Fetch Today's or Selected Consultation
+    // We use a query to find the correct consultation to display
     const { data: consultationData, isLoading: isConsultationLoading } = useQuery({
         queryKey: ['consultations', 'active', patientId, mode, consultationId, action],
         queryFn: async () => {
-            console.log(`🔍 useDoctorDashboardLogic: Fetching consultation (patientId: ${patientId}, consultationId: ${consultationId}, action: ${action})`);
+            console.log(`🔍 useDoctorDashboardLogic: Locating consultation (patientId: ${patientId}, consultationId: ${consultationId}, action: ${action})`);
             
-            // Logic 0: If specific ID requested, fetch that
+            // Logic 0: If specific ID requested in URL, fetch that strictly
             if (consultationId) {
                 const all = await orpcClient.consultations.listByPatient({ patientId });
                 const found = all.find(c => c.id === consultationId);
                 if (found) return found;
+                console.warn("⚠️ Consultation ID in URL not found, falling back...");
             }
 
             const consultations = await orpcClient.consultations.listByPatient({ patientId });
@@ -70,23 +72,33 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             const { start, end } = getDayRangeEncoded(today);
 
             // Logic 1: Find existing today's consultation (PRIORITY)
-            // Even in 'view' mode, if there's a pending consultation for today, we should probably show it
+            // We search for ANY pending consultation for this patient today.
+            // If we are in 'radiography' mode, we look for that type first, but fallback to standard if it's all we have.
             const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
-            const specificToday = consultations.find(c => {
+            
+            // Search for EXACT match (type + pending)
+            let specificToday = consultations.find(c => {
                 const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
                 const isCorrectType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
-                // Prioritize 'pending' ones if searching for today's active work
                 return isWithinRange && isCorrectType && c.status === 'pending';
             });
+
+            // Fallback: Search for ANY pending match today regardless of type if we are in 'consultation' action
+            if (!specificToday && action === 'consultation') {
+                specificToday = consultations.find(c => {
+                    const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
+                    return isWithinRange && c.status === 'pending';
+                });
+            }
 
             if (specificToday) {
                 console.log("✅ Found pending consultation for today:", specificToday.id);
                 return specificToday;
             }
 
-            // Logic 2: Auto-create if action is 'consultation' (from patient list)
+            // Logic 2: Auto-create if action is 'consultation' (triggered from patient list)
             if (action === 'consultation') {
-                console.log("🚀 Auto-creating consultation from list action...");
+                console.log("🚀 Auto-creating consultation record...");
                 try {
                     const newConsultation = await orpcClient.consultations.create({
                         patient_id: patientId,
@@ -100,7 +112,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                         return null;
                     }
 
-                    // Invalidate list so it shows up in history immediately
+                    // Success: Invalidate relevant queries
                     queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
                     return newConsultation;
                 } catch (err) {
@@ -109,17 +121,17 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                 }
             }
 
-            // Logic 3: Fallback to the MOST RECENT consultation in history (default for 'view' action)
+            // Logic 3: Fallback to the MOST RECENT consultation in history (for 'view' mode)
             if (consultations.length > 0) {
-                console.log("ℹ️ View mode: Falling back to most recent history entry.");
+                console.log("ℹ️ View mode fallback: Most recent history entry.");
                 return consultations[0];
             }
 
-            console.log("ℹ️ No consultation found for this patient.");
-            return null; // No consultation exists yet
+            console.log("ℹ️ No consultation record found.");
+            return null;
         },
         enabled: !!patientId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 5000, // Reduced staleTime to ensure we don't work with old results during rapid clicks
         refetchOnWindowFocus: false,
     });
 
@@ -210,12 +222,27 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         }
     }, [isHistoryLoading, history, hasInitializedHistory]);
 
-    // Determine current ID and Safe Sync
+    // 4. Synchronization and URL Locking
     useEffect(() => {
         // Init with fetched data
         if (!currentConsultationId && consultationData) {
             console.log("📍 Syncing currentConsultationId with fetched data:", consultationData.id);
             setCurrentConsultationId(consultationData.id);
+
+            // CRITICAL: If we are viewing a consultation but the ID is not in the URL,
+            // we must update the navigation state. This "locks" the session and 
+            // prevents Logic 2 (Auto-create) from re-running on refetches.
+            if (!consultationId) {
+                console.log("🔗 Locking URL to consultation ID:", consultationData.id);
+                navigate({
+                    search: (prev: any) => ({
+                        ...prev,
+                        consultationId: consultationData.id,
+                        action: 'consultation' // Ensure we stay in consultation mode
+                    }),
+                    replace: true // Use replace to not pollute browser history
+                });
+            }
         }
 
         // Initial Store Load

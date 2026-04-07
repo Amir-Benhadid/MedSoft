@@ -107,9 +107,9 @@ export const useDocumentsState = ({
     const unified = documentOverrides.unifiedDocumentsState || {};
     const pStates = unified.printStates || {};
 
-    const createSetter = (key: string, isPrintState: boolean, legacyKey?: string) => (updater: any) => {
+    const createSetter = (key: string, isPrintState: boolean, legacyKey?: string, defaultValue?: any) => (updater: any) => {
         const safePrev = documentOverrides.unifiedDocumentsState || {};
-        const currentState = isPrintState ? (safePrev.printStates?.[key] || {}) : (safePrev[key] || {});
+        const currentState = isPrintState ? (safePrev.printStates?.[key] || defaultValue || {}) : (safePrev[key] || defaultValue || {});
         const newState = typeof updater === 'function' ? updater(currentState) : updater;
 
         const nextUnified = { ...safePrev };
@@ -187,40 +187,40 @@ export const useDocumentsState = ({
 
     const returnObj = {
         bilanFields,
-        setBilanFields: createSetter('bilanFields', false, 'bilan'),
+        setBilanFields: createSetter('bilanFields', false, 'bilan', DEFAULT_BILAN_FIELDS),
         
         customFieldInputs: unified.customFieldInputs || { bilanPreOp: '', bilanDiabete: '', bilanInflammatoire: '', bilanUveite: '' },
-        setCustomFieldInputs: createSetter('customFieldInputs', false),
+        setCustomFieldInputs: createSetter('customFieldInputs', false, undefined, { bilanPreOp: '', bilanDiabete: '', bilanInflammatoire: '', bilanUveite: '' }),
         
         printControlFlags,
-        setPrintControlFlags: createSetter('printControlFlags', false, 'printControlFlags'),
+        setPrintControlFlags: createSetter('printControlFlags', false, 'printControlFlags', DEFAULT_PRINT_CONTROL_FLAGS),
 
         selectedDiversDocument: pStates.selectedDiversDocument || 'documentVierge',
-        setSelectedDiversDocument: createSetter('selectedDiversDocument', true),
+        setSelectedDiversDocument: createSetter('selectedDiversDocument', true, undefined, 'documentVierge'),
 
         printPrescriptionData: pStates.printPrescriptionData || prescriptionData,
-        setPrintPrescriptionData: createSetter('printPrescriptionData', true, 'printPrescriptionData'),
+        setPrintPrescriptionData: createSetter('printPrescriptionData', true, 'printPrescriptionData', prescriptionData),
 
         printGlassesData,
-        setPrintGlassesData: createSetter('printGlassesData', true, 'glasses'),
+        setPrintGlassesData: createSetter('printGlassesData', true, 'glasses', printGlassesData),
 
         printContactLensesData,
-        setPrintContactLensesData: createSetter('printContactLensesData', true, 'contacts'),
+        setPrintContactLensesData: createSetter('printContactLensesData', true, 'contacts', printContactLensesData),
 
         printVisualAcuityData,
-        setPrintVisualAcuityData: createSetter('printVisualAcuityData', true, 'visualAcuity'),
+        setPrintVisualAcuityData: createSetter('printVisualAcuityData', true, 'visualAcuity', printVisualAcuityData),
 
         printWorkStopData,
-        setPrintWorkStopData: createSetter('printWorkStopData', true, 'workStop'),
+        setPrintWorkStopData: createSetter('printWorkStopData', true, 'workStop', printWorkStopData),
 
         printAbsenceData,
-        setPrintAbsenceData: createSetter('printAbsenceData', true, 'absence'),
+        setPrintAbsenceData: createSetter('printAbsenceData', true, 'absence', printAbsenceData),
 
         printMedicalRecordData: pStates.printMedicalRecordData || {},
-        setPrintMedicalRecordData: createSetter('printMedicalRecordData', true),
+        setPrintMedicalRecordData: createSetter('printMedicalRecordData', true, undefined, {}),
 
         printGenericData: pStates.printGenericData || { title: '', text: '' },
-        setPrintGenericData: createSetter('printGenericData', true, 'customGeneric'),
+        setPrintGenericData: createSetter('printGenericData', true, 'customGeneric', { title: '', text: '' }),
     };
 
     // Provide useMemo wrap to guarantee referential equality if we need it

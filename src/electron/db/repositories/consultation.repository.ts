@@ -235,19 +235,19 @@ export class ConsultationRepository {
 
             const transaction = this.db.transaction(() => {
                 try {
-                    // DEFENSIVE: Before creating, check if a pending consultation for this patient already exists today
-                    // This prevents double-creation if the frontend query retries rapidly.
                     if (hasConsultations && !isSecretary) {
+                        // DEFENSIVE: Before creating, check if a pending consultation for this patient already exists today
+                        // This prevents double-creation if the frontend query retries rapidly or type-detection shifts.
                         const today = (data.date || now).split('T')[0];
                         const existing = this.db.prepare(`
                             SELECT id FROM consultations 
-                            WHERE patient_id = ? AND date LIKE ? AND status = 'pending' AND type = ?
+                            WHERE patient_id = ? AND date LIKE ? AND status = 'pending'
                             LIMIT 1
-                        `).get(data.patient_id, `${today}%`, data.type || 'Consultation') as any;
+                        `).get(data.patient_id, `${today}%`) as any;
 
                         if (existing) {
                             console.log(`⚠️ Prevented duplicate consultation creation for ${data.patient_id}. Returning existing: ${existing.id}`);
-                            return existing.id; // Corrected: Transaction should return the ID for the caller to fetch
+                            return existing.id;
                         }
 
                         this.db.prepare(`
@@ -326,8 +326,7 @@ export class ConsultationRepository {
 
                     if (data.payment) {
                         const invoiceId = randomUUID();
-                        const isGratuit = data.payment.amount === 0;
-                        const paidAmount = 0; // Keeping legacy behavior
+                        const paidAmount = 0;
 
                         this.db.prepare(`
                             INSERT INTO invoices (
@@ -355,7 +354,7 @@ export class ConsultationRepository {
                         }
 
                         if (schedulingData && schedulingData.consultation_type_id) {
-                            const typeData = this.db.prepare('SELECT amount, label FROM consultation_types WHERE id = ?').get(schedulingData.consultation_type_id) as any;
+                            const typeData = this.db.prepare('SELECT amount FROM consultation_types WHERE id = ?').get(schedulingData.consultation_type_id) as any;
 
                             if (typeData) {
                                 const invoiceId = randomUUID();
@@ -386,37 +385,37 @@ export class ConsultationRepository {
                             WHERE patient_id = ? AND state IN ('in_consultation', 'waiting', 'in_progress')
                         `).run(targetState, now, data.patient_id);
                     }
+
+                    if (!isSecretary) {
+                        let oph_ants = data.antecedents?.oph_ants;
+                        let gen_ants = data.antecedents?.gen_ants;
+
+                        if (data.clinical_exam) {
+                            if (data.clinical_exam.ophthalmologicalHistory !== undefined) {
+                                oph_ants = data.clinical_exam.ophthalmologicalHistory;
+                            }
+                            if (data.clinical_exam.generalMedicalHistory !== undefined) {
+                                gen_ants = data.clinical_exam.generalMedicalHistory;
+                            }
+                        }
+
+                        if (oph_ants !== undefined || gen_ants !== undefined) {
+                            this.db.prepare(`
+                                UPDATE patients SET 
+                                    oph_ants = COALESCE(?, oph_ants), 
+                                    gen_ants = COALESCE(?, gen_ants), 
+                                    updated_at = ?
+                                WHERE id = ?
+                            `).run(
+                                oph_ants === undefined ? null : oph_ants,
+                                gen_ants === undefined ? null : gen_ants,
+                                now,
+                                data.patient_id
+                            );
+                        }
+                    }
                 } catch (err) {
                     throw err;
-                }
-
-                if (!isSecretary) {
-                    let oph_ants = data.antecedents?.oph_ants;
-                    let gen_ants = data.antecedents?.gen_ants;
-
-                    if (data.clinical_exam) {
-                        if (data.clinical_exam.ophthalmologicalHistory !== undefined) {
-                            oph_ants = data.clinical_exam.ophthalmologicalHistory;
-                        }
-                        if (data.clinical_exam.generalMedicalHistory !== undefined) {
-                            gen_ants = data.clinical_exam.generalMedicalHistory;
-                        }
-                    }
-
-                    if (oph_ants !== undefined || gen_ants !== undefined) {
-                        this.db.prepare(`
-                            UPDATE patients SET 
-                                oph_ants = COALESCE(?, oph_ants), 
-                                gen_ants = COALESCE(?, gen_ants), 
-                                updated_at = ?
-                            WHERE id = ?
-                        `).run(
-                            oph_ants === undefined ? null : oph_ants,
-                            gen_ants === undefined ? null : gen_ants,
-                            now,
-                            data.patient_id
-                        );
-                    }
                 }
                 return id;
             });
