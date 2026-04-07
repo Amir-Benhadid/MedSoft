@@ -21,6 +21,7 @@ import { DocumentPrinter } from "../../doctor/documents/PrintingLogic";
 import { Printer, Loader2, X, ChevronDown } from "lucide-react";
 import { cn } from "@/ui/lib/utils";
 import { useConfig } from "@/ui/contexts/ConfigContext";
+import { getLocalTodayDate, getLocalISOString } from "@/ui/lib/time";
 import {
     SPHERE_VALUES,
     CYLINDER_VALUES,
@@ -74,7 +75,7 @@ function CompactSelect({ value, onChange, options, disabled, placeholder, classN
 export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientName, patient, checkDirtyRef }: Omit<ClinicalDataSheetProps, 'open' | 'onOpenChange'> & { onCancel: () => void, onSuccess: () => void, checkDirtyRef?: React.MutableRefObject<(() => Promise<boolean>) | null> }) {
     const { appMode } = useConfig();
     const queryClient = useQueryClient();
-    const today = format(new Date(), 'yyyy-MM-dd');
+    const today = getLocalTodayDate();
     const { toast } = useToast();
     const [isPrinting, setIsPrinting] = useState(false);
 
@@ -168,7 +169,7 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
                 // Create
                 await orpcClient.consultations.create({
                     patient_id: patientId,
-                    date: today,
+                    date: getLocalISOString(),
                     type: "Consultation",
                     status: "pending",
                     ...payload

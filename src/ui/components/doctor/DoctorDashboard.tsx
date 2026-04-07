@@ -16,10 +16,11 @@ import { useState } from 'react';
 interface DoctorDashboardProps {
     patientId: string;
     consultationId?: string;
+    action?: 'view' | 'consultation';
     onBack?: () => void;
 }
 
-export default function DoctorDashboard({ patientId, consultationId, onBack }: DoctorDashboardProps) {
+export default function DoctorDashboard({ patientId, consultationId, action, onBack }: DoctorDashboardProps) {
     const {
         patient,
         isPatientLoading,
@@ -35,14 +36,16 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
         history,
         currentConsultationId,
         handleSwitchConsultation,
-        isActiveConsultationToday
-    } = useDoctorDashboardLogic({ patientId, onBack, consultationId });
+        isActiveConsultationToday,
+        hasTodayConsultation,
+        createConsultationMutation
+    } = useDoctorDashboardLogic({ patientId, onBack, consultationId, action });
 
     const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
 
     const nextAppointmentData = useConsultationStore(state => state.clinicalExam.nextAppointment);
 
-    if (isPatientLoading || (isConsultationLoading && !consultationData)) {
+    if (isPatientLoading || isConsultationLoading || createConsultationMutation.isPending) {
         return (
             <div className="flex items-center justify-center h-full">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -125,6 +128,8 @@ export default function DoctorDashboard({ patientId, consultationId, onBack }: D
                 consultations={history}
                 currentConsultationId={currentConsultationId}
                 onSelectConsultation={handleSwitchConsultation}
+                onCreateConsultation={() => createConsultationMutation.mutate()}
+                showCreate={!hasTodayConsultation}
             />
 
             {/* Payment History Sheet */}

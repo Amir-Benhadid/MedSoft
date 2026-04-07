@@ -10,8 +10,12 @@ import { useCreatePatient, useUpdatePatient, usePatient, Patient } from '@/ui/ho
 import { PatientSelector } from '@/ui/components/patients/PatientSelector';
 import { PatientForm } from '@/ui/components/patients/PatientForm';
 import {
-    Search, UserPlus, Clock, FileText, X, Save
+    Search, UserPlus, Clock, FileText, X, Save, Activity
 } from 'lucide-react';
+import { useSheetStack } from '@/ui/components/ui/sheet-stack';
+import { ClinicalDataContent } from '@/ui/components/secretary/patient/ClinicalDataSheet';
+import { SecretaryDocumentsContent } from '@/ui/components/secretary/sheet/SecretaryDocumentsSheet';
+import { useRef } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
 
@@ -42,10 +46,73 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
     const createWaitlistEntry = useCreateWaitlistEntry();
     const createPatient = useCreatePatient();
     const updatePatient = useUpdatePatient();
+    const { openSheet, closeSheet, sheets } = useSheetStack();
+
+    // Refs for dirty checking active sheets
+    const clinicalDirtyRef = useRef<(() => Promise<boolean>) | null>(null);
+    const activeSheetRef = useRef<'clinical' | 'documents' | null>(null);
 
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [view, setView] = useState<'selection' | 'form' | 'entry' | 'edit-patient'>('selection');
     const { appMode } = useConfig();
+
+    const handleOpenClinicalData = async () => {
+        if (!selectedPatient) return;
+
+        // Clean up documents if open
+        if (activeSheetRef.current === 'documents') {
+            closeSheet('documents');
+        } else if (activeSheetRef.current === 'clinical') {
+            return; // Already open
+        }
+
+        activeSheetRef.current = 'clinical';
+        openSheet(
+            <ClinicalDataContent
+                patientId={selectedPatient.id}
+                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
+                onCancel={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                onSuccess={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                checkDirtyRef={clinicalDirtyRef}
+            />,
+            { id: 'clinical-data', width: 500, title: 'Données Cliniques', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
+
+    const handleOpenDocuments = async () => {
+        if (!selectedPatient) return;
+
+        // Check if clinical is dirty before switching
+        if (activeSheetRef.current === 'clinical') {
+            if (clinicalDirtyRef.current) {
+                const canClose = await clinicalDirtyRef.current();
+                if (!canClose) return; // User cancelled
+            }
+            closeSheet('clinical-data');
+        } else if (activeSheetRef.current === 'documents') {
+            return;
+        }
+
+        activeSheetRef.current = 'documents';
+        openSheet(
+            <SecretaryDocumentsContent
+                patientId={selectedPatient.id}
+                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
+                patient={selectedPatient}
+                onClose={() => {
+                    closeSheet('documents');
+                    activeSheetRef.current = null;
+                }}
+            />,
+            { id: 'documents', width: 500, title: 'Documents', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
     const { data: consultationTypes = [] } = useConsultationTypes();
 
     const { register, handleSubmit, reset, control, setValue, watch, formState: { errors } } = useForm<WaitlistEntryFormValues>({
@@ -158,8 +225,19 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
     );
 
     return (
-        <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <SheetContent side="right" className="w-full sm:max-w-[480px] overflow-hidden p-0 flex flex-col">
+        <Sheet open={isOpen} onOpenChange={(open) => {
+            if (!open) {
+                if (sheets.length > 0) return;
+                onClose();
+            }
+        }}>
+            <SheetContent 
+                side="right" 
+                className="w-full sm:max-w-[480px] overflow-hidden p-0 flex flex-col"
+                onInteractOutside={(e) => {
+                    if (sheets.length > 0) e.preventDefault();
+                }}
+            >
                 {/* Header */}
                 <SheetHeader className="px-4 py-3 border-b bg-gradient-to-r from-blue-50 to-indigo-50 sticky top-0 z-10 backdrop-blur-sm flex-none">
                     <SheetTitle className="text-lg font-bold flex items-center gap-2 text-blue-900">
@@ -218,6 +296,30 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                                 onChangePatient={() => setView('selection')}
                                 onEdit={() => setView('edit-patient')}
                             />
+
+                            {/* Quick Actions Grid */}
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-auto flex-col gap-1 py-1.5 border-dashed border-teal-200 bg-teal-50/30 hover:bg-teal-50 text-teal-700"
+                                    onClick={handleOpenClinicalData}
+                                >
+                                    <Activity className="w-4 h-4" />
+                                    <span className="text-[10px] font-medium">Données Cliniques</span>
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-auto flex-col gap-1 py-1.5 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700"
+                                    onClick={handleOpenDocuments}
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    <span className="text-[10px] font-medium">Documents</span>
+                                </Button>
+                            </div>
 
                             {/* Dilation Control */}
                             {appMode !== 'secretary' && <CompactDilationControl control={control} />}

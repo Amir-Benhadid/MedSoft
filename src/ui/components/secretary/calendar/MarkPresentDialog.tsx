@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/components/ui/dialog";
 import { Button } from "@/ui/components/ui/button";
 import { Label } from "@/ui/components/ui/label";
@@ -10,10 +9,13 @@ import { Badge } from "@/ui/components/ui/badge";
 import { Appointment, useMarkPresent, useToggleDilation, useUpdateAppointment } from "@/ui/hooks/useAppointments";
 import { usePatient, useUpdatePatient } from "@/ui/hooks/usePatients";
 import { useConfig } from "@/ui/contexts/ConfigContext";
-import { Eye, Activity, Save, CheckCircle, Droplet } from "lucide-react";
+import { Eye, Activity, Save, CheckCircle, Droplet, FileText } from "lucide-react";
 import { getLocalISOString } from "@/ui/lib/time";
 import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
 import { cn } from "@/ui/lib/utils";
+import { useSheetStack } from "@/ui/components/ui/sheet-stack";
+import { ClinicalDataContent } from "@/ui/components/secretary/patient/ClinicalDataSheet";
+import { SecretaryDocumentsContent } from "@/ui/components/secretary/sheet/SecretaryDocumentsSheet";
 
 interface MarkPresentDialogProps {
     isOpen: boolean;
@@ -49,6 +51,68 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
     const [dilationStatus, setDilationStatus] = useState<string>("");
     const [consultationTypeId, setConsultationTypeId] = useState<string>("1");
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { openSheet, closeSheet, sheets } = useSheetStack();
+    const clinicalDirtyRef = useRef<(() => Promise<boolean>) | null>(null);
+    const activeSheetRef = useRef<'clinical' | 'documents' | null>(null);
+
+    const handleOpenClinicalData = async () => {
+        if (!patient) return;
+
+        // Clean up documents if open
+        if (activeSheetRef.current === 'documents') {
+            closeSheet('documents');
+        } else if (activeSheetRef.current === 'clinical') {
+            return; // Already open
+        }
+
+        activeSheetRef.current = 'clinical';
+        openSheet(
+            <ClinicalDataContent
+                patientId={patient.id}
+                patientName={`${patient.surname} ${patient.name}`}
+                onCancel={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                onSuccess={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                checkDirtyRef={clinicalDirtyRef}
+            />,
+            { id: 'clinical-data', width: 500, title: 'Données Cliniques', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
+
+    const handleOpenDocuments = async () => {
+        if (!patient) return;
+
+        // Check if clinical is dirty before switching
+        if (activeSheetRef.current === 'clinical') {
+            if (clinicalDirtyRef.current) {
+                const canClose = await clinicalDirtyRef.current();
+                if (!canClose) return; // User cancelled
+            }
+            closeSheet('clinical-data');
+        } else if (activeSheetRef.current === 'documents') {
+            return;
+        }
+
+        activeSheetRef.current = 'documents';
+        openSheet(
+            <SecretaryDocumentsContent
+                patientId={patient.id}
+                patientName={`${patient.surname} ${patient.name}`}
+                patient={patient}
+                onClose={() => {
+                    closeSheet('documents');
+                    activeSheetRef.current = null;
+                }}
+            />,
+            { id: 'documents', width: 500, title: 'Documents', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
 
     // Sync state with patient data
     useEffect(() => {
@@ -132,8 +196,23 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
     if (!appointment) return null;
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[500px] bg-white">
+        <Dialog open={isOpen} onOpenChange={(open) => {
+            if (!open) {
+                // If any sheet is open in the stack, we don't want to close the dialog
+                // as the user might be clicking on a sheet or its overlay.
+                if (sheets.length > 0) return;
+                onClose();
+            }
+        }}>
+            <DialogContent 
+                className="sm:max-w-[500px] bg-white"
+                onInteractOutside={(e) => {
+                    // Prevent closing the dialog if sheets are open
+                    if (sheets.length > 0) {
+                        e.preventDefault();
+                    }
+                }}
+            >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl">
                         <CheckCircle className="w-6 h-6 text-green-600" />
@@ -221,6 +300,32 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
                             </div>
                         </div>
                     )}
+
+                    {/* Quick Actions Grid */}
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-auto flex-col gap-1 py-3 border-dashed border-teal-200 bg-teal-50/30 hover:bg-teal-50 text-teal-700"
+                            onClick={handleOpenClinicalData}
+                            disabled={isPatientLoading}
+                        >
+                            <Activity className="w-4 h-4" />
+                            <span className="text-[10px] font-medium">Données Cliniques</span>
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-auto flex-col gap-1 py-3 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700"
+                            onClick={handleOpenDocuments}
+                            disabled={isPatientLoading}
+                        >
+                            <FileText className="w-4 h-4" />
+                            <span className="text-[10px] font-medium">Documents</span>
+                        </Button>
+                    </div>
 
                     {/* Antecedents Section */}
                     <div className="space-y-4">

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +17,6 @@ import {
     Phone, MapPin, Eye, Droplet, Activity, Save, X,
     UserPlus, ArrowLeft, Hash, Edit2, ChevronRight
 } from 'lucide-react';
-import { useSheetStack } from '@/ui/components/ui/sheet-stack';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
 
@@ -25,8 +24,6 @@ import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
 import { CompactPatientCard } from '@/ui/components/secretary/calendar/components/CompactPatientCard';
 import { CompactDilationControl } from '@/ui/components/secretary/calendar/components/CompactDilationControl';
 import { CompactAntecedentsSection } from '@/ui/components/secretary/calendar/components/CompactAntecedentsSection';
-import { ClinicalDataContent } from '@/ui/components/secretary/patient/ClinicalDataSheet';
-import { SecretaryDocumentsContent } from '@/ui/components/secretary/sheet/SecretaryDocumentsSheet';
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { getLocalISOString } from '@/ui/lib/time';
 import { cn } from '@/ui/lib/utils';
@@ -64,20 +61,9 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
     const updateAppointment = useUpdateAppointment();
     const createPatient = useCreatePatient();
     const updatePatient = useUpdatePatient();
-    const { openSheet, closeSheet } = useSheetStack();
-
-    // Refs for dirty checking active sheets
-    const clinicalDirtyRef = useRef<(() => Promise<boolean>) | null>(null);
-    const activeSheetRef = useRef<'clinical' | 'documents' | null>(null);
 
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [view, setView] = useState<'selection' | 'form' | 'appointment' | 'edit-patient'>('selection');
-    const { appMode } = useConfig();
-
-    // Restore appointment view if we cancel edit
-    const restoreView = useCallback(() => {
-        setView('appointment');
-    }, []);
 
     const { data: consultationTypes = [] } = useConsultationTypes();
 
@@ -198,64 +184,6 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
         }
     }, [selectedPatient, updatePatient]);
 
-    const handleOpenClinicalData = async () => {
-        if (!selectedPatient) return;
-
-        // Clean up documents if open
-        if (activeSheetRef.current === 'documents') {
-            closeSheet('documents');
-        } else if (activeSheetRef.current === 'clinical') {
-            return; // Already open
-        }
-
-        activeSheetRef.current = 'clinical';
-        openSheet(
-            <ClinicalDataContent
-                patientId={selectedPatient.id}
-                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
-                onCancel={() => {
-                    closeSheet('clinical-data');
-                    activeSheetRef.current = null;
-                }}
-                onSuccess={() => {
-                    closeSheet('clinical-data');
-                    activeSheetRef.current = null;
-                }}
-                checkDirtyRef={clinicalDirtyRef}
-            />,
-            { id: 'clinical-data', width: 500, title: 'Données Cliniques', onDismiss: () => { activeSheetRef.current = null; } }
-        );
-    };
-
-    const handleOpenDocuments = async () => {
-        if (!selectedPatient) return;
-
-        // Check if clinical is dirty before switching
-        if (activeSheetRef.current === 'clinical') {
-            if (clinicalDirtyRef.current) {
-                const canClose = await clinicalDirtyRef.current();
-                if (!canClose) return; // User cancelled
-            }
-            closeSheet('clinical-data');
-        } else if (activeSheetRef.current === 'documents') {
-            return;
-        }
-
-        activeSheetRef.current = 'documents';
-        openSheet(
-            <SecretaryDocumentsContent
-                patientId={selectedPatient.id}
-                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
-                patient={selectedPatient}
-                onClose={() => {
-                    closeSheet('documents');
-                    activeSheetRef.current = null;
-                }}
-            />,
-            { id: 'documents', width: 500, title: 'Documents', onDismiss: () => { activeSheetRef.current = null; } }
-        );
-    };
-
     const onSubmit = useCallback(async (data: AppointmentFormValues) => {
         if (!selectedPatient) return;
 
@@ -369,32 +297,6 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                             onEdit={() => setView('edit-patient')}
                         />
 
-                        {/* Quick Actions Grid */}
-                        {appMode !== 'secretary' && (
-                            <div className="grid grid-cols-2 gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-auto flex-col gap-1 py-2 border-dashed border-teal-200 bg-teal-50/30 hover:bg-teal-50 text-teal-700"
-                                    onClick={handleOpenClinicalData}
-                                >
-                                    <Activity className="w-4 h-4" />
-                                    <span className="text-[10px] font-medium">Données Cliniques</span>
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-auto flex-col gap-1 py-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700"
-                                    onClick={handleOpenDocuments}
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    <span className="text-[10px] font-medium">Documents</span>
-                                </Button>
-                            </div>
-                        )}
-
                         {/* Time Inputs - Compact Grid */}
                         <div className="space-y-1 mb-2">
                             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -446,9 +348,6 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                                 {errors.end_time && <span className="text-destructive text-xs">{errors.end_time.message}</span>}
                             </div>
                         </div>
-
-                        {/* Compact Dilation Control */}
-
 
                         {/* Compact Antecedents */}
                         <CompactAntecedentsSection register={register} errors={errors} control={control} />

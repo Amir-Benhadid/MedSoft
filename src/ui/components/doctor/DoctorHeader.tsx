@@ -64,7 +64,15 @@ export default function DoctorHeader({ currentTab = 'patients', onTabChange }: D
     const navigate = useNavigate({ from: '/doctor' });
 
     const handlePatientSelect = (patientId: string) => {
-        navigate({ search: (prev: any) => ({ ...prev, patientId }) });
+        // Correctly reset search params when selecting a NEW patient from search bar
+        // Set action: 'view' to inform dashboard to NOT auto-create consultation
+        navigate({ 
+            search: () => ({ 
+                patientId, 
+                mode: 'normal',
+                action: 'view'
+            }) 
+        });
     };
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);

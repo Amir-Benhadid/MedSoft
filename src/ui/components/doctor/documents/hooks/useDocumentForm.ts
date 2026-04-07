@@ -132,29 +132,6 @@ export function useDocumentForm() {
         rightEye.tension, rightEye.pachymetry, rightEye.corrected_iop, rightEye.tensionTime
     ]);
 
-    // Handle data changes from the hook
-    const handleDocumentsDataChange = useCallback((newData: any) => {
-        // Save unified state for persistence and rehydration
-        setDocumentOverride('unifiedDocumentsState', newData);
-
-        // Sync to individual legacy keys for usePrintHandlers
-        if (newData.printStates) {
-            setDocumentOverride('glasses', newData.printStates.printGlassesData);
-            setDocumentOverride('contacts', newData.printStates.printContactLensesData);
-            setDocumentOverride('visualAcuity', newData.printStates.printVisualAcuityData);
-            setDocumentOverride('absence', newData.printStates.printAbsenceData);
-            setDocumentOverride('workStop', newData.printStates.printWorkStopData);
-            setDocumentOverride('bilan', newData.bilanFields);
-            setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
-            setDocumentOverride('customGeneric', newData.printStates.printGenericData);
-        }
-
-        if (newData.printControlFlags) {
-            setDocumentOverride('printControlFlags', newData.printControlFlags);
-        }
-    }, [setDocumentOverride]);
-
-    // Use shared state hook
     const {
         bilanFields,
         setBilanFields,
@@ -185,9 +162,7 @@ export function useDocumentForm() {
         rightEyeData: rightEye,
         leftEyeData: leftEye,
         absenceData: absenceData,
-        workStopData: workStopData,
-        initialDocumentsData: initialDocumentsData,
-        onDocumentsDataChange: handleDocumentsDataChange
+        workStopData: workStopData
     });
 
     // Note: prescriptionData setter would need to update the store's prescriptions

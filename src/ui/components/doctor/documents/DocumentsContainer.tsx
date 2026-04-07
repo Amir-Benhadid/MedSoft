@@ -122,71 +122,18 @@ const DocumentsContainer: React.FC<DocumentsContainerProps> = ({ allowedTabs }) 
         }
     }), [leftEye.tension, leftEye.pachymetry, leftEye.corrected_iop, leftEye.tensionTime, rightEye.tension, rightEye.pachymetry, rightEye.corrected_iop, rightEye.tensionTime]);
 
-    // Handle data changes from the hook
-    const handleDocumentsDataChange = useCallback((newData: any) => {
-        // 1. Save unified state for persistence and rehydration
-        setDocumentOverride('unifiedDocumentsState', newData);
-
-        // 2. Sync to individual legacy keys for usePrintHandlers
-        if (newData.printStates) {
-            setDocumentOverride('glasses', newData.printStates.printGlassesData);
-            setDocumentOverride('contacts', newData.printStates.printContactLensesData);
-            setDocumentOverride('visualAcuity', newData.printStates.printVisualAcuityData);
-            setDocumentOverride('absence', newData.printStates.printAbsenceData);
-            setDocumentOverride('workStop', newData.printStates.printWorkStopData);
-            setDocumentOverride('bilan', newData.bilanFields);
-            setDocumentOverride('printPrescriptionData', newData.printStates.printPrescriptionData);
-            setDocumentOverride('selectedGenericTemplate', newData.printStates.selectedDiversDocument);
-            setDocumentOverride('customGeneric', newData.printStates.printGenericData);
-            // For divers tab: pass medicalRecord when a specific document is selected
-            const selectedDivers = newData.printStates.selectedDiversDocument;
-            if (selectedDivers && selectedDivers !== 'documentVierge') {
-                setDocumentOverride('medicalRecord', {
-                    documentType: selectedDivers,
-                    printData: newData.printStates.printMedicalRecordData || {},
-                });
-            } else {
-                setDocumentOverride('medicalRecord', undefined);
-            }
-        }
-
-        if (newData.printControlFlags) {
-            setDocumentOverride('printControlFlags', newData.printControlFlags);
-        }
-    }, [setDocumentOverride]);
-
     // Use shared state hook
     const {
-        bilanFields,
-        setBilanFields,
-        customFieldInputs,
-        setCustomFieldInputs,
-        printControlFlags,
-        setPrintControlFlags,
-        selectedDiversDocument,
-        setSelectedDiversDocument,
-        printPrescriptionData,
-        setPrintPrescriptionData,
-        printGlassesData,
-        setPrintGlassesData,
-        printContactLensesData,
-        setPrintContactLensesData,
-        printVisualAcuityData,
-        setPrintVisualAcuityData,
         printWorkStopData,
         setPrintWorkStopData,
         printAbsenceData,
         setPrintAbsenceData,
-        printMedicalRecordData,
-        setPrintMedicalRecordData,
     } = useDocumentsState({
         prescriptionData: prescriptionData,
         rightEyeData: rightEye,
         leftEyeData: leftEye,
         absenceData: absenceData,
-        workStopData: workStopData,
-        initialDocumentsData: initialDocumentsData,
-        onDocumentsDataChange: handleDocumentsDataChange
+        workStopData: workStopData
     });
 
     // Print Handlers

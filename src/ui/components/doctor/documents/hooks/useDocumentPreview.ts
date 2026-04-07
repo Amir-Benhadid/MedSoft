@@ -103,7 +103,6 @@ export function useDocumentPreview({ activeDocTab }: UseDocumentPreviewOptions) 
         leftEyeData: leftEye,
         absenceData,
         workStopData,
-        initialDocumentsData,
     });
 
     // Debounce prescription data for medications preview

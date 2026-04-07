@@ -315,8 +315,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 				{/* Right Eye */}
 				<div className="bg-blue-500/10 rounded-xl p-2.5 border-2 border-blue-300/50 shadow-sm hover:shadow-md transition-all space-y-2">
 					{/* OD Checkbox - Title Box (Full Width) */}
-					<button
-						type="button"
+					<div
 						onClick={() =>
 							setPrintControlFlags((prev) => ({
 								...prev,
@@ -351,7 +350,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 						<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
 							OD
 						</h4>
-					</button>
+					</div>
 
 					<div className="grid grid-cols-2 gap-2.5">
 						<div className="col-span-1 space-y-1">
@@ -433,8 +432,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 				{/* Left Eye */}
 				<div className="bg-green-500/10 rounded-xl p-2.5 border-2 border-green-300/50 shadow-sm hover:shadow-md transition-all space-y-2">
 					{/* OG Checkbox - Title Box (Full Width) */}
-					<button
-						type="button"
+					<div
 						onClick={() =>
 							setPrintControlFlags((prev) => ({
 								...prev,
@@ -469,7 +467,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 						<h4 className="text-xs font-extrabold text-white uppercase tracking-tight">
 							OG
 						</h4>
-					</button>
+					</div>
 
 					<div className="grid grid-cols-2 gap-2.5">
 						<div className="col-span-1 space-y-1">

@@ -9,6 +9,7 @@ import { ScrollArea } from "@/ui/components/ui/scroll-area";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/ui/lib/utils";
+import { Button } from "@/ui/components/ui/button";
 import { Calendar } from "lucide-react";
 
 interface ConsultationHistoryItem {
@@ -31,7 +32,9 @@ interface HistorySheetProps {
     onOpenChange: (open: boolean) => void;
     consultations: ConsultationHistoryItem[];
     currentConsultationId: string | null;
-    onSelectConsultation: (consultation: ConsultationHistoryItem) => void;
+    onSelectConsultation: (consultation: any) => void;
+    onCreateConsultation?: () => void;
+    showCreate?: boolean;
 }
 
 export function HistorySheet({
@@ -40,18 +43,32 @@ export function HistorySheet({
     consultations,
     currentConsultationId,
     onSelectConsultation,
+    onCreateConsultation,
+    showCreate = true,
 }: HistorySheetProps) {
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetContent side="left" className="w-full sm:max-w-[580px] md:max-w-[640px] p-0 flex flex-col gap-0 border-r shadow-2xl">
-                <SheetHeader className="px-3 py-2.5 border-b bg-white shrink-0">
-                    <SheetTitle className="flex items-center gap-2 text-base text-slate-800">
-                        <Calendar className="w-4 h-4 text-slate-500" />
-                        <span>Historique</span>
-                    </SheetTitle>
-                    <SheetDescription className="hidden">
-                        Consultez l'historique des consultations et traitements.
-                    </SheetDescription>
+                <SheetHeader className="px-3 py-2.5 border-b bg-white shrink-0 flex-row items-center justify-between">
+                    <div className="flex flex-col">
+                        <SheetTitle className="flex items-center gap-2 text-base text-slate-800">
+                            <Calendar className="w-4 h-4 text-slate-500" />
+                            <span>Historique</span>
+                        </SheetTitle>
+                        <SheetDescription className="hidden">
+                            Consultez l'historique des consultations et traitements.
+                        </SheetDescription>
+                    </div>
+
+                    {showCreate && (
+                        <Button
+                            size="sm"
+                            onClick={onCreateConsultation}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 px-4 rounded-lg shadow-sm"
+                        >
+                            Nouvelle Consultation
+                        </Button>
+                    )}
                 </SheetHeader>
 
                 <div className="flex-1 grid grid-rows-[6fr_4fr] min-h-0 gap-0 bg-slate-50/50">

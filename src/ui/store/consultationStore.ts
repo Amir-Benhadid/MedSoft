@@ -112,37 +112,68 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
         }
     }
 
+    // Helper for smart sync
+    const shouldSync = (currentDocValue: any, prevExamValue: any, isNumber: boolean = false) => {
+        if (!currentDocValue) return true; // If empty, always sync
+        if (currentDocValue === prevExamValue) return true;
+        if (isNumber) {
+            const expectedFmt = formatNumberWithSign(prevExamValue) || prevExamValue;
+            if (currentDocValue === expectedFmt) return true;
+        }
+        return false; // User manually changed it
+    };
+
     // --- GLASSES SYNC ---
     const syncGlasses = (eye: 'right' | 'left', fieldPrefix: 'rightEye' | 'leftEye') => {
         const prevEye = prevState[eye === 'right' ? 'rightEye' : 'leftEye'];
         const newEye = newState[eye === 'right' ? 'rightEye' : 'leftEye'];
+        const currentDoc = printGlassesData[fieldPrefix] || {};
+        let updated = false;
 
-        if (
-            prevEye.sph !== newEye.sph ||
-            prevEye.cyl !== newEye.cyl ||
-            prevEye.axis !== newEye.axis ||
-            prevEye.add !== newEye.add ||
-            prevEye.glassType !== newEye.glassType
-        ) {
-            const sph = newEye.sph ?? '';
-            const cyl = newEye.cyl ?? '';
-            const axis = newEye.axis ?? '';
-            const add = newEye.add ?? '';
-            const sphNum = parseFloat(String(sph).replace(',', '.'));
-            const addNum = parseFloat(String(add).replace(',', '.')) || 0;
-            const nearSph = !isNaN(sphNum) ? (sphNum + addNum).toFixed(2) : '';
+        const syncField = (key: keyof EyeData, docKey: string, isNumber: boolean = false) => {
+            const newVal = newEye[key];
+            const prevVal = prevEye[key];
+            if (newVal !== prevVal) {
+                if (shouldSync(currentDoc[docKey], prevVal, isNumber)) {
+                    currentDoc[docKey] = isNumber ? (formatNumberWithSign(newVal) || newVal) : newVal;
+                    updated = true;
+                }
+            }
+        };
 
-            printGlassesData[fieldPrefix] = {
-                ...(printGlassesData[fieldPrefix] || {}),
-                sph: formatNumberWithSign(sph) || sph,
-                cyl: formatNumberWithSign(cyl) || cyl,
-                axis: axis,
-                add: formatNumberWithSign(add) || add,
-                glassType: newEye.glassType ?? (printGlassesData[fieldPrefix]?.glassType || ''),
-                nearSph,
-                nearCyl: cyl ? (formatNumberWithSign(cyl) || cyl) : (printGlassesData[fieldPrefix]?.nearCyl || ''),
-                nearAxis: axis || (printGlassesData[fieldPrefix]?.nearAxis || ''),
-            };
+        syncField('sph', 'sph', true);
+        syncField('cyl', 'cyl', true);
+        syncField('axis', 'axis', false);
+        syncField('add', 'add', true);
+        syncField('glassType', 'glassType', false);
+
+        if (updated) {
+            const sphText = currentDoc.sph || '';
+            const addText = currentDoc.add || '';
+            const sphNum = parseFloat(String(sphText).replace(',', '.'));
+            const addNum = parseFloat(String(addText).replace(',', '.')) || 0;
+            const nearSphRaw = !isNaN(sphNum) ? (sphNum + addNum).toFixed(2) : '';
+            const nearSphFmt = formatNumberWithSign(nearSphRaw) || nearSphRaw;
+
+            const prevSphNum = parseFloat(String(prevEye.sph).replace(',', '.'));
+            const prevAddNum = parseFloat(String(prevEye.add).replace(',', '.')) || 0;
+            const prevNearSphRaw = !isNaN(prevSphNum) ? (prevSphNum + prevAddNum).toFixed(2) : '';
+            const prevNearSphFmt = formatNumberWithSign(prevNearSphRaw) || prevNearSphRaw;
+
+            // Near updates
+            if (shouldSync(currentDoc.nearSph, prevNearSphRaw, false) || shouldSync(currentDoc.nearSph, prevNearSphFmt, false)) {
+                currentDoc.nearSph = nearSphFmt;
+            }
+
+            if (newEye.cyl !== prevEye.cyl && shouldSync(currentDoc.nearCyl, prevEye.cyl, true)) {
+                currentDoc.nearCyl = currentDoc.cyl || '';
+            }
+
+            if (newEye.axis !== prevEye.axis && shouldSync(currentDoc.nearAxis, prevEye.axis, false)) {
+                currentDoc.nearAxis = currentDoc.axis || '';
+            }
+
+            printGlassesData[fieldPrefix] = currentDoc;
             overridesChanged = true;
         }
     };
@@ -159,16 +190,22 @@ const syncDocuments = (set: any, get: any, prevState: any) => {
         const prev_sc_vl = prevEye.visualAcuityVL_SC || prevEye.visualAcuity;
         const prev_ac_vl = prevEye.visualAcuityVL_AC;
 
-        if (sc_vl !== prev_sc_vl || ac_vl !== prev_ac_vl) {
-            if (eye === 'right') {
-                printVisualAcuityData.visualAcuityVL_SC_OD = sc_vl ?? '';
-                printVisualAcuityData.visualAcuityVL_AC_OD = ac_vl ?? '';
-            } else {
-                printVisualAcuityData.visualAcuityVL_SC_OG = sc_vl ?? '';
-                printVisualAcuityData.visualAcuityVL_AC_OG = ac_vl ?? '';
-            }
-            overridesChanged = true;
+        let updated = false;
+
+        const docKeySC = eye === 'right' ? 'visualAcuityVL_SC_OD' : 'visualAcuityVL_SC_OG';
+        const docKeyAC = eye === 'right' ? 'visualAcuityVL_AC_OD' : 'visualAcuityVL_AC_OG';
+
+        if (sc_vl !== prev_sc_vl && shouldSync(printVisualAcuityData[docKeySC], prev_sc_vl)) {
+            printVisualAcuityData[docKeySC] = sc_vl ?? '';
+            updated = true;
         }
+
+        if (ac_vl !== prev_ac_vl && shouldSync(printVisualAcuityData[docKeyAC], prev_ac_vl)) {
+            printVisualAcuityData[docKeyAC] = ac_vl ?? '';
+            updated = true;
+        }
+
+        if (updated) overridesChanged = true;
     };
     syncVisualAcuity('right');
     syncVisualAcuity('left');
@@ -444,15 +481,17 @@ export const useConsultationStore = create<ConsultationState>((set, get) => ({
 
     reset: () => set({ leftEye: defaultEyeData, rightEye: defaultEyeData, clinicalExam: defaultClinicalExam, dilatationRequired: false, prescriptions: [], patientId: null, consultationId: null, patient: null, documentOverrides: {} }),
 
-    loadConsultation: (data: any) => set({
-        patientId: data.patient_id,
-        consultationId: data.id,
-        leftEye: { ...defaultEyeData, ...data.left_eye },
-        rightEye: { ...defaultEyeData, ...data.right_eye },
-        clinicalExam: { ...defaultClinicalExam, ...data.clinical_exam },
-        prescriptions: data.prescription?.treatments || [],
-        dilatationRequired: data.clinical_exam?.dilatationRequired || false,
-        documentOverrides: data.documents_data || {}
-    })
+    loadConsultation: (data: any) => {
+        console.log("📥 Store: Loading consultation data", data.id);
+        set({
+            patientId: data.patient_id,
+            consultationId: data.id,
+            leftEye: { ...defaultEyeData, ...(data.left_eye || {}) },
+            rightEye: { ...defaultEyeData, ...(data.right_eye || {}) },
+            clinicalExam: { ...defaultClinicalExam, ...(data.clinical_exam || {}) },
+            prescriptions: data.prescription?.treatments || [],
+            dilatationRequired: data.clinical_exam?.dilatationRequired || false,
+            documentOverrides: data.documents_data || {}
+        });
+    }
 }));
-

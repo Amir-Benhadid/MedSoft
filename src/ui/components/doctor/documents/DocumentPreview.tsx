@@ -617,37 +617,12 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                     <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
                                                         <p className="text-xs font-medium text-blue-700">
                                                             OD: {(() => {
-                                                                const hasData = glassesPrintData?.rightEye?.sph && glassesPrintData.rightEye.sph !== '' &&
-                                                                    (parseFloat(glassesPrintData.rightEye.sph) !== 0 ||
-                                                                        (glassesPrintData.rightEye.cyl && glassesPrintData.rightEye.cyl !== '' && parseFloat(glassesPrintData.rightEye.cyl) !== 0) ||
-                                                                        (glassesPrintData.rightEye.axis && glassesPrintData.rightEye.axis !== '' && parseFloat(glassesPrintData.rightEye.axis) !== 0));
-                                                                const emptyOption = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
-
-                                                                if (hasData) {
-                                                                    const s = glassesPrintData.rightEye.sph === '' ? '' : glassesPrintData.rightEye.sph;
-                                                                    const c = glassesPrintData.rightEye.cyl === '' ? '' : glassesPrintData.rightEye.cyl;
-                                                                    const a = glassesPrintData.rightEye.axis === '' ? '' : glassesPrintData.rightEye.axis;
-
-                                                                    const formatVal = (v: string) => {
-                                                                        if (!v || v === '') return '';
-                                                                        const n = parseFloat(v?.toString().replace(',', '.') || '0');
-                                                                        if (isNaN(n)) return v || '';
-                                                                        if (n === 0) return '0.00';
-                                                                        return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
-                                                                    };
-
-                                                                    const sphFormatted = formatVal(s);
-                                                                    const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
-                                                                        ? ` (${formatVal(c)})`
-                                                                        : '';
-                                                                    const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
-
-                                                                    return `${sphFormatted}${cylFormatted}${axisFormatted}`;
-                                                                } else if (emptyOption === 'conserver') {
-                                                                    return 'Verre en place';
-                                                                } else {
-                                                                    return 'Plan';
-                                                                }
+                                                                const s = glassesPrintData?.rightEye?.sph;
+                                                                const c = glassesPrintData?.rightEye?.cyl;
+                                                                const a = glassesPrintData?.rightEye?.axis;
+                                                                const emptyOpt = glassesPrintData?.rightEye?.emptyEyeOption || 'plan';
+                                                                
+                                                                return DocumentUtils.formatEyePrescription(s, c, a, emptyOpt);
                                                             })()}
                                                         </p>
                                                     </div>
@@ -657,37 +632,12 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                     <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
                                                         <p className="text-xs font-medium text-green-700">
                                                             OG: {(() => {
-                                                                const hasData = glassesPrintData?.leftEye?.sph && glassesPrintData?.leftEye?.sph !== '' &&
-                                                                    (parseFloat(glassesPrintData.leftEye.sph) !== 0 ||
-                                                                        (glassesPrintData.leftEye.cyl && glassesPrintData.leftEye.cyl !== '' && parseFloat(glassesPrintData.leftEye.cyl) !== 0) ||
-                                                                        (glassesPrintData.leftEye.axis && glassesPrintData.leftEye.axis !== '' && parseFloat(glassesPrintData.leftEye.axis) !== 0));
-                                                                const emptyOption = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
-
-                                                                if (hasData) {
-                                                                    const s = glassesPrintData.leftEye.sph === '' ? '' : glassesPrintData.leftEye.sph;
-                                                                    const c = glassesPrintData.leftEye.cyl === '' ? '' : glassesPrintData.leftEye.cyl;
-                                                                    const a = glassesPrintData.leftEye.axis === '' ? '' : glassesPrintData.leftEye.axis;
-
-                                                                    const formatVal = (v: string) => {
-                                                                        if (!v || v === '') return '';
-                                                                        const n = parseFloat(v?.toString().replace(',', '.') || '0');
-                                                                        if (isNaN(n)) return v || '';
-                                                                        if (n === 0) return '0.00';
-                                                                        return n > 0 ? `+${n.toFixed(2)}` : n.toFixed(2);
-                                                                    };
-
-                                                                    const sphFormatted = formatVal(s);
-                                                                    const cylFormatted = c && c !== '0.00' && parseFloat(c.replace(',', '.')) !== 0
-                                                                        ? ` (${formatVal(c)})`
-                                                                        : '';
-                                                                    const axisFormatted = a && a !== '0' ? ` ${a}°` : '';
-
-                                                                    return `${sphFormatted}${cylFormatted}${axisFormatted}`;
-                                                                } else if (emptyOption === 'conserver') {
-                                                                    return 'Verre en place';
-                                                                } else {
-                                                                    return 'Plan';
-                                                                }
+                                                                const s = glassesPrintData?.leftEye?.sph;
+                                                                const c = glassesPrintData?.leftEye?.cyl;
+                                                                const a = glassesPrintData?.leftEye?.axis;
+                                                                const emptyOpt = glassesPrintData?.leftEye?.emptyEyeOption || 'plan';
+                                                                
+                                                                return DocumentUtils.formatEyePrescription(s, c, a, emptyOpt);
                                                             })()}
                                                         </p>
                                                     </div>
@@ -705,22 +655,12 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-blue-50/30 rounded border border-blue-200">
                                                     <p className="text-xs font-medium text-blue-700">
                                                         OD: {(() => {
-                                                            const hasData = glassesPrintData?.rightEye?.nearSph && glassesPrintData?.rightEye?.nearSph !== '' &&
-                                                                (parseFloat(glassesPrintData.rightEye.nearSph) !== 0 ||
-                                                                    (glassesPrintData.rightEye.nearCyl && glassesPrintData.rightEye.nearCyl !== '' && parseFloat(glassesPrintData.rightEye.nearCyl) !== 0) ||
-                                                                    (glassesPrintData.rightEye.nearAxis && glassesPrintData.rightEye.nearAxis !== '' && parseFloat(glassesPrintData.rightEye.nearAxis) !== 0));
-                                                            const emptyOption = glassesPrintData?.rightEye?.emptyNearEyeOption || 'plan';
+                                                            const s = glassesPrintData?.rightEye?.nearSph;
+                                                            const c = glassesPrintData?.rightEye?.nearCyl;
+                                                            const a = glassesPrintData?.rightEye?.nearAxis;
+                                                            const emptyOpt = glassesPrintData?.rightEye?.emptyNearEyeOption || 'plan';
 
-                                                            if (hasData) {
-                                                                const s = glassesPrintData.rightEye.nearSph === '' ? '' : glassesPrintData.rightEye.nearSph;
-                                                                const c = glassesPrintData.rightEye.nearCyl === '' ? '' : glassesPrintData.rightEye.nearCyl;
-                                                                const a = glassesPrintData.rightEye.nearAxis === '' ? '' : glassesPrintData.rightEye.nearAxis;
-                                                                return `${s ? (parseFloat(s) > 0 ? `+${s}` : s) : '0.00'}${c && c !== '0.00' ? ` (${parseFloat(c) > 0 ? `+${c}` : c})` : ''}${a && a !== '0' ? ` ${a}°` : ''}`;
-                                                            } else if (emptyOption === 'conserver') {
-                                                                return 'Verre en place';
-                                                            } else {
-                                                                return 'Plan';
-                                                            }
+                                                            return DocumentUtils.formatEyePrescription(s, c, a, emptyOpt);
                                                         })()}
                                                     </p>
                                                 </div>
@@ -730,22 +670,12 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ activeDocTab }) => {
                                                 <div className="mb-2 p-2 bg-green-50/30 rounded border border-green-200">
                                                     <p className="text-xs font-medium text-green-700">
                                                         OG: {(() => {
-                                                            const hasData = glassesPrintData?.leftEye?.nearSph && glassesPrintData?.leftEye?.nearSph !== '' &&
-                                                                (parseFloat(glassesPrintData.leftEye.nearSph) !== 0 ||
-                                                                    (glassesPrintData.leftEye.nearCyl && glassesPrintData.leftEye.nearCyl !== '' && parseFloat(glassesPrintData.leftEye.nearCyl) !== 0) ||
-                                                                    (glassesPrintData.leftEye.nearAxis && glassesPrintData.leftEye.nearAxis !== '' && parseFloat(glassesPrintData.leftEye.nearAxis) !== 0));
-                                                            const emptyOption = glassesPrintData?.leftEye?.emptyNearEyeOption || 'plan';
+                                                            const s = glassesPrintData?.leftEye?.nearSph;
+                                                            const c = glassesPrintData?.leftEye?.nearCyl;
+                                                            const a = glassesPrintData?.leftEye?.nearAxis;
+                                                            const emptyOpt = glassesPrintData?.leftEye?.emptyNearEyeOption || 'plan';
 
-                                                            if (hasData) {
-                                                                const s = glassesPrintData.leftEye.nearSph === '' ? '' : glassesPrintData.leftEye.nearSph;
-                                                                const c = glassesPrintData.leftEye.nearCyl === '' ? '' : glassesPrintData.leftEye.nearCyl;
-                                                                const a = glassesPrintData.leftEye.nearAxis === '' ? '' : glassesPrintData.leftEye.nearAxis;
-                                                                return `${s ? (parseFloat(s) > 0 ? `+${s}` : s) : '0.00'}${c && c !== '0.00' ? ` (${parseFloat(c) > 0 ? `+${c}` : c})` : ''}${a && a !== '0' ? ` ${a}°` : ''}`;
-                                                            } else if (emptyOption === 'conserver') {
-                                                                return 'Verre en place';
-                                                            } else {
-                                                                return 'Plan';
-                                                            }
+                                                            return DocumentUtils.formatEyePrescription(s, c, a, emptyOpt);
                                                         })()}
                                                     </p>
                                                 </div>

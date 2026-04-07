@@ -34,8 +34,8 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
     // We don't need internal selection state anymore since we navigate immediately
     const selectedId = propSelectedPatientId;
 
-    // Identify the active consultation patient to highlight at the absolute top
-    const activePatientInConsultation = unifiedList.find(item => item.status === 'in_consultation');
+    // Identify the active consultation patients to highlight at the absolute top
+    const activePatientsInConsultation = unifiedList.filter(item => item.status === 'in_consultation');
 
     const handleSelect = (item: UnifiedPatientItem) => {
         // Determine target mode based on consultation type
@@ -52,61 +52,64 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
             <div className="flex flex-col border-r bg-white h-full w-full transition-all duration-300 ease-in-out">
 
                 {/* 1. TOP BANNER: ACTIVE CONSULTATION (The "Green Row") */}
-                {activePatientInConsultation && (
-                    <div className="px-4 pt-4 shrink-0">
-                        <div className="flex items-center gap-2 mb-2">
+                {activePatientsInConsultation.length > 0 && (
+                    <div className="px-4 pt-4 shrink-0 flex flex-col gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
-                                Consultation en cours
+                                {activePatientsInConsultation.length === 1 ? 'Consultation en cours' : 'Consultations en cours'}
                             </h3>
                         </div>
-                        <div
-                            onClick={() => handleSelect(activePatientInConsultation)}
-                            className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all border-2 bg-emerald-500/10 border-emerald-300 hover:border-emerald-500 hover:bg-emerald-500/20 shadow-md shadow-emerald-500/10"
-                            )}
-                        >
-                            {/* Patient name */}
-                            <span className="font-black text-base text-emerald-800 truncate w-[35%] min-w-0 flex items-center gap-3">
-                                <div className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-                                {activePatientInConsultation.patient?.name} {activePatientInConsultation.patient?.surname}
-                            </span>
-
-                            {/* Time */}
-                            <span className="text-xs font-black text-emerald-700 tabular-nums w-[10%] min-w-[50px]">
-                                {format(activePatientInConsultation.time, 'HH:mm')}
-                            </span>
-
-                            {/* Age */}
-                            <span className="text-xs font-bold text-emerald-600/80 w-[10%] min-w-[40px]">
-                                {activePatientInConsultation.patient?.dob ? getAge(activePatientInConsultation.patient.dob) : '-'}
-                            </span>
-
-                            {/* Phone */}
-                            <span className="text-xs font-bold text-emerald-600/80 w-[15%] min-w-[80px]">
-                                {activePatientInConsultation.patient?.phone || '-'}
-                            </span>
-
-                            {/* Dilation badge */}
-                            <div className="w-[80px] shrink-0 flex items-center justify-center">
-                                {activePatientInConsultation.needsDilation && (
-                                    <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 font-black uppercase">
-                                        Dilatation
-                                    </Badge>
+                        {activePatientsInConsultation.map((patient) => (
+                            <div
+                                key={patient.patientId}
+                                onClick={() => handleSelect(patient)}
+                                className={cn(
+                                    "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all border-2 bg-emerald-500/10 border-emerald-300 hover:border-emerald-500 hover:bg-emerald-500/20 shadow-md shadow-emerald-500/10"
                                 )}
-                            </div>
+                            >
+                                {/* Patient name */}
+                                <span className="font-black text-base text-emerald-800 truncate w-[35%] min-w-0 flex items-center gap-3">
+                                    <div className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+                                    {patient.patient?.name} {patient.patient?.surname}
+                                </span>
 
-                            {/* Notes */}
-                            <span className="text-[11px] text-emerald-600/70 font-bold italic truncate w-[200px] shrink-0">
-                                {activePatientInConsultation.notes ? `🩺 ${activePatientInConsultation.notes}` : ''}
-                            </span>
-                        </div>
+                                {/* Time */}
+                                <span className="text-xs font-black text-emerald-700 tabular-nums w-[10%] min-w-[50px]">
+                                    {format(patient.time, 'HH:mm')}
+                                </span>
+
+                                {/* Age */}
+                                <span className="text-xs font-bold text-emerald-600/80 w-[10%] min-w-[40px]">
+                                    {patient.patient?.dob ? getAge(patient.patient.dob) : '-'}
+                                </span>
+
+                                {/* Phone */}
+                                <span className="text-xs font-bold text-emerald-600/80 w-[15%] min-w-[80px]">
+                                    {patient.patient?.phone || '-'}
+                                </span>
+
+                                {/* Dilation badge */}
+                                <div className="w-[80px] shrink-0 flex items-center justify-center">
+                                    {patient.needsDilation && (
+                                        <Badge className="h-5 px-2.5 text-[10px] bg-emerald-600/25 text-emerald-800 border-0 font-black uppercase">
+                                            Dilatation
+                                        </Badge>
+                                    )}
+                                </div>
+
+                                {/* Notes */}
+                                <span className="text-[11px] text-emerald-600/70 font-bold italic truncate w-[200px] shrink-0">
+                                    {patient.notes ? `🩺 ${patient.notes}` : ''}
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
                 {/* 2. SHARED FILES LIST */}
                 <DoctorSharedFilesList
-                    activePatientId={activePatientInConsultation?.patientId}
+                    activePatientId={activePatientsInConsultation[0]?.patientId}
                     onSelectPatient={(patientId) => {
                         onSelectPatient(patientId);
                     }}

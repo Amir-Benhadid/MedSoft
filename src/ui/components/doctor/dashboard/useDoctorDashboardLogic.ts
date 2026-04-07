@@ -9,12 +9,13 @@ import { useNavigate } from '@tanstack/react-router';
 
 interface UseDoctorDashboardLogicProps {
     patientId: string;
-    consultationId?: string; // Add consultationId support
+    consultationId?: string;
+    action?: 'view' | 'consultation';
     onBack?: () => void;
     mode?: 'normal' | 'radiography';
 }
 
-export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mode = 'normal' }: UseDoctorDashboardLogicProps) {
+export function useDoctorDashboardLogic({ patientId, consultationId, action, onBack, mode = 'normal' }: UseDoctorDashboardLogicProps) {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const navigate = useNavigate({ from: '/doctor' });
@@ -51,10 +52,12 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         return () => reset();
     }, [reset]);
 
-    // 1. Auto-Fetch Logic (Query + Store Sync)
+    // 1. Fetch Today's or Selected Consultation
     const { data: consultationData, isLoading: isConsultationLoading } = useQuery({
-        queryKey: ['consultations', 'pending', patientId, mode, consultationId], // Depend on consultationId
+        queryKey: ['consultations', 'active', patientId, mode, consultationId, action],
         queryFn: async () => {
+            console.log(`🔍 useDoctorDashboardLogic: Fetching consultation (patientId: ${patientId}, consultationId: ${consultationId}, action: ${action})`);
+            
             // Logic 0: If specific ID requested, fetch that
             if (consultationId) {
                 const all = await orpcClient.consultations.listByPatient({ patientId });
@@ -65,113 +68,141 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             const consultations = await orpcClient.consultations.listByPatient({ patientId });
             const today = getLocalTodayDate();
             const { start, end } = getDayRangeEncoded(today);
-            
-            // Logic 1: Find existing today's consultation
-            // Check specifically for the current mode first if provided
-            if (mode) {
-                const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
-                const specificToday = consultations.find(c =>
-                    c.date >= start &&
-                    c.date <= end &&
-                    (c.type === targetType || (!c.type && targetType === 'Consultation'))
-                );
-                if (specificToday) return specificToday;
+
+            // Logic 1: Find existing today's consultation (PRIORITY)
+            // Even in 'view' mode, if there's a pending consultation for today, we should probably show it
+            const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
+            const specificToday = consultations.find(c => {
+                const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
+                const isCorrectType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
+                // Prioritize 'pending' ones if searching for today's active work
+                return isWithinRange && isCorrectType && c.status === 'pending';
+            });
+
+            if (specificToday) {
+                console.log("✅ Found pending consultation for today:", specificToday.id);
+                return specificToday;
             }
 
-            // Logic 1.5: If NO match for targetType or mode not provided, check if ANY consultation exists today
-            const anyToday = consultations.find(c => c.date >= start && c.date <= end);
-            if (anyToday) return anyToday;
+            // Logic 2: Auto-create if action is 'consultation' (from patient list)
+            if (action === 'consultation') {
+                console.log("🚀 Auto-creating consultation from list action...");
+                try {
+                    const newConsultation = await orpcClient.consultations.create({
+                        patient_id: patientId,
+                        date: getLocalISOString(),
+                        type: targetType,
+                        status: 'pending',
+                    });
+                    
+                    if (!newConsultation) {
+                        console.error("❌ Failed to auto-create consultation (returned null)");
+                        return null;
+                    }
 
-            // Logic 2: Determine type from today's waitlist/appointments before creating new
-            // This is CRITICAL for search results or mode-less landings
+                    // Invalidate list so it shows up in history immediately
+                    queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
+                    return newConsultation;
+                } catch (err) {
+                    console.error("❌ Critical error during auto-creation:", err);
+                    return null;
+                }
+            }
+
+            // Logic 3: Fallback to the MOST RECENT consultation in history (default for 'view' action)
+            if (consultations.length > 0) {
+                console.log("ℹ️ View mode: Falling back to most recent history entry.");
+                return consultations[0];
+            }
+
+            console.log("ℹ️ No consultation found for this patient.");
+            return null; // No consultation exists yet
+        },
+        enabled: !!patientId,
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: false,
+    });
+
+    // 2. Fetch History (All Consultations)
+    const { data: history = [], isLoading: isHistoryLoading, refetch: refetchHistory } = useQuery({
+        queryKey: ['consultations', 'list', patientId],
+        queryFn: async () => await orpcClient.consultations.listByPatient({ patientId }),
+        enabled: !!patientId
+    });
+
+    // 3. Create Mutation (Manual)
+    const createConsultationMutation = useMutation({
+        mutationFn: async () => {
+            console.log("➕ Manual consultation creation requested...");
             let detectedType = mode === 'radiography' ? 'Radiography' : 'Consultation';
-            
+            const today = getLocalTodayDate();
+            const { start, end } = getDayRangeEncoded(today);
+
             try {
-                // Check waitlist for this patient today
                 const waitlist = await orpcClient.waitlist.list({ start, end });
                 const entry = waitlist.find(w => w.patient_id === patientId);
                 if (entry?.consultation_type_id) {
                     const types = await orpcClient.consultationTypes.list();
                     const cType = types.find(t => t.id === entry.consultation_type_id);
-                    if (cType?.nature === 'radiography') {
-                        detectedType = 'Radiography';
-                    } else if (cType?.nature === 'normal') {
-                        detectedType = 'Consultation';
-                    }
-                } else {
-                    // Check appointments if not in waitlist
-                    const appointments = await orpcClient.appointments.list({ start, end });
-                    const appt = appointments.find(a => a.patient_id === patientId);
-                    if (appt?.consultation_type_id) {
-                        const types = await orpcClient.consultationTypes.list();
-                        const cType = types.find(t => t.id === appt.consultation_type_id);
-                        if (cType?.nature === 'radiography') {
-                            detectedType = 'Radiography';
-                        } else if (cType?.nature === 'normal') {
-                            detectedType = 'Consultation';
-                        }
-                    }
+                    if (cType?.nature === 'radiography') detectedType = 'Radiography';
+                    else if (cType?.nature === 'normal') detectedType = 'Consultation';
                 }
             } catch (e) {
-                console.error("Failed to detect consultation type from scheduling:", e);
+                console.warn("Type detection failed (not critical)", e);
             }
 
-            // Logic 3: Create NEW consultation with DETECTED type
-            const newConsultation = await orpcClient.consultations.create({
+            const result = await orpcClient.consultations.create({
                 patient_id: patientId,
                 date: getLocalISOString(),
                 type: detectedType,
                 status: 'pending',
             });
 
-            // IMPORTANT: Invalidate history so it appears in the list immediately
-            queryClient.invalidateQueries({ queryKey: ['consultations', patientId] });
-
-            return newConsultation;
+            if (!result) throw new Error("Erreur base de données lors de la création.");
+            return result;
         },
-        enabled: !!patientId,
-        staleTime: 5 * 60 * 1000,
-        refetchOnWindowFocus: false,
-        gcTime: 30 * 60 * 1000,
-    });
-
-    // 1.1 Auto-Mode Sync: If fetched consultation type doesn't match current mode, redirect
-    useEffect(() => {
-        if (consultationData && !consultationId) {
-            const detectedMode = consultationData.type === 'Radiography' ? 'radiography' : 'normal';
-            // Only redirect if explicitly different or if mode was undefined
-            if (detectedMode !== mode) {
-                console.log(`🔄 Mode mismatch detected: URL Mode="${mode}", Detected Mode="${detectedMode}" (from consultation type "${consultationData.type}")`);
-                console.log(`🚀 Redirecting to correct mode...`);
-                navigate({
-                    search: (prev: any) => ({
-                        ...prev,
-                        mode: detectedMode
-                    }),
-                    replace: true
-                });
-            }
+        onSuccess: (newConsultation) => {
+            console.log("✅ Consultation created successfully:", newConsultation.id);
+            toast({ title: "Nouvelle consultation créée" });
+            
+            // Refetch active query to switch to the new one
+            queryClient.invalidateQueries({ queryKey: ['consultations', 'active', patientId] });
+            queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
+            
+            // Navigate to the new ID to update URL
+            navigate({
+                search: (prev: any) => ({
+                    ...prev,
+                    consultationId: newConsultation.id,
+                    mode: newConsultation.type === 'Radiography' ? 'radiography' : 'normal',
+                    action: 'consultation'
+                }),
+                replace: true
+            });
+            
+            setIsHistoryOpen(false);
+            setCurrentConsultationId(newConsultation.id);
+        },
+        onError: (err: any) => {
+            console.error("❌ Failed to create consultation:", err);
+            toast({ 
+                title: "Erreur", 
+                description: err.message || "Impossible de créer la consultation.", 
+                variant: "destructive" 
+            });
         }
-    }, [consultationData, mode, consultationId, navigate]);
-
-    // 2. Fetch History (All Consultations)
-    const { data: history = [], isLoading: isHistoryLoading } = useQuery({
-        queryKey: ['consultations', patientId],
-        queryFn: async () => await orpcClient.consultations.listByPatient({ patientId }),
-        enabled: !!patientId
     });
 
-    // Auto-open History if patient has history (only once per patient load)
+    // Auto-open History logic
     const [hasInitializedHistory, setHasInitializedHistory] = useState(false);
-
-    // Reset initialization when patient changes
     useEffect(() => {
         setHasInitializedHistory(false);
-        setIsHistoryOpen(false);
     }, [patientId]);
 
     useEffect(() => {
-        if (!isHistoryLoading && !hasInitializedHistory) {
+        if (!isHistoryLoading && !hasInitializedHistory && history) {
+            // Auto-open if history exists AND we are currently viewing the latest one (but it's not today's)
+            // Or just always open if history exists for awareness
             if (history.length > 0) {
                 setIsHistoryOpen(true);
             }
@@ -183,22 +214,22 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
     useEffect(() => {
         // Init with fetched data
         if (!currentConsultationId && consultationData) {
+            console.log("📍 Syncing currentConsultationId with fetched data:", consultationData.id);
             setCurrentConsultationId(consultationData.id);
         }
 
-        // Initial Store Load (only once when we find our target consultation)
-        // Or if the consultationId matches (explicit switch)
-        if (consultationData && !isHistoryLoading && (consultationData.id === currentConsultationId || consultationData.id === consultationId) && consultationData.id !== loadedConsultationId) {
-            console.log("Loading fresh consultation data into store", consultationData.id);
+        // Initial Store Load
+        // Load data if we have it and it's different from what's currently in the store
+        if (consultationData && !isHistoryLoading && consultationData.id !== loadedConsultationId) {
+            console.log("💾 Loading consultation data into store:", consultationData.id);
+            console.log("   (Action:", action, ", PatientId:", patientId, ")");
 
-            // Find previous consultation to carry over fields for new consultations
+            // Find previous consultation to carry over fields
             let previousConsultation: any = null;
             if (history && history.length > 0) {
-                // history is usually sorted by date desc. Find the most recent one that is not the current one
                 previousConsultation = history.find(c => c.id !== consultationData.id);
             }
 
-            // If the consultation history is empty but patient has history, pre-fill it in the store
             const mergedConsultation = {
                 ...consultationData,
                 left_eye: {
@@ -210,7 +241,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
                     pachymetry: consultationData.right_eye?.pachymetry || previousConsultation?.right_eye?.pachymetry || '',
                 },
                 clinical_exam: {
-                    ...consultationData.clinical_exam,
+                    ...(consultationData.clinical_exam || {}),
                     generalMedicalHistory: consultationData.clinical_exam?.generalMedicalHistory || previousConsultation?.clinical_exam?.generalMedicalHistory || patient?.gen_ants || '',
                     ophthalmologicalHistory: consultationData.clinical_exam?.ophthalmologicalHistory || previousConsultation?.clinical_exam?.ophthalmologicalHistory || patient?.oph_ants || '',
                     profile: consultationData.clinical_exam?.profile || previousConsultation?.clinical_exam?.profile || '',
@@ -218,7 +249,6 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             };
 
             loadConsultation(mergedConsultation);
-            // Also sync state ID if differ
             if (currentConsultationId !== consultationData.id) setCurrentConsultationId(consultationData.id);
         }
     }, [consultationData, currentConsultationId, loadConsultation, loadedConsultationId, patient, consultationId, history, isHistoryLoading]);
@@ -239,7 +269,12 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
     // 3. Finalize/Save Mutation
     const saveMutation = useMutation({
         mutationFn: async ({ paymentData, finish }: { paymentData?: any, finish: boolean }) => {
-            if (!currentConsultationId) throw new Error("No active consultation");
+            if (!currentConsultationId) {
+                toast({ title: "Action impossible", description: "Veuillez d'abord créer une consultation pour ce patient.", variant: "destructive" });
+                throw new Error("No active consultation");
+            }
+
+            console.log(`💾 Saving consultation ${currentConsultationId}${finish ? ' (Finalizing)' : ''}...`);
 
             // Get standard state
             const state = useConsultationStore.getState();
@@ -276,17 +311,15 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
             const title = variables.finish ? "Consultation terminée." : "Sauvegardée.";
             toast({ title: "Succès", description: title });
             queryClient.invalidateQueries({ queryKey: ['consultations', patientId] });
-            queryClient.invalidateQueries({ queryKey: ['consultations', 'pending', patientId] });
-            queryClient.invalidateQueries({ queryKey: ['consultations', 'last-completed', patientId] }); // For radiography dashboard real-time updates
             queryClient.invalidateQueries({ queryKey: ['patients', 'get', patientId] });
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });
             queryClient.invalidateQueries({ queryKey: ['resume'] });
             if (variables.finish && onBack) onBack();
         },
-        onError: (err) => {
-            toast({ title: "Erreur", description: "Erreur lors de la sauvegarde.", variant: "destructive" });
-            console.error(err);
+        onError: (err: any) => {
+            toast({ title: "Erreur", description: err.message || "Erreur lors de la sauvegarde.", variant: "destructive" });
+            console.error("❌ Save failed:", err);
         }
     });
 
@@ -348,6 +381,19 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         setIsHistoryOpen(false);
     };
 
+    // Helper: Is ANY consultation for today (matched by type)?
+    const hasTodayConsultation = (() => {
+        const today = getLocalTodayDate();
+        const { start, end } = getDayRangeEncoded(today);
+        const targetType = mode === 'radiography' ? 'Radiography' : 'Consultation';
+        
+        return history.some(c => {
+            const isToday = (c.date >= start && c.date <= end) || c.date === today;
+            const isMatchingType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
+            return isToday && isMatchingType;
+        });
+    })();
+
     return {
         patient,
         isPatientLoading,
@@ -364,6 +410,8 @@ export function useDoctorDashboardLogic({ patientId, consultationId, onBack, mod
         setIsHistoryOpen,
         history,
         handleSwitchConsultation,
-        isActiveConsultationToday
+        isActiveConsultationToday,
+        hasTodayConsultation,
+        createConsultationMutation
     };
 }

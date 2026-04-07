@@ -155,6 +155,39 @@ export const DocumentUtils = {
 		return num > 0 ? `+${num.toFixed(2)}` : num.toFixed(2);
 	},
 
+	// Unified format for eye prescriptions shared by Preview and PDF generator
+	formatEyePrescription: (sph: string | undefined | null, cyl: string | undefined | null, axis: string | undefined | null, emptyOption: string | undefined | null): string => {
+		if (emptyOption === 'conserver') {
+			return 'Verre en place';
+		}
+
+		const sphText = DocumentUtils.formatNumberWithSignOrEmpty(sph);
+		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
+		const axisRaw = axis || '';
+		
+		const sphNum = parseFloat(sphText.replace(',', '.')) || 0;
+		const cylNum = parseFloat(cylText.replace(',', '.')) || 0;
+		const axisExists = axisRaw.trim() !== '';
+		const axisNum = parseFloat(axisRaw) || 0;
+
+		const hasData = (sph && sph.trim() !== '') || (cyl && cyl.trim() !== '') || axisExists;
+		const isEffectivelyZero = sphNum === 0 && cylNum === 0 && axisNum === 0 && !axisExists;
+
+		if (!hasData || isEffectivelyZero) {
+			return 'Plan';
+		}
+
+		// Case: Sphere only (Cyl is 0 and Axis is empty/0)
+		if (Math.abs(cylNum) < 0.01 && (!axisExists || axisNum === 0)) {
+			// Some users enter "0.00" for an element, but if it hasData and is not effectively zero (e.g. cyl is 0 but sph is 2), display the sph
+			return `${sphText} d`;
+		}
+
+		// Case: Cylinder present
+		const axisText = axisExists ? axisRaw : '0';
+		return `${sphText} (${cylText} à ${axisText}°)`;
+	},
+
 	// Helper: Replace placeholders in text
 	processText: (text: string, printData?: Record<string, string>) => {
 		if (!text || !printData) return text;

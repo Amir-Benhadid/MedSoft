@@ -87,7 +87,7 @@ export function PatientSearchDialog({
     };
 
     // Handle action selection (Step 2)
-    const handleAction = async (action: 'file' | 'consultation' | 'agenda' | 'send_to_doctor' | 'send_to_secretary') => {
+    const handleAction = async (action: 'file' | 'agenda' | 'send_to_doctor' | 'send_to_secretary') => {
         if (!selectedPatient) return;
 
         if (action === 'send_to_doctor' || action === 'send_to_secretary') {
@@ -217,15 +217,7 @@ export function PatientSearchDialog({
                                 </div>
                             </CommandItem>
 
-                            {!isSecretary && (
-                                <CommandItem value="new_consultation" onSelect={() => handleAction('consultation')} className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100">
-                                    <PlusCircle className="w-5 h-5 text-emerald-600" />
-                                    <div className="flex flex-col">
-                                        <span className="font-semibold text-slate-900">Nouvelle Consultation</span>
-                                        <span className="text-xs text-slate-500">Démarrer une consultation immédiate</span>
-                                    </div>
-                                </CommandItem>
-                            )}
+
 
                             <CommandItem value="view_agenda" onSelect={() => handleAction('agenda')} className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100">
                                 <Calendar className="w-5 h-5 text-purple-600" />

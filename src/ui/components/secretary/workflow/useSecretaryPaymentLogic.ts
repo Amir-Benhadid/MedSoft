@@ -4,6 +4,7 @@ import { orpcClient } from '@/ui/lib/orpc/client';
 import { useToast } from "@/ui/hooks/use-toast";
 
 import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
+import { getLocalISOString, getLocalTodayDate } from '@/ui/lib/time';
 
 interface UseSecretaryPaymentLogicProps {
     patientId: string;
@@ -40,7 +41,8 @@ export function useSecretaryPaymentLogic({
         enabled: isOpen && !!patientId,
     });
 
-    const latestConsultation = consultations?.[0];
+    const today = getLocalTodayDate();
+    const latestConsultation = consultations?.find(c => c.date.startsWith(today)) || consultations?.[0];
 
     // 2. Fetch Invoice
     const { data: invoice, isLoading: isLoadingInvoice } = useQuery({
@@ -95,7 +97,7 @@ export function useSecretaryPaymentLogic({
             if (!targetConsultationId) {
                 const newCons = await orpcClient.consultations.create({
                     patient_id: patientId,
-                    date: new Date().toISOString(),
+                    date: getLocalISOString(),
                     status: 'completed',
                     payment: {
                         amount: originalAmount,

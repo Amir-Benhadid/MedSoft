@@ -55,12 +55,21 @@ export class ConsultationRepository {
         if (!row) return {};
         const raw = row.raw_data ? JSON.parse(row.raw_data) : {};
 
+        const formatNumberWithSign = (value: any): string => {
+            if (value === null || value === undefined || value === '') return '';
+            const num = typeof value === 'number' ? value : parseFloat(String(value).replace(',', '.'));
+            if (isNaN(num) || !isFinite(num)) return String(value);
+            if (num === 0) return '0.00';
+            const formatted = num.toFixed(2);
+            return num > 0 ? `+${formatted}` : formatted;
+        };
+
         return {
             ...raw,
-            sph: row.sph !== null ? String(row.sph) : raw.sph,
-            cyl: row.cyl !== null ? String(row.cyl) : raw.cyl,
+            sph: row.sph !== null ? formatNumberWithSign(row.sph) : raw.sph,
+            cyl: row.cyl !== null ? formatNumberWithSign(row.cyl) : raw.cyl,
             axis: row.axis !== null ? String(row.axis) : raw.axis,
-            add: row.add_val !== null ? String(row.add_val) : raw.add,
+            add: row.add_val !== null ? formatNumberWithSign(row.add_val) : raw.add,
             tension: row.tension !== null ? String(row.tension) : raw.tension,
             pachymetry: row.pachymetry !== null ? String(row.pachymetry) : raw.pachymetry,
             visualAcuity: row.visual_acuity || raw.visualAcuity,
@@ -568,6 +577,7 @@ export class ConsultationRepository {
                             patientId || null,
                             updates.payment.amount,
                             updates.payment.amount,
+                            0, // paid
                             updates.payment.type || null,
                             updates.payment.method || 'cash',
                             updates.payment.consultation_type_id || null,

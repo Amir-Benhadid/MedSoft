@@ -147,21 +147,8 @@ export const generateGlassesPDF = async (
 	const col3 = width / 2 - 'VERRES CORRECTEURS'.length * 3; // Keep for consistency if used elsewhere, though we override for vision sections
 
 	// Helper for prescription formatting
-	const formatPrescriptionLine = (sph: string, cyl: string, axisRaw: string): string => {
-		const sphText = DocumentUtils.formatNumberWithSignOrEmpty(sph);
-		const cylNum = parseFloat(cyl) || 0;
-		const axisExists = axisRaw && axisRaw.trim() !== '';
-
-		// Case: Sphere only (Cyl is 0 and Axis is empty/0)
-		if (Math.abs(cylNum) < 0.01 && !axisExists) {
-			return `${sphText} d`;
-		}
-
-		// Case: Cylinder present
-		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
-		const axisText = axisExists ? axisRaw : '0';
-		return `${sphText} (${cylText} à ${axisText}°)`;
-	};
+	// Using standardized format function instead of inline formatting
+	// removed local formatPrescriptionLine
 
 	// Use print data directly - apply empty field formatting
 	const rightSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.sph);
@@ -251,43 +238,29 @@ export const generateGlassesPDF = async (
 		if (shouldShowRightEyeFar) {
 			const rightEmptyOption = printData?.rightEye?.emptyEyeOption || 'plan';
 
-			const rightAxisExists = rightAxisRaw && rightAxisRaw.trim() !== '';
-
-			if (rightEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (rightSph !== '' || rightCyl !== '' || rightAxisExists) {
-				const rightText = formatPrescriptionLine(rightSph, rightCyl, rightAxis);
-				page.drawText(rightText, {
-					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
+			const rightText = DocumentUtils.formatEyePrescription(
+				printData?.rightEye?.sph,
+				printData?.rightEye?.cyl,
+				printData?.rightEye?.axis,
+				rightEmptyOption
+			);
+			page.drawText(rightText, {
+				x: colODValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+			});
 		}
 
 		// Left Eye (OG) - values on separate line
 		if (shouldShowLeftEyeFar) {
 			const leftEmptyOption = printData?.leftEye?.emptyEyeOption || 'plan';
-			const leftAxisExists = leftAxisRaw && leftAxisRaw.trim() !== '';
-
-			if (leftEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (leftSph !== '' || leftCyl !== '' || leftAxisExists) {
-				const leftText = formatPrescriptionLine(leftSph, leftCyl, leftAxis);
-				page.drawText(leftText, {
-					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
+			const leftText = DocumentUtils.formatEyePrescription(
+				printData?.leftEye?.sph,
+				printData?.leftEye?.cyl,
+				printData?.leftEye?.axis,
+				leftEmptyOption
+			);
+			page.drawText(leftText, {
+				x: colOGValue, y: valueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+			});
 		}
 
 		y = valueY - LINE_HEIGHTS.normal;
@@ -323,52 +296,30 @@ export const generateGlassesPDF = async (
 		if (shouldShowRightEyeNear) {
 			const rightNearEmptyOption = printData?.rightEye?.emptyNearEyeOption || 'plan';
 
-			const rightNearSphNum = parseFloat(rightNearSph) || 0;
-			const rightNearCylNum = parseFloat(rightNearCyl) || 0;
-			const rightNearAxisExists = rightNearAxisRaw && rightNearAxisRaw.trim() !== '';
-			const rightNearHasVisualData = !DocumentUtils.isEmptyField(rightNearSph) || !DocumentUtils.isEmptyField(rightNearCyl) || rightNearAxisExists;
-			const rightNearIsEffectivelyZero = rightNearSphNum === 0 && rightNearCylNum === 0 && !rightNearAxisExists;
-
-			if (rightNearEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (rightNearHasVisualData && !rightNearIsEffectivelyZero) {
-				const rightText = formatPrescriptionLine(rightNearSph, rightNearCyl, rightNearAxis);
-				page.drawText(rightText, {
-					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
+			const rightText = DocumentUtils.formatEyePrescription(
+				printData?.rightEye?.nearSph,
+				printData?.rightEye?.nearCyl,
+				printData?.rightEye?.nearAxis,
+				rightNearEmptyOption
+			);
+			page.drawText(rightText, {
+				x: colODValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+			});
 		}
 
 		// Left Eye (OG) - values on separate line
 		if (shouldShowLeftEyeNear) {
 			const leftNearEmptyOption = printData?.leftEye?.emptyNearEyeOption || 'plan';
 
-			const leftNearSphNum = parseFloat(leftNearSph) || 0;
-			const leftNearCylNum = parseFloat(leftNearCyl) || 0;
-			const leftNearAxisExists = leftNearAxisRaw && leftNearAxisRaw.trim() !== '';
-			const leftNearHasVisualData = !DocumentUtils.isEmptyField(leftNearSph) || !DocumentUtils.isEmptyField(leftNearCyl) || leftNearAxisExists;
-			const leftNearIsEffectivelyZero = leftNearSphNum === 0 && leftNearCylNum === 0 && !leftNearAxisExists;
-
-			if (leftNearEmptyOption === 'conserver') {
-				page.drawText('Verre en place', {
-					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else if (leftNearHasVisualData && !leftNearIsEffectivelyZero) {
-				const leftText = formatPrescriptionLine(leftNearSph, leftNearCyl, leftNearAxis);
-				page.drawText(leftText, {
-					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			} else {
-				page.drawText('Plan', {
-					x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
-				});
-			}
+			const leftText = DocumentUtils.formatEyePrescription(
+				printData?.leftEye?.nearSph,
+				printData?.leftEye?.nearCyl,
+				printData?.leftEye?.nearAxis,
+				leftNearEmptyOption
+			);
+			page.drawText(leftText, {
+				x: colOGValue, y: nearValueY, size: TEXT_SIZES.normal, font: helvetica, color: rgb(0, 0, 0)
+			});
 		}
 
 		y = nearValueY - 2 * LINE_HEIGHTS.normal;
@@ -443,8 +394,13 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 				const axisNum = parseFloat(axis as string) || 0;
 
 				// If all values are empty/zero and no option is set, default to 'plan'
-				if (!sph && !cyl && !axis && sphNum === 0 && cylNum === 0 && axisNum === 0 && !updated[eye].emptyEyeOption) {
+				if (!sph && !cyl && !axis && sphNum === 0 && cylNum === 0 && axisNum === 0 && (!updated[eye].emptyEyeOption || updated[eye].emptyEyeOption === 'conserver')) {
 					updated[eye].emptyEyeOption = 'plan';
+				} else if (sph || cyl || axis) {
+					// User explicitly typed something, automatically uncheck 'conserver'
+					if (updated[eye].emptyEyeOption === 'conserver') {
+						updated[eye].emptyEyeOption = 'plan';
+					}
 				}
 			} else if (field === 'nearSph' || field === 'nearCyl' || field === 'nearAxis') {
 				// Similar logic for near vision
@@ -456,8 +412,13 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 				const nearAxisNum = parseFloat(nearAxis as string) || 0;
 
 				// If all values are empty/zero and no option is set, default to 'plan'
-				if (!nearSph && !nearCyl && !nearAxis && nearSphNum === 0 && nearCylNum === 0 && nearAxisNum === 0 && !updated[eye].emptyNearEyeOption) {
+				if (!nearSph && !nearCyl && !nearAxis && nearSphNum === 0 && nearCylNum === 0 && nearAxisNum === 0 && (!updated[eye].emptyNearEyeOption || updated[eye].emptyNearEyeOption === 'conserver')) {
 					updated[eye].emptyNearEyeOption = 'plan';
+				} else if (nearSph || nearCyl || nearAxis) {
+					// User explicitly typed something, automatically uncheck 'conserver'
+					if (updated[eye].emptyNearEyeOption === 'conserver') {
+						updated[eye].emptyNearEyeOption = 'plan';
+					}
 				}
 			}
 
