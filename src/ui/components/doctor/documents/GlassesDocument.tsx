@@ -153,7 +153,7 @@ export const generateGlassesPDF = async (
 	// Use print data directly - apply empty field formatting
 	const rightSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.sph);
 	const rightCyl = DocumentUtils.formatFieldDisplay(printData?.rightEye?.cyl);
-	const rightAxisRaw = printData?.rightEye?.axis || ''; // Keep raw value for axis (0 is valid)
+	const rightAxisRaw = printData?.rightEye?.axis !== undefined ? String(printData.rightEye.axis) : ''; // Keep raw value for axis (0 is valid)
 	const rightAxis = rightAxisRaw.trim() !== '' ? rightAxisRaw : ''; // Only empty if truly empty
 	const rightAdd = DocumentUtils.formatFieldDisplay(printData?.rightEye?.add);
 	const rightGlassType = DocumentUtils.formatFieldDisplay(printData?.rightEye?.glassType);
@@ -162,7 +162,7 @@ export const generateGlassesPDF = async (
 	// Far vision section - only show if we have non-empty far vision data
 	const leftSph = DocumentUtils.formatFieldDisplay(printData?.leftEye?.sph);
 	const leftCyl = DocumentUtils.formatFieldDisplay(printData?.leftEye?.cyl);
-	const leftAxisRaw = printData?.leftEye?.axis || ''; // Keep raw value for axis (0 is valid)
+	const leftAxisRaw = printData?.leftEye?.axis !== undefined ? String(printData.leftEye.axis) : ''; // Keep raw value for axis (0 is valid)
 	const leftAxis = leftAxisRaw.trim() !== '' ? leftAxisRaw : ''; // Only empty if truly empty
 
 	// Determine if we should show far vision section
@@ -270,11 +270,11 @@ export const generateGlassesPDF = async (
 	// Near vision section - use stored near vision values
 	const rightNearSph = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearSph);
 	const rightNearCyl = DocumentUtils.formatFieldDisplay(printData?.rightEye?.nearCyl);
-	const rightNearAxisRaw = printData?.rightEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
+	const rightNearAxisRaw = printData?.rightEye?.nearAxis !== undefined ? String(printData.rightEye.nearAxis) : ''; // Keep raw value for axis (0 is valid)
 	const rightNearAxis = rightNearAxisRaw.trim() !== '' ? rightNearAxisRaw : ''; // Only empty if truly empty
 	const leftNearSph = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearSph);
 	const leftNearCyl = DocumentUtils.formatFieldDisplay(printData?.leftEye?.nearCyl);
-	const leftNearAxisRaw = printData?.leftEye?.nearAxis || ''; // Keep raw value for axis (0 is valid)
+	const leftNearAxisRaw = printData?.leftEye?.nearAxis !== undefined ? String(printData.leftEye.nearAxis) : ''; // Keep raw value for axis (0 is valid)
 	const leftNearAxis = leftNearAxisRaw.trim() !== '' ? leftNearAxisRaw : ''; // Only empty if truly empty
 
 
@@ -544,7 +544,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 							<div>
 								<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Axe</Label>
 								<Input
-									value={printData.rightEye.axis || ''}
+									value={printData.rightEye.axis ?? ''}
 									onChange={(e) => handlePrintDataChange('rightEye', 'axis')(e.target.value)}
 									className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
 								/>
@@ -647,7 +647,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 							<div>
 								<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Axe</Label>
 								<Input
-									value={printData.leftEye.axis || ''}
+									value={printData.leftEye.axis ?? ''}
 									onChange={(e) => handlePrintDataChange('leftEye', 'axis')(e.target.value)}
 									className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
 								/>
@@ -764,7 +764,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 								<div>
 									<Label className="text-[10px] font-semibold text-blue-700 uppercase tracking-tight block mb-1">Axe</Label>
 									<Input
-										value={printData.rightEye.nearAxis || ''}
+										value={printData.rightEye.nearAxis ?? ''}
 										onChange={(e) => handlePrintDataChange('rightEye', 'nearAxis')(e.target.value)}
 										className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
 									/>
@@ -867,7 +867,7 @@ const GlassesDocument: React.FC<GlassesDocumentProps> = () => {
 								<div>
 									<Label className="text-[10px] font-semibold text-green-700 uppercase tracking-tight block mb-1">Axe</Label>
 									<Input
-										value={printData.leftEye.nearAxis || ''}
+										value={printData.leftEye.nearAxis ?? ''}
 										onChange={(e) => handlePrintDataChange('leftEye', 'nearAxis')(e.target.value)}
 										className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
 									/>

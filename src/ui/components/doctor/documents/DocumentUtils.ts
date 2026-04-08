@@ -170,10 +170,10 @@ export const DocumentUtils = {
 		const axisExists = axisRaw.trim() !== '';
 		const axisNum = parseFloat(axisRaw) || 0;
 
-		const hasData = (sph && sph.trim() !== '') || (cyl && cyl.trim() !== '') || axisExists;
+		const hasData = (sph && sph.trim() !== '') || (cyl && cyl.trim() !== '') || (axis !== undefined && axis !== null && axis.toString().trim() !== '');
 		const isEffectivelyZero = sphNum === 0 && cylNum === 0 && axisNum === 0 && !axisExists;
 
-		if (!hasData || isEffectivelyZero) {
+		if (!hasData) {
 			return 'Plan';
 		}
 
@@ -184,7 +184,7 @@ export const DocumentUtils = {
 		}
 
 		// Case: Cylinder present
-		const axisText = axisExists ? axisRaw : '0';
+		const axisText = axisExists ? axisRaw : (axisNum === 0 && (String(axis) === '0') ? '0' : '0');
 		return `${sphText} (${cylText} à ${axisText}°)`;
 	},
 

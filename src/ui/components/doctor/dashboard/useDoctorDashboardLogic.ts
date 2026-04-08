@@ -131,7 +131,9 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             return null;
         },
         enabled: !!patientId,
-        staleTime: 5000, // Reduced staleTime to ensure we don't work with old results during rapid clicks
+        staleTime: 0, 
+        gcTime: 0, // Don't keep old consultation data in cache after unmounting
+        refetchOnMount: 'always',
         refetchOnWindowFocus: false,
     });
 
@@ -139,7 +141,8 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     const { data: history = [], isLoading: isHistoryLoading, refetch: refetchHistory } = useQuery({
         queryKey: ['consultations', 'list', patientId],
         queryFn: async () => await orpcClient.consultations.listByPatient({ patientId }),
-        enabled: !!patientId
+        enabled: !!patientId,
+        staleTime: 0, // Always refresh history list on mount
     });
 
     // 3. Create Mutation (Manual)
@@ -337,7 +340,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         onSuccess: (_, variables) => {
             const title = variables.finish ? "Consultation terminée." : "Sauvegardée.";
             toast({ title: "Succès", description: title });
-            queryClient.invalidateQueries({ queryKey: ['consultations', patientId] });
+            queryClient.invalidateQueries({ queryKey: ['consultations'] });
             queryClient.invalidateQueries({ queryKey: ['patients', 'get', patientId] });
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });

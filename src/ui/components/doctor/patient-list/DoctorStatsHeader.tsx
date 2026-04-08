@@ -25,13 +25,6 @@ export default function DoctorStatsHeader({
 }: DoctorStatsHeaderProps) {
     const statItems = [
         {
-            label: 'Total Prévus',
-            value: stats?.totalAppointments || 0,
-            icon: Calendar,
-            color: 'text-slate-600',
-            bg: 'bg-slate-100'
-        },
-        {
             label: 'Présents',
             value: stats?.totalPresent || 0,
             icon: UserPlus,
@@ -39,11 +32,11 @@ export default function DoctorStatsHeader({
             bg: 'bg-violet-500/10'
         },
         {
-            label: 'Waitlist',
-            value: stats?.patientsWaiting || 0,
-            icon: Activity,
-            color: 'text-amber-600',
-            bg: 'bg-amber-500/10'
+            label: 'Total Prévus',
+            value: stats?.totalAppointments || 0,
+            icon: Calendar,
+            color: 'text-slate-600',
+            bg: 'bg-slate-100'
         },
         {
             label: 'Consultation',
@@ -51,6 +44,13 @@ export default function DoctorStatsHeader({
             icon: Activity,
             color: 'text-emerald-600',
             bg: 'bg-emerald-500/10'
+        },
+        {
+            label: 'Waitlist',
+            value: stats?.patientsWaiting || 0,
+            icon: Activity,
+            color: 'text-amber-600',
+            bg: 'bg-amber-500/10'
         }
     ];
 

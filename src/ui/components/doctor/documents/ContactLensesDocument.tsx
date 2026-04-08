@@ -102,7 +102,7 @@ export const generateContactLensesPDF = async (
 	// Normalize to nested structure (support legacy flat data)
 	const rightSph = DocumentUtils.formatFieldDisplay((printData?.rightEye?.sph) || printData?.sph || printData?.objSph);
 	const rightCyl = DocumentUtils.formatFieldDisplay((printData?.rightEye?.cyl) || printData?.cyl || printData?.objCyl);
-	const rightAxisRaw = (printData?.rightEye?.axis) || printData?.axis || printData?.objAxis || '';
+	const rightAxisRaw = (printData?.rightEye?.axis !== undefined) ? String(printData.rightEye.axis) : (printData?.axis !== undefined ? String(printData.axis) : (printData?.objAxis !== undefined ? String(printData.objAxis) : ''));
 	const rightAxis = rightAxisRaw.trim() !== '' ? rightAxisRaw : '';
 	const rightDiam = (printData?.rightEye?.diam) || printData?.diam || '';
 	// Use rayon from eyeData if available, otherwise use axis_k from printData
@@ -113,7 +113,7 @@ export const generateContactLensesPDF = async (
 
 	const leftSph = DocumentUtils.formatFieldDisplay((printData?.leftEye?.sph) || '');
 	const leftCyl = DocumentUtils.formatFieldDisplay((printData?.leftEye?.cyl) || '');
-	const leftAxisRaw = (printData?.leftEye?.axis) || '';
+	const leftAxisRaw = (printData?.leftEye?.axis !== undefined) ? String(printData.leftEye.axis) : '';
 	const leftAxis = leftAxisRaw.trim() !== '' ? leftAxisRaw : '';
 	const leftDiam = (printData?.leftEye?.diam) || '';
 	// Use rayon from eyeData if available, otherwise use axis_k from printData
@@ -185,7 +185,7 @@ export const generateContactLensesPDF = async (
 			return `${sphText} d`;
 		}
 		const cylText = DocumentUtils.formatNumberWithSignOrEmpty(cyl);
-		const axisText = axisExists ? axisRaw : '0';
+		const axisText = axisExists ? axisRaw : (axisRaw === '0' ? '0' : '0');
 		return `${sphText} (${cylText} à ${axisText}°)`;
 	};
 
@@ -268,10 +268,10 @@ export const generateContactLensesPDF = async (
 		if ((shouldShowRightEye && rightLensBrand) || (shouldShowLeftEye && leftLensBrand)) {
 			page.drawText('Marque:', { x: colLabel, y, size: TEXT_SIZES.small, font: helveticaBold, color: rgb(0, 0, 0) });
 			if (shouldShowRightEye && rightLensBrand) {
-				page.drawText(rightLensBrand, { x: colOD, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
+				page.drawText(rightLensBrand, { x: colOD + 15, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
 			if (shouldShowLeftEye && leftLensBrand) {
-				page.drawText(leftLensBrand, { x: colOG, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
+				page.drawText(leftLensBrand, { x: colOG + 15, y, size: TEXT_SIZES.small, font: helvetica, color: rgb(0, 0, 0) });
 			}
 			y -= LINE_HEIGHTS.small;
 		}
@@ -375,7 +375,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 								<div className="col-span-1 space-y-1">
 									<Label className="text-xs font-semibold text-blue-700 uppercase tracking-tight block">Axe</Label>
 									<Input
-										value={printData.rightEye.axis}
+										value={printData.rightEye.axis ?? ''}
 										onChange={(e) => handlePrintDataChange('rightEye', 'axis')(e.target.value)}
 										className="h-7 text-sm font-semibold text-foreground bg-background border-blue-300/50 focus:border-blue-500 focus:ring-blue-200/50"
 									/>
@@ -492,7 +492,7 @@ const ContactLensesDocument: React.FC<ContactLensesDocumentProps> = () => {
 								<div className="col-span-1 space-y-1">
 									<Label className="text-xs font-semibold text-green-700 uppercase tracking-tight block">Axe</Label>
 									<Input
-										value={printData.leftEye.axis}
+										value={printData.leftEye.axis ?? ''}
 										onChange={(e) => handlePrintDataChange('leftEye', 'axis')(e.target.value)}
 										className="h-7 text-sm font-semibold text-foreground bg-background border-green-300/50 focus:border-green-500 focus:ring-green-200/50"
 									/>
