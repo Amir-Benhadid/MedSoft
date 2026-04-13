@@ -18,7 +18,7 @@ import {
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { getLocalISOString } from '../../lib/time.js';
-import { formatNumberWithSign } from '../../../shared/formatters.js';
+import { formatNumberWithSign } from '../../lib/formatters.js';
 type Consultation = z.infer<typeof ConsultationSchema>;
 type CreateConsultationInput = z.infer<typeof CreateConsultationSchema>;
 type DetailedClinicalExamData = z.infer<typeof DetailedClinicalExamDataSchema>;

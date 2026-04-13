@@ -7,7 +7,14 @@
       "Bash(find C:/Work/projects/medsoft-orpc/tests -name *.spec.ts)",
       "Bash(ls:*)",
       "Bash(cat C:/Work/projects/medsoft-orpc/src/ui/routes/*.tsx)",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "Bash(cat src/shared/formatters.ts)",
+      "Bash(ls src/shared/)",
+      "Bash(npx tsc:*)",
+      "Bash(node_modules/.bin/tsc --project src/electron/tsconfig.json --noEmit)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(node_modules/.bin/tsc --project src/electron/tsconfig.json)",
+      "Bash(ls dist-electron/electron/)"
     ]
   }
 }
