@@ -43,6 +43,7 @@ export interface WorkStopData {
     endDate?: Date | string;
     exitAuthorized?: boolean;
     isProlongation?: boolean;
+    isReprise?: boolean;
 }
 
 export interface WorkStopPrintData extends WorkStopData {}
