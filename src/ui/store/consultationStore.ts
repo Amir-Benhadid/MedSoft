@@ -191,7 +191,11 @@ export const resetSyncSnapshot = () => { syncSnapshot = null; };
 
 export const runSyncDocuments = () => {
     const store = useConsultationStore.getState();
-    const prev = syncSnapshot || store;
+    const prev = syncSnapshot ?? {
+        leftEye: defaultEyeData,
+        rightEye: defaultEyeData,
+        clinicalExam: defaultClinicalExam,
+    };
     syncDocuments(useConsultationStore.setState, useConsultationStore.getState, prev);
     syncSnapshot = { leftEye: store.leftEye, rightEye: store.rightEye, clinicalExam: store.clinicalExam };
 };
