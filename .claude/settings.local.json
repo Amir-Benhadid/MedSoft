@@ -14,7 +14,13 @@
       "Bash(node_modules/.bin/tsc --project src/electron/tsconfig.json --noEmit)",
       "Bash(echo \"Exit: $?\")",
       "Bash(node_modules/.bin/tsc --project src/electron/tsconfig.json)",
-      "Bash(ls dist-electron/electron/)"
+      "Bash(ls dist-electron/electron/)",
+      "Bash(ls *.html)",
+      "Bash(cat index.html)",
+      "Bash(cat src/ui/lib/router.ts)",
+      "Bash(cat src/ui/lib/router.tsx)",
+      "Bash(cat src/ui/components/UpdateNotification.tsx)",
+      "Bash(find src/ui -name \"UpdateNotification*\" -exec cat {} \\\\;)"
     ]
   }
 }
