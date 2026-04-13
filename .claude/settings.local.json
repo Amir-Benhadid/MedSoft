@@ -5,7 +5,9 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm test:*)",
       "Bash(find C:/Work/projects/medsoft-orpc/tests -name *.spec.ts)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cat C:/Work/projects/medsoft-orpc/src/ui/routes/*.tsx)",
+      "Bash(cmd:*)"
     ]
   }
 }

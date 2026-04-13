@@ -15,9 +15,10 @@ export function useRealtime() {
         // 1. Local IPC Listener (Always try, works for Host windows)
         let unsubscribeIPC: (() => void) | undefined;
         if (window.electronAPI?.onDataChanged) {
-            unsubscribeIPC = window.electronAPI.onDataChanged((resource) => {
-                console.log(`[IPC] Data changed: ${resource}`);
-                handleResourceChange(resource);
+            unsubscribeIPC = window.electronAPI.onDataChanged((data) => {
+                const payload = typeof data === 'string' ? { resource: data } : data;
+                console.log(`[IPC] Data changed: ${payload.resource}`);
+                handleResourceChange(payload);
             });
         }
 
@@ -43,9 +44,10 @@ export function useRealtime() {
                     console.log('✅ [Socket.IO] Connected to synchronization server');
                 });
 
-                socket.on('data-changed', (resource: string) => {
-                    console.log(`🌐 [Socket.IO] Data changed: ${resource}`);
-                    handleResourceChange(resource);
+                socket.on('data-changed', (data: any) => {
+                    const payload = typeof data === 'string' ? { resource: data } : data;
+                    console.log(`🌐 [Socket.IO] Data changed: ${payload.resource}`);
+                    handleResourceChange(payload);
                 });
 
                 socket.on('connect_error', (error: any) => {
@@ -60,8 +62,15 @@ export function useRealtime() {
         setupSocket();
 
         // 3. Centralized Change Handler
-        const handleResourceChange = (resource: string) => {
-            queryClient.invalidateQueries({ queryKey: [resource] });
+        const handleResourceChange = (payload: { resource: string, id?: string }) => {
+            const { resource, id } = payload;
+            
+            if (id) {
+                queryClient.invalidateQueries({ queryKey: [resource, 'active'] });
+                queryClient.invalidateQueries({ queryKey: [resource, 'list'] });
+            } else {
+                queryClient.invalidateQueries({ queryKey: [resource] });
+            }
 
             // Special handling for dependent queries
             if (resource === 'appointments' || resource === 'waitlist' || resource === 'consultations' || resource === 'payments') {

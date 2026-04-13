@@ -13,6 +13,7 @@ import {
     DialogFooter,
 } from "@/ui/components/ui/dialog";
 import { Input } from "@/ui/components/ui/input";
+import { useConsultationStore } from "@/ui/store/consultationStore";
 
 interface DashboardHeaderProps {
     patient: any;
@@ -41,6 +42,7 @@ export const DashboardHeader = memo(function DashboardHeader({
     const pinDialog = usePinDialog(() => {
         setIsSettingsOpen(true);
     });
+    const isDirty = useConsultationStore(state => state.isDirty);
 
     return (
         <>
@@ -128,7 +130,6 @@ export const DashboardHeader = memo(function DashboardHeader({
                         <span className="text-lg">📅</span>
                     </Button>
 
-                    {/* Manual Save Button */}
                     <Button
                         size="sm"
                         variant="outline"
@@ -137,6 +138,7 @@ export const DashboardHeader = memo(function DashboardHeader({
                     >
                         {saveMutation.isPending && !isFinishSheetOpen ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         Sauvegarder
+                        {isDirty && <span className="w-2 h-2 rounded-full bg-blue-500 ml-1" title="Modifications non sauvegardées" />}
                     </Button>
 
                     {showFinishButton && (

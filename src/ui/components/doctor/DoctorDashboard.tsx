@@ -12,7 +12,8 @@ import { useConsultationStore } from '@/ui/store/consultationStore';
 import { HistorySheet } from './history/HistorySheet';
 import { PaymentHistorySheet } from './history/PaymentHistorySheet';
 import { useState } from 'react';
-
+import { useDocumentSync } from '@/ui/hooks/useDocumentSync';
+import { useContactLensSync } from '@/ui/hooks/useContactLensSync';
 interface DoctorDashboardProps {
     patientId: string;
     consultationId?: string;
@@ -42,6 +43,9 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
     } = useDoctorDashboardLogic({ patientId, onBack, consultationId, action });
 
     const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+
+    useDocumentSync();
+    useContactLensSync();
 
     const nextAppointmentData = useConsultationStore(state => state.clinicalExam.nextAppointment);
 

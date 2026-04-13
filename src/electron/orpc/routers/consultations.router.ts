@@ -57,7 +57,7 @@ export const consultationsRouter = os.router({
             const repo = new ConsultationRepository();
             const result = repo.create(input);
             if (result) {
-                broadcastChange('consultations');
+                broadcastChange('consultations', result.id);
             }
             return result;
         }),
@@ -112,9 +112,28 @@ export const consultationsRouter = os.router({
                 }
             }
 
+            // --- AUDIT LOGGING ---
+            const currentData = repo.findById(input.id);
+            if (currentData) {
+                try {
+                    const db = (await import('../../db/database.js')).getDatabase();
+                    db.prepare(`
+                        INSERT INTO consultation_snapshots (consultation_id, snapshot_data, snapshot_type)
+                        VALUES (?, ?, ?)
+                    `).run(
+                        input.id,
+                        JSON.stringify(currentData),
+                        input.updates.status === 'completed' && currentData.status !== 'completed' ? 'completion' : 'auto_save'
+                    );
+                } catch(e) {
+                    console.warn("Could not save snapshot", e);
+                }
+            }
+            // ---------------------
+
             const success = repo.update(input.id, input.updates);
             if (success) {
-                broadcastChange('consultations');
+                broadcastChange('consultations', input.id);
             }
             return { success };
         }),

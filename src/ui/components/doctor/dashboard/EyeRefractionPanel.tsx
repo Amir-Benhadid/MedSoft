@@ -27,6 +27,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
 
     const storeData = useConsultationStore(state => isRight ? state.rightEye : state.leftEye);
     const updateField = useConsultationStore(state => isRight ? state.updateRightEyeField : state.updateLeftEyeField);
+    const setObjectiveRefraction = useConsultationStore(state => state.setObjectiveRefraction);
+    const setGlassType = useConsultationStore(state => state.setGlassType);
     const data = externalData || storeData;
 
     const handleChange = (field: keyof EyeData, value: string) => {
@@ -96,10 +98,10 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                     <div className={cn("rounded-md p-1 border border-transparent hover:border-slate-100 transition-colors relative z-20", themeSectionBg)}>
                         <RowLayout label="OBJ" title="Réfraction Objective" className="items-center" headerClassName={themeColor}>
                             <div className="grid grid-cols-4 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.objSph ?? ''} onChange={(v) => handleChange("objSph", v)} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objCyl ?? ''} onChange={(v) => handleChange("objCyl", v)} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objAxis ?? ''} onChange={(v) => handleChange("objAxis", v)} options={AXIS_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objAdd ?? ''} onChange={(v) => handleChange("objAdd", v)} options={ADD_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objSph ?? ''} onChange={(v) => setObjectiveRefraction(side, { sph: v })} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objCyl ?? ''} onChange={(v) => setObjectiveRefraction(side, { cyl: v })} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objAxis ?? ''} onChange={(v) => setObjectiveRefraction(side, { axis: v })} options={AXIS_VALUES} disabled={readOnly} placeholder="-" />
+                                <CompactSelect value={data.objAdd ?? ''} onChange={(v) => setObjectiveRefraction(side, { add: v })} options={ADD_VALUES} disabled={readOnly} placeholder="-" />
                             </div>
                         </RowLayout>
                     </div>
@@ -150,7 +152,7 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                             {/* Brand & Glass Type */}
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
                                 <CompactSelect value={data.lensBrand ?? ''} onChange={(v) => handleChange("lensBrand", v)} options={LENS_BRAND_OPTIONS} disabled={readOnly} placeholder="Marque" className="w-full" />
-                                <CompactSelect value={data.glassType ?? ''} onChange={(v) => handleChange("glassType", v)} options={GLASS_TYPE_OPTIONS} disabled={readOnly} placeholder="Verres" className="w-full" />
+                                <CompactSelect value={data.glassType ?? ''} onChange={(v) => setGlassType(v)} options={GLASS_TYPE_OPTIONS} disabled={readOnly} placeholder="Verres" className="w-full" />
                             </div>
                         </div>
                     </RowLayout>

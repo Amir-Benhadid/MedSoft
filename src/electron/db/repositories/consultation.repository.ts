@@ -18,7 +18,7 @@ import {
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { getLocalISOString } from '../../lib/time.js';
-
+import { formatNumberWithSign } from '../../../shared/formatters.js';
 type Consultation = z.infer<typeof ConsultationSchema>;
 type CreateConsultationInput = z.infer<typeof CreateConsultationSchema>;
 type DetailedClinicalExamData = z.infer<typeof DetailedClinicalExamDataSchema>;
@@ -54,15 +54,6 @@ export class ConsultationRepository {
     private mapEye(row: any): any {
         if (!row) return {};
         const raw = row.raw_data ? JSON.parse(row.raw_data) : {};
-
-        const formatNumberWithSign = (value: any): string => {
-            if (value === null || value === undefined || value === '') return '';
-            const num = typeof value === 'number' ? value : parseFloat(String(value).replace(',', '.'));
-            if (isNaN(num) || !isFinite(num)) return String(value);
-            if (num === 0) return '0.00';
-            const formatted = num.toFixed(2);
-            return num > 0 ? `+${formatted}` : formatted;
-        };
 
         return {
             ...raw,

@@ -123,6 +123,19 @@ export class ElectronServerManager {
 	}
 
 	/**
+	 * Emits a Socket.IO event to all connected network clients.
+	 * Safe to call even if the server has not started yet (no-op in that case).
+	 *
+	 * @param event - The event name
+	 * @param data - The payload to emit
+	 */
+	public emitToClients(event: string, data: unknown): void {
+		if (this.io) {
+			this.io.emit(event, data);
+		}
+	}
+
+	/**
 	 * Stops the embedded server gracefully.
 	 * Closes Socket.IO connections, stops the broadcaster, and closes the HTTP server.
 	 *

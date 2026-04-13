@@ -102,13 +102,15 @@ export const drawDocumentHeader = (
 	});
 
 	// Patient name and age on the line below
-	const surnameCased = patient.surname.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-	const nameCased = patient.name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+	const surnameCased = (patient.surname || '').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || 'Patient';
+	const nameCased = (patient.name || '').toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || '';
+
+	const age = patient.dob ? calculateAge(patient.dob) : 0;
 
 	page.drawText(
-		`${surnameCased} ${nameCased}, ${calculateAge(patient.dob) === 1
+		`${surnameCased} ${nameCased}, ${age === 1
 			? '1 an'
-			: `${calculateAge(patient.dob)} ans`
+			: `${age} ans`
 		}`,
 		{
 			x: LEFT_MARGIN,

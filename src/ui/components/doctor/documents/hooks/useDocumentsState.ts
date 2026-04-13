@@ -10,6 +10,7 @@ import {
     VisualAcuityPrintData,
     GenericPrintData
 } from '../types';
+import { formatNumberWithSign } from '@/shared/formatters';
 
 export interface BilanFields {
     bilanPreOp: {
@@ -153,9 +154,32 @@ export const useDocumentsState = ({
     };
 
     // Derived States or Defaults
+    // Helper for near vision calculation in fallbacks
+    const calculateNearFromStore = (sph: string | undefined, add: string | undefined) => {
+        const s = parseFloat(String(sph || '').replace(',', '.')) || 0;
+        const a = parseFloat(String(add || '').replace(',', '.')) || 0;
+        if (!sph && !add) return '';
+        return (formatNumberWithSign(s + a) || (s + a).toFixed(2));
+    };
+
+    // Derived States or Defaults
     const printGlassesData = pStates.printGlassesData || {
-        rightEye: { sph: rightEyeData?.sph || '', cyl: rightEyeData?.cyl || '', axis: rightEyeData?.axis || '', add: rightEyeData?.add || '', glassType: rightEyeData?.glassType || '', nearSph: '', nearCyl: '', nearAxis: '', emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' },
-        leftEye: { sph: leftEyeData?.sph || '', cyl: leftEyeData?.cyl || '', axis: leftEyeData?.axis || '', add: leftEyeData?.add || '', glassType: leftEyeData?.glassType || '', nearSph: '', nearCyl: '', nearAxis: '', emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' },
+        rightEye: { 
+            sph: rightEyeData?.sph || '', cyl: rightEyeData?.cyl || '', axis: rightEyeData?.axis || '', 
+            add: rightEyeData?.add || '', glassType: rightEyeData?.glassType || '', 
+            nearSph: calculateNearFromStore(rightEyeData?.sph, rightEyeData?.add), 
+            nearCyl: rightEyeData?.cyl || '', 
+            nearAxis: rightEyeData?.axis || '', 
+            emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' 
+        },
+        leftEye: { 
+            sph: leftEyeData?.sph || '', cyl: leftEyeData?.cyl || '', axis: leftEyeData?.axis || '', 
+            add: leftEyeData?.add || '', glassType: leftEyeData?.glassType || '', 
+            nearSph: calculateNearFromStore(leftEyeData?.sph, leftEyeData?.add), 
+            nearCyl: leftEyeData?.cyl || '', 
+            nearAxis: leftEyeData?.axis || '', 
+            emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' 
+        },
     };
 
     const printContactLensesData = pStates.printContactLensesData || {

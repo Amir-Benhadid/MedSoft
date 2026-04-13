@@ -1028,6 +1028,15 @@ function createOptimizedSchema(db: Database.Database, businessType?: string) {
 				FOREIGN KEY (consultation_id) REFERENCES consultations(id) ON DELETE CASCADE
 			);
 			CREATE INDEX IF NOT EXISTS idx_clinical_exams_consultation ON clinical_exams(consultation_id);
+
+			CREATE TABLE IF NOT EXISTS consultation_snapshots (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				consultation_id TEXT NOT NULL,
+				snapshot_data TEXT NOT NULL,
+				snapshot_type TEXT NOT NULL,
+				created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			);
+			CREATE INDEX IF NOT EXISTS idx_snapshots_consultation_id ON consultation_snapshots(consultation_id);
 		`);
 	}
 }

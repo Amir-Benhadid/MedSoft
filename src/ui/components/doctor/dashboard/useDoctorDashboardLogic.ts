@@ -340,7 +340,11 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         onSuccess: (_, variables) => {
             const title = variables.finish ? "Consultation terminée." : "Sauvegardée.";
             toast({ title: "Succès", description: title });
-            queryClient.invalidateQueries({ queryKey: ['consultations'] });
+            useConsultationStore.setState({ isDirty: false });
+
+            queryClient.invalidateQueries({ queryKey: ['consultations', 'active', patientId] });
+            queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
+            
             queryClient.invalidateQueries({ queryKey: ['patients', 'get', patientId] });
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });
@@ -365,21 +369,10 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     })();
 
     // Context Switching Logic
-    const handleSwitchConsultation = async (newConsultation: any) => {
+    const handleSwitchConsultation = (newConsultation: any) => {
         if (!currentConsultationId || currentConsultationId === newConsultation.id) return;
 
-        // 1. Auto-save current ONLY if it was "Today's" consultation
-        // The user explicitly requested: "When we switch from current consultation to another... we save."
-        // "But if we change from another ... it should not automatically save."
-        if (isActiveConsultationToday) {
-            try {
-                await saveMutation.mutateAsync({ finish: false });
-            } catch (e) {
-                console.error("Failed to auto-save before switch", e);
-            }
-        }
-
-        // 2. Check Mode Compatability
+        // Check Mode Compatability
         const newMode = (newConsultation.type === 'Radiography') ? 'radiography' : 'normal';
 
         // If mode is different, we MUST navigate. The Dashboard layout depends on URL mode.

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DocumentPrinter } from '../PrintingLogic';
 import { useConsultationStore } from '@/ui/store/consultationStore';
 import { useQueryClient } from '@tanstack/react-query';
+import { formatNumberWithSign } from '@/shared/formatters';
 import genericRecords from '../medical_records_structured.json';
 
 export const usePrintHandlers = ({
@@ -101,12 +102,51 @@ export const usePrintHandlers = ({
 
             printControlFlags: overrides.printControlFlags || {},
             printDataOverrides: {
-                glasses: overrides.glasses ?? overrides.unifiedDocumentsState?.printStates?.printGlassesData,
-                contacts: overrides.contacts ?? overrides.unifiedDocumentsState?.printStates?.printContactLensesData,
+                glasses: overrides.glasses ?? overrides.unifiedDocumentsState?.printStates?.printGlassesData ?? (() => {
+                    const calcNear = (sph: string | undefined, add: string | undefined) => {
+                        const s = parseFloat(String(sph || '').replace(',', '.')) || 0;
+                        const a = parseFloat(String(add || '').replace(',', '.')) || 0;
+                        if (!sph && !add) return '';
+                        return (formatNumberWithSign(s + a) || (s + a).toFixed(2));
+                    };
+                    return {
+                        rightEye: { 
+                            sph: state.rightEye?.sph || '', cyl: state.rightEye?.cyl || '', axis: state.rightEye?.axis || '', 
+                            add: state.rightEye?.add || '', glassType: state.rightEye?.glassType || '', 
+                            nearSph: calcNear(state.rightEye?.sph, state.rightEye?.add), 
+                            nearCyl: state.rightEye?.cyl || '', nearAxis: state.rightEye?.axis || '', 
+                            emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' 
+                        },
+                        leftEye: { 
+                            sph: state.leftEye?.sph || '', cyl: state.leftEye?.cyl || '', axis: state.leftEye?.axis || '', 
+                            add: state.leftEye?.add || '', glassType: state.leftEye?.glassType || '', 
+                            nearSph: calcNear(state.leftEye?.sph, state.leftEye?.add), 
+                            nearCyl: state.leftEye?.cyl || '', nearAxis: state.leftEye?.axis || '', 
+                            emptyEyeOption: 'plan', emptyNearEyeOption: 'plan' 
+                        },
+                    };
+                })(),
+                contacts: overrides.contacts ?? overrides.unifiedDocumentsState?.printStates?.printContactLensesData ?? {
+                    rightEye: { 
+                        sph: state.rightEye?.sph || '', cyl: state.rightEye?.cyl || '', axis: state.rightEye?.axis || '', 
+                        diam: state.rightEye?.diam || '', axis_k: state.rightEye?.axis_k || '', k1: state.rightEye?.k1 || '', k2: state.rightEye?.k2 || '', 
+                        contactLensType: state.rightEye?.contactLensType || 'Sphérique', lensBrand: state.rightEye?.lensBrand || '', lensType: state.rightEye?.lensType || '' 
+                    },
+                    leftEye: { 
+                        sph: state.leftEye?.sph || '', cyl: state.leftEye?.cyl || '', axis: state.leftEye?.axis || '', 
+                        diam: state.leftEye?.diam || '', axis_k: state.leftEye?.axis_k || '', k1: state.leftEye?.k1 || '', k2: state.leftEye?.k2 || '', 
+                        contactLensType: state.leftEye?.contactLensType || 'Sphérique', lensBrand: state.leftEye?.lensBrand || '', lensType: state.leftEye?.lensType || '' 
+                    },
+                },
                 report: overrides.report,
                 workStop: normalizedWorkStop,
                 generic: overrides.generic,
-                visualAcuity: overrides.visualAcuity ?? overrides.unifiedDocumentsState?.printStates?.printVisualAcuityData,
+                visualAcuity: overrides.visualAcuity ?? overrides.unifiedDocumentsState?.printStates?.printVisualAcuityData ?? {
+                    visualAcuityVL_SC_OD: state.rightEye?.visualAcuityVL_SC || state.rightEye?.visualAcuity || '',
+                    visualAcuityVL_SC_OG: state.leftEye?.visualAcuityVL_SC || state.leftEye?.visualAcuity || '',
+                    visualAcuityVL_AC_OD: state.rightEye?.visualAcuityVL_AC || '',
+                    visualAcuityVL_AC_OG: state.leftEye?.visualAcuityVL_AC || '',
+                },
                 certificatAcuite: overrides.certificatAcuite,
                 bilan: overrides.bilan ?? overrides.unifiedDocumentsState?.bilanFields,
                 absence: normalizedAbsence,
@@ -120,12 +160,6 @@ export const usePrintHandlers = ({
                 : undefined,
         };
 
-        console.group('[PDF Print/Preview] getPrintOptions Debugging');
-        console.log('1. documentType:', documentType);
-        console.log('2. original leftEye/rightEye from store:', { left: state.leftEye, right: state.rightEye });
-        console.log('3. overrides.glasses explicitly:', overrides.glasses);
-        console.log('4. printDataOverrides extracted:', printOptions.printDataOverrides);
-        console.groupEnd();
 
         return { documentType, patient, printOptions };
     }, [activeDocTab, patient]);

@@ -517,8 +517,9 @@ export class DocumentPrinter {
 			// 1) Generate the PDF bytes
 			const bytes = await this.generatePdfBytes(documentType, patient, options);
 
-			// 2) IMPORTANT: Build Blob from the Uint8Array itself, not bytes.buffer
-			const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+			// 2) IMPORTANT: Build Blob from the Uint8Array itself. 
+			// Do NOT use bytes.buffer as it may contain trailing data from the allocator.
+			const blob = new Blob([bytes], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
 
 			// 3) Create a hidden iframe to host the PDF
@@ -618,7 +619,7 @@ export class DocumentPrinter {
 	): Promise<string> {
 		try {
 			const bytes = await this.generatePdfBytes(documentType, patient, printOptions);
-			const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+			const blob = new Blob([bytes], { type: 'application/pdf' });
 			return URL.createObjectURL(blob);
 		} catch (err) {
 			console.error('Preview generation error:', err);
