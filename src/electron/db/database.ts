@@ -67,15 +67,12 @@ export function getDatabase(): Database.Database {
 	}
 
 	currentConfig = config;
-	console.log(`📦 Database path: ${dbPath}`);
 
 	db = new Database(dbPath);
 
 	db.pragma('journal_mode = WAL');
 	db.pragma('foreign_keys = ON');
 	db.exec('PRAGMA busy_timeout = 15000'); // Wait up to 15s for lock instead of "database is locked"
-
-	console.log('✅ Database initialized');
 
 	// Register fuzzy matching functions
 	// 1. Levenshtein Distance Helper
@@ -277,8 +274,6 @@ function setupDatabase(database: Database.Database, config: AppConfig) {
 	}
 
 
-
-	console.log(`✅ Database schema initialized for type: ${type} (Mode: ${config.appMode})`);
 
 	try {
 		const tableInfo = database.prepare("PRAGMA table_info(appointments)").all() as any[];

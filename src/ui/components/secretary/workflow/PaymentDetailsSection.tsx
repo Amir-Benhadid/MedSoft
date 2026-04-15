@@ -12,6 +12,8 @@ interface PaymentDetailsSectionProps {
     setAmountToPay: React.Dispatch<React.SetStateAction<number | ''>>;
     originalAmount: number;
     isPartial: boolean;
+    previousPaid?: number;
+    remainingAfterPayment?: number;
     consultationTypes?: ConsultationType[];
     selectedTypeId?: string;
     setSelectedTypeId?: (id: string) => void;
@@ -23,6 +25,8 @@ export function PaymentDetailsSection({
     setAmountToPay,
     originalAmount,
     isPartial,
+    previousPaid = 0,
+    remainingAfterPayment = 0,
     consultationTypes = [],
     selectedTypeId,
     setSelectedTypeId,
@@ -95,6 +99,12 @@ export function PaymentDetailsSection({
                 </Label>
 
                 <div className="space-y-3">
+                    {previousPaid > 0 && (
+                        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                            Deja encaisse: <span className="font-semibold text-slate-800">{previousPaid} DA</span>
+                        </div>
+                    )}
+
                     <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <Banknote className={cn(
@@ -151,12 +161,12 @@ export function PaymentDetailsSection({
                                 <div className="mt-0.5 p-1 bg-amber-100 rounded-md shrink-0">
                                     <span className="text-xs font-bold">⚠️</span>
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-amber-900">Paiement Partiel</span>
-                                    <span className="text-xs text-amber-700/80">Le reste sera automatiquement marqué comme dette.</span>
-                                </div>
-                            </div>
-                        </Card>
+                                 <div className="flex flex-col">
+                                     <span className="text-sm font-bold text-amber-900">Paiement Partiel</span>
+                                     <span className="text-xs text-amber-700/80">Reste apres encaissement: {remainingAfterPayment} DA.</span>
+                                 </div>
+                             </div>
+                         </Card>
                     </div>
                 )}
             </Card>

@@ -118,15 +118,31 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
                         </div>
                     ) : (
                         otherItems.map(item => {
+                            const isFinished = ['completed', 'paid', 'creance'].includes(item.status);
                             const isWaitlist = item.source === 'waitlist';
-                            // Match stats colors: Amber for waitlist, Blue for appointments
-                            const baseBg = isWaitlist ? "bg-amber-500/10" : "bg-blue-500/10";
-                            const hoverBg = isWaitlist ? "hover:bg-amber-500/20" : "hover:bg-blue-500/20";
-                            const borderColor = isWaitlist ? "border-amber-300" : "border-blue-300";
-                            const hoverBorder = isWaitlist ? "hover:border-amber-500" : "hover:border-blue-500";
-                            const selectedBorder = isWaitlist ? "border-amber-500" : "border-blue-500";
-                            const textColor = isWaitlist ? "text-amber-800" : "text-blue-800";
-                            const secondaryTextColor = isWaitlist ? "text-amber-600/80" : "text-blue-600/80";
+                            const isDebt = item.status === 'creance';
+                            const isPaid = item.status === 'paid';
+                            const baseBg = isFinished
+                                ? isDebt ? 'bg-red-500/10' : isPaid ? 'bg-teal-500/10' : 'bg-emerald-500/10'
+                                : isWaitlist ? 'bg-amber-500/10' : 'bg-blue-500/10';
+                            const hoverBg = isFinished
+                                ? isDebt ? 'hover:bg-red-500/20' : isPaid ? 'hover:bg-teal-500/20' : 'hover:bg-emerald-500/20'
+                                : isWaitlist ? 'hover:bg-amber-500/20' : 'hover:bg-blue-500/20';
+                            const borderColor = isFinished
+                                ? isDebt ? 'border-red-300' : isPaid ? 'border-teal-300' : 'border-emerald-300'
+                                : isWaitlist ? 'border-amber-300' : 'border-blue-300';
+                            const hoverBorder = isFinished
+                                ? isDebt ? 'hover:border-red-500' : isPaid ? 'hover:border-teal-500' : 'hover:border-emerald-500'
+                                : isWaitlist ? 'hover:border-amber-500' : 'hover:border-blue-500';
+                            const selectedBorder = isFinished
+                                ? isDebt ? 'border-red-500' : isPaid ? 'border-teal-500' : 'border-emerald-500'
+                                : isWaitlist ? 'border-amber-500' : 'border-blue-500';
+                            const textColor = isFinished
+                                ? isDebt ? 'text-red-800' : isPaid ? 'text-teal-800' : 'text-emerald-800'
+                                : isWaitlist ? 'text-amber-800' : 'text-blue-800';
+                            const secondaryTextColor = isFinished
+                                ? isDebt ? 'text-red-700/80' : isPaid ? 'text-teal-700/80' : 'text-emerald-700/80'
+                                : isWaitlist ? 'text-amber-600/80' : 'text-blue-600/80';
 
                             return (
                                 <div

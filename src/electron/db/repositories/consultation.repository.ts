@@ -82,6 +82,114 @@ export class ConsultationRepository {
         };
     }
 
+    private findReusableInvoice(patientId: string, consultationDate: string, consultationId?: string) {
+        const day = consultationDate.split('T')[0];
+        return this.db.prepare(`
+            SELECT id, paid
+            FROM invoices
+            WHERE patient_id = ?
+              AND created_at LIKE ?
+              AND (? IS NULL OR consultation_id != ?)
+            ORDER BY created_at DESC
+            LIMIT 1
+        `).get(patientId, `${day}%`, consultationId || null, consultationId || null) as { id: string; paid: number } | undefined;
+    }
+
+    private upsertInvoiceForConsultation({
+        consultationId,
+        patientId,
+        consultationDate,
+        amount,
+        type,
+        method,
+        consultationTypeId,
+    }: {
+        consultationId: string;
+        patientId: string;
+        consultationDate: string;
+        amount: number;
+        type: string | null;
+        method?: string | null;
+        consultationTypeId?: number | null;
+    }) {
+        const now = getLocalISOString();
+        const existingInvoice = this.db.prepare('SELECT id FROM invoices WHERE consultation_id = ?').get(consultationId) as any;
+
+        if (existingInvoice) {
+            this.db.prepare(`
+                UPDATE invoices
+                SET patient_id = ?, amount = ?, total = ?, type = ?, method = ?, consultation_type_id = ?, updated_at = ?
+                WHERE id = ?
+            `).run(
+                patientId,
+                amount,
+                amount,
+                type,
+                method || 'cash',
+                consultationTypeId || null,
+                now,
+                existingInvoice.id
+            );
+            return existingInvoice.id as string;
+        }
+
+        const reusableInvoice = this.findReusableInvoice(patientId, consultationDate, consultationId);
+        if (reusableInvoice) {
+            this.db.prepare(`
+                UPDATE invoices
+                SET consultation_id = ?, patient_id = ?, amount = ?, total = ?, type = ?, method = ?, consultation_type_id = ?, updated_at = ?
+                WHERE id = ?
+            `).run(
+                consultationId,
+                patientId,
+                amount,
+                amount,
+                type,
+                method || 'cash',
+                consultationTypeId || null,
+                now,
+                reusableInvoice.id
+            );
+            return reusableInvoice.id as string;
+        }
+
+        const invoiceId = randomUUID();
+        this.db.prepare(`
+            INSERT INTO invoices (id, consultation_id, patient_id, amount, total, paid, type, method, consultation_type_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+            invoiceId,
+            consultationId,
+            patientId,
+            amount,
+            amount,
+            0,
+            type,
+            method || 'cash',
+            consultationTypeId || null,
+            now,
+            now
+        );
+        return invoiceId;
+    }
+
+    private syncSchedulingPaymentState(patientId: string, total: number, paid: number) {
+        const now = getLocalISOString();
+        const nextState = paid >= total ? 'paid' : paid > 0 ? 'creance' : 'completed';
+
+        this.db.prepare(`
+            UPDATE appointments
+            SET state = ?, updated_at = ?
+            WHERE patient_id = ? AND state IN ('completed', 'paid', 'creance')
+        `).run(nextState, now, patientId);
+
+        this.db.prepare(`
+            UPDATE waitlist_entries
+            SET state = ?, updated_at = ?
+            WHERE patient_id = ? AND state IN ('completed', 'paid', 'creance')
+        `).run(nextState, now, patientId);
+    }
+
     /**
      * Maps database rows to a complete consultation object.
      *
@@ -316,18 +424,15 @@ export class ConsultationRepository {
                     }
 
                     if (data.payment) {
-                        const invoiceId = randomUUID();
-                        const paidAmount = 0;
-
-                        this.db.prepare(`
-                            INSERT INTO invoices (
-                                id, consultation_id, patient_id, amount, total, paid, type, method, consultation_type_id, created_at, updated_at
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        `).run(
-                            invoiceId, id, data.patient_id, data.payment.amount, data.payment.amount, paidAmount,
-                            data.payment.type, data.payment.method || 'cash', data.payment.consultation_type_id || null,
-                            now, now
-                        );
+                        this.upsertInvoiceForConsultation({
+                            consultationId: id,
+                            patientId: data.patient_id,
+                            consultationDate: data.date || now,
+                            amount: data.payment.amount,
+                            type: data.payment.type,
+                            method: data.payment.method || 'cash',
+                            consultationTypeId: data.payment.consultation_type_id || null,
+                        });
                     } else {
                         const today = now.split('T')[0];
                         let schedulingData = this.db.prepare(`
@@ -348,18 +453,17 @@ export class ConsultationRepository {
                             const typeData = this.db.prepare('SELECT amount FROM consultation_types WHERE id = ?').get(schedulingData.consultation_type_id) as any;
 
                             if (typeData) {
-                                const invoiceId = randomUUID();
                                 const amount = typeData.amount || 0;
 
-                                this.db.prepare(`
-                                    INSERT INTO invoices (
-                                        id, consultation_id, patient_id, amount, total, paid, type, method, consultation_type_id, created_at, updated_at
-                                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                `).run(
-                                    invoiceId, id, data.patient_id, amount, amount, 0,
-                                    'standard', 'cash', schedulingData.consultation_type_id,
-                                    now, now
-                                );
+                                this.upsertInvoiceForConsultation({
+                                    consultationId: id,
+                                    patientId: data.patient_id,
+                                    consultationDate: data.date || now,
+                                    amount,
+                                    type: 'standard',
+                                    method: 'cash',
+                                    consultationTypeId: schedulingData.consultation_type_id,
+                                });
                             }
                         }
                     }
@@ -531,50 +635,37 @@ export class ConsultationRepository {
                 }
 
                 if (updates.payment) {
-                    const existingInvoice = this.db.prepare('SELECT id, patient_id FROM invoices WHERE consultation_id = ?').get(id) as any;
+                    let patientId = updates.patient_id;
 
-                    const forceNewInvoice = isSecretary;
-
-                    if (existingInvoice && !forceNewInvoice) {
-                        this.db.prepare(`
-                            UPDATE invoices SET amount = ?, total = ?, type = ?, consultation_type_id = ?, updated_at = ? 
-                            WHERE id = ?
-                        `).run(
-                            updates.payment.amount,
-                            updates.payment.amount,
-                            updates.payment.type || null,
-                            updates.payment.consultation_type_id || null,
-                            now,
-                            existingInvoice.id
-                        );
-                    } else {
-                        const invoiceId = randomUUID();
-                        let patientId = updates.patient_id;
-                        if (!patientId && existingInvoice) {
-                            patientId = existingInvoice.patient_id;
+                    if (!patientId && hasConsultations) {
+                        const consult = this.db.prepare('SELECT patient_id, date FROM consultations WHERE id = ?').get(id) as any;
+                        if (consult) {
+                            patientId = consult.patient_id;
                         }
-                        if (!patientId && hasConsultations) {
-                            const consult = this.db.prepare('SELECT patient_id FROM consultations WHERE id = ?').get(id) as any;
-                            if (consult) patientId = consult.patient_id;
-                        }
+                    }
 
-                        this.db.prepare(`
-                            INSERT INTO invoices (id, consultation_id, patient_id, amount, total, paid, type, method, consultation_type_id, created_at, updated_at)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        `).run(
-                            invoiceId,
-                            id,
-                            patientId || null,
-                            updates.payment.amount,
-                            updates.payment.amount,
-                            0, // paid
-                            updates.payment.type || null,
-                            updates.payment.method || 'cash',
-                            updates.payment.consultation_type_id || null,
-                            now,
-                            now
-                        );
-                        console.log(`💰 New Invoice Created (Force New: ${forceNewInvoice}) ID: ${invoiceId}`);
+                    const consultMeta = hasConsultations
+                        ? this.db.prepare('SELECT patient_id, date FROM consultations WHERE id = ?').get(id) as any
+                        : null;
+
+                    const consultationPatientId = patientId || consultMeta?.patient_id || null;
+                    const consultationDate = updates.date || consultMeta?.date || now;
+
+                    if (consultationPatientId) {
+                        this.upsertInvoiceForConsultation({
+                            consultationId: id,
+                            patientId: consultationPatientId,
+                            consultationDate,
+                            amount: updates.payment.amount,
+                            type: updates.payment.type || null,
+                            method: updates.payment.method || 'cash',
+                            consultationTypeId: updates.payment.consultation_type_id || null,
+                        });
+
+                        const syncedInvoice = this.db.prepare('SELECT total, paid FROM invoices WHERE consultation_id = ?').get(id) as any;
+                        if (syncedInvoice) {
+                            this.syncSchedulingPaymentState(consultationPatientId, syncedInvoice.total || 0, syncedInvoice.paid || 0);
+                        }
                     }
                 }
 

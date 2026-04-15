@@ -5,6 +5,7 @@ import { Check, CreditCard, Loader2, Wallet } from 'lucide-react';
 import { useSecretaryPaymentLogic } from './useSecretaryPaymentLogic';
 import { PaymentDetailsSection } from './PaymentDetailsSection';
 import { NextAppointmentSection } from './NextAppointmentSection';
+import { PatientDebtSummary } from '@/ui/components/shared/billing/PatientDebtSummary';
 
 interface SecretaryPaymentSheetProps {
     isOpen: boolean;
@@ -30,6 +31,8 @@ export function SecretaryPaymentSheet({
         paymentStatus,
         isPartial,
         originalAmount,
+        previousPaid,
+        remainingAfterPayment,
         payMutation,
         nextAppt,
         consultationTypes,
@@ -65,11 +68,15 @@ export function SecretaryPaymentSheet({
                     </div>
                 ) : (
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+                        <PatientDebtSummary patientId={patientId} variant="prominent" />
+
                         <PaymentDetailsSection
                             amountToPay={amountToPay}
                             setAmountToPay={setAmountToPay}
                             originalAmount={originalAmount}
                             isPartial={isPartial}
+                            previousPaid={previousPaid}
+                            remainingAfterPayment={remainingAfterPayment}
                             consultationTypes={consultationTypes}
                             selectedTypeId={selectedTypeId}
                             setSelectedTypeId={setSelectedTypeId}

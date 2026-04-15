@@ -24,6 +24,7 @@ interface DashboardHeaderProps {
     onOpenHistory: () => void;
     onOpenPaymentHistory: () => void;
     showFinishButton?: boolean;
+    consultationStatus?: 'pending' | 'completed';
 }
 
 export const DashboardHeader = memo(function DashboardHeader({
@@ -34,7 +35,8 @@ export const DashboardHeader = memo(function DashboardHeader({
     isFinishSheetOpen,
     onOpenHistory,
     onOpenPaymentHistory,
-    showFinishButton = true
+    showFinishButton = true,
+    consultationStatus
 }: DashboardHeaderProps) {
     if (!patient) return null;
 
@@ -148,7 +150,7 @@ export const DashboardHeader = memo(function DashboardHeader({
                             onClick={() => setIsFinishSheetOpen(true)}
                         >
                             <Save className="w-4 h-4" />
-                            Terminer la consultation
+                            {consultationStatus === 'completed' ? 'Mettre a jour la consultation' : 'Terminer la consultation'}
                         </Button>
                     )}
                 </div>

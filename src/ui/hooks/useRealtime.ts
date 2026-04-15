@@ -17,7 +17,6 @@ export function useRealtime() {
         if (window.electronAPI?.onDataChanged) {
             unsubscribeIPC = window.electronAPI.onDataChanged((data) => {
                 const payload = typeof data === 'string' ? { resource: data } : data;
-                console.log(`[IPC] Data changed: ${payload.resource}`);
                 handleResourceChange(payload);
             });
         }
@@ -33,29 +32,23 @@ export function useRealtime() {
                 const ip = config.serverIP || 'localhost';
                 const url = `http://${ip}:${port}`;
 
-                console.log(`🔌 [Socket.IO] Connecting to ${url}...`);
                 socket = io(url, {
                     transports: ['websocket', 'polling'],
                     reconnection: true,
                     reconnectionAttempts: 10
                 });
 
-                socket.on('connect', () => {
-                    console.log('✅ [Socket.IO] Connected to synchronization server');
-                });
-
                 socket.on('data-changed', (data: any) => {
                     const payload = typeof data === 'string' ? { resource: data } : data;
-                    console.log(`🌐 [Socket.IO] Data changed: ${payload.resource}`);
                     handleResourceChange(payload);
                 });
 
                 socket.on('connect_error', (error: any) => {
-                    console.warn('⚠️ [Socket.IO] Connection error:', error.message);
+                    console.warn('[Socket.IO] Connection error:', error.message);
                 });
 
             } catch (error) {
-                console.error('❌ [Socket.IO] Setup failed:', error);
+                console.error('[Socket.IO] Setup failed:', error);
             }
         };
 
@@ -80,13 +73,19 @@ export function useRealtime() {
 
             if (resource === 'consultations') {
                 queryClient.invalidateQueries({ queryKey: ['consultations', 'last-completed'] });
+                queryClient.invalidateQueries({ queryKey: ['invoice'] });
+                queryClient.invalidateQueries({ queryKey: ['invoices'] });
+            }
+
+            if (resource === 'invoices') {
+                queryClient.invalidateQueries({ queryKey: ['invoice'] });
+                queryClient.invalidateQueries({ queryKey: ['invoices'] });
             }
         };
 
         return () => {
             if (unsubscribeIPC) unsubscribeIPC();
             if (socket) {
-                console.log('🔌 [Socket.IO] Disconnecting...');
                 socket.disconnect();
             }
         };

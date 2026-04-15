@@ -46,7 +46,6 @@ export class LentilleService {
             this.initPromise = (async () => {
                 try {
                     this.conversions = await orpcClient.conversion.getAll();
-                    console.log(`[LentilleService] Loaded ${this.conversions?.length} conversion records.`);
                 } catch (error) {
                     console.error('[LentilleService] Failed to load conversions:', error);
                     this.conversions = []; // Fallback to empty to prevent infinite retries/errors
@@ -161,11 +160,8 @@ export class LentilleService {
                 };
             }
 
-            console.log(`[LentilleService] Converting: Sph=${sph}, Cyl=${cyl}, Axis=${axis}, Type=${lensType}`);
-
             // Convert the sphere
             const sphereConversion = await this.getConversionForSphere(sph);
-            console.log(`[LentilleService] Sphere conversion for ${sph}:`, sphereConversion);
 
             // Helper to safely parse DB values which might be strings despite interface saying number
             // (Maintaining this from previous fix as DB structure hasn't changed, only access method)
@@ -179,12 +175,9 @@ export class LentilleService {
                 ? (sph < 0 ? parseVal(sphereConversion.lun_moins, sph) : parseVal(sphereConversion.lun_plus, sph))
                 : sph;
 
-            console.log(`[LentilleService] Converted Sphere (Raw): ${convertedSphere}`);
-
             // Convert (sphere + cylinder)
             const spherePlusCylinder = sph + cyl;
             const spherePlusCylinderConversion = await this.getConversionForSphere(spherePlusCylinder);
-            console.log(`[LentilleService] Sphere+Cyl conversion for ${spherePlusCylinder}:`, spherePlusCylinderConversion);
 
             let convertedSpherePlusCylinder: number;
             if (spherePlusCylinderConversion) {
@@ -194,25 +187,20 @@ export class LentilleService {
             } else {
                 convertedSpherePlusCylinder = spherePlusCylinder;
             }
-            console.log(`[LentilleService] Converted Sph+Cyl: ${convertedSpherePlusCylinder}`);
 
             // Calculate new cylinder: new cylinder = convertedSpherePlusCylinder - convertedSphere
             let newCylinder = convertedSpherePlusCylinder - convertedSphere;
-            console.log(`[LentilleService] New Cylinder (before type check): ${newCylinder}`);
 
             // Start with new sphere = convertedSphere
             let newSphere = convertedSphere;
 
             // Exception: When type == "Sphérique" AND cylinder != 0.
             if (lensType === 'Sphérique' && Math.abs(cyl) > 0.01) {
-                console.log(`[LentilleService] Spherical adjustment triggered`);
                 const calculatedSphere = convertedSphere + 0.5 * newCylinder;
                 // Round to nearest 0.25 (using signs correctly for myopia/hyperopia)
                 newSphere = Math.round(calculatedSphere * 4) / 4;
                 newCylinder = 0;
             }
-
-            console.log(`[LentilleService] Final Result: Sph=${newSphere}, Cyl=${newCylinder}`);
 
             // Final safety check to ensure we return finite numbers
             return {

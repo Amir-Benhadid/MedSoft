@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ConsultationType } from '@/ui/hooks/useConsultationTypes';
+import { orpcClient } from '@/ui/lib/orpc/client';
 
 interface UseFinishSheetLogicProps {
     isOpen: boolean;
+    consultationId?: string;
     consultationTypes: ConsultationType[];
     nextAppointmentData?: {
         date?: string;
@@ -15,6 +18,7 @@ interface UseFinishSheetLogicProps {
 
 export function useFinishSheetLogic({
     isOpen,
+    consultationId,
     consultationTypes,
     nextAppointmentData,
     onConfirm,
@@ -30,27 +34,37 @@ export function useFinishSheetLogic({
     const [nextApptType, setNextApptType] = useState<string>('control');
     const [nextApptTimeframe, setNextApptTimeframe] = useState<string>('');
 
+    const { data: invoice } = useQuery({
+        queryKey: ['invoice', consultationId],
+        queryFn: () => orpcClient.invoices.getByConsultationId({ consultationId: consultationId! }),
+        enabled: isOpen && !!consultationId,
+    });
+
     // Set initial values
     useEffect(() => {
         if (isOpen) {
-            // Price init
-            if (!isPriceModified && consultationTypes.length > 0) {
+            if (invoice) {
+                if (invoice.consultation_type_id) {
+                    setConsultationTypeId(invoice.consultation_type_id.toString());
+                }
+                setAmount(invoice.amount);
+                setStatus(invoice.type === 'gratuit' || invoice.amount === 0 ? 'gratuit' : 'standard');
+                setIsPriceModified(false);
+            } else if (!isPriceModified && consultationTypes.length > 0) {
                 const typeId = parseInt(consultationTypeId);
-                const type = consultationTypes.find(t => t.id === typeId);
-                // Only reset amount if we found a type and price hasn't been manually modified.
-                // However, initial load usually sets '1' as default.
-                // If the user hasn't touched the price, update it based on type.
-                if (type) setAmount(type.amount);
+                const type = consultationTypes.find(t => t.id === typeId) || consultationTypes[0];
+                if (type) {
+                    setConsultationTypeId(type.id.toString());
+                    setAmount(type.amount);
+                }
             }
 
-            // Next Appointment Init
             if (nextAppointmentData) {
                 if (nextAppointmentData.date) setNextApptDate(nextAppointmentData.date.split('T')[0]);
                 if (nextAppointmentData.timeframe) setNextApptTimeframe(nextAppointmentData.timeframe);
-                // Reason usually maps to type, but loose mapping
             }
         }
-    }, [isOpen, consultationTypeId, consultationTypes, isPriceModified, nextAppointmentData]);
+    }, [isOpen, consultationTypeId, consultationTypes, invoice, isPriceModified, nextAppointmentData]);
 
     const handleTypeChange = (value: string) => {
         setConsultationTypeId(value);

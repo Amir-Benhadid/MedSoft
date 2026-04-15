@@ -8,8 +8,8 @@ interface DoctorStatsHeaderProps {
     stats: any;
     isLoading: boolean;
     patientCount: number;
-    activeFilter: 'all' | 'present' | 'waiting' | 'consultation';
-    onFilterChange: (filter: 'all' | 'present' | 'waiting' | 'consultation') => void;
+    activeFilter: 'all' | 'present' | 'waiting' | 'completed';
+    onFilterChange: (filter: 'all' | 'present' | 'waiting' | 'completed') => void;
     searchTerm: string;
     onSearchChange: (term: string) => void;
 }
@@ -154,15 +154,15 @@ export default function DoctorStatsHeader({
                 <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onFilterChange('consultation')}
+                    onClick={() => onFilterChange('completed')}
                     className={cn(
                         "flex-1 h-8 text-[10px] uppercase font-bold tracking-wider rounded-lg transition-all border",
-                        activeFilter === 'consultation'
+                        activeFilter === 'completed'
                             ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
                             : "bg-white text-slate-500 border-slate-200 hover:bg-emerald-50 hover:text-emerald-700"
                     )}
                 >
-                    En Cours
+                    Termine
                 </Button>
                 <Button
                     variant="ghost"

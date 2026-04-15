@@ -36,6 +36,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
         setIsHistoryOpen,
         history,
         currentConsultationId,
+        currentConsultationStatus,
         handleSwitchConsultation,
         isActiveConsultationToday,
         hasTodayConsultation,
@@ -71,6 +72,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
                 onOpenHistory={() => setIsHistoryOpen(true)}
                 onOpenPaymentHistory={() => setIsPaymentHistoryOpen(true)}
                 showFinishButton={isActiveConsultationToday}
+                consultationStatus={currentConsultationStatus}
             />
 
             {/* Main Content - No Tabs, just Consultation View */}
@@ -122,6 +124,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
                 onClose={() => setIsFinishSheetOpen(false)}
                 onConfirm={(data) => saveMutation.mutate({ paymentData: data, finish: true })}
                 patientId={patientId}
+                consultationId={currentConsultationId || undefined}
                 nextAppointmentData={nextAppointmentData}
                 consultationTypes={consultationTypes}
             />

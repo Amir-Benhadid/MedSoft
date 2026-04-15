@@ -18,9 +18,8 @@ export function broadcastChange(resource: string, id?: string) {
             win.webContents.send('data-changed', payload);
         }
     });
-
+    
     // 2. Network clients via Socket.IO (no-op if server not started)
     const serverManager = ElectronServerManager.getInstance();
-    console.log(`🌐 [Socket.IO] Broadcasting change for: ${resource}${id ? ` (id: ${id})` : ''}`);
     serverManager.emitToClients('data-changed', payload);
 }

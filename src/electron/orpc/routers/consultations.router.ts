@@ -117,14 +117,17 @@ export const consultationsRouter = os.router({
             if (currentData) {
                 try {
                     const db = (await import('../../db/database.js')).getDatabase();
-                    db.prepare(`
-                        INSERT INTO consultation_snapshots (consultation_id, snapshot_data, snapshot_type)
-                        VALUES (?, ?, ?)
-                    `).run(
-                        input.id,
-                        JSON.stringify(currentData),
-                        input.updates.status === 'completed' && currentData.status !== 'completed' ? 'completion' : 'auto_save'
-                    );
+                    const hasSnapshotsTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='consultation_snapshots'").get();
+                    if (hasSnapshotsTable) {
+                        db.prepare(`
+                            INSERT INTO consultation_snapshots (consultation_id, snapshot_data, snapshot_type)
+                            VALUES (?, ?, ?)
+                        `).run(
+                            input.id,
+                            JSON.stringify(currentData),
+                            input.updates.status === 'completed' && currentData.status !== 'completed' ? 'completion' : 'auto_save'
+                        );
+                    }
                 } catch(e) {
                     console.warn("Could not save snapshot", e);
                 }
@@ -134,6 +137,11 @@ export const consultationsRouter = os.router({
             const success = repo.update(input.id, input.updates);
             if (success) {
                 broadcastChange('consultations', input.id);
+                if (input.updates.payment) {
+                    broadcastChange('invoices');
+                    broadcastChange('appointments');
+                    broadcastChange('waitlist');
+                }
             }
             return { success };
         }),

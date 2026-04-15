@@ -1,7 +1,7 @@
 export interface UnifiedPatientItem {
     patientId: string;
     patient: any; // Using any for flexibility to match unified fields
-    status: 'in_consultation' | 'waiting' | 'booked' | 'completed' | 'paid' | 'cancelled';
+    status: 'in_consultation' | 'waiting' | 'booked' | 'completed' | 'paid' | 'creance' | 'cancelled';
     time: Date;
     source: 'waitlist' | 'appointment';
     waitlistId?: string;

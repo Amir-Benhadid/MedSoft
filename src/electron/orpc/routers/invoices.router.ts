@@ -37,6 +37,16 @@ export const invoicesRouter = os.router({
             return repo.findByPatientId(input.patientId);
         }),
 
+    getOutstandingSummary: os
+        .input(z.object({
+            patientId: z.string(),
+            excludeConsultationId: z.string().optional(),
+        }))
+        .handler(async ({ input }) => {
+            const repo = new InvoiceRepository();
+            return repo.getOutstandingSummaryByPatientId(input.patientId, input.excludeConsultationId);
+        }),
+
     /**
      * Updates an invoice.
      *
@@ -50,6 +60,7 @@ export const invoicesRouter = os.router({
             updates: z.object({
                 paid: z.number().optional(),
                 method: z.string().optional(),
+                patient_id: z.string().nullable().optional(),
             })
         }))
         .handler(async ({ input }) => {

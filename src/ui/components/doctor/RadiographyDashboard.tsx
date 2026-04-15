@@ -40,6 +40,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
         setIsHistoryOpen,
         history,
         currentConsultationId,
+        currentConsultationStatus,
         handleSwitchConsultation,
         isActiveConsultationToday
     } = useDoctorDashboardLogic({ patientId, onBack, mode: 'radiography', consultationId });
@@ -81,6 +82,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                 onOpenHistory={() => setIsHistoryOpen(true)}
                 onOpenPaymentHistory={() => { }}
                 showFinishButton={isActiveConsultationToday}
+                consultationStatus={currentConsultationStatus}
             />
 
             {/* Main Content - 50/50 Split */}
@@ -151,6 +153,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                 onClose={() => setIsFinishSheetOpen(false)}
                 onConfirm={(data) => saveMutation.mutate({ paymentData: data, finish: true })}
                 patientId={patientId}
+                consultationId={currentConsultationId || undefined}
                 nextAppointmentData={nextAppointmentData}
                 consultationTypes={consultationTypes}
             />

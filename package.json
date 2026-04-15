@@ -1,7 +1,7 @@
 {
 	"name": "medsoft",
 	"private": true,
-	"version": "1.0.22",
+	"version": "1.0.23",
 	"type": "module",
 	"main": "dist-electron/main.js",
 	"description": "Software for medical appointments.",

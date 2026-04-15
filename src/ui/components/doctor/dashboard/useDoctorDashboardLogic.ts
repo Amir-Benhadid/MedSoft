@@ -57,14 +57,11 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     const { data: consultationData, isLoading: isConsultationLoading } = useQuery({
         queryKey: ['consultations', 'active', patientId, mode, consultationId, action],
         queryFn: async () => {
-            console.log(`🔍 useDoctorDashboardLogic: Locating consultation (patientId: ${patientId}, consultationId: ${consultationId}, action: ${action})`);
-            
             // Logic 0: If specific ID requested in URL, fetch that strictly
             if (consultationId) {
                 const all = await orpcClient.consultations.listByPatient({ patientId });
                 const found = all.find(c => c.id === consultationId);
                 if (found) return found;
-                console.warn("⚠️ Consultation ID in URL not found, falling back...");
             }
 
             const consultations = await orpcClient.consultations.listByPatient({ patientId });
@@ -91,14 +88,18 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                 });
             }
 
-            if (specificToday) {
-                console.log("✅ Found pending consultation for today:", specificToday.id);
-                return specificToday;
-            }
+            if (specificToday) return specificToday;
+
+            const completedToday = consultations.find(c => {
+                const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
+                const isCorrectType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
+                return isWithinRange && isCorrectType && c.status === 'completed';
+            });
+
+            if (completedToday) return completedToday;
 
             // Logic 2: Auto-create if action is 'consultation' (triggered from patient list)
             if (action === 'consultation') {
-                console.log("🚀 Auto-creating consultation record...");
                 try {
                     const newConsultation = await orpcClient.consultations.create({
                         patient_id: patientId,
@@ -106,28 +107,22 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                         type: targetType,
                         status: 'pending',
                     });
-                    
-                    if (!newConsultation) {
-                        console.error("❌ Failed to auto-create consultation (returned null)");
-                        return null;
-                    }
+                    if (!newConsultation) return null;
 
                     // Success: Invalidate relevant queries
                     queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
                     return newConsultation;
                 } catch (err) {
-                    console.error("❌ Critical error during auto-creation:", err);
+                    console.error('Failed to auto-create consultation:', err);
                     return null;
                 }
             }
 
             // Logic 3: Fallback to the MOST RECENT consultation in history (for 'view' mode)
             if (consultations.length > 0) {
-                console.log("ℹ️ View mode fallback: Most recent history entry.");
                 return consultations[0];
             }
 
-            console.log("ℹ️ No consultation record found.");
             return null;
         },
         enabled: !!patientId,
@@ -148,7 +143,6 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     // 3. Create Mutation (Manual)
     const createConsultationMutation = useMutation({
         mutationFn: async () => {
-            console.log("➕ Manual consultation creation requested...");
             let detectedType = mode === 'radiography' ? 'Radiography' : 'Consultation';
             const today = getLocalTodayDate();
             const { start, end } = getDayRangeEncoded(today);
@@ -162,9 +156,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                     if (cType?.nature === 'radiography') detectedType = 'Radiography';
                     else if (cType?.nature === 'normal') detectedType = 'Consultation';
                 }
-            } catch (e) {
-                console.warn("Type detection failed (not critical)", e);
-            }
+            } catch {}
 
             const result = await orpcClient.consultations.create({
                 patient_id: patientId,
@@ -177,7 +169,6 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             return result;
         },
         onSuccess: (newConsultation) => {
-            console.log("✅ Consultation created successfully:", newConsultation.id);
             toast({ title: "Nouvelle consultation créée" });
             
             // Refetch active query to switch to the new one
@@ -199,7 +190,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             setCurrentConsultationId(newConsultation.id);
         },
         onError: (err: any) => {
-            console.error("❌ Failed to create consultation:", err);
+            console.error('Failed to create consultation:', err);
             toast({ 
                 title: "Erreur", 
                 description: err.message || "Impossible de créer la consultation.", 
@@ -229,14 +220,12 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     useEffect(() => {
         // Init with fetched data
         if (!currentConsultationId && consultationData) {
-            console.log("📍 Syncing currentConsultationId with fetched data:", consultationData.id);
             setCurrentConsultationId(consultationData.id);
 
             // CRITICAL: If we are viewing a consultation but the ID is not in the URL,
             // we must update the navigation state. This "locks" the session and 
             // prevents Logic 2 (Auto-create) from re-running on refetches.
             if (!consultationId) {
-                console.log("🔗 Locking URL to consultation ID:", consultationData.id);
                 navigate({
                     search: (prev: any) => ({
                         ...prev,
@@ -251,9 +240,6 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         // Initial Store Load
         // Load data if we have it and it's different from what's currently in the store
         if (consultationData && !isHistoryLoading && consultationData.id !== loadedConsultationId) {
-            console.log("💾 Loading consultation data into store:", consultationData.id);
-            console.log("   (Action:", action, ", PatientId:", patientId, ")");
-
             // Find previous consultation to carry over fields
             let previousConsultation: any = null;
             if (history && history.length > 0) {
@@ -304,10 +290,10 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                 throw new Error("No active consultation");
             }
 
-            console.log(`💾 Saving consultation ${currentConsultationId}${finish ? ' (Finalizing)' : ''}...`);
-
             // Get standard state
             const state = useConsultationStore.getState();
+
+            const activeStatus = activeConsultation?.status === 'completed' ? 'completed' : 'pending';
 
             // Payload
             const payload: any = {
@@ -321,10 +307,9 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                 },
                 prescription: { treatments: state.prescriptions },
                 documents_data: state.documentOverrides as any,
-                // Only mark completed if finish is true
-                status: finish ? 'completed' : 'pending',
+                status: finish ? 'completed' : activeStatus,
 
-                payment: (finish && paymentData) ? {
+                payment: paymentData ? {
                     amount: paymentData.amount,
                     type: paymentData.status,
                     method: 'cash',
@@ -341,6 +326,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             const title = variables.finish ? "Consultation terminée." : "Sauvegardée.";
             toast({ title: "Succès", description: title });
             useConsultationStore.setState({ isDirty: false });
+            const shouldExitDashboard = !!onBack && (variables.finish || activeConsultation?.status === 'completed');
 
             queryClient.invalidateQueries({ queryKey: ['consultations', 'active', patientId] });
             queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
@@ -348,12 +334,14 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             queryClient.invalidateQueries({ queryKey: ['patients', 'get', patientId] });
             queryClient.invalidateQueries({ queryKey: ['appointments'] });
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });
+            queryClient.invalidateQueries({ queryKey: ['invoice'] });
+            queryClient.invalidateQueries({ queryKey: ['invoices'] });
             queryClient.invalidateQueries({ queryKey: ['resume'] });
-            if (variables.finish && onBack) onBack();
+            if (shouldExitDashboard) onBack();
         },
         onError: (err: any) => {
             toast({ title: "Erreur", description: err.message || "Erreur lors de la sauvegarde.", variant: "destructive" });
-            console.error("❌ Save failed:", err);
+            console.error('Failed to save consultation:', err);
         }
     });
 
@@ -428,6 +416,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         isFinishSheetOpen,
         setIsFinishSheetOpen,
         currentConsultationId,
+        currentConsultationStatus: activeConsultation?.status,
         // History Props
         isHistoryOpen,
         setIsHistoryOpen,

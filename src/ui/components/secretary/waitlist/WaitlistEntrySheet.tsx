@@ -25,6 +25,7 @@ import { CompactDilationControl } from '@/ui/components/secretary/calendar/compo
 import { CompactAntecedentsSection } from '@/ui/components/secretary/calendar/components/CompactAntecedentsSection';
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { cn } from '@/ui/lib/utils';
+import { PatientDebtSummary } from '@/ui/components/shared/billing/PatientDebtSummary';
 
 const waitlistEntrySchema = z.object({
     notes: z.string().optional(),
@@ -296,6 +297,8 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                                 onChangePatient={() => setView('selection')}
                                 onEdit={() => setView('edit-patient')}
                             />
+
+                            <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
 
                             {/* Quick Actions Grid */}
                             <div className="grid grid-cols-2 gap-2">

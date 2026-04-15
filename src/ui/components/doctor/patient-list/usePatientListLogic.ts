@@ -8,7 +8,7 @@ import { UnifiedPatientItem } from './types';
 export function usePatientListLogic() {
     const [selectedDate] = useState(new Date());
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeFilter, setActiveFilter] = useState<'all' | 'present' | 'waiting' | 'consultation'>('present');
+    const [activeFilter, setActiveFilter] = useState<'all' | 'present' | 'waiting' | 'completed'>('present');
 
     // 1. Fetch Waitlist
     const { data: waitlist, isLoading: isWaitlistLoading } = useWaitlist(format(selectedDate, 'yyyy-MM-dd'));
@@ -113,9 +113,9 @@ export function usePatientListLogic() {
             matchesFilter = item.status === 'waiting';
         }
 
-        // "En Cours" - Strictly in consultation
-        if (activeFilter === 'consultation') {
-            matchesFilter = item.status === 'in_consultation';
+        // "Termine" - Completed consultation states
+        if (activeFilter === 'completed') {
+            matchesFilter = ['completed', 'paid', 'creance'].includes(item.status);
         }
 
         return matchesSearch && matchesFilter;

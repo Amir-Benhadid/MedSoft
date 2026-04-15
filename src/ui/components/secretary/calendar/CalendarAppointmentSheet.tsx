@@ -27,6 +27,7 @@ import { CompactAntecedentsSection } from '@/ui/components/secretary/calendar/co
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { getLocalISOString } from '@/ui/lib/time';
 import { cn } from '@/ui/lib/utils';
+import { PatientDebtSummary } from '@/ui/components/shared/billing/PatientDebtSummary';
 
 const appointmentSchema = z.object({
     title: z.string().optional(),
@@ -296,6 +297,8 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                             onChangePatient={() => setView('selection')}
                             onEdit={() => setView('edit-patient')}
                         />
+
+                        <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
 
                         {/* Time Inputs - Compact Grid */}
                         <div className="space-y-1 mb-2">

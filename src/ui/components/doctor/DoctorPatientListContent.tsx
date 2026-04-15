@@ -11,7 +11,7 @@ import { getAge } from './patient-list/utils';
 import { Badge } from '@/ui/components/ui/badge';
 
 interface DoctorPatientListContentProps {
-    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography') => void;
+    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation') => void;
     selectedPatientId?: string | null;
 }
 
@@ -42,8 +42,9 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
         const typeId = item.consultationTypeId ? Number(item.consultationTypeId) : undefined;
         const consultationType = consultationTypes.find(t => t.id === typeId);
         const targetMode = (consultationType?.nature === 'radiography') ? 'radiography' : 'normal';
+        const targetAction = ['completed', 'paid', 'creance'].includes(item.status) ? 'view' : 'consultation';
 
-        onSelectPatient(item.patientId, targetMode);
+        onSelectPatient(item.patientId, targetMode, targetAction);
     };
 
     return (

@@ -391,7 +391,6 @@ export const useConsultationStore = create<ConsultationState>((set, get) => ({
     },
 
     loadConsultation: (data: any) => {
-        console.log("📥 Store: Loading consultation data", data.id);
         resetSyncSnapshot();
         set({
             patientId: data.patient_id,

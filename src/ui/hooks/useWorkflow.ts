@@ -140,9 +140,9 @@ export function usePendingPayment() {
         const queue: any[] = [];
         const seenPatientIds = new Set<string>();
 
-        // Check appointments with 'completed' state
+        // Check appointments awaiting or needing additional payment
         appointments.forEach((apt) => {
-            if (apt.state === 'completed') {
+            if (apt.state === 'completed' || apt.state === 'creance') {
                 const patient = patients.find((p) => p.id === apt.patient_id);
                 if (patient && !seenPatientIds.has(patient.id)) {
                     queue.push({
@@ -156,9 +156,9 @@ export function usePendingPayment() {
             }
         });
 
-        // Check waitlist entries with 'completed' state
+        // Check waitlist entries awaiting or needing additional payment
         waitlist.forEach((w) => {
-            if (w.state === 'completed') {
+            if (w.state === 'completed' || w.state === 'creance') {
                 const patient = patients.find((p) => p.id === w.patient_id);
                 if (patient && !seenPatientIds.has(patient.id)) {
                     queue.push({

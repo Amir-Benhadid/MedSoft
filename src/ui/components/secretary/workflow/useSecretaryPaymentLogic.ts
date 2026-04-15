@@ -54,7 +54,7 @@ export function useSecretaryPaymentLogic({
     // Initialize local state when invoice loads OR when types change
     useEffect(() => {
         if (invoice) {
-            setAmountToPay(invoice.amount);
+            setAmountToPay(Math.max(invoice.total - invoice.paid, 0));
             if (invoice.consultation_type_id) {
                 setSelectedTypeId(invoice.consultation_type_id.toString());
             }
@@ -77,13 +77,13 @@ export function useSecretaryPaymentLogic({
     // Derived Logic
     const currentAmount = typeof amountToPay === 'number' ? amountToPay : 0;
     const isInvoiceMissing = !invoice;
-    // If invoice exists, use its amount. If not, use the amount derived from selected type (or user input)
     const originalAmount = invoice ? invoice.amount : (consultationTypes.find(t => t.id.toString() === selectedTypeId)?.amount || 0);
+    const previousPaid = invoice?.paid || 0;
+    const totalPaidAfterPayment = Math.min(originalAmount, previousPaid + currentAmount);
+    const remainingAfterPayment = Math.max(0, originalAmount - totalPaidAfterPayment);
 
-    const isPartial = currentAmount < originalAmount;
+    const isPartial = remainingAfterPayment > 0;
 
-    // Status is strictly derived: If not fully paid, it is a debt (creance).
-    // Unless amount is 0 and original is 0 (free).
     const paymentStatus: 'paid' | 'creance' = isPartial ? 'creance' : 'paid';
 
     // 3. Mutation to Pay
@@ -91,6 +91,7 @@ export function useSecretaryPaymentLogic({
     const payMutation = useMutation({
         mutationFn: async () => {
             const paidAmount = currentAmount;
+            const paidTotal = Math.min(originalAmount, previousPaid + paidAmount);
             let targetConsultationId = latestConsultation?.id;
 
             // Scenario A: No Consultation exists (e.g. Secretary Mode start) -> Create One
@@ -133,7 +134,7 @@ export function useSecretaryPaymentLogic({
                 await orpcClient.invoices.update({
                     id: invoice.id,
                     updates: {
-                        paid: paidAmount,
+                        paid: paidTotal,
                         patient_id: patientId, // Redundant but safe
                     } as any
                 });
@@ -145,7 +146,7 @@ export function useSecretaryPaymentLogic({
                         await orpcClient.invoices.update({
                             id: newInvoice.id,
                             updates: {
-                                paid: paidAmount,
+                                paid: paidTotal,
                                 patient_id: patientId, // Vital for linking in Secretary Mode
                             } as any
                         });
@@ -197,6 +198,8 @@ export function useSecretaryPaymentLogic({
         paymentStatus,
         isPartial,
         originalAmount,
+        previousPaid,
+        remainingAfterPayment,
         payMutation,
         nextAppt: latestConsultation?.clinical_exam?.nextAppointment,
         consultationTypes,

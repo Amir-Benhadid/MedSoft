@@ -189,7 +189,6 @@ function createMainWindow() {
 	mainWindow.once('ready-to-show', () => {
 		mainWindow?.maximize();
 		mainWindow?.show();
-		console.log('✅ Main window is ready');
 	});
 }
 
@@ -744,8 +743,6 @@ app.whenReady().then(async () => {
 		const rawPath = url.replace(/^local-resource:\/\//, '');
 		const decodedPath = decodeURIComponent(rawPath);
 
-		console.log(`🖼️ Local Resource Request: ${url}`);
-
 		try {
 			let cleanPath = decodedPath;
 
@@ -755,7 +752,6 @@ app.whenReady().then(async () => {
 				}
 
 				if (/^[a-zA-Z]\//.test(cleanPath)) {
-					console.log(`   🔧 Fixing malformed Windows path: ${cleanPath} -> ${cleanPath[0]}:/${cleanPath.slice(2)}`);
 					cleanPath = `${cleanPath[0]}:/${cleanPath.slice(2)}`;
 				}
 			}
@@ -766,10 +762,7 @@ app.whenReady().then(async () => {
 			} else {
 				const userDataPath = app.getPath('userData');
 				finalPath = path.join(userDataPath, cleanPath);
-				console.log(`   -> Relative path detected, trying in userData: ${finalPath}`);
 			}
-
-			console.log(`   -> Reading file: ${finalPath}`);
 
 			const buffer = await fs.readFile(finalPath);
 			const mimeType = getMimeType(finalPath);

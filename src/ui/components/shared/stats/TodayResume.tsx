@@ -100,14 +100,14 @@ export function DailyResume({ date, title }: DailyResumeProps) {
             </div>
 
             {/* Consultations Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-0 flex flex-col">
                 <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
                     <h3 className="text-base font-bold text-slate-900">Détail des Consultations</h3>
                     <p className="text-xs text-slate-500 mt-0.5">Liste complète des patients vus aujourd'hui</p>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-auto max-h-[55vh]">
                     <table className="w-full text-sm">
-                        <thead className="text-xs text-slate-500 uppercase bg-slate-50/50 border-b border-slate-100">
+                        <thead className="text-xs text-slate-500 uppercase bg-slate-50/95 border-b border-slate-100 sticky top-0 z-10 backdrop-blur">
                             <tr>
                                 <th className="px-6 py-3 font-bold text-left">Heure</th>
                                 <th className="px-6 py-3 font-bold text-left">Patient</th>

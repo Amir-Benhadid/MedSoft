@@ -6,6 +6,7 @@ import { ConsultationType } from '@/ui/hooks/useConsultationTypes';
 import { NextAppointmentSection } from './finish-sheet/NextAppointmentSection';
 import { PaymentSection } from './finish-sheet/PaymentSection';
 import { useFinishSheetLogic } from './finish-sheet/useFinishSheetLogic';
+import { PatientDebtSummary } from '@/ui/components/shared/billing/PatientDebtSummary';
 
 interface FinishConsultationSheetProps {
     isOpen: boolean;
@@ -28,6 +29,7 @@ interface FinishConsultationSheetProps {
         reason?: string;
     };
     patientId?: string;
+    consultationId?: string;
 }
 
 export function FinishConsultationSheet({
@@ -36,7 +38,8 @@ export function FinishConsultationSheet({
     onConfirm,
     consultationTypes,
     nextAppointmentData,
-    patientId
+    patientId,
+    consultationId
 }: FinishConsultationSheetProps) {
     const {
         consultationTypeId,
@@ -55,6 +58,7 @@ export function FinishConsultationSheet({
         handleConfirm
     } = useFinishSheetLogic({
         isOpen,
+        consultationId,
         consultationTypes,
         nextAppointmentData,
         onConfirm,
@@ -75,6 +79,13 @@ export function FinishConsultationSheet({
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+                    <PatientDebtSummary
+                        patientId={patientId}
+                        excludeConsultationId={consultationId}
+                        emptyLabel="Aucune creance precedente pour ce patient."
+                        variant="prominent"
+                    />
+
                     <NextAppointmentSection
                         nextApptType={nextApptType}
                         setNextApptType={setNextApptType}

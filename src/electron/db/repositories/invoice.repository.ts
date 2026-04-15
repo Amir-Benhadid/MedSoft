@@ -25,6 +25,23 @@ export const InvoiceSchema = z.object({
 
 export type Invoice = z.infer<typeof InvoiceSchema>;
 
+export const OutstandingInvoiceSummarySchema = z.object({
+    patient_id: z.string(),
+    totalOutstanding: z.number(),
+    invoiceCount: z.number(),
+    invoices: z.array(z.object({
+        id: z.string(),
+        consultation_id: z.string(),
+        created_at: z.string(),
+        total: z.number(),
+        paid: z.number(),
+        remaining: z.number(),
+        type: z.string().nullable(),
+    })),
+});
+
+export type OutstandingInvoiceSummary = z.infer<typeof OutstandingInvoiceSummarySchema>;
+
 /**
  * Repository for managing invoice data.
  */
@@ -100,6 +117,38 @@ export class InvoiceRepository {
             ORDER BY i.created_at DESC
         `).all(patientId, patientId);
         return rows.map(r => InvoiceSchema.parse(r));
+    }
+
+    getOutstandingSummaryByPatientId(patientId: string, excludeConsultationId?: string): OutstandingInvoiceSummary {
+        const rows = this.db.prepare(`
+            SELECT DISTINCT i.*
+            FROM invoices i
+            LEFT JOIN consultations c ON i.consultation_id = c.id
+            WHERE (i.patient_id = ? OR c.patient_id = ?)
+              AND i.paid < i.total
+              AND (? IS NULL OR i.consultation_id != ?)
+            ORDER BY i.created_at DESC
+        `).all(patientId, patientId, excludeConsultationId || null, excludeConsultationId || null) as any[];
+
+        const invoices = rows.map((row) => {
+            const parsed = InvoiceSchema.parse(row);
+            return {
+                id: parsed.id,
+                consultation_id: parsed.consultation_id,
+                created_at: parsed.created_at,
+                total: parsed.total,
+                paid: parsed.paid,
+                remaining: Math.max(0, parsed.total - parsed.paid),
+                type: parsed.type,
+            };
+        });
+
+        return OutstandingInvoiceSummarySchema.parse({
+            patient_id: patientId,
+            totalOutstanding: invoices.reduce((sum, invoice) => sum + invoice.remaining, 0),
+            invoiceCount: invoices.length,
+            invoices,
+        });
     }
 
     /**
