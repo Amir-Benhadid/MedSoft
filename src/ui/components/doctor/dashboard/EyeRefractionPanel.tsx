@@ -1,6 +1,7 @@
 import { memo, useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Popover, PopoverContent, PopoverAnchor } from "@/ui/components/ui/popover";
 import { EyeData, VISUAL_ACUITY_OPTIONS_DISTANCE_SC, VISUAL_ACUITY_OPTIONS_DISTANCE_AC, VISUAL_ACUITY_OPTIONS_NEAR, SPHERE_VALUES, CYLINDER_VALUES, AXIS_VALUES, ADD_VALUES, KERATOMETRY_VALUES, LENS_TYPE_OPTIONS, LENS_BRAND_OPTIONS, GLASS_TYPE_OPTIONS, CONTACT_LENS_TYPE_OPTIONS } from "./types";
+import { DashboardSelect } from '@/ui/components/ui/dashboard-select';
 import { cn } from "@/ui/lib/utils";
 import { useConsultationStore } from "@/ui/store/consultationStore";
 import { Input } from "@/ui/components/ui/input";
@@ -66,13 +67,13 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                         <div className="grid grid-cols-[auto_1fr_auto_1fr] gap-2 xl:gap-3 items-center">
                             <span className="font-bold text-slate-400 w-4 xl:w-5 2xl:w-6 uppercase tracking-wider" style={{ fontSize: 'var(--dash-label)' }}>VL</span>
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.visualAcuityVL_SC ?? ''} onChange={(v) => handleChange("visualAcuityVL_SC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} disabled={readOnly} placeholder="SC" />
-                                <CompactSelect value={data.visualAcuityVL_AC ?? ''} onChange={(v) => handleChange("visualAcuityVL_AC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_AC} disabled={readOnly} placeholder="AC" />
+                                <DashboardSelect value={data.visualAcuityVL_SC ?? ''} onChange={(v) => handleChange("visualAcuityVL_SC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} disabled={readOnly} placeholder="SC" />
+                                <DashboardSelect value={data.visualAcuityVL_AC ?? ''} onChange={(v) => handleChange("visualAcuityVL_AC", v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_AC} disabled={readOnly} placeholder="AC" />
                             </div>
                             <span className="font-bold text-slate-400 w-4 xl:w-5 2xl:w-6 text-right uppercase tracking-wider" style={{ fontSize: 'var(--dash-label)' }}>VP</span>
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.visualAcuityVP_SC ?? ''} onChange={(v) => handleChange("visualAcuityVP_SC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="SC" />
-                                <CompactSelect value={data.visualAcuityVP_AC ?? ''} onChange={(v) => handleChange("visualAcuityVP_AC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="AC" />
+                                <DashboardSelect value={data.visualAcuityVP_SC ?? ''} onChange={(v) => handleChange("visualAcuityVP_SC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="SC" />
+                                <DashboardSelect value={data.visualAcuityVP_AC ?? ''} onChange={(v) => handleChange("visualAcuityVP_AC", v)} options={VISUAL_ACUITY_OPTIONS_NEAR} disabled={readOnly} placeholder="AC" />
                             </div>
                         </div>
                     </RowLayout>
@@ -98,10 +99,10 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                     <div className={cn("rounded-md p-1 border border-transparent hover:border-slate-100 transition-colors relative z-20", themeSectionBg)}>
                         <RowLayout label="OBJ" title="Réfraction Objective" className="items-center" headerClassName={themeColor}>
                             <div className="grid grid-cols-4 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.objSph ?? ''} onChange={(v) => setObjectiveRefraction(side, { sph: v })} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objCyl ?? ''} onChange={(v) => setObjectiveRefraction(side, { cyl: v })} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objAxis ?? ''} onChange={(v) => setObjectiveRefraction(side, { axis: v })} options={AXIS_VALUES} disabled={readOnly} placeholder="-" />
-                                <CompactSelect value={data.objAdd ?? ''} onChange={(v) => setObjectiveRefraction(side, { add: v })} options={ADD_VALUES} disabled={readOnly} placeholder="-" />
+                                <DashboardSelect value={data.objSph ?? ''} onChange={(v) => setObjectiveRefraction(side, { sph: v })} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" />
+                                <DashboardSelect value={data.objCyl ?? ''} onChange={(v) => setObjectiveRefraction(side, { cyl: v })} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" />
+                                <DashboardSelect value={data.objAxis ?? ''} onChange={(v) => setObjectiveRefraction(side, { axis: v })} options={AXIS_VALUES} disabled={readOnly} placeholder="-" />
+                                <DashboardSelect value={data.objAdd ?? ''} onChange={(v) => setObjectiveRefraction(side, { add: v })} options={ADD_VALUES} disabled={readOnly} placeholder="-" />
                             </div>
                         </RowLayout>
                     </div>
@@ -110,10 +111,10 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                     <div className={cn("rounded-md p-1 border shadow-sm relative z-10", themeBorder, isRight ? "bg-emerald-50/60" : "bg-blue-50/60")}>
                         <RowLayout label="SUB" title="Réfraction Subjective" className="items-center" headerClassName={cn("font-extrabold", themeColor)}>
                             <div className="grid grid-cols-4 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.sph ?? ''} onChange={(v) => handleChange("sph", v)} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" bold />
-                                <CompactSelect value={data.cyl ?? ''} onChange={(v) => handleChange("cyl", v)} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" bold />
-                                <CompactSelect value={data.axis ?? ''} onChange={(v) => handleChange("axis", v)} options={AXIS_VALUES} disabled={readOnly} placeholder="-" bold />
-                                <CompactSelect value={data.add ?? ''} onChange={(v) => handleChange("add", v)} options={ADD_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <DashboardSelect value={data.sph ?? ''} onChange={(v) => handleChange("sph", v)} options={SPHERE_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <DashboardSelect value={data.cyl ?? ''} onChange={(v) => handleChange("cyl", v)} options={CYLINDER_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <DashboardSelect value={data.axis ?? ''} onChange={(v) => handleChange("axis", v)} options={AXIS_VALUES} disabled={readOnly} placeholder="-" bold />
+                                <DashboardSelect value={data.add ?? ''} onChange={(v) => handleChange("add", v)} options={ADD_VALUES} disabled={readOnly} placeholder="-" bold />
                             </div>
                         </RowLayout>
                     </div>
@@ -132,8 +133,8 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                                 <CompactInput value={data.diam || ""} onChange={(v) => handleChange("diam", v)} disabled={readOnly} placeholder="DL" />
                             </div>
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.k1 ?? ''} onChange={(v) => handleChange("k1", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K1" />
-                                <CompactSelect value={data.k2 ?? ''} onChange={(v) => handleChange("k2", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K2" />
+                                <DashboardSelect value={data.k1 ?? ''} onChange={(v) => handleChange("k1", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K1" />
+                                <DashboardSelect value={data.k2 ?? ''} onChange={(v) => handleChange("k2", v)} options={KERATOMETRY_VALUES} disabled={readOnly} placeholder="K2" />
                             </div>
                         </div>
                     </RowLayout>
@@ -145,15 +146,16 @@ export const EyeRefractionPanel = memo(function EyeRefractionPanel({ side, readO
                         <div className="space-y-1.5">
                             {/* Type & Material */}
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.contactLensType ?? ''} onChange={(v) => handleChange("contactLensType", v)} options={CONTACT_LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Type" className="w-full" />
-                                <CompactSelect value={data.lensType ?? ''} onChange={(v) => handleChange("lensType", v)} options={LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Matière" className="w-full" />
+                                <DashboardSelect value={data.contactLensType ?? ''} onChange={(v) => handleChange("contactLensType", v)} options={CONTACT_LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Type" className="w-full" />
+                                <DashboardSelect value={data.lensType ?? ''} onChange={(v) => handleChange("lensType", v)} options={LENS_TYPE_OPTIONS} disabled={readOnly} placeholder="Matière" className="w-full" />
                             </div>
-
+ 
                             {/* Brand & Glass Type */}
                             <div className="grid grid-cols-2 gap-1.5 xl:gap-2">
-                                <CompactSelect value={data.lensBrand ?? ''} onChange={(v) => handleChange("lensBrand", v)} options={LENS_BRAND_OPTIONS} disabled={readOnly} placeholder="Marque" className="w-full" />
-                                <CompactSelect value={data.glassType ?? ''} onChange={(v) => setGlassType(v)} options={GLASS_TYPE_OPTIONS} disabled={readOnly} placeholder="Verres" className="w-full" />
+                                <DashboardSelect value={data.lensBrand ?? ''} onChange={(v) => handleChange("lensBrand", v)} options={LENS_BRAND_OPTIONS} disabled={readOnly} placeholder="Marque" className="w-full" />
+                                <DashboardSelect value={data.glassType ?? ''} onChange={(v) => setGlassType(v)} options={GLASS_TYPE_OPTIONS} disabled={readOnly} placeholder="Verres" className="w-full" />
                             </div>
+
                         </div>
                     </RowLayout>
                 </div>
@@ -184,178 +186,6 @@ function HeaderLabel({ children }: { children: React.ReactNode }) {
     );
 }
 
-function CompactSelect({ value, onChange, options, disabled, placeholder, className, bold }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string, bold?: boolean }) {
-    const [open, setOpen] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    // Internal state for the input value - ensure we never use undefined (controlled input)
-    const [inputValue, setInputValue] = useState(() => (value ?? '') === '' ? '' : (value ?? ''));
-
-    // Sync state if external value changes (e.g. from store updates or "copy" actions)
-    useEffect(() => {
-        setInputValue((value ?? '') === '' ? '' : (value ?? ''));
-    }, [value]);
-
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        };
-    }, []);
-
-    // Callback ref that fires when the scroll container mounts inside the portal
-    const scrollContainerCallbackRef = useCallback((node: HTMLDivElement | null) => {
-        if (!node) return;
-        const hasVal = value && value !== '';
-        const targetValue = hasVal ? value : '-0.75';
-
-        const element = node.querySelector(`[data-value="${targetValue}"]`);
-        if (element) {
-            element.scrollIntoView({ block: 'start', behavior: 'auto' });
-        } else if (!hasVal) {
-            const zeroElement = node.querySelector(`[data-value="0.00"]`);
-            if (zeroElement) zeroElement.scrollIntoView({ block: 'center' });
-        }
-    }, [value]);
-
-    // Revert clearing on focus - only open dropdown
-    const handleFocus = () => {
-        if (!disabled) setOpen(true);
-    };
-
-    const handleClear = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onChange('');
-        setInputValue('');
-        inputRef.current?.focus();
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setInputValue(val);
-        setOpen(true);
-
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => {
-            onChange(val === '' ? '' : val);
-        }, 300);
-    };
-
-    const handleSelect = (optionValue: string) => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        onChange(optionValue);
-        setInputValue(optionValue === '' ? '' : optionValue);
-        setOpen(false);
-        inputRef.current?.blur();
-    };
-
-    // Filter Logic
-    const filteredOptions = useMemo(() => {
-        if (!inputValue) return options;
-
-        const cleanInput = inputValue.replace(/[+-]/g, '').trim();
-        if (!cleanInput) return options;
-
-        // Check if we should apply strict decimal logic (User: "not 20 if I type 2")
-        const isDecimalField = options.some(o => o.value.includes('.') && !o.value.includes('/')); // Exclude "10/10"
-
-        return options.filter(opt => {
-            if (opt.value === '') return false;
-
-            // Text matching for non-numeric fields
-            if (!isDecimalField && !/^[+-]?\d/.test(opt.value)) {
-                return opt.label.toLowerCase().includes(inputValue.toLowerCase());
-            }
-
-            // Numeric matching
-            const optVal = opt.value;
-            const cleanOpt = optVal.replace(/[+-]/g, '');
-
-            // "Absolute value" starts with check
-            if (cleanOpt.startsWith(cleanInput)) {
-                // Strict check: if I typed "2", I don't want "20..."
-                if (isDecimalField) {
-                    // Check character after the match
-                    const charAfter = cleanOpt[cleanInput.length];
-                    // Valid if end of string or a decimal point
-                    return charAfter === undefined || charAfter === '.';
-                }
-                return true;
-            }
-            return false;
-        });
-    }, [options, inputValue]);
-
-    const hasValue = !!inputValue;
-
-    return (
-
-        <Popover open={open && !disabled}>
-            <PopoverAnchor asChild>
-                <div className={cn("relative w-full", className)} ref={containerRef}>
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        className={cn(
-                            "flex w-full rounded-md border border-slate-200 bg-white/80 font-bold text-slate-900 ring-offset-background placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50 pr-5 xl:pr-6 cursor-text hover:bg-white transition-all shadow-sm",
-                            bold && "font-extrabold text-slate-900 border-slate-300 ring-1 ring-slate-100",
-                            className
-                        )}
-                        style={{ height: 'var(--dash-h)', paddingInline: 'var(--dash-input-p)', fontSize: 'calc(var(--dash-label) + 1px)' }}
-                        value={inputValue ?? ''}
-                        onChange={handleInputChange}
-                        onFocus={handleFocus}
-                        disabled={disabled}
-                        placeholder={placeholder}
-                    />
-                    {hasValue && !disabled ? (
-                        <X
-                            className="absolute right-1.5 xl:right-2 top-1/2 -translate-y-1/2 h-3 w-3 xl:h-3.5 xl:w-3.5 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors"
-                            onClick={handleClear}
-                        />
-                    ) : (
-                        <ChevronDown className="absolute right-1.5 xl:right-2 top-1/2 -translate-y-1/2 h-3 w-3 xl:h-3.5 xl:w-3.5 text-slate-400 pointer-events-none opacity-50" />
-                    )}
-                </div>
-            </PopoverAnchor>
-
-            <PopoverContent
-                className="p-0 w-[--radix-popover-trigger-width] min-w-[80px]"
-                align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-                onInteractOutside={(e) => {
-                    // Only close if clicking outside the container (input + wrapper)
-                    if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-                        setOpen(false);
-                    }
-                }}
-            >
-                <div ref={scrollContainerCallbackRef} className="max-h-60 overflow-auto py-1">
-                    {filteredOptions.length > 0 ? (
-                        filteredOptions.map((option) => (
-                            <div
-                                key={`${option.value}-${option.label}`}
-                                data-value={option.value}
-                                className={cn(
-                                    "px-2 cursor-pointer hover:bg-slate-100 font-medium text-slate-700",
-                                    option.value === value && "bg-slate-50 text-slate-900 font-bold"
-                                )}
-                                style={{ paddingBlock: 'calc(var(--dash-p) / 2.5)', fontSize: 'var(--dash-label)' }}
-                                onClick={() => handleSelect(option.value)}
-                            >
-                                {option.label}
-                            </div>
-                        ))
-                    ) : (
-                        <div className="px-2 py-2 text-[10px] xl:text-xs text-slate-400 text-center italic">
-                            Aucun résultat
-                        </div>
-                    )}
-                </div>
-            </PopoverContent>
-        </Popover>
-    );
-}
 
 function CompactInput({ value, onChange, placeholder, disabled, className }: { value: string, onChange: (val: string) => void, placeholder?: string, disabled?: boolean, className?: string }) {
     return (

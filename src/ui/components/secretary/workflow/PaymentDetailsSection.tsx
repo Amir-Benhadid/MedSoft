@@ -1,6 +1,7 @@
 import { Label } from '@/ui/components/ui/label';
 import { Button } from '@/ui/components/ui/button';
 import { Input } from '@/ui/components/ui/input';
+import { PriceInput } from '@/ui/components/ui/price-input';
 import { Card } from '@/ui/components/ui/card';
 import { Badge } from '@/ui/components/ui/badge';
 import { Check, CreditCard, Banknote } from 'lucide-react';
@@ -112,16 +113,11 @@ export function PaymentDetailsSection({
                                 isPartial ? "text-amber-400" : "text-slate-400 group-focus-within:text-blue-500"
                             )} />
                         </div>
-                        <Input
-                            type="number"
-                            step="100"
+                        <PriceInput
                             value={amountToPay}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setAmountToPay(val === '' ? '' : Number(val));
-                            }}
+                            onValueChange={setAmountToPay}
                             className={cn(
-                                "pl-12 pr-14 h-14 text-3xl font-black tracking-tight border-2 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-xl",
+                                "pl-12 pr-14 h-14 text-3xl font-black tracking-tight border-2 transition-all rounded-xl",
                                 isPartial
                                     ? 'text-amber-600 border-amber-200 focus:border-amber-500 focus:shadow-md focus:shadow-amber-50'
                                     : 'text-slate-800 border-slate-200 focus:border-blue-500 focus:shadow-md focus:shadow-blue-50'
@@ -161,14 +157,15 @@ export function PaymentDetailsSection({
                                 <div className="mt-0.5 p-1 bg-amber-100 rounded-md shrink-0">
                                     <span className="text-xs font-bold">⚠️</span>
                                 </div>
-                                 <div className="flex flex-col">
-                                     <span className="text-sm font-bold text-amber-900">Paiement Partiel</span>
-                                     <span className="text-xs text-amber-700/80">Reste apres encaissement: {remainingAfterPayment} DA.</span>
-                                 </div>
-                             </div>
-                         </Card>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-amber-900">Paiement Partiel</span>
+                                    <span className="text-xs text-amber-700/80">Reste apres encaissement: {remainingAfterPayment} DA.</span>
+                                </div>
+                            </div>
+                        </Card>
                     </div>
                 )}
+
             </Card>
         </div>
     );

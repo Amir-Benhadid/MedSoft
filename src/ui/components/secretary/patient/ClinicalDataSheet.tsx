@@ -28,8 +28,10 @@ import {
     AXIS_VALUES,
     ADD_VALUES,
     TENSION_VALUES,
-    VISUAL_ACUITY_OPTIONS_DISTANCE_SC
+    VISUAL_ACUITY_OPTIONS_DISTANCE_SC,
+    PACHYMETRY_VALUES
 } from "@/ui/components/doctor/dashboard/types";
+import { DashboardSelect } from "@/ui/components/ui/dashboard-select";
 
 interface ClinicalDataSheetProps {
     open: boolean;
@@ -37,39 +39,6 @@ interface ClinicalDataSheetProps {
     patientId: string;
     patientName: string;
     patient?: any;
-}
-
-function CompactSelect({ value, onChange, options, disabled, placeholder, className }: { value: string, onChange: (val: string) => void, options: { value: string, label: string }[], disabled?: boolean, placeholder?: string, className?: string }) {
-    // Transform options for NativeSelect if they are empty
-    const nativeOptions = options.map(o => ({
-        ...o,
-        value: o.value === '' ? '' : o.value,
-        label: o.value === '' ? (placeholder || ' ') : o.label
-    }));
-
-    const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onChange(e.target.value);
-    };
-
-    return (
-        <div className={cn("relative w-full", className)}>
-            <select
-                className={cn(
-                    "flex h-8 w-full items-center justify-between rounded-md border border-slate-200 bg-background px-2 py-0 text-xs ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 appearance-none pr-4",
-                )}
-                value={value || ""}
-                onChange={handleValueChange}
-                disabled={disabled}
-            >
-                {nativeOptions.map((option) => (
-                    <option key={`${option.value}-${option.label}`} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-            <ChevronDown className="absolute right-1 top-1/2 -translate-y-1/2 h-3 w-3 opacity-50 pointer-events-none" />
-        </div>
-    );
 }
 
 export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientName, patient, checkDirtyRef }: Omit<ClinicalDataSheetProps, 'open' | 'onOpenChange'> & { onCancel: () => void, onSuccess: () => void, checkDirtyRef?: React.MutableRefObject<(() => Promise<boolean>) | null> }) {
@@ -300,19 +269,19 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
                     {/* OD */}
                     <div className="grid grid-cols-5 gap-2 items-center">
                         <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
-                        <CompactSelect placeholder="Sph" value={formData.od_sph} onChange={v => handleChange('od_sph', v)} options={SPHERE_VALUES} />
-                        <CompactSelect placeholder="Cyl" value={formData.od_cyl} onChange={v => handleChange('od_cyl', v)} options={CYLINDER_VALUES} />
-                        <CompactSelect placeholder="Axe" value={formData.od_axis} onChange={v => handleChange('od_axis', v)} options={AXIS_VALUES} />
-                        <CompactSelect placeholder="Add" value={formData.od_add} onChange={v => handleChange('od_add', v)} options={ADD_VALUES} />
+                        <DashboardSelect placeholder="Sph" value={formData.od_sph} onChange={v => handleChange('od_sph', v)} options={SPHERE_VALUES} />
+                        <DashboardSelect placeholder="Cyl" value={formData.od_cyl} onChange={v => handleChange('od_cyl', v)} options={CYLINDER_VALUES} />
+                        <DashboardSelect placeholder="Axe" value={formData.od_axis} onChange={v => handleChange('od_axis', v)} options={AXIS_VALUES} />
+                        <DashboardSelect placeholder="Add" value={formData.od_add} onChange={v => handleChange('od_add', v)} options={ADD_VALUES} />
                     </div>
 
                     {/* OG */}
                     <div className="grid grid-cols-5 gap-2 items-center">
                         <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
-                        <CompactSelect placeholder="Sph" value={formData.og_sph} onChange={v => handleChange('og_sph', v)} options={SPHERE_VALUES} />
-                        <CompactSelect placeholder="Cyl" value={formData.og_cyl} onChange={v => handleChange('og_cyl', v)} options={CYLINDER_VALUES} />
-                        <CompactSelect placeholder="Axe" value={formData.og_axis} onChange={v => handleChange('og_axis', v)} options={AXIS_VALUES} />
-                        <CompactSelect placeholder="Add" value={formData.og_add} onChange={v => handleChange('og_add', v)} options={ADD_VALUES} />
+                        <DashboardSelect placeholder="Sph" value={formData.og_sph} onChange={v => handleChange('og_sph', v)} options={SPHERE_VALUES} />
+                        <DashboardSelect placeholder="Cyl" value={formData.og_cyl} onChange={v => handleChange('og_cyl', v)} options={CYLINDER_VALUES} />
+                        <DashboardSelect placeholder="Axe" value={formData.og_axis} onChange={v => handleChange('og_axis', v)} options={AXIS_VALUES} />
+                        <DashboardSelect placeholder="Add" value={formData.og_add} onChange={v => handleChange('og_add', v)} options={ADD_VALUES} />
                     </div>
                 </div>
 
@@ -330,17 +299,17 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
                     {/* OD */}
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label className="text-right text-xs bg-blue-50 px-2 py-1 rounded text-blue-700 font-bold">OD</Label>
-                        <CompactSelect placeholder="-" value={formData.od_va} onChange={v => handleChange('od_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
-                        <CompactSelect placeholder="-" value={formData.od_iop} onChange={v => handleChange('od_iop', v)} options={TENSION_VALUES} />
-                        <Input placeholder="550" value={formData.od_pach} onChange={e => handleChange('od_pach', e.target.value)} className="h-8 text-xs" />
+                        <DashboardSelect placeholder="-" value={formData.od_va} onChange={v => handleChange('od_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
+                        <DashboardSelect placeholder="-" value={formData.od_iop} onChange={v => handleChange('od_iop', v)} options={TENSION_VALUES} />
+                        <DashboardSelect placeholder="-" value={formData.od_pach} onChange={v => handleChange('od_pach', v)} options={PACHYMETRY_VALUES} className="h-8" />
                     </div>
 
                     {/* OG */}
                     <div className="grid grid-cols-4 gap-4 items-center">
                         <Label className="text-right text-xs bg-cyan-50 px-2 py-1 rounded text-cyan-700 font-bold">OG</Label>
-                        <CompactSelect placeholder="-" value={formData.og_va} onChange={v => handleChange('og_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
-                        <CompactSelect placeholder="-" value={formData.og_iop} onChange={v => handleChange('og_iop', v)} options={TENSION_VALUES} />
-                        <Input placeholder="550" value={formData.og_pach} onChange={e => handleChange('og_pach', e.target.value)} className="h-8 text-xs" />
+                        <DashboardSelect placeholder="-" value={formData.og_va} onChange={v => handleChange('og_va', v)} options={VISUAL_ACUITY_OPTIONS_DISTANCE_SC} />
+                        <DashboardSelect placeholder="-" value={formData.og_iop} onChange={v => handleChange('og_iop', v)} options={TENSION_VALUES} />
+                        <DashboardSelect placeholder="-" value={formData.og_pach} onChange={v => handleChange('og_pach', v)} options={PACHYMETRY_VALUES} className="h-8" />
                     </div>
                 </div>
             </div>

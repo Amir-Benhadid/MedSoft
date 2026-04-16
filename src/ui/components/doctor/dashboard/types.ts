@@ -206,3 +206,12 @@ export const CONTACT_LENS_TYPE_OPTIONS: OptionType[] = [
     { value: 'Sphérique', label: 'Sphérique' },
     { value: 'Torique', label: 'Torique' },
 ];
+
+export const PACHYMETRY_VALUES = (() => {
+    const values: OptionType[] = [{ value: '', label: ' ' }];
+    for (let i = 400; i <= 700; i++) {
+        values.push({ value: i.toString(), label: i.toString() });
+    }
+    return values;
+})();
+

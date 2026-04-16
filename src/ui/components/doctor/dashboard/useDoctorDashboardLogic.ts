@@ -101,6 +101,23 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             // Logic 2: Auto-create if action is 'consultation' (triggered from patient list)
             if (action === 'consultation') {
                 try {
+                    // Sync waitlist entry
+                    const today = getLocalTodayDate();
+                    const { start, end } = getDayRangeEncoded(today);
+                    const waitlist = await orpcClient.waitlist.list({ start, end });
+                    const entry = waitlist.find(w => w.patient_id === patientId);
+                    
+                    if (entry) {
+                        await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
+                    } else {
+                        await orpcClient.waitlist.add({
+                            patient_id: patientId,
+                            state: 'in_consultation',
+                            arrived_at: getLocalISOString(),
+                            needs_dilation: false
+                        });
+                    }
+
                     const newConsultation = await orpcClient.consultations.create({
                         patient_id: patientId,
                         date: getLocalISOString(),
@@ -150,13 +167,25 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             try {
                 const waitlist = await orpcClient.waitlist.list({ start, end });
                 const entry = waitlist.find(w => w.patient_id === patientId);
-                if (entry?.consultation_type_id) {
-                    const types = await orpcClient.consultationTypes.list();
-                    const cType = types.find(t => t.id === entry.consultation_type_id);
-                    if (cType?.nature === 'radiography') detectedType = 'Radiography';
-                    else if (cType?.nature === 'normal') detectedType = 'Consultation';
+                if (entry) {
+                    await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
+                    if (entry.consultation_type_id) {
+                        const types = await orpcClient.consultationTypes.list();
+                        const cType = types.find(t => t.id === entry.consultation_type_id);
+                        if (cType?.nature === 'radiography') detectedType = 'Radiography';
+                        else if (cType?.nature === 'normal') detectedType = 'Consultation';
+                    }
+                } else {
+                    await orpcClient.waitlist.add({
+                        patient_id: patientId,
+                        state: 'in_consultation',
+                        arrived_at: getLocalISOString(),
+                        needs_dilation: false
+                    });
                 }
-            } catch {}
+            } catch (err) {
+                console.error('Waitlist sync failed:', err);
+            }
 
             const result = await orpcClient.consultations.create({
                 patient_id: patientId,

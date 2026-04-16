@@ -2,6 +2,7 @@ import React from 'react';
 import { CreditCard, Stethoscope, Check, Wallet, Banknote } from 'lucide-react';
 import { Label } from '@/ui/components/ui/label';
 import { Input } from '@/ui/components/ui/input';
+import { PriceInput } from '@/ui/components/ui/price-input';
 import { Button } from '@/ui/components/ui/button';
 import { Card } from '@/ui/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
@@ -86,14 +87,12 @@ export function PaymentSection({
                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                                 <Banknote className={cn("w-4 h-4 transition-colors", status === 'gratuit' ? "text-slate-300" : "text-slate-400 group-focus-within:text-blue-500")} />
                             </div>
-                            <Input
-                                type="number"
-                                step="100"
+                            <PriceInput
                                 value={amount}
-                                onChange={onAmountChange}
+                                onValueChange={setAmount}
                                 disabled={status === 'gratuit'}
                                 className={cn(
-                                    "pl-10 pr-12 h-11 text-xl font-bold tracking-tight border transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-lg",
+                                    "pl-10 pr-12 h-11 text-xl font-bold tracking-tight border transition-all rounded-lg",
                                     status === 'gratuit'
                                         ? "bg-slate-50/80 border-slate-200/80 text-slate-400 opacity-80"
                                         : "bg-white border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 shadow-sm"
