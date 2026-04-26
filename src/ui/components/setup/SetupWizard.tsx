@@ -118,16 +118,17 @@ function ClientScanningStep({ onSelect, selectedIP }: { onSelect: (ip: string) =
 
 interface SetupWizardProps {
     onComplete: () => void;
+    initialConfig?: any;
 }
 
-export function SetupWizard({ onComplete }: SetupWizardProps) {
+export function SetupWizard({ onComplete, initialConfig }: SetupWizardProps) {
     const [step, setStep] = useState(0);
-    const [businessName, setBusinessName] = useState('');
-    const [businessType, setBusinessType] = useState('');
-    const [appMode, setAppMode] = useState<'both' | 'secretary'>('both');
-    const [serverMode, setServerMode] = useState<'host' | 'client'>('host');
-    const [dbPath, setDbPath] = useState('');
-    const [logoPath, setLogoPath] = useState('');
+    const [businessName, setBusinessName] = useState(initialConfig?.businessName || '');
+    const [businessType, setBusinessType] = useState(initialConfig?.businessType || '');
+    const [appMode, setAppMode] = useState<'both' | 'secretary'>(initialConfig?.appMode || 'both');
+    const [serverMode, setServerMode] = useState<'host' | 'client'>(initialConfig?.serverMode || 'host');
+    const [dbPath, setDbPath] = useState(initialConfig?.dbPath || '');
+    const [logoPath, setLogoPath] = useState(initialConfig?.logoPath || '');
     const [isSaving, setIsSaving] = useState(false);
 
     // Supabase State

@@ -13,6 +13,7 @@ import {
     DialogFooter,
 } from "@/ui/components/ui/dialog";
 import { Input } from "@/ui/components/ui/input";
+import { formatPatientName } from "@/shared/formatters";
 import { useConsultationStore } from "@/ui/store/consultationStore";
 
 interface DashboardHeaderProps {
@@ -20,6 +21,7 @@ interface DashboardHeaderProps {
     onBack?: () => void;
     saveMutation: any;
     setIsFinishSheetOpen: (val: boolean) => void;
+    onFinishConsultation: () => void;
     isFinishSheetOpen: boolean;
     onOpenHistory: () => void;
     onOpenPaymentHistory: () => void;
@@ -32,6 +34,7 @@ export const DashboardHeader = memo(function DashboardHeader({
     onBack,
     saveMutation,
     setIsFinishSheetOpen,
+    onFinishConsultation,
     isFinishSheetOpen,
     onOpenHistory,
     onOpenPaymentHistory,
@@ -92,7 +95,7 @@ export const DashboardHeader = memo(function DashboardHeader({
                     <div className="flex items-center gap-4">
                         <div>
                             <h1 className="text-lg font-bold text-slate-900 leading-tight flex items-center gap-2">
-                                {patient.name} {patient.surname}
+                                {formatPatientName(patient.surname, patient.name)}
                             </h1>
                         </div>
                     </div>
@@ -147,7 +150,7 @@ export const DashboardHeader = memo(function DashboardHeader({
                         <Button
                             size="sm"
                             className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm"
-                            onClick={() => setIsFinishSheetOpen(true)}
+                            onClick={onFinishConsultation}
                         >
                             <Save className="w-4 h-4" />
                             {consultationStatus === 'completed' ? 'Mettre a jour la consultation' : 'Terminer la consultation'}

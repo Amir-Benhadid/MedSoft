@@ -720,6 +720,7 @@ function runMigrations(db: Database.Database, config: AppConfig) {
 	addSharedRecordsSchema(db);
 	addDocumentsDataColumn(db);
 	addEyeToDilationsSchema(db);
+	addExcludeFromStatsToConsultations(db);
 }
 
 function addEyeToDilationsSchema(db: Database.Database) {
@@ -735,6 +736,30 @@ function addEyeToDilationsSchema(db: Database.Database) {
 					const tableInfo = db.prepare("PRAGMA table_info(dilations)").all() as any[];
 					if (!tableInfo.some(c => c.name === 'eye')) {
 						db.exec('ALTER TABLE dilations ADD COLUMN eye TEXT'); // 'OD', 'OG', 'ODS'
+					}
+				}
+				db.prepare('INSERT INTO migrations (name) VALUES (?)').run(migrationName);
+			})();
+			console.log(`✅ Migration ${migrationName} completed successfully`);
+		} catch (error) {
+			console.error(`❌ Migration ${migrationName} failed:`, error);
+		}
+	}
+}
+
+function addExcludeFromStatsToConsultations(db: Database.Database) {
+	const migrationName = '009_add_exclude_from_stats_to_consultations';
+	const exists = db.prepare('SELECT 1 FROM migrations WHERE name = ?').get(migrationName);
+
+	if (!exists) {
+		console.log(`🚀 Running migration: ${migrationName}`);
+		try {
+			db.transaction(() => {
+				const hasConsultations = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='consultations'").get();
+				if (hasConsultations) {
+					const tableInfo = db.prepare('PRAGMA table_info(consultations)').all() as any[];
+					if (!tableInfo.some(c => c.name === 'exclude_from_stats')) {
+						db.exec('ALTER TABLE consultations ADD COLUMN exclude_from_stats INTEGER DEFAULT 0');
 					}
 				}
 				db.prepare('INSERT INTO migrations (name) VALUES (?)').run(migrationName);
@@ -797,7 +822,6 @@ function addSharedRecordsSchema(db: Database.Database) {
 		}
 	}
 }
-
 function addRadiographyDocumentSchema(db: Database.Database, config: AppConfig) {
 	const type = config.businessType || 'cabinet-ophthalmologie';
 	if (type !== 'cabinet-ophthalmologie') return;
@@ -967,6 +991,7 @@ function createOptimizedSchema(db: Database.Database, businessType?: string) {
 			date TEXT NOT NULL,
 			type TEXT DEFAULT 'Consultation',
 			status TEXT DEFAULT 'pending',
+			exclude_from_stats INTEGER DEFAULT 0,
 			documents_data TEXT, -- Keeping as JSON for now
 			prescription TEXT DEFAULT '{}', -- Keeping as JSON for now (restored)
 			created_at TEXT DEFAULT CURRENT_TIMESTAMP,

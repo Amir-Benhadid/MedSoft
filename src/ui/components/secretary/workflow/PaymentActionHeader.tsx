@@ -31,7 +31,7 @@ export default function PaymentActionHeader({ payment, queueSize = 1 }: PaymentA
                                 Paiement Requis
                             </h3>
                             <p className="text-lg font-bold text-slate-900 leading-tight">
-                                {payment.name} {payment.surname}
+                                {payment.surname}{"   "}{payment.name}
                             </p>
                         </div>
                     </div>

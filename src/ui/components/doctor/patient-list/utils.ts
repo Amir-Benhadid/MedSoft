@@ -1,7 +1,7 @@
 import { format, differenceInYears } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-export const getInitials = (p: any) => `${p?.name?.[0] || ''}${p?.surname?.[0] || ''}`.toUpperCase();
+export const getInitials = (p: any) => `${p?.surname?.[0] || ''}${p?.name?.[0] || ''}`.toUpperCase();
 
 export const getStatusColor = (status: string) => {
     switch (status) {

@@ -8,6 +8,7 @@
 import { getDatabase } from '../database.js';
 import { randomUUID } from 'crypto';
 import { getLocalISOString } from '../../lib/time.js';
+import { toTitleCase } from '../../lib/formatters.js';
 
 export interface WaitlistEntry {
     id: string;
@@ -83,8 +84,8 @@ export class WaitlistRepository {
             notes: row.notes,
             created_at: row.created_at,
             updated_at: row.updated_at,
-            patient_name: row.patient_name,
-            patient_surname: row.patient_surname,
+            patient_name: toTitleCase(row.patient_name),
+            patient_surname: toTitleCase(row.patient_surname),
             needs_dilation: !!row.dilation_id,
             dilation_status: row.dilation_status,
             dilation_type: row.dilation_medicine,

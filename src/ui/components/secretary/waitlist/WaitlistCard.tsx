@@ -80,7 +80,7 @@ export const WaitlistCard = memo(({ entry, onRemove, onToggleDilation, onUpdateS
                 <div className="flex justify-between items-start">
                     <div className="min-w-0 pr-2">
                         <h3 className="text-[15px] font-bold text-slate-900 leading-tight truncate">
-                            {entry.patient?.name || entry.patient_name} {entry.patient?.surname || entry.patient_surname}
+                            {entry.patient?.surname || entry.patient_surname}{"   "}{entry.patient?.name || entry.patient_name}
                         </h3>
                         {entry.notes && (
                             <p className="text-xs text-slate-500 mt-0.5 truncate max-w-[180px]">

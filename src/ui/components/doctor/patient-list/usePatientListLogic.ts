@@ -93,7 +93,7 @@ export function usePatientListLogic() {
 
     // 4. Filtering
     const filteredList = unifiedList.filter(item => {
-        const fullName = `${item.patient?.name || ''} ${item.patient?.surname || ''}`.toLowerCase();
+        const fullName = `${item.patient?.surname || ''} ${item.patient?.name || ''}`.toLowerCase();
         const matchesSearch = fullName.includes(searchTerm.toLowerCase());
 
         let matchesFilter = true;

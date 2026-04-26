@@ -51,7 +51,7 @@ export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps)
                             >
                                 <div className="flex-1 min-w-0">
                                     <div className="font-semibold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
-                                        {patient.surname} {patient.name}
+                                        {patient.surname}{"   "}{patient.name}
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-slate-500 truncate mt-0.5">
                                         {patient.dob && (

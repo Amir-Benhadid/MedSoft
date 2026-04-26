@@ -71,7 +71,7 @@ function PatientInfoCard({ readOnly }: PatientInfoCardProps) {
                     </div>
                     <div className="flex items-baseline" style={{ gap: 'calc(var(--dash-gap) / 2)' }}>
                         <h2 className="font-bold text-slate-800" style={{ fontSize: 'calc(var(--dash-label) + 2px)' }}>
-                            {patient?.surname} {patient?.name}
+                            {patient?.surname}{"   "}{patient?.name}
                         </h2>
                         <span className="font-bold text-slate-400" style={{ fontSize: 'var(--dash-label)' }}>
                             {age}

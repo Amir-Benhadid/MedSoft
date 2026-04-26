@@ -44,7 +44,7 @@ export default function PaymentSection() {
                         {activePayment ? (
                             <div>
                                 <p className="text-base font-bold text-slate-900 truncate leading-tight">
-                                    {activePayment.name} {activePayment.surname}
+                                    {activePayment.surname}{"   "}{activePayment.name}
                                 </p>
                                 <p className="text-[11px] text-amber-700 font-extrabold uppercase tracking-wide mt-0.5 flex items-center gap-1.5">
                                     <span className="relative flex h-2 w-2">

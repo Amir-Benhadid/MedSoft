@@ -66,7 +66,7 @@ export default function DoctorSharedFilesList({ onSelectPatient, activePatientId
                         {/* Patient name - like consultation card */}
                         <span className="font-black text-base text-amber-800 truncate flex-1 min-w-0 flex items-center gap-3">
                             <div className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
-                            {file.patient_surname} {file.patient_name}
+                            {file.patient_surname}{"   "}{file.patient_name}
                         </span>
 
                         {/* Age */}

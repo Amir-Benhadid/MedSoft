@@ -64,7 +64,7 @@ function RootComponent() {
 
 	// Loader/Setup Window Mode
 	if (!isSetup) {
-		return <SetupWizard onComplete={handleSetupComplete} />;
+		return <SetupWizard onComplete={handleSetupComplete} initialConfig={config} />;
 	}
 
 	// Show loader if setup is complete (in loader window)

@@ -41,7 +41,7 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
                                 selectedId === item.patientId ? "text-emerald-800" : "text-emerald-700"
                             )}>
                                 <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                                {item.patient?.name} {item.patient?.surname}
+                                {item.patient?.surname}{"   "}{item.patient?.name}
                             </span>
 
                             {/* Appointment Time */}
@@ -157,7 +157,7 @@ export default function PatientListView({ list, selectedId, onSelect, isLoading 
                                 >
                                     {/* Patient name */}
                                     <span className={cn("font-bold text-sm truncate w-[30%] min-w-0", textColor)}>
-                                        {item.patient?.name} {item.patient?.surname}
+                                        {item.patient?.surname}{"   "}{item.patient?.name}
                                     </span>
 
                                     {/* Appointment Time */}

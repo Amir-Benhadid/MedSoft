@@ -70,7 +70,7 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
         openSheet(
             <ClinicalDataContent
                 patientId={patient.id}
-                patientName={`${patient.surname} ${patient.name}`}
+                patientName={`${patient.surname}   ${patient.name}`}
                 onCancel={() => {
                     closeSheet('clinical-data');
                     activeSheetRef.current = null;
@@ -103,7 +103,7 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
         openSheet(
             <SecretaryDocumentsContent
                 patientId={patient.id}
-                patientName={`${patient.surname} ${patient.name}`}
+                patientName={`${patient.surname}   ${patient.name}`}
                 patient={patient}
                 onClose={() => {
                     closeSheet('documents');

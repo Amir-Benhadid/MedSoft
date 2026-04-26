@@ -218,6 +218,7 @@ export const ConsultationSchema = z.object({
     date: z.string(),
     type: z.string().optional().default('Consultation'),
     status: z.enum(['pending', 'completed']).default('pending'),
+    exclude_from_stats: z.boolean().optional().default(false),
 
     // JSON Columns
     left_eye: EyeDataSchema.default({

@@ -231,7 +231,7 @@ export default function DilationSection() {
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-sm font-semibold text-slate-900 truncate">
-                                        {patient.name} {patient.surname}
+                                        {patient.surname}{"   "}{patient.name}
                                     </span>
                                     {patient.dilation_type && (
                                         <span className="text-[10px] text-slate-500 font-medium truncate">
@@ -274,7 +274,7 @@ export default function DilationSection() {
                 {waitingForDilation.map((patient: any) => (
                     <div key={patient.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/80 border border-slate-100 hover:bg-white hover:border-indigo-200 transition-all shadow-sm group">
                         <div className="flex flex-col">
-                            <span className="text-sm font-semibold text-slate-700">{patient.name} {patient.surname}</span>
+                            <span className="text-sm font-semibold text-slate-700">{patient.surname}{"   "}{patient.name}</span>
                             <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">
                                 {patient.dilation_type ? (
                                     <>

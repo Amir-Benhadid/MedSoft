@@ -83,15 +83,15 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
             const right = todayConsultation.right_eye || {};
 
             const loadedData = {
-                od_sph: right.sph || "",
-                od_cyl: right.cyl || "",
-                od_axis: right.axis || "",
-                od_add: right.add || "",
+                od_sph: right.objSph || "",
+                od_cyl: right.objCyl || "",
+                od_axis: right.objAxis || "",
+                od_add: right.objAdd || "",
 
-                og_sph: left.sph || "",
-                og_cyl: left.cyl || "",
-                og_axis: left.axis || "",
-                og_add: left.add || "",
+                og_sph: left.objSph || "",
+                og_cyl: left.objCyl || "",
+                og_axis: left.objAxis || "",
+                og_add: left.objAdd || "",
 
                 od_va: right.visualAcuityVL_SC || "",
                 og_va: left.visualAcuityVL_SC || "",
@@ -119,11 +119,11 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
         mutationFn: async () => {
             const payload = {
                 left_eye: {
-                    sph: formData.og_sph, cyl: formData.og_cyl, axis: formData.og_axis, add: formData.og_add,
+                    objSph: formData.og_sph, objCyl: formData.og_cyl, objAxis: formData.og_axis, objAdd: formData.og_add,
                     visualAcuityVL_SC: formData.og_va, tension: formData.og_iop, pachymetry: formData.og_pach
                 },
                 right_eye: {
-                    sph: formData.od_sph, cyl: formData.od_cyl, axis: formData.od_axis, add: formData.od_add,
+                    objSph: formData.od_sph, objCyl: formData.od_cyl, objAxis: formData.od_axis, objAdd: formData.od_add,
                     visualAcuityVL_SC: formData.od_va, tension: formData.od_iop, pachymetry: formData.od_pach
                 }
             };
@@ -209,12 +209,12 @@ export function ClinicalDataContent({ onCancel, onSuccess, patientId, patientNam
             const printOptions: any = {
                 leftEye: {
                     visualAcuityVL_SC: formData.og_va,
-                    sph: formData.og_sph, cyl: formData.og_cyl, axis: formData.og_axis, add: formData.og_add,
+                    objSph: formData.og_sph, objCyl: formData.og_cyl, objAxis: formData.og_axis, objAdd: formData.og_add,
                     tension: formData.og_iop, pachymetry: formData.og_pach
                 },
                 rightEye: {
                     visualAcuityVL_SC: formData.od_va,
-                    sph: formData.od_sph, cyl: formData.od_cyl, axis: formData.od_axis, add: formData.od_add,
+                    objSph: formData.od_sph, objCyl: formData.od_cyl, objAxis: formData.od_axis, objAdd: formData.od_add,
                     tension: formData.od_iop, pachymetry: formData.od_pach
                 },
                 prescriptions: [],

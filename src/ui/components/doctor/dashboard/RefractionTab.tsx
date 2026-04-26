@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { EyeRefractionPanel } from "./EyeRefractionPanel";
 import { EyeData } from "./types";
 import { Button } from "@/ui/components/ui/button";
-import { Copy, Loader2, Droplet, Eye } from "lucide-react";
+import { Copy, Loader2, Droplet, Eye, CheckCircle } from "lucide-react";
 import { useConsultationStore } from "@/ui/store/consultationStore";
 import { useAppointments, useToggleDilation } from "@/ui/hooks/useAppointments";
 import { useWaitlist, useWaitlistToggleDilation } from "@/ui/hooks/useWaitlist";
@@ -39,7 +39,10 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
     const toggleWaitlistDilation = useWaitlistToggleDilation();
     const [isDilationDialogOpen, setIsDilationDialogOpen] = useState(false);
 
-    const isDilating = activeAppointment?.needs_dilation || activeWaitlist?.needs_dilation;
+    const activeItem = activeAppointment || activeWaitlist;
+    const isDilated = activeItem?.dilation_status === 'dilated';
+    const isDilating = (activeAppointment?.needs_dilation || activeWaitlist?.needs_dilation) && !isDilated;
+    const isPending = toggleApptDilation.isPending || toggleWaitlistDilation.isPending;
 
     const handleDilationClick = () => {
         if (isDilating) {
@@ -97,8 +100,8 @@ function RefractionTab({ readOnly, data, patient }: RefractionTabProps) {
                         onClick={handleDilationClick}
                         disabled={toggleApptDilation.isPending || toggleWaitlistDilation.isPending}
                     >
-                        {isDilating ? <Loader2 className="w-3 h-3 xl:w-3.5 xl:h-3.5 animate-spin" /> : <Droplet className="w-3 h-3 xl:w-3.5 xl:h-3.5" />}
-                        {isDilating ? "Dilatation..." : "Dilater"}
+                        {(isDilating || isPending) ? <Loader2 className="w-3 h-3 xl:w-3.5 xl:h-3.5 animate-spin" /> : (isDilated ? <CheckCircle className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-emerald-600" /> : <Droplet className="w-3 h-3 xl:w-3.5 xl:h-3.5" />)}
+                        {isPending ? "Attente..." : (isDilating ? "Dilatation..." : (isDilated ? "Dilaté" : "Dilater"))}
                     </Button>
                 )}
             </div>

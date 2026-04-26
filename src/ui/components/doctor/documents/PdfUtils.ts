@@ -108,7 +108,7 @@ export const drawDocumentHeader = (
 	const age = patient.dob ? calculateAge(patient.dob) : 0;
 
 	page.drawText(
-		`${surnameCased} ${nameCased}, ${age === 1
+		`${surnameCased}   ${nameCased}, ${age === 1
 			? '1 an'
 			: `${age} ans`
 		}`,

@@ -39,7 +39,7 @@ export const CompactPatientCard = memo(({ patient, isLoading, onChangePatient, o
             >
                 <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-bold text-sm truncate flex items-center gap-2">
-                        {patient.surname} {patient.name}
+                        {patient.surname}{"   "}{patient.name}
                         {onEdit && <Edit2 className="w-3 h-3 text-slate-400 opacity-50" />}
                     </h4>
                     {patient.dob && (

@@ -7,7 +7,7 @@ import { SettingsContainer } from './settings/SettingsContainer';
 import { BooksLibrary } from './books/BookLibrary';
 
 interface DoctorPatientListProps {
-    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation') => void;
+    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation', entrySource?: 'shared_record') => void;
     selectedPatientId?: string | null;
 }
 

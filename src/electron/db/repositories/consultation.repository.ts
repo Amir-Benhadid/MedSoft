@@ -211,6 +211,7 @@ export class ConsultationRepository {
             date: consultationRow.date,
             type: consultationRow.type,
             status: consultationRow.status as 'pending' | 'completed',
+            exclude_from_stats: Boolean(consultationRow.exclude_from_stats),
             created_at: consultationRow.created_at,
             updated_at: consultationRow.updated_at,
 
@@ -335,12 +336,11 @@ export class ConsultationRepository {
             const transaction = this.db.transaction(() => {
                 try {
                     if (hasConsultations && !isSecretary) {
-                        // DEFENSIVE: Before creating, check if a pending consultation for this patient already exists today
-                        // This prevents double-creation if the frontend query retries rapidly or type-detection shifts.
+                        // DEFENSIVE: Never create more than one consultation for the same patient on the same day.
                         const today = (data.date || now).split('T')[0];
                         const existing = this.db.prepare(`
                             SELECT id FROM consultations 
-                            WHERE patient_id = ? AND date LIKE ? AND status = 'pending'
+                            WHERE patient_id = ? AND date LIKE ?
                             LIMIT 1
                         `).get(data.patient_id, `${today}%`) as any;
 
@@ -352,15 +352,16 @@ export class ConsultationRepository {
                         this.db.prepare(`
                             INSERT INTO consultations (
                                 id, patient_id, date, type, status,
-                                documents_data, prescription,
+                                exclude_from_stats, documents_data, prescription,
                                 created_at, updated_at
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).run(
                             id,
                             data.patient_id,
                             data.date,
                             data.type || 'Consultation',
                             data.status || 'pending',
+                            data.exclude_from_stats ? 1 : 0,
                             data.documents_data ? JSON.stringify(data.documents_data) : null,
                             JSON.stringify(data.prescription || {}),
                             now,
@@ -449,7 +450,7 @@ export class ConsultationRepository {
                             `).get(data.patient_id, `${today}%`) as any;
                         }
 
-                        if (schedulingData && schedulingData.consultation_type_id) {
+                        if (!data.exclude_from_stats && schedulingData && schedulingData.consultation_type_id) {
                             const typeData = this.db.prepare('SELECT amount FROM consultation_types WHERE id = ?').get(schedulingData.consultation_type_id) as any;
 
                             if (typeData) {
@@ -468,7 +469,7 @@ export class ConsultationRepository {
                         }
                     }
 
-                    if (data.status === 'completed') {
+                    if (data.status === 'completed' && !data.exclude_from_stats) {
                         const targetState = 'completed';
                         this.db.prepare(`
                             UPDATE appointments SET state = ?, updated_at = ?
@@ -523,6 +524,7 @@ export class ConsultationRepository {
                     date: data.date,
                     type: data.type || 'Consultation',
                     status: data.status as any,
+                    exclude_from_stats: Boolean(data.exclude_from_stats),
                     created_at: now,
                     updated_at: now,
                     left_eye: EyeDataSchema.parse({}),
@@ -568,6 +570,7 @@ export class ConsultationRepository {
                     if (updates.status) { sets.push('status = ?'); values.push(updates.status); }
                     if (updates.type) { sets.push('type = ?'); values.push(updates.type); }
                     if (updates.date) { sets.push('date = ?'); values.push(updates.date); }
+                    if (updates.exclude_from_stats !== undefined) { sets.push('exclude_from_stats = ?'); values.push(updates.exclude_from_stats ? 1 : 0); }
                     if (updates.documents_data) { sets.push('documents_data = ?'); values.push(JSON.stringify(updates.documents_data)); }
                     if (updates.prescription) { sets.push('prescription = ?'); values.push(JSON.stringify(updates.prescription)); }
 
@@ -645,7 +648,7 @@ export class ConsultationRepository {
                     }
 
                     const consultMeta = hasConsultations
-                        ? this.db.prepare('SELECT patient_id, date FROM consultations WHERE id = ?').get(id) as any
+                        ? this.db.prepare('SELECT patient_id, date, exclude_from_stats FROM consultations WHERE id = ?').get(id) as any
                         : null;
 
                     const consultationPatientId = patientId || consultMeta?.patient_id || null;
@@ -663,19 +666,22 @@ export class ConsultationRepository {
                         });
 
                         const syncedInvoice = this.db.prepare('SELECT total, paid FROM invoices WHERE consultation_id = ?').get(id) as any;
-                        if (syncedInvoice) {
+                        if (syncedInvoice && !Boolean(updates.exclude_from_stats ?? consultMeta?.exclude_from_stats)) {
                             this.syncSchedulingPaymentState(consultationPatientId, syncedInvoice.total || 0, syncedInvoice.paid || 0);
                         }
                     }
                 }
 
-                if (updates.status === 'completed') {
+                const consultFlags = hasConsultations
+                    ? this.db.prepare('SELECT patient_id, exclude_from_stats FROM consultations WHERE id = ?').get(id) as any
+                    : null;
+
+                if (updates.status === 'completed' && !Boolean(updates.exclude_from_stats ?? consultFlags?.exclude_from_stats)) {
                     let patientId: string | null = null;
                     if (updates.patient_id) {
                         patientId = updates.patient_id;
                     } else if (hasConsultations) {
-                        const consult = this.db.prepare('SELECT patient_id FROM consultations WHERE id = ?').get(id) as any;
-                        if (consult) patientId = consult.patient_id;
+                        if (consultFlags) patientId = consultFlags.patient_id;
                     } else {
                         const inv = this.db.prepare('SELECT patient_id FROM invoices WHERE consultation_id = ? LIMIT 1').get(id) as any;
                         if (inv) patientId = inv.patient_id;

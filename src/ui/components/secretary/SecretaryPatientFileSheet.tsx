@@ -37,7 +37,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
             <ClinicalDataContent
                 patientId={patientId}
                 patient={patient}
-                patientName={patient ? `${patient.surname} ${patient.name}` : ''}
+                patientName={patient ? `${patient.surname}   ${patient.name}` : ''}
                 onCancel={() => closeSheet('clinical-data')} // We'll manage IDs or use return values
                 onSuccess={() => closeSheet('clinical-data')}
             />,
@@ -50,7 +50,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
         openSheet(
             <SecretaryDocumentsContent
                 patientId={patientId}
-                patientName={patient ? `${patient.surname} ${patient.name}` : ''}
+                patientName={patient ? `${patient.surname}   ${patient.name}` : ''}
                 patient={patient}
                 onClose={() => closeSheet('documents')}
             />,
@@ -82,7 +82,7 @@ export function SecretaryPatientFileSheet({ patientId, open, onOpenChange, initi
         openSheet(
             <SecretaryCertificateContent
                 patientId={patientId}
-                patientName={patient ? `${patient.surname} ${patient.name}` : ''}
+                patientName={patient ? `${patient.surname}   ${patient.name}` : ''}
                 patient={patient}
                 onCancel={() => closeSheet('certificate')}
             />,

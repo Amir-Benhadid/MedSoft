@@ -49,7 +49,7 @@ export function HistorySheet({
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetContent side="left" className="w-full sm:max-w-[580px] md:max-w-[640px] p-0 flex flex-col gap-0 border-r shadow-2xl">
-                <SheetHeader className="px-3 py-2.5 border-b bg-white shrink-0 flex-row items-center justify-between">
+                <SheetHeader className="px-3 py-2.5 pr-14 border-b bg-white shrink-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                     <div className="flex flex-col">
                         <SheetTitle className="flex items-center gap-2 text-base text-slate-800">
                             <Calendar className="w-4 h-4 text-slate-500" />
@@ -64,7 +64,7 @@ export function HistorySheet({
                         <Button
                             size="sm"
                             onClick={onCreateConsultation}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 px-4 rounded-lg shadow-sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 max-w-full px-4 rounded-lg shadow-sm self-start sm:self-auto"
                         >
                             Nouvelle Consultation
                         </Button>

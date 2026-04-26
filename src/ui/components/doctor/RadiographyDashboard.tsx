@@ -41,11 +41,20 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
         history,
         currentConsultationId,
         currentConsultationStatus,
+        isExcludedFromStats,
         handleSwitchConsultation,
         isActiveConsultationToday
     } = useDoctorDashboardLogic({ patientId, onBack, mode: 'radiography', consultationId });
 
     const nextAppointmentData = useConsultationStore(state => state.clinicalExam.nextAppointment);
+    const handleFinishConsultation = () => {
+        if (isExcludedFromStats) {
+            saveMutation.mutate({ finish: true });
+            return;
+        }
+
+        setIsFinishSheetOpen(true);
+    };
 
     // Fetch Last Completed Consultation for ReadOnly Left Panel
     const { data: lastConsultation } = useQuery({
@@ -78,6 +87,7 @@ export default function RadiographyDashboard({ patientId, consultationId, onBack
                 onBack={onBack}
                 saveMutation={saveMutation}
                 setIsFinishSheetOpen={setIsFinishSheetOpen}
+                onFinishConsultation={handleFinishConsultation}
                 isFinishSheetOpen={isFinishSheetOpen}
                 onOpenHistory={() => setIsHistoryOpen(true)}
                 onOpenPaymentHistory={() => { }}

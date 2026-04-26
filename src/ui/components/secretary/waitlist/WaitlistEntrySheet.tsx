@@ -71,7 +71,7 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
         openSheet(
             <ClinicalDataContent
                 patientId={selectedPatient.id}
-                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
+                patientName={`${selectedPatient.surname}   ${selectedPatient.name}`}
                 onCancel={() => {
                     closeSheet('clinical-data');
                     activeSheetRef.current = null;
@@ -104,7 +104,7 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
         openSheet(
             <SecretaryDocumentsContent
                 patientId={selectedPatient.id}
-                patientName={`${selectedPatient.surname} ${selectedPatient.name}`}
+                patientName={`${selectedPatient.surname}   ${selectedPatient.name}`}
                 patient={selectedPatient}
                 onClose={() => {
                     closeSheet('documents');
@@ -116,6 +116,14 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
     };
     const { data: consultationTypes = [] } = useConsultationTypes();
 
+    const standardConsultationId = useMemo(() => {
+        const standard = consultationTypes.find(t => 
+            t.label.toLowerCase() === 'consultation standard' || 
+            t.label.toLowerCase() === 'consulatation standard'
+        );
+        return standard ? standard.id.toString() : '1';
+    }, [consultationTypes]);
+
     const { register, handleSubmit, reset, control, setValue, watch, formState: { errors } } = useForm<WaitlistEntryFormValues>({
         resolver: zodResolver(waitlistEntrySchema),
         defaultValues: {
@@ -125,7 +133,7 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
 
             oph_ants: '',
             gen_ants: '',
-            consultation_type_id: '1'
+            consultation_type_id: standardConsultationId
         }
     });
 
@@ -141,10 +149,10 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                 dilation_medicine: 'Mydriaticum',
                 oph_ants: '',
                 gen_ants: '',
-                consultation_type_id: '1'
+                consultation_type_id: standardConsultationId
             });
         }
-    }, [isOpen, reset]);
+    }, [isOpen, reset, standardConsultationId]);
 
     // Sync fetched patient data to state
     useEffect(() => {

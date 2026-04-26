@@ -9,6 +9,7 @@
 import { getDatabase } from '../database.js';
 import { randomUUID } from 'crypto';
 import { getLocalISOString } from '../../lib/time.js';
+import { toTitleCase } from '../../lib/formatters.js';
 
 export interface Appointment {
     id: string;
@@ -112,8 +113,8 @@ export class AppointmentRepository {
             dilation_eye: row.dilation_eye,
             dilation_started_at: row.dilation_started_at,
             patient: row.patient_name ? {
-                name: row.patient_name,
-                surname: row.patient_surname,
+                name: toTitleCase(row.patient_name),
+                surname: toTitleCase(row.patient_surname),
                 dob: row.patient_dob,
                 phone: row.patient_phone,
                 address: {

@@ -13,3 +13,13 @@ export const formatNumberWithSign = (value: number | string | undefined | null):
     const formatted = num.toFixed(2);
     return num > 0 ? `+${formatted}` : formatted;
 };
+
+/**
+ * Capitalizes the first letter of each word and lowers the rest.
+ */
+export const toTitleCase = (str: string): string => {
+    if (!str) return '';
+    return str.replace(/\w\S*/g, (txt) => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+};

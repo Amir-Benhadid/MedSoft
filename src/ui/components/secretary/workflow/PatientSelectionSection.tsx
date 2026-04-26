@@ -94,7 +94,7 @@ export default function PatientSelectionSection() {
                     {selectedPatient ? (
                         <div>
                             <p className="text-sm font-semibold text-white truncate">
-                                {selectedPatient.name} {selectedPatient.surname}
+                                {selectedPatient.surname}{"   "}{selectedPatient.name}
                             </p>
                             <p className="text-[10px] text-blue-100 font-medium uppercase tracking-tight">Sélectionné</p>
                         </div>

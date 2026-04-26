@@ -11,7 +11,7 @@ import { getAge } from './patient-list/utils';
 import { Badge } from '@/ui/components/ui/badge';
 
 interface DoctorPatientListContentProps {
-    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation') => void;
+    onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation', entrySource?: 'shared_record') => void;
     selectedPatientId?: string | null;
 }
 
@@ -72,7 +72,7 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
                                 {/* Patient name */}
                                 <span className="font-black text-base text-emerald-800 truncate w-[35%] min-w-0 flex items-center gap-3">
                                     <div className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-                                    {patient.patient?.name} {patient.patient?.surname}
+                                    {patient.patient?.surname}{"   "}{patient.patient?.name}
                                 </span>
 
                                 {/* Time */}
@@ -112,7 +112,7 @@ export default function DoctorPatientListContent({ onSelectPatient, selectedPati
                 <DoctorSharedFilesList
                     activePatientId={activePatientsInConsultation[0]?.patientId}
                     onSelectPatient={(patientId) => {
-                        onSelectPatient(patientId);
+                        onSelectPatient(patientId, 'normal', 'view', 'shared_record');
                     }}
                 />
 

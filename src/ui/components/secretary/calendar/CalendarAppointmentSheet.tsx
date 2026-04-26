@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import { useConsultationTypes } from '@/ui/hooks/useConsultationTypes';
+import { useSheetStack } from '@/ui/components/ui/sheet-stack';
+import { ClinicalDataContent } from '@/ui/components/secretary/patient/ClinicalDataSheet';
+import { SecretaryDocumentsContent } from '@/ui/components/secretary/sheet/SecretaryDocumentsSheet';
+import { useRef } from 'react';
 
 // Compact Modular Components
 import { CompactPatientCard } from '@/ui/components/secretary/calendar/components/CompactPatientCard';
@@ -65,8 +69,77 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
 
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
     const [view, setView] = useState<'selection' | 'form' | 'appointment' | 'edit-patient'>('selection');
+    const { openSheet, closeSheet, sheets } = useSheetStack();
+
+    // Refs for sheet management
+    const clinicalDirtyRef = useRef<(() => Promise<boolean>) | null>(null);
+    const activeSheetRef = useRef<'clinical' | 'documents' | null>(null);
+
+    const handleOpenClinicalData = async () => {
+        if (!selectedPatient) return;
+
+        if (activeSheetRef.current === 'documents') {
+            closeSheet('documents');
+        } else if (activeSheetRef.current === 'clinical') {
+            return;
+        }
+
+        activeSheetRef.current = 'clinical';
+        openSheet(
+            <ClinicalDataContent
+                patientId={selectedPatient.id}
+                patientName={`${selectedPatient.surname}   ${selectedPatient.name}`}
+                onCancel={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                onSuccess={() => {
+                    closeSheet('clinical-data');
+                    activeSheetRef.current = null;
+                }}
+                checkDirtyRef={clinicalDirtyRef}
+            />,
+            { id: 'clinical-data', width: 500, title: 'Données Cliniques', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
+
+    const handleOpenDocuments = async () => {
+        if (!selectedPatient) return;
+
+        if (activeSheetRef.current === 'clinical') {
+            if (clinicalDirtyRef.current) {
+                const canClose = await clinicalDirtyRef.current();
+                if (!canClose) return;
+            }
+            closeSheet('clinical-data');
+        } else if (activeSheetRef.current === 'documents') {
+            return;
+        }
+
+        activeSheetRef.current = 'documents';
+        openSheet(
+            <SecretaryDocumentsContent
+                patientId={selectedPatient.id}
+                patientName={`${selectedPatient.surname}   ${selectedPatient.name}`}
+                patient={selectedPatient}
+                onClose={() => {
+                    closeSheet('documents');
+                    activeSheetRef.current = null;
+                }}
+            />,
+            { id: 'documents', width: 500, title: 'Documents', onDismiss: () => { activeSheetRef.current = null; } }
+        );
+    };
 
     const { data: consultationTypes = [] } = useConsultationTypes();
+
+    const standardConsultationId = useMemo(() => {
+        const standard = consultationTypes.find(t => 
+            t.label.toLowerCase() === 'consultation standard' || 
+            t.label.toLowerCase() === 'consulatation standard'
+        );
+        return standard ? standard.id.toString() : '1';
+    }, [consultationTypes]);
 
     const { register, handleSubmit, reset, control, setValue, watch, formState: { errors } } = useForm<AppointmentFormValues>({
         resolver: zodResolver(appointmentSchema),
@@ -79,7 +152,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
             dilation_status: '',
             oph_ants: '',
             gen_ants: '',
-            consultation_type_id: '1'
+            consultation_type_id: standardConsultationId
         }
     });
 
@@ -97,7 +170,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 dilation_status: appointment.dilation_status || '',
                 oph_ants: '',
                 gen_ants: '',
-                consultation_type_id: appointment.consultation_type_id ? appointment.consultation_type_id.toString() : '1'
+                consultation_type_id: appointment.consultation_type_id ? appointment.consultation_type_id.toString() : standardConsultationId
             });
         } else {
             setView('selection');
@@ -115,10 +188,10 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 dilation_status: '',
                 oph_ants: '',
                 gen_ants: '',
-                consultation_type_id: '1'
+                consultation_type_id: standardConsultationId
             });
         }
-    }, [appointment, defaultDate, reset]);
+    }, [appointment, defaultDate, reset, standardConsultationId]);
 
     useEffect(() => {
         if (patientData.data && (appointment || selectedPatient)) {
@@ -203,7 +276,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 });
             }
 
-            const title = `${selectedPatient.surname} ${selectedPatient.name}`;
+            const title = `${selectedPatient.surname}   ${selectedPatient.name}`;
             const appointmentData = {
                 title,
                 start_time: getLocalISOString(new Date(data.start_time)),
@@ -299,6 +372,30 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                         />
 
                         <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
+
+                        {/* Quick Actions Grid */}
+                        <div className="grid grid-cols-2 gap-2 my-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-auto flex-col gap-1 py-2 border-dashed border-teal-200 bg-teal-50/30 hover:bg-teal-50 text-teal-700"
+                                onClick={handleOpenClinicalData}
+                            >
+                                <Activity className="w-4 h-4" />
+                                <span className="text-[10px] font-medium">Données Cliniques</span>
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-auto flex-col gap-1 py-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-slate-700"
+                                onClick={handleOpenDocuments}
+                            >
+                                <FileText className="w-4 h-4" />
+                                <span className="text-[10px] font-medium">Documents</span>
+                            </Button>
+                        </div>
 
                         {/* Time Inputs - Compact Grid */}
                         <div className="space-y-1 mb-2">
@@ -410,11 +507,21 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
 }
 
 export function CalendarAppointmentSheet(props: CalendarAppointmentSheetProps) {
-    if (!props.isOpen) return null; // Simple safe guard used to be controlled by Sheet open prop
-
+    const { sheets } = useSheetStack();
     return (
-        <Sheet open={props.isOpen} onOpenChange={(open) => !open && props.onClose()}>
-            <SheetContent side="right" className="w-full sm:max-w-md overflow-hidden p-0">
+        <Sheet open={props.isOpen} onOpenChange={(open) => {
+            if (!open) {
+                if (sheets.length > 0) return;
+                props.onClose();
+            }
+        }}>
+            <SheetContent 
+                side="right" 
+                className="w-full sm:max-w-md overflow-hidden p-0 flex flex-col"
+                onInteractOutside={(e) => {
+                    if (sheets.length > 0) e.preventDefault();
+                }}
+            >
                 <CalendarAppointmentContent {...props} />
             </SheetContent>
         </Sheet>

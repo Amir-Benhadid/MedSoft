@@ -50,7 +50,7 @@ export default function ConsultationSection() {
                     {inConsultation ? (
                         <div>
                             <p className="text-sm font-semibold text-white truncate">
-                                {inConsultation.name} {inConsultation.surname}
+                                {inConsultation.surname}{"   "}{inConsultation.name}
                             </p>
                             <p className="text-[10px] text-emerald-100 font-medium uppercase tracking-tight">En consultation</p>
                         </div>

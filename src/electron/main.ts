@@ -233,6 +233,27 @@ async function saveConfig(config: any) {
 }
 
 /**
+ * Validates the current application setup.
+ * Checks if a valid configuration exists and confirms database accessibility for host mode.
+ *
+ * @param config - The configuration to validate
+ * @returns Promise resolving to true if set up, false otherwise
+ */
+async function validateSetup(config: any): Promise<boolean> {
+	if (!config) return false;
+	if (config.serverMode === 'client') return true;
+	if (!config.dbPath) return false;
+
+	try {
+		await fs.access(config.dbPath);
+		return true;
+	} catch (error) {
+		console.warn('⚠️ App is NOT setup: dbPath is missing or inaccessible:', config.dbPath);
+		return false;
+	}
+}
+
+/**
  * Sets up all IPC (Inter-Process Communication) handlers for communication
  * between the main process and renderer processes.
  * Handles app configuration, window management, file operations, and network discovery.
@@ -243,8 +264,9 @@ function setupIPC() {
 
 	ipcMain.handle('app:checkSetup', async () => {
 		const config = await loadConfig();
+		const isSetup = await validateSetup(config);
 		return {
-			isSetup: !!config && (config.serverMode === 'client' || !!config.dbPath),
+			isSetup: isSetup,
 			config: config || {},
 		};
 	});
@@ -553,7 +575,8 @@ function setupIPC() {
 	});
 
 	loadConfig().then(async (config) => {
-		if (config && config.serverMode !== 'client') {
+		const isSetup = await validateSetup(config);
+		if (isSetup && config && config.serverMode !== 'client') {
 			const { ElectronServerManager } = await import('./serverManager.js');
 			const manager = ElectronServerManager.getInstance();
 			const businessName = config.businessName || 'Cabinet Medical';
@@ -781,7 +804,7 @@ app.whenReady().then(async () => {
 	});
 
 	const config = await loadConfig();
-	const isSetup = !!config && (config.serverMode === 'client' || !!config.dbPath);
+	const isSetup = await validateSetup(config);
 
 	console.log('isSetup', isSetup);
 
@@ -813,7 +836,7 @@ app.on('activate', async () => {
 	console.log('📱 App activated');
 	if (loaderWindow === null && mainWindow === null) {
 		const config = await loadConfig();
-		const isSetup = !!config && (config.serverMode === 'client' || !!config.dbPath);
+		const isSetup = await validateSetup(config);
 
 		if (isDevelopment && isSetup) {
 			createMainWindow();

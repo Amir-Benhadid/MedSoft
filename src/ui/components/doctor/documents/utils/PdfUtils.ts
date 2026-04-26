@@ -106,7 +106,7 @@ export const drawDocumentHeader = (
     const nameCased = patient.name.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
     page.drawText(
-        `${surnameCased} ${nameCased}, ${calculateAge(patient.dob) === 1
+        `${surnameCased}   ${nameCased}, ${calculateAge(patient.dob) === 1
             ? '1 an'
             : `${calculateAge(patient.dob)} ans`
         }`,

@@ -18,10 +18,11 @@ interface DoctorDashboardProps {
     patientId: string;
     consultationId?: string;
     action?: 'view' | 'consultation';
+    entrySource?: 'shared_record';
     onBack?: () => void;
 }
 
-export default function DoctorDashboard({ patientId, consultationId, action, onBack }: DoctorDashboardProps) {
+export default function DoctorDashboard({ patientId, consultationId, action, entrySource, onBack }: DoctorDashboardProps) {
     const {
         patient,
         isPatientLoading,
@@ -37,13 +38,22 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
         history,
         currentConsultationId,
         currentConsultationStatus,
+        isExcludedFromStats,
         handleSwitchConsultation,
         isActiveConsultationToday,
-        hasTodayConsultation,
+        hasAnyTodayConsultation,
         createConsultationMutation
-    } = useDoctorDashboardLogic({ patientId, onBack, consultationId, action });
+    } = useDoctorDashboardLogic({ patientId, onBack, consultationId, action, entrySource });
 
     const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+    const handleFinishConsultation = () => {
+        if (entrySource === 'shared_record' || isExcludedFromStats) {
+            saveMutation.mutate({ finish: true });
+            return;
+        }
+
+        setIsFinishSheetOpen(true);
+    };
 
     useDocumentSync();
     useContactLensSync();
@@ -68,6 +78,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
                 onBack={onBack}
                 saveMutation={saveMutation}
                 setIsFinishSheetOpen={setIsFinishSheetOpen}
+                onFinishConsultation={handleFinishConsultation}
                 isFinishSheetOpen={isFinishSheetOpen}
                 onOpenHistory={() => setIsHistoryOpen(true)}
                 onOpenPaymentHistory={() => setIsPaymentHistoryOpen(true)}
@@ -136,7 +147,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, onB
                 currentConsultationId={currentConsultationId}
                 onSelectConsultation={handleSwitchConsultation}
                 onCreateConsultation={() => createConsultationMutation.mutate()}
-                showCreate={!hasTodayConsultation}
+                showCreate={!hasAnyTodayConsultation}
             />
 
             {/* Payment History Sheet */}

@@ -11,11 +11,12 @@ interface UseDoctorDashboardLogicProps {
     patientId: string;
     consultationId?: string;
     action?: 'view' | 'consultation';
+    entrySource?: 'shared_record';
     onBack?: () => void;
     mode?: 'normal' | 'radiography';
 }
 
-export function useDoctorDashboardLogic({ patientId, consultationId, action, onBack, mode = 'normal' }: UseDoctorDashboardLogicProps) {
+export function useDoctorDashboardLogic({ patientId, consultationId, action, entrySource, onBack, mode = 'normal' }: UseDoctorDashboardLogicProps) {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const navigate = useNavigate({ from: '/doctor' });
@@ -33,6 +34,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     const { data: consultationTypes = [] } = useConsultationTypes();
     const [isFinishSheetOpen, setIsFinishSheetOpen] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+    const isSharedRecordFlow = entrySource === 'shared_record';
 
     // Fetch Patient Details
     const { data: patient, isLoading: isPatientLoading } = useQuery({
@@ -55,7 +57,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     // 1. Fetch Today's or Selected Consultation
     // We use a query to find the correct consultation to display
     const { data: consultationData, isLoading: isConsultationLoading } = useQuery({
-        queryKey: ['consultations', 'active', patientId, mode, consultationId, action],
+        queryKey: ['consultations', 'active', patientId, mode, consultationId, action, entrySource],
         queryFn: async () => {
             // Logic 0: If specific ID requested in URL, fetch that strictly
             if (consultationId) {
@@ -77,14 +79,14 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             let specificToday = consultations.find(c => {
                 const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
                 const isCorrectType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
-                return isWithinRange && isCorrectType && c.status === 'pending';
+                return isWithinRange && isCorrectType && c.status === 'pending' && !c.exclude_from_stats;
             });
 
             // Fallback: Search for ANY pending match today regardless of type if we are in 'consultation' action
-            if (!specificToday && action === 'consultation') {
+            if (!specificToday && action === 'consultation' && !isSharedRecordFlow) {
                 specificToday = consultations.find(c => {
                     const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
-                    return isWithinRange && c.status === 'pending';
+                    return isWithinRange && c.status === 'pending' && !c.exclude_from_stats;
                 });
             }
 
@@ -93,7 +95,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             const completedToday = consultations.find(c => {
                 const isWithinRange = (c.date >= start && c.date <= end) || c.date === today;
                 const isCorrectType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
-                return isWithinRange && isCorrectType && c.status === 'completed';
+                return isWithinRange && isCorrectType && c.status === 'completed' && !c.exclude_from_stats;
             });
 
             if (completedToday) return completedToday;
@@ -101,21 +103,22 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
             // Logic 2: Auto-create if action is 'consultation' (triggered from patient list)
             if (action === 'consultation') {
                 try {
-                    // Sync waitlist entry
-                    const today = getLocalTodayDate();
-                    const { start, end } = getDayRangeEncoded(today);
-                    const waitlist = await orpcClient.waitlist.list({ start, end });
-                    const entry = waitlist.find(w => w.patient_id === patientId);
-                    
-                    if (entry) {
-                        await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
-                    } else {
-                        await orpcClient.waitlist.add({
-                            patient_id: patientId,
-                            state: 'in_consultation',
-                            arrived_at: getLocalISOString(),
-                            needs_dilation: false
-                        });
+                    if (!isSharedRecordFlow) {
+                        const today = getLocalTodayDate();
+                        const { start, end } = getDayRangeEncoded(today);
+                        const waitlist = await orpcClient.waitlist.list({ start, end });
+                        const entry = waitlist.find(w => w.patient_id === patientId);
+
+                        if (entry) {
+                            await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
+                        } else {
+                            await orpcClient.waitlist.add({
+                                patient_id: patientId,
+                                state: 'in_consultation',
+                                arrived_at: getLocalISOString(),
+                                needs_dilation: false
+                            });
+                        }
                     }
 
                     const newConsultation = await orpcClient.consultations.create({
@@ -123,6 +126,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                         date: getLocalISOString(),
                         type: targetType,
                         status: 'pending',
+                        exclude_from_stats: isSharedRecordFlow,
                     });
                     if (!newConsultation) return null;
 
@@ -157,31 +161,47 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         staleTime: 0, // Always refresh history list on mount
     });
 
+    const hasAnyTodayConsultation = (() => {
+        const today = getLocalTodayDate();
+        const { start, end } = getDayRangeEncoded(today);
+
+        return history.some(c => {
+            const isToday = (c.date >= start && c.date <= end) || c.date === today;
+            return isToday;
+        });
+    })();
+
     // 3. Create Mutation (Manual)
     const createConsultationMutation = useMutation({
         mutationFn: async () => {
+            if (hasAnyTodayConsultation) {
+                throw new Error('Une consultation existe deja aujourd\'hui pour ce patient.');
+            }
+
             let detectedType = mode === 'radiography' ? 'Radiography' : 'Consultation';
-            const today = getLocalTodayDate();
-            const { start, end } = getDayRangeEncoded(today);
 
             try {
-                const waitlist = await orpcClient.waitlist.list({ start, end });
-                const entry = waitlist.find(w => w.patient_id === patientId);
-                if (entry) {
-                    await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
-                    if (entry.consultation_type_id) {
-                        const types = await orpcClient.consultationTypes.list();
-                        const cType = types.find(t => t.id === entry.consultation_type_id);
-                        if (cType?.nature === 'radiography') detectedType = 'Radiography';
-                        else if (cType?.nature === 'normal') detectedType = 'Consultation';
+                if (!isSharedRecordFlow) {
+                    const today = getLocalTodayDate();
+                    const { start, end } = getDayRangeEncoded(today);
+                    const waitlist = await orpcClient.waitlist.list({ start, end });
+                    const entry = waitlist.find(w => w.patient_id === patientId);
+                    if (entry) {
+                        await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
+                        if (entry.consultation_type_id) {
+                            const types = await orpcClient.consultationTypes.list();
+                            const cType = types.find(t => t.id === entry.consultation_type_id);
+                            if (cType?.nature === 'radiography') detectedType = 'Radiography';
+                            else if (cType?.nature === 'normal') detectedType = 'Consultation';
+                        }
+                    } else {
+                        await orpcClient.waitlist.add({
+                            patient_id: patientId,
+                            state: 'in_consultation',
+                            arrived_at: getLocalISOString(),
+                            needs_dilation: false
+                        });
                     }
-                } else {
-                    await orpcClient.waitlist.add({
-                        patient_id: patientId,
-                        state: 'in_consultation',
-                        arrived_at: getLocalISOString(),
-                        needs_dilation: false
-                    });
                 }
             } catch (err) {
                 console.error('Waitlist sync failed:', err);
@@ -192,6 +212,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                 date: getLocalISOString(),
                 type: detectedType,
                 status: 'pending',
+                exclude_from_stats: isSharedRecordFlow,
             });
 
             if (!result) throw new Error("Erreur base de données lors de la création.");
@@ -235,15 +256,13 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
     }, [patientId]);
 
     useEffect(() => {
-        if (!isHistoryLoading && !hasInitializedHistory && history) {
-            // Auto-open if history exists AND we are currently viewing the latest one (but it's not today's)
-            // Or just always open if history exists for awareness
-            if (history.length > 0) {
+        if (!isHistoryLoading && !isConsultationLoading && !hasInitializedHistory && history) {
+            if (isSharedRecordFlow || history.length > 0 || !consultationData) {
                 setIsHistoryOpen(true);
             }
             setHasInitializedHistory(true);
         }
-    }, [isHistoryLoading, history, hasInitializedHistory]);
+    }, [isHistoryLoading, isConsultationLoading, history, hasInitializedHistory, isSharedRecordFlow, consultationData]);
 
     // 4. Synchronization and URL Locking
     useEffect(() => {
@@ -303,13 +322,17 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'F3') {
                 e.preventDefault();
-                setIsHistoryOpen(prev => !prev);
+                if (isHistoryOpen) {
+                    handleHistoryOpenChange(false);
+                } else {
+                    handleHistoryOpenChange(true);
+                }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+    }, [isHistoryOpen, handleHistoryOpenChange]);
 
     // 3. Finalize/Save Mutation
     const saveMutation = useMutation({
@@ -343,7 +366,8 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
                     type: paymentData.status,
                     method: 'cash',
                     consultation_type_id: paymentData.consultationType,
-                } : undefined
+                } : undefined,
+                exclude_from_stats: Boolean(activeConsultation?.exclude_from_stats)
             };
 
             return await orpcClient.consultations.update({
@@ -430,9 +454,24 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         return history.some(c => {
             const isToday = (c.date >= start && c.date <= end) || c.date === today;
             const isMatchingType = (c.type === targetType || (!c.type && targetType === 'Consultation'));
-            return isToday && isMatchingType;
+            return isToday && isMatchingType && !c.exclude_from_stats;
         });
     })();
+
+    const requiresInitialConsultation = history.length === 0 && !consultationData && !currentConsultationId;
+
+    function handleHistoryOpenChange(open: boolean) {
+        if (!open && requiresInitialConsultation) {
+            toast({
+                title: 'Consultation requise',
+                description: 'Creez une nouvelle consultation pour ce patient avant de fermer l\'historique.',
+                variant: 'destructive'
+            });
+            return;
+        }
+
+        setIsHistoryOpen(open);
+    }
 
     return {
         patient,
@@ -446,12 +485,15 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, onB
         setIsFinishSheetOpen,
         currentConsultationId,
         currentConsultationStatus: activeConsultation?.status,
+        isExcludedFromStats: Boolean(activeConsultation?.exclude_from_stats),
         // History Props
         isHistoryOpen,
-        setIsHistoryOpen,
+        setIsHistoryOpen: handleHistoryOpenChange,
+        requiresInitialConsultation,
         history,
         handleSwitchConsultation,
         isActiveConsultationToday,
+        hasAnyTodayConsultation,
         hasTodayConsultation,
         createConsultationMutation
     };

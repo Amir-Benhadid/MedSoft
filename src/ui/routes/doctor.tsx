@@ -22,6 +22,7 @@ const doctorSearchSchema = z.object({
 	mode: z.enum(['normal', 'radiography']).optional(),
 	consultationId: z.string().optional(),
 	action: z.enum(['view', 'consultation']).optional(),
+	entrySource: z.enum(['shared_record']).optional(),
 });
 
 export const Route = createFileRoute('/doctor')({
@@ -31,13 +32,14 @@ export const Route = createFileRoute('/doctor')({
 
 function DoctorPage() {
 	useRealtime();
-	const { patientId, mode, consultationId, action } = Route.useSearch();
+	const { patientId, mode, consultationId, action, entrySource } = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
     const setSelectedPatientId = (
         id: string | null,
         mode: 'normal' | 'radiography' = 'normal',
-        actionOverride: 'view' | 'consultation' = 'consultation'
+        actionOverride: 'view' | 'consultation' = 'consultation',
+        source?: 'shared_record'
     ) => {
         navigate({
             search: (prev) => ({
@@ -45,6 +47,7 @@ function DoctorPage() {
                 patientId: id ?? undefined,
                 mode: id ? mode : undefined,
                 action: id ? actionOverride : undefined,
+                entrySource: id ? source : undefined,
                 consultationId: undefined // Reset consultationId on new patient selection
             }),
         });
@@ -70,6 +73,7 @@ function DoctorPage() {
 							patientId={patientId}
 							consultationId={consultationId}
 							action={action}
+							entrySource={entrySource}
 							onBack={() => setSelectedPatientId(null)}
 						/>
 					</div>

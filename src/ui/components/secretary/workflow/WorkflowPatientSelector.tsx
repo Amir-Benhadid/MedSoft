@@ -61,10 +61,10 @@ export function WorkflowPatientSelector({ onSelect, onCreateNew }: WorkflowPatie
                 let name = '';
                 if (item.source === 'appointment') {
                     // item is inferred as AppointmentItem here
-                    name = item.patient ? `${item.patient.surname} ${item.patient.name}` : (item.title || '');
+                    name = item.patient ? `${item.patient.surname}   ${item.patient.name}` : (item.title || '');
                 } else {
                     // item is inferred as WaitlistItem here
-                    name = item.patient_name ? `${item.patient_surname} ${item.patient_name}` : '';
+                    name = item.patient_name ? `${item.patient_surname}   ${item.patient_name}` : '';
                 }
                 return name.toLowerCase().includes(term);
             });
@@ -98,8 +98,8 @@ export function WorkflowPatientSelector({ onSelect, onCreateNew }: WorkflowPatie
 
             <div className="flex-1 min-w-0">
                 <div className="font-semibold text-slate-900 truncate">
-                    {item.patient ? `${item.patient.surname} ${item.patient.name}` :
-                        (item.patient_name ? `${item.patient_surname} ${item.patient_name}` :
+                    {item.patient ? `${item.patient.surname}   ${item.patient.name}` :
+                        (item.patient_name ? `${item.patient_surname}   ${item.patient_name}` :
                             item.title || "Patient Sans Nom")}
                 </div>
                 <div className="text-xs text-slate-500 flex items-center gap-2">

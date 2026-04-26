@@ -84,7 +84,7 @@ export default function RehabilitationSection() {
 
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-slate-900 truncate">
-                                    {patient.name} {patient.surname}
+                                    {patient.surname}{"   "}{patient.name}
                                 </p>
                                 <p className="text-[10px] text-indigo-600 font-medium uppercase tracking-tight">En cours</p>
                             </div>

@@ -8,6 +8,7 @@
 import { getDatabase } from '../database.js';
 import { randomUUID } from 'crypto';
 import { getLocalISOString } from '../../lib/time.js';
+import { toTitleCase } from '../../lib/formatters.js';
 
 export interface Patient {
     id: string;
@@ -38,7 +39,8 @@ export class PatientRepository {
      */
     findAll(): Patient[] {
         const query = `SELECT * FROM patients ORDER BY surname ASC, name ASC`;
-        return this.db.prepare(query).all() as Patient[];
+        const rows = this.db.prepare(query).all() as any[];
+        return rows.map(row => this.mapRow(row));
     }
 
     /**
@@ -139,7 +141,8 @@ export class PatientRepository {
 
         query += ` ORDER BY surname ASC, name ASC LIMIT 50`;
 
-        return this.db.prepare(query).all(...params) as Patient[];
+        const rows = this.db.prepare(query).all(...params) as any[];
+        return rows.map(row => this.mapRow(row));
     }
 
     /**
@@ -150,7 +153,8 @@ export class PatientRepository {
      */
     findById(id: string): Patient | null {
         const query = `SELECT * FROM patients WHERE id = ?`;
-        return this.db.prepare(query).get(id) as Patient | null;
+        const row = this.db.prepare(query).get(id);
+        return row ? this.mapRow(row) : null;
     }
 
     /**
@@ -169,10 +173,13 @@ export class PatientRepository {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
+        const name = toTitleCase(patient.name);
+        const surname = toTitleCase(patient.surname);
+
         stmt.run(
             id,
-            patient.name,
-            patient.surname,
+            name,
+            surname,
             patient.dob || null,
             patient.phone_number || null,
             patient.street || null,
@@ -186,6 +193,8 @@ export class PatientRepository {
         return {
             id,
             ...patient,
+            name,
+            surname,
             created_at: now,
             updated_at: now
         };
@@ -206,7 +215,11 @@ export class PatientRepository {
         Object.entries(updates).forEach(([key, value]) => {
             if (key === 'id' || key === 'created_at') return;
             sets.push(`${key} = ?`);
-            values.push(value);
+            if (key === 'name' || key === 'surname') {
+                values.push(toTitleCase(value as string));
+            } else {
+                values.push(value);
+            }
         });
 
         if (sets.length === 0) return this.findById(id);
@@ -232,5 +245,13 @@ export class PatientRepository {
     delete(id: string): boolean {
         const result = this.db.prepare('DELETE FROM patients WHERE id = ?').run(id);
         return result.changes > 0;
+    }
+
+    private mapRow(row: any): Patient {
+        return {
+            ...row,
+            name: toTitleCase(row.name),
+            surname: toTitleCase(row.surname)
+        };
     }
 }

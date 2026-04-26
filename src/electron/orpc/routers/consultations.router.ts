@@ -82,7 +82,7 @@ export const consultationsRouter = os.router({
             // Critical: If finishing consultation, also mark Appointment/Waitlist as completed
             if (input.updates.status === 'completed') {
                 const consultation = repo.findById(input.id);
-                if (consultation) {
+                if (consultation && !consultation.exclude_from_stats) {
                     const AppointmentRepository = (await import('../../db/repositories/appointment.repository.js')).AppointmentRepository;
                     const WaitlistRepository = (await import('../../db/repositories/waitlist.repository.js')).WaitlistRepository;
                     const appointmentRepo = new AppointmentRepository();

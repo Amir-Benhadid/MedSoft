@@ -361,7 +361,7 @@ export class DocumentPrinter {
 				const diversData = options.printDataOverrides?.divers;
 				if (diversData) {
 					// Add patient header
-					context.page.drawText(`${patient.name} ${patient.surname}`, {
+					context.page.drawText(`${DocumentUtils.toTitleCase(patient.surname)}   ${DocumentUtils.toTitleCase(patient.name)}`, {
 						x: context.LEFT_MARGIN,
 						y: context.height - 100,
 						size: context.TEXT_SIZES.title,

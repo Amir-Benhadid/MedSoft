@@ -7,6 +7,7 @@
  */
 
 import { getDatabase, getConfig } from '../database.js';
+import { toTitleCase } from '../../lib/formatters.js';
 
 /**
  * Repository for retrieving application statistics.
@@ -122,6 +123,7 @@ export class StatsRepository {
             LEFT JOIN patients p ON i.patient_id = p.id
             LEFT JOIN consultations c ON i.consultation_id = c.id
             WHERE i.created_at >= ? AND i.created_at <= ?
+              AND COALESCE(c.exclude_from_stats, 0) = 0
             ORDER BY i.created_at DESC
         `;
 
@@ -136,7 +138,7 @@ export class StatsRepository {
             consultations: rows.map(r => ({
                 id: r.consultation_id || r.invoice_id,
                 date: r.created_at,
-                patientName: `${r.patient_surname || ''} ${r.patient_name || ''}`.trim() || 'Patient Inconnu',
+                patientName: `${toTitleCase(r.patient_surname || '')}\u00A0\u00A0\u00A0${toTitleCase(r.patient_name || '')}`.trim() || 'Patient Inconnu',
                 type: r.type || 'Consultation',
                 status: r.consultation_status || 'completed',
                 amount: r.amount || 0,
