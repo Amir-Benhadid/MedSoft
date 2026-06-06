@@ -5,6 +5,8 @@ import { TodayResume } from '@/ui/components/shared/stats/TodayResume';
 import { MonthlyResume } from '@/ui/components/doctor/resume/MonthlyResume';
 import { SettingsContainer } from './settings/SettingsContainer';
 import { BooksLibrary } from './books/BookLibrary';
+import Calendar from '@/ui/components/secretary/calendar/Calendar';
+import Waitlist from '@/ui/components/secretary/waitlist/Waitlist';
 
 interface DoctorPatientListProps {
     onSelectPatient: (patientId: string, mode?: 'normal' | 'radiography', action?: 'view' | 'consultation', entrySource?: 'shared_record') => void;
@@ -33,6 +35,19 @@ export default function DoctorPatientList({ onSelectPatient, selectedPatientId }
                 {currentTab === 'resume' && (
                     <div className="h-full overflow-y-auto w-full flex justify-center">
                         <TodayResume />
+                    </div>
+                )}
+
+                {currentTab === 'calendar' && (
+                    <div className="h-full overflow-hidden w-full p-4">
+                        <div className="flex h-full overflow-hidden gap-4">
+                            <div className="flex-1 min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                                <Calendar />
+                            </div>
+                            <div className="hidden lg:flex lg:w-[420px] xl:w-[450px] shrink-0 min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                                <Waitlist />
+                            </div>
+                        </div>
                     </div>
                 )}
 

@@ -25,6 +25,29 @@ export interface Patient {
     updated_at?: string;
 }
 
+export interface PatientDraft {
+    name: string;
+    surname: string;
+    dob?: string | null;
+    phone_number?: string | null;
+    street?: string | null;
+    city?: string | null;
+    oph_ants?: string | null;
+    gen_ants?: string | null;
+}
+
+export type DuplicateConfidence = 'high' | 'medium';
+
+export interface PatientDuplicateCandidate extends Patient {
+    confidence: DuplicateConfidence;
+    reasons: string[];
+}
+
+export interface PatientSearchResult extends Patient {
+    duplicate_count: number;
+    duplicate_candidates: PatientDuplicateCandidate[];
+}
+
 /**
  * Hook to fetch all patients
  * 
@@ -88,7 +111,7 @@ export function useCreatePatient() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (patient: Omit<Patient, 'id' | 'created_at' | 'updated_at'>) => {
+        mutationFn: async (patient: PatientDraft) => {
             return orpcClient.patients.create(patient);
         },
         onSuccess: () => {
@@ -113,6 +136,37 @@ export function useUpdatePatient() {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['patients'] });
+            queryClient.invalidateQueries({ queryKey: ['patients', 'get', data.id] });
+        },
+    });
+}
+
+export function usePatientDuplicateCheck() {
+    return useMutation({
+        mutationFn: async (patient: PatientDraft) => {
+            return orpcClient.patients.findPotentialDuplicates(patient);
+        },
+    });
+}
+
+export function useMergePatients() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (input: {
+            survivor_id: string;
+            duplicate_ids: string[];
+            resolved_patient: Partial<PatientDraft>;
+        }) => {
+            return orpcClient.patients.merge(input);
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
+            queryClient.invalidateQueries({ queryKey: ['appointments'] });
+            queryClient.invalidateQueries({ queryKey: ['waitlist'] });
+            queryClient.invalidateQueries({ queryKey: ['consultations'] });
+            queryClient.invalidateQueries({ queryKey: ['invoices'] });
+            queryClient.invalidateQueries({ queryKey: ['sharedRecords'] });
             queryClient.invalidateQueries({ queryKey: ['patients', 'get', data.id] });
         },
     });

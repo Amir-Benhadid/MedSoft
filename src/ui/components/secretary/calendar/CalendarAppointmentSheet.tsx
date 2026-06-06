@@ -9,9 +9,10 @@ import { Label } from '@/ui/components/ui/label';
 import { Textarea } from '@/ui/components/ui/textarea';
 import { Badge } from '@/ui/components/ui/badge';
 import { useCreateAppointment, useUpdateAppointment, Appointment } from '@/ui/hooks/useAppointments';
-import { useCreatePatient, useUpdatePatient, usePatient, Patient } from '@/ui/hooks/usePatients';
+import { useCreatePatient, useUpdatePatient, usePatient, Patient, PatientDraft, PatientDuplicateCandidate, usePatientDuplicateCheck } from '@/ui/hooks/usePatients';
 import { PatientSelector } from '@/ui/components/patients/PatientSelector';
 import { PatientForm } from '@/ui/components/patients/PatientForm';
+import { PatientDuplicateWarningDialog } from '@/ui/components/patients/PatientDuplicateWarningDialog';
 import {
     Search, User, Clock, FileText, Calendar as CalendarIcon,
     Phone, MapPin, Eye, Droplet, Activity, Save, X,
@@ -23,6 +24,7 @@ import { useSheetStack } from '@/ui/components/ui/sheet-stack';
 import { ClinicalDataContent } from '@/ui/components/secretary/patient/ClinicalDataSheet';
 import { SecretaryDocumentsContent } from '@/ui/components/secretary/sheet/SecretaryDocumentsSheet';
 import { useRef } from 'react';
+import { PaymentHistorySheet } from '@/ui/components/doctor/history/PaymentHistorySheet';
 
 // Compact Modular Components
 import { CompactPatientCard } from '@/ui/components/secretary/calendar/components/CompactPatientCard';
@@ -65,10 +67,14 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
     const createAppointment = useCreateAppointment();
     const updateAppointment = useUpdateAppointment();
     const createPatient = useCreatePatient();
+    const duplicateCheck = usePatientDuplicateCheck();
     const updatePatient = useUpdatePatient();
 
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+    const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
     const [view, setView] = useState<'selection' | 'form' | 'appointment' | 'edit-patient'>('selection');
+    const [pendingPatientDraft, setPendingPatientDraft] = useState<PatientDraft | null>(null);
+    const [duplicateCandidates, setDuplicateCandidates] = useState<PatientDuplicateCandidate[]>([]);
     const { openSheet, closeSheet, sheets } = useSheetStack();
 
     // Refs for sheet management
@@ -234,15 +240,32 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
         setView('appointment');
     }, []);
 
-    const handlePatientCreate = useCallback(async (data: any) => {
+    const finalizePatientCreate = useCallback(async (data: PatientDraft) => {
         try {
             const newPatient = await createPatient.mutateAsync(data);
             setSelectedPatient(newPatient);
             setView('appointment');
+            setPendingPatientDraft(null);
+            setDuplicateCandidates([]);
         } catch (error) {
             console.error("Failed to create patient", error);
         }
     }, [createPatient]);
+
+    const handlePatientCreate = useCallback(async (data: PatientDraft) => {
+        try {
+            const duplicates = await duplicateCheck.mutateAsync(data);
+            if (duplicates.length > 0) {
+                setPendingPatientDraft(data);
+                setDuplicateCandidates(duplicates);
+                return;
+            }
+
+            await finalizePatientCreate(data);
+        } catch (error) {
+            console.error("Failed to check patient duplicates", error);
+        }
+    }, [duplicateCheck, finalizePatientCreate]);
 
     const handlePatientUpdate = useCallback(async (data: any) => {
         if (!selectedPatient) return;
@@ -343,7 +366,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 {view === 'form' && (
                     <div className="animate-in fade-in slide-in-from-right-5 duration-200">
                         <PatientForm
-                            isLoading={createPatient.isPending}
+                            isLoading={createPatient.isPending || duplicateCheck.isPending}
                             onSubmit={handlePatientCreate}
                             onCancel={() => setView('selection')}
                         />
@@ -365,13 +388,23 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 {view === 'appointment' && selectedPatient && (
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 animate-in fade-in slide-in-from-right-5 duration-200">
                         {/* Compact Patient Card */}
-                        <CompactPatientCard
-                            patient={selectedPatient}
-                            onChangePatient={() => setView('selection')}
-                            onEdit={() => setView('edit-patient')}
-                        />
+                         <CompactPatientCard
+                             patient={selectedPatient}
+                             onChangePatient={() => setView('selection')}
+                             onEdit={() => setView('edit-patient')}
+                         />
 
-                        <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
+                         <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
+
+                         <Button
+                             type="button"
+                             variant="outline"
+                             className="w-full justify-between border-slate-200 bg-slate-50 hover:bg-slate-100"
+                             onClick={() => setIsPaymentHistoryOpen(true)}
+                         >
+                             <span>Historique des paiements</span>
+                             <ChevronRight className="h-4 w-4" />
+                         </Button>
 
                         {/* Quick Actions Grid */}
                         <div className="grid grid-cols-2 gap-2 my-2">
@@ -502,6 +535,34 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                     </div>
                 </div>
             )}
+
+            <PatientDuplicateWarningDialog
+                open={duplicateCandidates.length > 0}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setDuplicateCandidates([]);
+                        setPendingPatientDraft(null);
+                    }
+                }}
+                candidates={duplicateCandidates}
+                isCreating={createPatient.isPending}
+                onUseExisting={(patient) => {
+                    setSelectedPatient(patient);
+                    setDuplicateCandidates([]);
+                    setPendingPatientDraft(null);
+                    setView('appointment');
+                }}
+                onCreateAnyway={() => {
+                    if (!pendingPatientDraft) return;
+                    void finalizePatientCreate(pendingPatientDraft);
+                }}
+            />
+
+            <PaymentHistorySheet
+                isOpen={isPaymentHistoryOpen}
+                onOpenChange={setIsPaymentHistoryOpen}
+                patientId={selectedPatient?.id || ''}
+            />
         </div>
     );
 }

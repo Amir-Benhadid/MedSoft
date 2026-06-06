@@ -24,6 +24,33 @@ export interface Patient {
     updated_at?: string;
 }
 
+export type DuplicateConfidence = 'high' | 'medium';
+
+export interface PatientDuplicateCandidate extends Patient {
+    confidence: DuplicateConfidence;
+    reasons: string[];
+}
+
+export interface PatientSearchResult extends Patient {
+    duplicate_count: number;
+    duplicate_candidates: PatientDuplicateCandidate[];
+}
+
+export interface MergePatientsInput {
+    survivor_id: string;
+    duplicate_ids: string[];
+    resolved_patient: Partial<Omit<Patient, 'id' | 'created_at' | 'updated_at'>>;
+}
+
+interface DuplicateMatchContext {
+    exactNameMatch: boolean;
+    sameDob: boolean;
+    sameBirthYear: boolean;
+    sameCity: boolean;
+    surnameDistance: number;
+    nameDistance: number;
+}
+
 /**
  * Repository for managing patient data.
  */
@@ -60,7 +87,7 @@ export class PatientRepository {
      * @param term - Search string
      * @returns Array of matching patients (limited to 50 results)
      */
-    search(term: string): Patient[] {
+    search(term: string): PatientSearchResult[] {
         const tokens = term.trim().split(/\s+/);
         if (tokens.length === 0) return [];
 
@@ -142,7 +169,11 @@ export class PatientRepository {
         query += ` ORDER BY surname ASC, name ASC LIMIT 50`;
 
         const rows = this.db.prepare(query).all(...params) as any[];
-        return rows.map(row => this.mapRow(row));
+        return rows.map(row => this.attachDuplicateMetadata(this.mapRow(row)));
+    }
+
+    findPotentialDuplicates(patient: Partial<Patient> & Pick<Patient, 'name' | 'surname'>, excludeIds: string[] = []): PatientDuplicateCandidate[] {
+        return this.findDuplicateCandidates(patient, excludeIds);
     }
 
     /**
@@ -245,6 +276,255 @@ export class PatientRepository {
     delete(id: string): boolean {
         const result = this.db.prepare('DELETE FROM patients WHERE id = ?').run(id);
         return result.changes > 0;
+    }
+
+    mergePatients(input: MergePatientsInput): Patient {
+        const duplicateIds = Array.from(new Set(input.duplicate_ids.filter(id => id && id !== input.survivor_id)));
+        if (duplicateIds.length === 0) {
+            throw new Error('At least one duplicate patient must be selected');
+        }
+
+        const survivor = this.findById(input.survivor_id);
+        if (!survivor) {
+            throw new Error('Survivor patient not found');
+        }
+
+        const duplicates = duplicateIds
+            .map(id => this.findById(id))
+            .filter((patient): patient is Patient => patient !== null);
+
+        if (duplicates.length !== duplicateIds.length) {
+            throw new Error('One or more duplicate patients were not found');
+        }
+
+        const mergedPatient = this.buildMergedPatient(survivor, duplicates, input.resolved_patient);
+        const now = getLocalISOString();
+        const fullName = `${toTitleCase(mergedPatient.surname || '')}   ${toTitleCase(mergedPatient.name || '')}`.trim();
+
+        const transaction = this.db.transaction(() => {
+            const patientIdTables = [
+                'appointments',
+                'waitlist_entries',
+                'consultations',
+                'dilations',
+                'shared_records',
+                'invoices'
+            ];
+
+            for (const duplicateId of duplicateIds) {
+                for (const table of patientIdTables) {
+                    if (!this.tableHasColumn(table, 'patient_id')) continue;
+                    this.db.prepare(`UPDATE ${table} SET patient_id = ? WHERE patient_id = ?`).run(input.survivor_id, duplicateId);
+                }
+
+                this.db.prepare('DELETE FROM patients WHERE id = ?').run(duplicateId);
+            }
+
+            this.db.prepare(`
+                UPDATE patients
+                SET name = ?, surname = ?, dob = ?, phone_number = ?, street = ?, city = ?, oph_ants = ?, gen_ants = ?, updated_at = ?
+                WHERE id = ?
+            `).run(
+                toTitleCase(mergedPatient.name || ''),
+                toTitleCase(mergedPatient.surname || ''),
+                mergedPatient.dob || null,
+                mergedPatient.phone_number || null,
+                mergedPatient.street || null,
+                mergedPatient.city || null,
+                mergedPatient.oph_ants || null,
+                mergedPatient.gen_ants || null,
+                now,
+                input.survivor_id
+            );
+
+            if (this.tableHasColumn('appointments', 'title')) {
+                this.db.prepare('UPDATE appointments SET title = ?, updated_at = ? WHERE patient_id = ?').run(fullName, now, input.survivor_id);
+            }
+        });
+
+        transaction();
+
+        const finalPatient = this.findById(input.survivor_id);
+        if (!finalPatient) {
+            throw new Error('Merged patient not found after merge');
+        }
+
+        return finalPatient;
+    }
+
+    private attachDuplicateMetadata(patient: Patient): PatientSearchResult {
+        const candidates = this.findDuplicateCandidates(patient, [patient.id]);
+        return {
+            ...patient,
+            duplicate_count: candidates.length,
+            duplicate_candidates: candidates
+        };
+    }
+
+    private findDuplicateCandidates(patient: Partial<Patient> & Pick<Patient, 'name' | 'surname'>, excludeIds: string[] = []): PatientDuplicateCandidate[] {
+        const normalizedName = this.normalizeStr(patient.name);
+        const normalizedSurname = this.normalizeStr(patient.surname);
+        if (!normalizedName || !normalizedSurname) return [];
+
+        const excluded = new Set(excludeIds);
+        const candidates = this.findAll().filter(candidate => !excluded.has(candidate.id));
+
+        return candidates
+            .map(candidate => {
+                const match = this.scoreDuplicateMatch(patient, candidate);
+                if (!match) return null;
+
+                return {
+                    ...candidate,
+                    confidence: match.confidence,
+                    reasons: match.reasons
+                } satisfies PatientDuplicateCandidate;
+            })
+            .filter((candidate): candidate is PatientDuplicateCandidate => candidate !== null)
+            .sort((a, b) => {
+                if (a.confidence !== b.confidence) return a.confidence === 'high' ? -1 : 1;
+                return (a.surname || '').localeCompare(b.surname || '') || (a.name || '').localeCompare(b.name || '');
+            })
+            .slice(0, 5);
+    }
+
+    private scoreDuplicateMatch(source: Partial<Patient> & Pick<Patient, 'name' | 'surname'>, candidate: Patient): { confidence: DuplicateConfidence; reasons: string[] } | null {
+        const sourceName = this.normalizeStr(source.name);
+        const sourceSurname = this.normalizeStr(source.surname);
+        const candidateName = this.normalizeStr(candidate.name);
+        const candidateSurname = this.normalizeStr(candidate.surname);
+
+        if (!sourceName || !sourceSurname || !candidateName || !candidateSurname) return null;
+
+        const context = this.buildDuplicateContext(source, candidate, sourceName, sourceSurname, candidateName, candidateSurname);
+        const reasons: string[] = [];
+
+        if (context.exactNameMatch) reasons.push('same-full-name');
+        if (context.sameDob) reasons.push('same-dob');
+        if (context.sameBirthYear) reasons.push('same-birth-year');
+        if (context.sameCity) reasons.push('same-city');
+        if (!context.exactNameMatch && context.surnameDistance <= 1 && context.nameDistance <= 1) reasons.push('close-spelling');
+
+        const isHighConfidence =
+            (context.exactNameMatch && context.sameDob) ||
+            (context.exactNameMatch && context.sameBirthYear) ||
+            (context.exactNameMatch && context.sameCity && (!source.dob || !candidate.dob));
+
+        if (isHighConfidence) {
+            return { confidence: 'high', reasons };
+        }
+
+        const isMediumConfidence =
+            ((context.exactNameMatch || (context.surnameDistance <= 1 && context.nameDistance <= 1)) && context.sameBirthYear) ||
+            ((context.exactNameMatch || (context.surnameDistance <= 1 && context.nameDistance <= 1)) && context.sameCity) ||
+            (context.exactNameMatch && !source.dob && !candidate.dob);
+
+        if (!isMediumConfidence) {
+            return null;
+        }
+
+        return { confidence: 'medium', reasons };
+    }
+
+    private buildDuplicateContext(
+        source: Partial<Patient>,
+        candidate: Patient,
+        sourceName: string,
+        sourceSurname: string,
+        candidateName: string,
+        candidateSurname: string
+    ): DuplicateMatchContext {
+        const sourceBirthYear = this.getBirthYear(source.dob);
+        const candidateBirthYear = this.getBirthYear(candidate.dob);
+
+        return {
+            exactNameMatch: sourceName === candidateName && sourceSurname === candidateSurname,
+            sameDob: !!source.dob && !!candidate.dob && source.dob === candidate.dob,
+            sameBirthYear: !!sourceBirthYear && !!candidateBirthYear && Math.abs(sourceBirthYear - candidateBirthYear) <= 1,
+            sameCity: this.normalizeStr(source.city || '') !== '' && this.normalizeStr(source.city || '') === this.normalizeStr(candidate.city || ''),
+            surnameDistance: this.levenshtein(sourceSurname, candidateSurname),
+            nameDistance: this.levenshtein(sourceName, candidateName)
+        };
+    }
+
+    private buildMergedPatient(survivor: Patient, duplicates: Patient[], resolvedPatient: Partial<Omit<Patient, 'id' | 'created_at' | 'updated_at'>>): Patient {
+        const allPatients = [survivor, ...duplicates];
+
+        return {
+            ...survivor,
+            name: toTitleCase((resolvedPatient.name ?? this.pickPreferredValue(allPatients.map(patient => patient.name))) || survivor.name),
+            surname: toTitleCase((resolvedPatient.surname ?? this.pickPreferredValue(allPatients.map(patient => patient.surname))) || survivor.surname),
+            dob: resolvedPatient.dob ?? this.pickPreferredValue(allPatients.map(patient => patient.dob)),
+            phone_number: resolvedPatient.phone_number ?? this.pickPreferredValue(allPatients.map(patient => patient.phone_number)),
+            street: resolvedPatient.street ?? this.pickPreferredValue(allPatients.map(patient => patient.street)),
+            city: resolvedPatient.city ?? this.pickPreferredValue(allPatients.map(patient => patient.city)),
+            oph_ants: resolvedPatient.oph_ants ?? this.mergeTextValues(allPatients.map(patient => patient.oph_ants)),
+            gen_ants: resolvedPatient.gen_ants ?? this.mergeTextValues(allPatients.map(patient => patient.gen_ants))
+        };
+    }
+
+    private pickPreferredValue(values: Array<string | null | undefined>): string | null {
+        for (const value of values) {
+            if (value && value.trim()) return value.trim();
+        }
+
+        return null;
+    }
+
+    private mergeTextValues(values: Array<string | null | undefined>): string | null {
+        const unique = Array.from(
+            new Map(
+                values
+                    .filter((value): value is string => !!value && !!value.trim())
+                    .map(value => [value.trim().toLowerCase(), value.trim()])
+            ).values()
+        );
+
+        return unique.length > 0 ? unique.join('\n\n') : null;
+    }
+
+    private tableHasColumn(tableName: string, columnName: string): boolean {
+        const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
+        return columns.some(column => column.name === columnName);
+    }
+
+    private getBirthYear(dob?: string | null): number | null {
+        if (!dob) return null;
+
+        const date = new Date(dob);
+        return Number.isNaN(date.getTime()) ? null : date.getFullYear();
+    }
+
+    private normalizeStr(value: string): string {
+        return value
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, ' ');
+    }
+
+    private levenshtein(a: string, b: string): number {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+
+        const matrix = Array.from({ length: b.length + 1 }, () => Array(a.length + 1).fill(0));
+
+        for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+        for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+        for (let j = 1; j <= b.length; j++) {
+            for (let i = 1; i <= a.length; i++) {
+                const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
+                matrix[j][i] = Math.min(
+                    matrix[j][i - 1] + 1,
+                    matrix[j - 1][i] + 1,
+                    matrix[j - 1][i - 1] + substitutionCost
+                );
+            }
+        }
+
+        return matrix[b.length][a.length];
     }
 
     private mapRow(row: any): Patient {

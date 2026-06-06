@@ -71,15 +71,14 @@ export function SettingsDialog({
 						</div>
 
 						<div className="space-y-4">
-							<div className="relative group">
-								<Input
-									type={showNewPin ? 'text' : 'password'}
-									placeholder="Nouveau PIN"
-									value={newPin}
-									onChange={(e) => setNewPin(e.target.value)}
-									disabled={isLoading}
-									className="text-center text-lg sm:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 bg-gray-50/50 border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
-								/>
+						<div className="relative group">
+							<Input
+								type={showNewPin ? 'text' : 'password'}
+								value={newPin}
+								onChange={(e) => setNewPin(e.target.value)}
+								disabled={isLoading}
+								className="text-center text-lg sm:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-300 bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
+							/>
 								<Button
 									variant="ghost"
 									size="icon"
@@ -95,15 +94,14 @@ export function SettingsDialog({
 								</Button>
 							</div>
 
-							<div className="relative group">
-								<Input
-									type={showConfirmPin ? 'text' : 'password'}
-									placeholder="Confirmer le PIN"
-									value={confirmPin}
-									onChange={(e) => setConfirmPin(e.target.value)}
-									disabled={isLoading}
-									className="text-center text-lg sm:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 bg-gray-50/50 border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
-								/>
+						<div className="relative group">
+							<Input
+								type={showConfirmPin ? 'text' : 'password'}
+								value={confirmPin}
+								onChange={(e) => setConfirmPin(e.target.value)}
+								disabled={isLoading}
+								className="text-center text-lg sm:text-xl font-bold tracking-[0.2em] sm:tracking-[0.3em] h-12 sm:h-14 rounded-xl sm:rounded-2xl border-2 border-slate-300 bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
+							/>
 								<Button
 									variant="ghost"
 									size="icon"

@@ -20,7 +20,7 @@ import { Label } from '@/ui/components/ui/label';
 import { Textarea } from '@/ui/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/components/ui/tabs";
-import { Plus, Trash, Eye, AlignJustify, Check } from 'lucide-react';
+import { Plus, Trash, Eye, AlignJustify, Check, Save, RotateCcw, Sparkles } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/ui/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/components/ui/popover";
 import { cn } from "@/ui/lib/utils";
@@ -54,6 +54,9 @@ export function DynamicDocumentEditor() {
     const DOC_ID = 'radiography_dynamic';
     const storeData = documentOverrides[DOC_ID] as DynamicDocumentState | undefined;
 
+    const [savedIndicator, setSavedIndicator] = useState<boolean>(false);
+    const [hasSavedPrefill, setHasSavedPrefill] = useState<boolean>(false);
+
     // Queries
     const { data: templates = [] } = useQuery({
         queryKey: ['radiography', 'documents', 'list'],
@@ -62,6 +65,56 @@ export function DynamicDocumentEditor() {
 
     // Helper to get field suggestions for a template
     const activeTemplate = templates.find(t => t.id === storeData?.templateId);
+
+    // Check if prefill exists reactive
+    useEffect(() => {
+        if (storeData?.templateId) {
+            setHasSavedPrefill(!!localStorage.getItem(`medsoft_exploration_prefill_${storeData.templateId}`));
+        } else {
+            setHasSavedPrefill(false);
+        }
+    }, [storeData?.templateId]);
+
+    const handleSavePrefill = () => {
+        if (!storeData?.templateId) return;
+
+        const dataToSave = {
+            eyeTreatment: storeData.eyeTreatment,
+            bothLines: storeData.bothLines,
+            odLines: storeData.odLines,
+            ogLines: storeData.ogLines,
+            conclusion: storeData.conclusion
+        };
+
+        localStorage.setItem(`medsoft_exploration_prefill_${storeData.templateId}`, JSON.stringify(dataToSave));
+        setHasSavedPrefill(true);
+        setSavedIndicator(true);
+        setTimeout(() => setSavedIndicator(false), 2500);
+    };
+
+    const handleResetPrefill = () => {
+        if (!storeData?.templateId) return;
+        if (confirm("Voulez-vous supprimer le préremplissage enregistré pour ce modèle ?")) {
+            localStorage.removeItem(`medsoft_exploration_prefill_${storeData.templateId}`);
+            setHasSavedPrefill(false);
+
+            // Reseed back to standard DB fields
+            const dbFields = activeTemplate?.fields || [];
+            const initialLines = dbFields.map((f: any) => ({
+                id: Math.random().toString(),
+                title: f.label,
+                content: ""
+            }));
+
+            updateState({
+                eyeTreatment: 'same',
+                bothLines: initialLines,
+                odLines: initialLines.map((l: any) => ({ ...l, id: Math.random().toString() })),
+                ogLines: initialLines.map((l: any) => ({ ...l, id: Math.random().toString() })),
+                conclusion: []
+            });
+        }
+    };
 
     // Initial State Setup
     useEffect(() => {
@@ -87,16 +140,62 @@ export function DynamicDocumentEditor() {
     return (
         <div className="h-full flex flex-col space-y-4 p-1">
             {/* Header: Template & Eye Mode Selection */}
-            <div className="flex items-center gap-4 bg-slate-50 p-3 rounded-lg border">
+            <div className="flex flex-col md:flex-row md:items-end gap-4 bg-slate-50 p-3 rounded-lg border">
                 <div className="flex-1 max-w-sm space-y-1">
-                    <Label className="text-xs text-muted-foreground">Modèle de Document</Label>
+                    <Label className="text-xs text-muted-foreground font-semibold">Modèle de Document</Label>
                     <Select
                         value={storeData.templateId || "none"}
                         onValueChange={(val) => {
+                            if (val === "none") {
+                                updateState({
+                                    templateId: null,
+                                    templateTitle: undefined,
+                                    bothLines: [],
+                                    odLines: [],
+                                    ogLines: [],
+                                    conclusion: []
+                                });
+                                return;
+                            }
+
                             const selected = templates.find(t => t.id === val);
+
+                            // 1. Try to load saved prefill from localStorage
+                            const savedPrefill = localStorage.getItem(`medsoft_exploration_prefill_${val}`);
+                            if (savedPrefill) {
+                                try {
+                                    const parsed = JSON.parse(savedPrefill);
+                                    updateState({
+                                        templateId: val,
+                                        templateTitle: selected?.title || undefined,
+                                        eyeTreatment: parsed.eyeTreatment || 'same',
+                                        bothLines: parsed.bothLines || [],
+                                        odLines: parsed.odLines || [],
+                                        ogLines: parsed.ogLines || [],
+                                        conclusion: parsed.conclusion || []
+                                    });
+                                    return;
+                                } catch (e) {
+                                    console.error("Failed to parse saved prefill", e);
+                                }
+                            }
+
+                            // 2. Otherwise: seed empty DB fields (Proposal A)
+                            const dbFields = selected?.fields || [];
+                            const initialLines = dbFields.map((f: any) => ({
+                                id: Math.random().toString(),
+                                title: f.label,
+                                content: ""
+                            }));
+
                             updateState({
-                                templateId: val === "none" ? null : val,
-                                templateTitle: selected?.title || undefined
+                                templateId: val,
+                                templateTitle: selected?.title || undefined,
+                                eyeTreatment: 'same',
+                                bothLines: initialLines,
+                                odLines: initialLines.map((l: any) => ({ ...l, id: Math.random().toString() })),
+                                ogLines: initialLines.map((l: any) => ({ ...l, id: Math.random().toString() })),
+                                conclusion: []
                             });
                         }}
                     >
@@ -111,6 +210,42 @@ export function DynamicDocumentEditor() {
                         </SelectContent>
                     </Select>
                 </div>
+
+                {storeData.templateId && storeData.templateId !== "none" && (
+                    <div className="flex items-center gap-2 pb-0.5">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSavePrefill}
+                            title="Sauvegarder ce remplissage comme valeurs par défaut pour les prochaines consultations"
+                            className="h-9 px-3 gap-1.5 border-purple-200 text-purple-700 hover:bg-purple-100 hover:text-purple-800 transition-all font-semibold shadow-sm"
+                        >
+                            <Save className="w-3.5 h-3.5" />
+                            Mémoriser comme défaut
+                        </Button>
+
+                        {hasSavedPrefill && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleResetPrefill}
+                                title="Réinitialiser le modèle par défaut"
+                                className="h-9 px-2 hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-all"
+                            >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                            </Button>
+                        )}
+
+                        {savedIndicator && (
+                            <span className="text-xs text-emerald-600 font-bold flex items-center gap-1 animate-pulse px-1">
+                                <Sparkles className="w-3 h-3" />
+                                Choix enregistrés !
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 <div className="flex-1 max-w-[200px] space-y-1">
                     <Label className="text-xs text-muted-foreground">Mode de Traitement</Label>

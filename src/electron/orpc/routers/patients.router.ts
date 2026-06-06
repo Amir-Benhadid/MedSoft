@@ -30,6 +30,12 @@ const createPatientSchema = patientSchema.omit({
     updated_at: true,
 });
 
+const mergePatientSchema = z.object({
+    survivor_id: z.string(),
+    duplicate_ids: z.array(z.string()).min(1),
+    resolved_patient: createPatientSchema.partial(),
+});
+
 export const patientsRouter = os.router({
     /**
      * Lists all patients, ordered by surname and name.
@@ -53,6 +59,13 @@ export const patientsRouter = os.router({
         .handler(async ({ input }) => {
             const repo = new PatientRepository();
             return repo.search(input.term);
+        }),
+
+    findPotentialDuplicates: os
+        .input(createPatientSchema)
+        .handler(async ({ input }) => {
+            const repo = new PatientRepository();
+            return repo.findPotentialDuplicates(input);
         }),
 
     /**
@@ -126,5 +139,19 @@ export const patientsRouter = os.router({
             const success = repo.delete(input.id);
             broadcastChange('patients');
             return { success };
+        }),
+
+    merge: os
+        .input(mergePatientSchema)
+        .handler(async ({ input }) => {
+            const repo = new PatientRepository();
+            const result = repo.mergePatients(input);
+            broadcastChange('patients');
+            broadcastChange('appointments');
+            broadcastChange('waitlist');
+            broadcastChange('consultations');
+            broadcastChange('invoices');
+            broadcastChange('sharedRecords');
+            return result;
         }),
 });

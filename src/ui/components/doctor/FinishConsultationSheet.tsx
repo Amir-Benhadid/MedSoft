@@ -87,6 +87,7 @@ export function FinishConsultationSheet({
                     />
 
                     <NextAppointmentSection
+                        consultationTypes={consultationTypes}
                         nextApptType={nextApptType}
                         setNextApptType={setNextApptType}
                         nextApptDate={nextApptDate}

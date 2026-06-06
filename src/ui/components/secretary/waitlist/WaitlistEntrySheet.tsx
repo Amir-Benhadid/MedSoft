@@ -6,11 +6,12 @@ import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/ui/
 import { Button } from '@/ui/components/ui/button';
 import { Textarea } from '@/ui/components/ui/textarea';
 import { useCreateWaitlistEntry } from '@/ui/hooks/useWaitlist';
-import { useCreatePatient, useUpdatePatient, usePatient, Patient } from '@/ui/hooks/usePatients';
+import { useCreatePatient, useUpdatePatient, usePatient, Patient, PatientDraft, PatientDuplicateCandidate, usePatientDuplicateCheck } from '@/ui/hooks/usePatients';
 import { PatientSelector } from '@/ui/components/patients/PatientSelector';
 import { PatientForm } from '@/ui/components/patients/PatientForm';
+import { PatientDuplicateWarningDialog } from '@/ui/components/patients/PatientDuplicateWarningDialog';
 import {
-    Search, UserPlus, Clock, FileText, X, Save, Activity
+    Search, UserPlus, Clock, FileText, X, Save, Activity, ChevronRight
 } from 'lucide-react';
 import { useSheetStack } from '@/ui/components/ui/sheet-stack';
 import { ClinicalDataContent } from '@/ui/components/secretary/patient/ClinicalDataSheet';
@@ -26,6 +27,7 @@ import { CompactAntecedentsSection } from '@/ui/components/secretary/calendar/co
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { cn } from '@/ui/lib/utils';
 import { PatientDebtSummary } from '@/ui/components/shared/billing/PatientDebtSummary';
+import { PaymentHistorySheet } from '@/ui/components/doctor/history/PaymentHistorySheet';
 
 const waitlistEntrySchema = z.object({
     notes: z.string().optional(),
@@ -46,6 +48,7 @@ interface WaitlistEntrySheetProps {
 export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps) {
     const createWaitlistEntry = useCreateWaitlistEntry();
     const createPatient = useCreatePatient();
+    const duplicateCheck = usePatientDuplicateCheck();
     const updatePatient = useUpdatePatient();
     const { openSheet, closeSheet, sheets } = useSheetStack();
 
@@ -54,7 +57,10 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
     const activeSheetRef = useRef<'clinical' | 'documents' | null>(null);
 
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+    const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
     const [view, setView] = useState<'selection' | 'form' | 'entry' | 'edit-patient'>('selection');
+    const [pendingPatientDraft, setPendingPatientDraft] = useState<PatientDraft | null>(null);
+    const [duplicateCandidates, setDuplicateCandidates] = useState<PatientDuplicateCandidate[]>([]);
     const { appMode } = useConfig();
 
     const handleOpenClinicalData = async () => {
@@ -171,15 +177,32 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
         setView('entry');
     }, []);
 
-    const handlePatientCreate = useCallback(async (data: any) => {
+    const finalizePatientCreate = useCallback(async (data: PatientDraft) => {
         try {
             const newPatient = await createPatient.mutateAsync(data);
             setSelectedPatient(newPatient);
             setView('entry');
+            setPendingPatientDraft(null);
+            setDuplicateCandidates([]);
         } catch (error) {
             console.error("Failed to create patient", error);
         }
     }, [createPatient]);
+
+    const handlePatientCreate = useCallback(async (data: PatientDraft) => {
+        try {
+            const duplicates = await duplicateCheck.mutateAsync(data);
+            if (duplicates.length > 0) {
+                setPendingPatientDraft(data);
+                setDuplicateCandidates(duplicates);
+                return;
+            }
+
+            await finalizePatientCreate(data);
+        } catch (error) {
+            console.error("Failed to check patient duplicates", error);
+        }
+    }, [duplicateCheck, finalizePatientCreate]);
 
     const handlePatientUpdate = useCallback(async (data: any) => {
         if (!selectedPatient) return;
@@ -278,7 +301,7 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                     {view === 'form' && (
                         <div className="animate-in fade-in slide-in-from-right-5 duration-200">
                             <PatientForm
-                                isLoading={createPatient.isPending}
+                                isLoading={createPatient.isPending || duplicateCheck.isPending}
                                 onSubmit={handlePatientCreate}
                                 onCancel={() => setView('selection')}
                             />
@@ -307,6 +330,16 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                             />
 
                             <PatientDebtSummary patientId={selectedPatient.id} variant="prominent" />
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full justify-between border-slate-200 bg-slate-50 hover:bg-slate-100"
+                                onClick={() => setIsPaymentHistoryOpen(true)}
+                            >
+                                <span>Historique des paiements</span>
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
 
                             {/* Quick Actions Grid */}
                             <div className="grid grid-cols-2 gap-2">
@@ -409,6 +442,34 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
                         </div>
                     </SheetFooter>
                 )}
+
+                <PatientDuplicateWarningDialog
+                    open={duplicateCandidates.length > 0}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setDuplicateCandidates([]);
+                            setPendingPatientDraft(null);
+                        }
+                    }}
+                    candidates={duplicateCandidates}
+                    isCreating={createPatient.isPending}
+                    onUseExisting={(patient) => {
+                        setSelectedPatient(patient);
+                        setDuplicateCandidates([]);
+                        setPendingPatientDraft(null);
+                        setView('entry');
+                    }}
+                    onCreateAnyway={() => {
+                        if (!pendingPatientDraft) return;
+                        void finalizePatientCreate(pendingPatientDraft);
+                    }}
+                />
+
+                <PaymentHistorySheet
+                    isOpen={isPaymentHistoryOpen}
+                    onOpenChange={setIsPaymentHistoryOpen}
+                    patientId={selectedPatient?.id || ''}
+                />
             </SheetContent>
         </Sheet>
     );

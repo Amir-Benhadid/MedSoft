@@ -10,11 +10,14 @@ import {
 } from '@/ui/components/ui/command';
 import { orpcClient } from '@/ui/lib/orpc/client';
 import { useQuery } from '@tanstack/react-query';
-import { FileText, Phone, MapPin, Loader2, History, Calendar, PlusCircle, FolderOpen, ArrowLeft, User, Send } from 'lucide-react';
+import { FileText, Phone, MapPin, Loader2, History, Calendar, PlusCircle, FolderOpen, ArrowLeft, User, Send, GitMerge } from 'lucide-react';
 import { useDebounce } from '@/ui/hooks/use-debounce';
 import { format } from 'date-fns';
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { useToast } from '@/ui/hooks/use-toast';
+import { Badge } from '@/ui/components/ui/badge';
+import { Patient as BasePatient, PatientSearchResult, useMergePatients } from '@/ui/hooks/usePatients';
+import { PatientDuplicateMergeDialog } from '@/ui/components/patients/PatientDuplicateMergeDialog';
 
 interface PatientSearchDialogProps {
     open: boolean;
@@ -23,14 +26,7 @@ interface PatientSearchDialogProps {
     mode?: 'doctor' | 'secretary';
 }
 
-interface Patient {
-    id: string;
-    name: string;
-    surname: string;
-    dob?: string | null;
-    city?: string | null;
-    phone_number?: string | null;
-}
+type SearchDialogPatient = BasePatient & Partial<Pick<PatientSearchResult, 'duplicate_count' | 'duplicate_candidates'>>;
 
 export function PatientSearchDialog({
     open,
@@ -40,12 +36,14 @@ export function PatientSearchDialog({
 }: PatientSearchDialogProps) {
     const [search, setSearch] = useState('');
     const debouncedSearch = useDebounce(search, 300);
-    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-    const [recentSearches, setRecentSearches] = useState<Patient[]>([]);
+    const [selectedPatient, setSelectedPatient] = useState<SearchDialogPatient | null>(null);
+    const [recentSearches, setRecentSearches] = useState<SearchDialogPatient[]>([]);
+    const [mergeTarget, setMergeTarget] = useState<PatientSearchResult | null>(null);
     const { appMode } = useConfig();
     const { toast } = useToast();
+    const mergePatients = useMergePatients();
 
-    const persistRecents = (patients: Patient[]) => {
+    const persistRecents = (patients: SearchDialogPatient[]) => {
         setRecentSearches(patients);
         localStorage.setItem('recent_patient_searches', JSON.stringify(patients));
     };
@@ -85,7 +83,7 @@ export function PatientSearchDialog({
 
             if (cancelled) return;
 
-            const validRecents = results.filter((patient): patient is Patient => patient !== null);
+            const validRecents = results.filter((patient): patient is SearchDialogPatient => patient !== null);
             if (validRecents.length !== recentSearches.length) {
                 persistRecents(validRecents);
                 if (selectedPatient && !validRecents.some(patient => patient.id === selectedPatient.id)) {
@@ -101,7 +99,7 @@ export function PatientSearchDialog({
         };
     }, [open, recentSearches, selectedPatient]);
 
-    const addToRecents = (patient: Patient) => {
+    const addToRecents = (patient: SearchDialogPatient) => {
         const newRecents = [patient, ...recentSearches.filter(p => p.id !== patient.id)].slice(0, 5);
         persistRecents(newRecents);
     };
@@ -121,7 +119,7 @@ export function PatientSearchDialog({
     }, [open]);
 
     // Handle patient selection (Step 1)
-    const handlePatientClick = (patient: Patient) => {
+    const handlePatientClick = (patient: SearchDialogPatient) => {
         addToRecents(patient);
         setSelectedPatient(patient);
         setSearch(''); // Clear search to show actions
@@ -170,6 +168,8 @@ export function PatientSearchDialog({
         setSelectedPatient(null);
         setSearch('');
     };
+
+    const canMergeSelectedPatient = !!selectedPatient?.duplicate_count && selectedPatient.duplicate_count > 0 && Array.isArray(selectedPatient.duplicate_candidates);
 
     return (
         <CommandDialog open={open} onOpenChange={onOpenChange} shouldFilter={false}>
@@ -227,8 +227,15 @@ export function PatientSearchDialog({
                                     >
                                         <div className="flex items-center gap-3">
                                             <div>
-                                                <div className="font-extrabold text-slate-900 capitalize text-base">
-                                                    {patient.surname}{"   "}{patient.name}
+                                                <div className="flex items-center gap-2">
+                                                    <div className="font-extrabold text-slate-900 capitalize text-base">
+                                                        {patient.surname}{"   "}{patient.name}
+                                                    </div>
+                                                    {!!patient.duplicate_count && patient.duplicate_count > 0 && (
+                                                        <Badge variant={patient.duplicate_candidates?.some(candidate => candidate.confidence === 'high') ? 'default' : 'secondary'}>
+                                                            {patient.duplicate_count} doublon{patient.duplicate_count > 1 ? 's' : ''}
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
                                                     {patient.dob && (
@@ -272,7 +279,19 @@ export function PatientSearchDialog({
                                 </div>
                             </CommandItem>
 
-
+                            {canMergeSelectedPatient && (
+                                <CommandItem
+                                    value="merge_duplicates"
+                                    onSelect={() => setMergeTarget(selectedPatient as PatientSearchResult)}
+                                    className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100"
+                                >
+                                    <GitMerge className="w-5 h-5 text-amber-600" />
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold text-slate-900">Fusionner les doublons</span>
+                                        <span className="text-xs text-slate-500">Nettoyer les dossiers proches avant de continuer</span>
+                                    </div>
+                                </CommandItem>
+                            )}
 
                             <CommandItem value="view_agenda" onSelect={() => handleAction('agenda')} className="gap-3 py-3 cursor-pointer data-[disabled]:pointer-events-auto data-[disabled]:opacity-100">
                                 <Calendar className="w-5 h-5 text-purple-600" />
@@ -297,6 +316,27 @@ export function PatientSearchDialog({
                     </>
                 )}
             </CommandList>
+
+            <PatientDuplicateMergeDialog
+                open={!!mergeTarget}
+                onOpenChange={(open) => {
+                    if (!open) setMergeTarget(null);
+                }}
+                patient={mergeTarget}
+                isSubmitting={mergePatients.isPending}
+                onConfirm={async (input) => {
+                    const mergedPatient = await mergePatients.mutateAsync(input);
+                    const nextSelectedPatient: SearchDialogPatient = {
+                        ...mergedPatient,
+                        duplicate_count: 0,
+                        duplicate_candidates: []
+                    };
+
+                    setMergeTarget(null);
+                    setSelectedPatient(nextSelectedPatient);
+                    addToRecents(nextSelectedPatient);
+                }}
+            />
         </CommandDialog>
     );
 }

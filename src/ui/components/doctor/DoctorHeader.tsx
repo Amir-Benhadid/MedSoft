@@ -54,6 +54,7 @@ export default function DoctorHeader({ currentTab = 'patients', onTabChange }: D
 
     const tabs = [
         { id: 'patients', label: 'Patients', icon: Users },
+        { id: 'calendar', label: 'Calendrier', icon: Calendar },
         { id: 'resume', label: 'Résumé Jour', icon: FileText },
         { id: 'monthly', label: 'Résumé Mois', icon: Calendar },
         { id: 'settings', label: 'Paramètres', icon: Settings },

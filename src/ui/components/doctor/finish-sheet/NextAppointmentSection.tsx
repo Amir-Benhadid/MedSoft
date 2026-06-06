@@ -4,8 +4,10 @@ import { Input } from '@/ui/components/ui/input';
 import { Card } from '@/ui/components/ui/card';
 import { Badge } from '@/ui/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
+import { ConsultationType } from '@/ui/hooks/useConsultationTypes';
 
 interface NextAppointmentSectionProps {
+    consultationTypes: ConsultationType[];
     nextApptType: string;
     setNextApptType: (val: string) => void;
     nextApptDate: string;
@@ -15,6 +17,7 @@ interface NextAppointmentSectionProps {
 }
 
 export function NextAppointmentSection({
+    consultationTypes,
     nextApptType,
     setNextApptType,
     nextApptDate,
@@ -44,10 +47,9 @@ export function NextAppointmentSection({
                                     <SelectValue placeholder="Type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="control">Contrôle</SelectItem>
-                                    <SelectItem value="consultation">Consultation</SelectItem>
-                                    <SelectItem value="surgery">Chirurgie</SelectItem>
-                                    <SelectItem value="laser">Laser</SelectItem>
+                                    {consultationTypes.map((type) => (
+                                        <SelectItem key={type.id} value={type.label}>{type.label}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

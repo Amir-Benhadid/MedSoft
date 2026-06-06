@@ -11,10 +11,25 @@ interface SettingsRow {
 	value: string;
 }
 
+const DEFAULT_DOCTOR_PIN = '1234';
+
 /**
  * Service for managing PIN-based authentication.
  */
 export class AuthService {
+	private getStoredPin(): string {
+		try {
+			const db = getDatabase();
+			const result = db
+				.prepare('SELECT value FROM settings WHERE key = ?')
+				.get('doctor_pin') as SettingsRow | undefined;
+
+			return result?.value || DEFAULT_DOCTOR_PIN;
+		} catch {
+			return DEFAULT_DOCTOR_PIN;
+		}
+	}
+
 	/**
 	 * Verifies a PIN code against the stored PIN.
 	 *
@@ -22,7 +37,7 @@ export class AuthService {
 	 * @returns True if PIN is correct, false otherwise
 	 */
 	async verifyPin(pin: string): Promise<boolean> {
-		return pin === '1234';
+		return pin === this.getStoredPin();
 	}
 
 	/**
@@ -60,4 +75,3 @@ export class AuthService {
 		}
 	}
 }
-

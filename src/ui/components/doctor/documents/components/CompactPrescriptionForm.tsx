@@ -38,13 +38,33 @@ import { cn } from "@/ui/lib/utils";
 import { useDocumentForm } from '../hooks/useDocumentForm';
 import { DocumentUtils } from '../DocumentUtils';
 import { useLocation } from '@tanstack/react-router';
+import { useToast } from '@/ui/hooks/use-toast';
 
 interface CompactPrescriptionFormProps {
     prescriptionData?: PrescriptionData;
     setPrescriptionData?: (data: PrescriptionData | ((prev: PrescriptionData) => PrescriptionData)) => void;
 }
 
-let treatmentCounter = 1; // ensures stable numbering
+const GENERIC_TREATMENT_NAME_REGEX = /^medicament\s+\d+$/i;
+
+const normalizeTreatmentName = (treatment: Partial<Treatment & { order?: number }>) =>
+    (treatment.customName || treatment.name || '').trim();
+
+const isValidTreatmentName = (treatment: Partial<Treatment & { order?: number }>) => {
+    const normalizedName = normalizeTreatmentName(treatment);
+    if (!normalizedName) return false;
+
+    const comparableName = normalizedName
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    return !GENERIC_TREATMENT_NAME_REGEX.test(comparableName);
+};
+
+const getNextTreatmentOrder = (treatments: Array<Treatment & { order?: number }>) => {
+    if (treatments.length === 0) return 1;
+    return Math.max(...treatments.map((treatment, index) => treatment.order || index + 1)) + 1;
+};
 
 // Memoized Treatment Item Component with optimized comparison
 const TreatmentItem = memo<{
@@ -60,6 +80,7 @@ const TreatmentItem = memo<{
     onSaveMedicine: (treatment: Treatment) => void;
     isExpanded: boolean;
     onToggleExpand: (index: number) => void;
+    canExitEditing: boolean;
 }>(({
     treatment,
     index,
@@ -72,7 +93,8 @@ const TreatmentItem = memo<{
     onCancel,
     onSaveMedicine,
     isExpanded,
-    onToggleExpand
+    onToggleExpand,
+    canExitEditing
 }) => {
     // Local state for immediate UI feedback (smooth typing)
     const [localTreatment, setLocalTreatment] = useState<Treatment & { order: number; isNew?: boolean }>(treatment);
@@ -236,6 +258,7 @@ const TreatmentItem = memo<{
                                                 variant="ghost"
                                                 className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-50"
                                                 onClick={onSave}
+                                                disabled={!canExitEditing}
                                             >
                                                 <Save className="h-3 w-3" />
                                             </Button>
@@ -251,6 +274,7 @@ const TreatmentItem = memo<{
                                                 variant="ghost"
                                                 className="h-6 w-6 text-muted-foreground hover:bg-gray-100"
                                                 onClick={onCancel}
+                                                disabled={!canExitEditing}
                                             >
                                                 <X className="h-3 w-3" />
                                             </Button>
@@ -428,6 +452,12 @@ const CompactPrescriptionForm = ({
     const [medicineToSave, setMedicineToSave] = useState<Treatment | null>(null);
     const { addMedicine } = useMedicinesPaginated(100);
     const location = useLocation();
+    const { toast } = useToast();
+    const treatmentsRef = useRef(prescriptionData.treatments);
+
+    useEffect(() => {
+        treatmentsRef.current = prescriptionData.treatments;
+    }, [prescriptionData.treatments]);
 
     // Guard against zombies when unmounting during an active portal
     useEffect(() => {
@@ -435,7 +465,7 @@ const CompactPrescriptionForm = ({
     }, [location.pathname, location.search]);
 
     /** Creates a new blank treatment */
-    const createNewTreatment = (): Treatment & { order: number; isNew: boolean } => ({
+    const createNewTreatment = (order: number): Treatment & { order: number; isNew: boolean } => ({
         name: '',
         customName: '',
         dosage: '',
@@ -445,9 +475,31 @@ const CompactPrescriptionForm = ({
         strength: '',
         type: '',
         packaging: '',
-        order: treatmentCounter++,
+        order,
         isNew: true,
     });
+
+    const getBlockingEditingIndex = useCallback((targetIndex?: number) => {
+        const activeEditingIndex = editingIndex;
+        if (activeEditingIndex === null) return null;
+
+        const activeTreatment = treatmentsRef.current[activeEditingIndex];
+        if (!activeTreatment) return null;
+
+        if (targetIndex !== undefined && activeEditingIndex === targetIndex) {
+            return isValidTreatmentName(activeTreatment) ? null : activeEditingIndex;
+        }
+
+        return isValidTreatmentName(activeTreatment) ? null : activeEditingIndex;
+    }, [editingIndex]);
+
+    const showMedicineSelectionRequired = useCallback(() => {
+        toast({
+            title: 'Medicament requis',
+            description: 'Selectionnez ou saisissez un vrai nom de medicament avant de fermer ou d\'ajouter une ligne.',
+            variant: 'destructive',
+        });
+    }, [toast]);
 
     /** Updates a treatment at index - optimized with useCallback and stable references */
     const updateTreatment = useCallback((index: number, updates: Partial<Treatment>) => {
@@ -464,6 +516,7 @@ const CompactPrescriptionForm = ({
 
             const newTreatments = [...prev.treatments];
             newTreatments[index] = { ...currentTreatment, ...updates };
+            treatmentsRef.current = newTreatments;
 
             return {
                 ...prev,
@@ -474,23 +527,36 @@ const CompactPrescriptionForm = ({
 
     /** Add a new treatment - optimized to only add, not re-render existing treatments */
     const handleAddTreatment = useCallback(() => {
-        const newTreatment = createNewTreatment();
+        if (getBlockingEditingIndex() !== null) {
+            showMedicineSelectionRequired();
+            return;
+        }
+
         setPrescriptionData(prev => {
+            const newTreatment = createNewTreatment(getNextTreatmentOrder(prev.treatments as Array<Treatment & { order?: number }>));
+            const newTreatments = [newTreatment, ...(prev?.treatments || [])];
+            treatmentsRef.current = newTreatments;
+
             return {
                 ...prev,
-                treatments: [newTreatment, ...(prev?.treatments || [])]
+                treatments: newTreatments
             };
         });
         setEditingIndex(0); // make it editable immediately
         setExpandedIndex(0); // expand the new item immediately
-    }, [setPrescriptionData]);
+    }, [getBlockingEditingIndex, setPrescriptionData, showMedicineSelectionRequired]);
 
     /** Remove treatment - optimized with useCallback */
     const handleRemoveTreatment = useCallback((index: number) => {
-        setPrescriptionData(prev => ({
-            ...prev,
-            treatments: prev.treatments.filter((_, i) => i !== index)
-        }));
+        setPrescriptionData(prev => {
+            const newTreatments = prev.treatments.filter((_, i) => i !== index);
+            treatmentsRef.current = newTreatments;
+
+            return {
+                ...prev,
+                treatments: newTreatments
+            };
+        });
         if (editingIndex === index) setEditingIndex(null);
         else if (editingIndex !== null && editingIndex > index) setEditingIndex(editingIndex - 1);
 
@@ -514,28 +580,49 @@ const CompactPrescriptionForm = ({
                     return prev;
                 }
 
+                const newTreatments = prev.treatments.map((t, i) =>
+                    i === index ? {
+                        ...t,
+                        name: selectedMedicine.value,
+                        customName: selectedMedicine.value,
+                        type: selectedMedicine.form || t.type,
+                        strength: selectedMedicine.strength || t.strength,
+                        packaging: selectedMedicine.packaging || t.packaging,
+                        instructions:
+                            selectedMedicine.defaultDosage ||
+                            t.instructions ||
+                            '1 goutte 2 fois par jour pendant 7 jours',
+                    } : t
+                );
+
+                treatmentsRef.current = newTreatments;
+
                 return {
                     ...prev,
-                    treatments: prev.treatments.map((t, i) =>
-                        i === index ? {
-                            ...t,
-                            name: selectedMedicine.value,
-                            customName: selectedMedicine.value,
-                            type: selectedMedicine.form || t.type,
-                            strength: selectedMedicine.strength || t.strength,
-                            packaging: selectedMedicine.packaging || t.packaging,
-                            instructions:
-                                selectedMedicine.defaultDosage ||
-                                t.instructions ||
-                                '1 goutte 2 fois par jour pendant 7 jours',
-                        } : t
-                    )
+                    treatments: newTreatments
                 };
             });
         } else {
             updateTreatment(index, { name: inputValue, customName: inputValue });
         }
     }, [updateTreatment, setPrescriptionData]);
+
+    const finalizeEditing = useCallback((index: number | null) => {
+        if (index === null) return;
+
+        setPrescriptionData(prev => {
+            if (!prev.treatments[index]) return prev;
+
+            const newTreatments = [...prev.treatments];
+            newTreatments[index] = { ...newTreatments[index], isNew: false };
+            treatmentsRef.current = newTreatments;
+
+            return {
+                ...prev,
+                treatments: newTreatments,
+            };
+        });
+    }, [setPrescriptionData]);
 
     /** Save medicine to database - optimized with useCallback */
     const handleConfirmSaveMedicine = useCallback(async () => {
@@ -562,15 +649,56 @@ const CompactPrescriptionForm = ({
         setSaveDialogOpen(true);
     }, []);
 
+    const handleEditTreatment = useCallback((index: number) => {
+        const blockingIndex = getBlockingEditingIndex(index);
+        if (blockingIndex !== null) {
+            showMedicineSelectionRequired();
+            return;
+        }
+
+        setEditingIndex(index);
+        setExpandedIndex(index);
+    }, [getBlockingEditingIndex, showMedicineSelectionRequired]);
+
+    const handleToggleExpand = useCallback((index: number) => {
+        const isClosingCurrentEditingCard = expandedIndex === index && editingIndex === index;
+        const isSwitchingAwayFromCurrentEditingCard = editingIndex !== null && expandedIndex === editingIndex && index !== editingIndex;
+
+        if ((isClosingCurrentEditingCard || isSwitchingAwayFromCurrentEditingCard) && getBlockingEditingIndex() !== null) {
+            showMedicineSelectionRequired();
+            return;
+        }
+
+        setExpandedIndex(prev => prev === index ? null : index);
+    }, [editingIndex, expandedIndex, getBlockingEditingIndex, showMedicineSelectionRequired]);
+
     // Stable callbacks to prevent TreatmentItem re-renders
-    const handleSaveStable = useCallback(() => setEditingIndex(null), []);
-    const handleCancelStable = useCallback(() => setEditingIndex(null), []);
+    const handleSaveStable = useCallback(() => {
+        if (getBlockingEditingIndex() !== null) {
+            showMedicineSelectionRequired();
+            return;
+        }
+
+        finalizeEditing(editingIndex);
+        setEditingIndex(null);
+    }, [editingIndex, finalizeEditing, getBlockingEditingIndex, showMedicineSelectionRequired]);
+
+    const handleCancelStable = useCallback(() => {
+        if (getBlockingEditingIndex() !== null) {
+            showMedicineSelectionRequired();
+            return;
+        }
+
+        finalizeEditing(editingIndex);
+        setEditingIndex(null);
+    }, [editingIndex, finalizeEditing, getBlockingEditingIndex, showMedicineSelectionRequired]);
 
     /** Memoized treatments list - optimized to only re-render changed items */
     const treatmentsList = useMemo(() => {
         return prescriptionData.treatments.map((treatment, index) => {
             const isEditing = editingIndex === index || (treatment as any).isNew;
             const treatmentOrder = (treatment as any).order || index;
+            const canExitEditing = isValidTreatmentName(treatment);
 
             return (
                 <TreatmentItem
@@ -579,14 +707,15 @@ const CompactPrescriptionForm = ({
                     index={index}
                     isEditing={isEditing}
                     isExpanded={expandedIndex === index}
-                    onToggleExpand={(idx) => setExpandedIndex(prev => prev === idx ? null : idx)}
+                    onToggleExpand={handleToggleExpand}
                     onUpdate={updateTreatment}
                     onRemove={handleRemoveTreatment}
                     onMedicineSelect={handleMedicineSelect}
-                    onEdit={() => setEditingIndex(index)}
+                    onEdit={() => handleEditTreatment(index)}
                     onSave={handleSaveStable}
                     onCancel={handleCancelStable}
                     onSaveMedicine={handleSaveMedicine}
+                    canExitEditing={canExitEditing}
                 />
             );
         });
@@ -596,9 +725,11 @@ const CompactPrescriptionForm = ({
         updateTreatment,
         handleRemoveTreatment,
         handleMedicineSelect,
+        handleEditTreatment,
         handleSaveMedicine,
         handleSaveStable,
         handleCancelStable,
+        handleToggleExpand,
         expandedIndex, // Dependency
     ]);
 

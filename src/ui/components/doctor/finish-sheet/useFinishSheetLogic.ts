@@ -24,6 +24,7 @@ export function useFinishSheetLogic({
     onConfirm,
     onClose
 }: UseFinishSheetLogicProps) {
+    const defaultNextApptType = consultationTypes[0]?.label || '';
     const [consultationTypeId, setConsultationTypeId] = useState<string>(consultationTypes[0]?.id.toString() || '1');
     const [amount, setAmount] = useState<number | ''>('');
     const [status, setStatus] = useState<string>('standard');
@@ -31,7 +32,7 @@ export function useFinishSheetLogic({
 
     // Next Appointment State
     const [nextApptDate, setNextApptDate] = useState<string>('');
-    const [nextApptType, setNextApptType] = useState<string>('control');
+    const [nextApptType, setNextApptType] = useState<string>(defaultNextApptType);
     const [nextApptTimeframe, setNextApptTimeframe] = useState<string>('');
 
     const { data: invoice } = useQuery({
@@ -62,9 +63,12 @@ export function useFinishSheetLogic({
             if (nextAppointmentData) {
                 if (nextAppointmentData.date) setNextApptDate(nextAppointmentData.date.split('T')[0]);
                 if (nextAppointmentData.timeframe) setNextApptTimeframe(nextAppointmentData.timeframe);
+                setNextApptType(nextAppointmentData.reason || defaultNextApptType);
+            } else {
+                setNextApptType(defaultNextApptType);
             }
         }
-    }, [isOpen, consultationTypeId, consultationTypes, invoice, isPriceModified, nextAppointmentData]);
+    }, [isOpen, consultationTypeId, consultationTypes, invoice, isPriceModified, nextAppointmentData, defaultNextApptType]);
 
     const handleTypeChange = (value: string) => {
         setConsultationTypeId(value);
