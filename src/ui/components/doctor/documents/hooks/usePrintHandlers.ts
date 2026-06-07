@@ -4,6 +4,7 @@ import { useConsultationStore } from '@/ui/store/consultationStore';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatNumberWithSign } from '@/shared/formatters';
 import genericRecords from '../medical_records_structured.json';
+import { normalizeBilanFields } from './useDocumentsState';
 
 export const usePrintHandlers = ({
     activeDocTab,
@@ -57,7 +58,8 @@ export const usePrintHandlers = ({
         })();
 
         // Bilan fields: use overrides.bilan or unified state (PrintingLogic expects options.bilanFields)
-        const bilanFields = overrides.bilan ?? overrides.unifiedDocumentsState?.bilanFields;
+        const bilanFieldsSource = overrides.unifiedDocumentsState?.bilanFields ?? overrides.bilan;
+        const bilanFields = normalizeBilanFields(bilanFieldsSource);
 
         // Construct print options from store data and overrides
         // IMPORTANT: Must match DocumentPrinter.printDocument options signature
@@ -148,7 +150,7 @@ export const usePrintHandlers = ({
                     visualAcuityVL_AC_OG: state.leftEye?.visualAcuityVL_AC || '',
                 },
                 certificatAcuite: overrides.certificatAcuite,
-                bilan: overrides.bilan ?? overrides.unifiedDocumentsState?.bilanFields,
+                bilan: bilanFields,
                 absence: normalizedAbsence,
                 radiography: overrides['radiography_dynamic'],
                 medicalRecord: medicalRecordOverride,

@@ -59,7 +59,7 @@ export interface InternalBilanFields extends BilanFields {
     bilanUveite: BilanFields['bilanUveite'] & { customFields: string[] };
 }
 
-const DEFAULT_BILAN_FIELDS: InternalBilanFields = {
+export const DEFAULT_BILAN_FIELDS: InternalBilanFields = {
     bilanPreOp: {
         groupage: true, fnsTP: true, ionogramme: true, glycemie: true,
         ureeCreatinine: true, bilanHepatique: true, ecgCardiologie: true, customFields: [],
@@ -76,6 +76,33 @@ const DEFAULT_BILAN_FIELDS: InternalBilanFields = {
         idrTuberculine: true, aslo: true, typageHla: true, vdrlTpha: true,
         serologie: true, radioThorax: true, customFields: [],
     },
+};
+
+export const normalizeBilanFields = (value: unknown): InternalBilanFields => {
+    const input = (value && typeof value === 'object') ? (value as Partial<InternalBilanFields>) : {};
+
+    return {
+        bilanPreOp: {
+            ...DEFAULT_BILAN_FIELDS.bilanPreOp,
+            ...(input.bilanPreOp || {}),
+            customFields: Array.isArray(input.bilanPreOp?.customFields) ? input.bilanPreOp.customFields : [],
+        },
+        bilanDiabete: {
+            ...DEFAULT_BILAN_FIELDS.bilanDiabete,
+            ...(input.bilanDiabete || {}),
+            customFields: Array.isArray(input.bilanDiabete?.customFields) ? input.bilanDiabete.customFields : [],
+        },
+        bilanInflammatoire: {
+            ...DEFAULT_BILAN_FIELDS.bilanInflammatoire,
+            ...(input.bilanInflammatoire || {}),
+            customFields: Array.isArray(input.bilanInflammatoire?.customFields) ? input.bilanInflammatoire.customFields : [],
+        },
+        bilanUveite: {
+            ...DEFAULT_BILAN_FIELDS.bilanUveite,
+            ...(input.bilanUveite || {}),
+            customFields: Array.isArray(input.bilanUveite?.customFields) ? input.bilanUveite.customFields : [],
+        },
+    };
 };
 
 const DEFAULT_PRINT_CONTROL_FLAGS = {
@@ -194,7 +221,7 @@ export const useDocumentsState = ({
         visualAcuityVL_AC_OG: leftEyeData?.visualAcuityVL_AC || '',
     };
 
-    const bilanFields = unified.bilanFields || DEFAULT_BILAN_FIELDS;
+    const bilanFields = normalizeBilanFields(unified.bilanFields);
     const printControlFlags = unified.printControlFlags || DEFAULT_PRINT_CONTROL_FLAGS;
 
     const printWorkStopData = pStates.printWorkStopData || {

@@ -46,7 +46,9 @@ interface BilanUveiteFields extends BilanFieldsBase {
 	toxoplasmose: boolean;
 	idrTuberculine: boolean;
 	aslo: boolean;
-	hlaB27: boolean;
+	typageHla: boolean;
+	vdrlTpha: boolean;
+	serologie: boolean;
 	radioThorax: boolean;
 }
 
