@@ -15,6 +15,8 @@ import { createContext, useContext } from 'react';
 interface AppConfig {
     /** Path to the local database file */
     dbPath?: string;
+    /** Server mode: 'host' for server app, 'client' for remote app */
+    serverMode?: 'host' | 'client';
     /** Path to the business logo image */
     logoPath?: string;
     /** Name of the business/practice */

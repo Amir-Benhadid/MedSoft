@@ -37,7 +37,7 @@ export const Route = createFileRoute('/')({
  */
 function LandingPage() {
 	const { goToSecretary } = useNavigation();
-	const { appMode } = useConfig();
+	const { appMode, serverMode } = useConfig();
 
 	useEffect(() => {
 		if (appMode === 'secretary') {
@@ -61,6 +61,11 @@ function LandingPage() {
 
 	const handleSettingsClick = () => {
 		pinDialog.openDialog('settings');
+	};
+
+	const handleForceSettingsAccess = () => {
+		pinDialog.closeDialog();
+		settingsDialog.openDialog();
 	};
 
 	return (
@@ -126,6 +131,8 @@ function LandingPage() {
 				error={pinDialog.error}
 				purpose={pinDialog.purpose}
 				onSubmit={pinDialog.handleSubmit}
+				onForceAccess={handleForceSettingsAccess}
+				showForceAccess={pinDialog.purpose === 'settings' && serverMode === 'host'}
 				onKeyPress={pinDialog.handleKeyPress}
 				isLoading={pinDialog.isLoading}
 			/>
@@ -151,4 +158,3 @@ function LandingPage() {
 		</>
 	);
 }
-
