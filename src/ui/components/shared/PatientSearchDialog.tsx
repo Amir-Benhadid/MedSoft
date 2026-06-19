@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { useConfig } from '@/ui/contexts/ConfigContext';
 import { useToast } from '@/ui/hooks/use-toast';
 import { Badge } from '@/ui/components/ui/badge';
-import { Patient as BasePatient, PatientSearchResult, useMergePatients } from '@/ui/hooks/usePatients';
+import { Patient as BasePatient, PatientSearchResult, useMergePatients, usePatientDuplicateCheck } from '@/ui/hooks/usePatients';
 import { PatientDuplicateMergeDialog } from '@/ui/components/patients/PatientDuplicateMergeDialog';
 
 interface PatientSearchDialogProps {
@@ -42,6 +42,7 @@ export function PatientSearchDialog({
     const { appMode } = useConfig();
     const { toast } = useToast();
     const mergePatients = useMergePatients();
+    const duplicateCheck = usePatientDuplicateCheck();
 
     const persistRecents = (patients: SearchDialogPatient[]) => {
         setRecentSearches(patients);
@@ -123,6 +124,20 @@ export function PatientSearchDialog({
         addToRecents(patient);
         setSelectedPatient(patient);
         setSearch(''); // Clear search to show actions
+
+        void duplicateCheck.mutateAsync(patient).then((candidates) => {
+            setSelectedPatient((current) => {
+                if (!current || current.id !== patient.id) return current;
+
+                return {
+                    ...current,
+                    duplicate_count: candidates.length,
+                    duplicate_candidates: candidates,
+                };
+            });
+        }).catch((error) => {
+            console.error('Failed to load duplicate candidates', error);
+        });
     };
 
     // Handle action selection (Step 2)
@@ -278,6 +293,16 @@ export function PatientSearchDialog({
                                     <span className="text-xs text-slate-500">Accéder à l'historique et aux consultations</span>
                                 </div>
                             </CommandItem>
+
+                            {duplicateCheck.isPending && selectedPatient && (
+                                <CommandItem value="loading_duplicates" disabled className="gap-3 py-3 opacity-70">
+                                    <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold text-slate-900">Verification des doublons</span>
+                                        <span className="text-xs text-slate-500">Analyse des dossiers proches...</span>
+                                    </div>
+                                </CommandItem>
+                            )}
 
                             {canMergeSelectedPatient && (
                                 <CommandItem

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Search, UserPlus, GitMerge } from 'lucide-react';
+import { Search, UserPlus } from 'lucide-react';
 import { Input } from '@/ui/components/ui/input';
 import { Button } from '@/ui/components/ui/button';
 import { ScrollArea } from '@/ui/components/ui/scroll-area';
-import { Badge } from '@/ui/components/ui/badge';
-import { useMergePatients, usePatientSearch, Patient, PatientSearchResult } from '@/ui/hooks/usePatients';
+import { usePatientSearch, Patient } from '@/ui/hooks/usePatients';
 import { cn } from '@/ui/lib/utils';
 import { formatDateDisplay } from '@/ui/lib/time';
-import { PatientDuplicateMergeDialog } from './PatientDuplicateMergeDialog';
+import { useDebounce } from '@/ui/hooks/use-debounce';
 
 
 interface PatientSelectorProps {
@@ -17,10 +16,8 @@ interface PatientSelectorProps {
 
 export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps) {
     const [searchTerm, setSearchTerm] = useState('');
-    const { data: searchResults, isLoading } = usePatientSearch(searchTerm);
-    const [patientToMerge, setPatientToMerge] = useState<PatientSearchResult | null>(null);
-    const mergePatients = useMergePatients();
-
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+    const { data: searchResults, isLoading } = usePatientSearch(debouncedSearchTerm);
 
 
     return (
@@ -61,11 +58,6 @@ export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps)
                                             <div className="font-semibold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
                                                 {patient.surname}{"   "}{patient.name}
                                             </div>
-                                            {patient.duplicate_count > 0 && (
-                                                <Badge variant={patient.duplicate_candidates.some(candidate => candidate.confidence === 'high') ? 'default' : 'secondary'}>
-                                                    {patient.duplicate_count} doublon{patient.duplicate_count > 1 ? 's' : ''}
-                                                </Badge>
-                                            )}
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-slate-500 truncate mt-0.5">
                                             {patient.dob && (
@@ -85,18 +77,6 @@ export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps)
                                         </div>
                                     </div>
                                 </button>
-
-                                {patient.duplicate_count > 0 && (
-                                    <div className="flex items-center justify-between gap-2 border-t px-3 py-2 bg-amber-50/60 rounded-b-lg">
-                                        <div className="text-xs text-amber-800">
-                                            Des doublons potentiels ont ete detectes pour ce patient.
-                                        </div>
-                                        <Button type="button" variant="outline" size="sm" onClick={() => setPatientToMerge(patient)}>
-                                            <GitMerge className="h-4 w-4 mr-1" />
-                                            Fusionner
-                                        </Button>
-                                    </div>
-                                )}
                             </div>
                         ))
                     ) : searchTerm.length >= 2 ? (
@@ -110,20 +90,6 @@ export function PatientSelector({ onSelect, onCreateNew }: PatientSelectorProps)
                     )}
                 </div>
             </ScrollArea>
-
-            <PatientDuplicateMergeDialog
-                open={!!patientToMerge}
-                onOpenChange={(open) => {
-                    if (!open) setPatientToMerge(null);
-                }}
-                patient={patientToMerge}
-                isSubmitting={mergePatients.isPending}
-                onConfirm={async (input) => {
-                    const mergedPatient = await mergePatients.mutateAsync(input);
-                    setPatientToMerge(null);
-                    onSelect(mergedPatient);
-                }}
-            />
         </div>
     );
 }

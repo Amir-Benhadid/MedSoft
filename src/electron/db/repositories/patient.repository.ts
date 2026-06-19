@@ -78,11 +78,15 @@ export class PatientRepository {
      */
     /**
      * Searches patients by multiple criteria (smart search).
-     * 
+     *
      * Handles:
      * - Multi-token search (AND logic)
      * - Name, Surname, Phone Number, City, Street
      * - Date of Birth (partial matching for day, month name, or year)
+     *
+     * Duplicate metadata is intentionally not computed here because this method
+     * backs live typeahead UIs and duplicate detection requires extra full-table
+     * scans. Use findPotentialDuplicates when duplicate analysis is explicitly needed.
      *
      * @param term - Search string
      * @returns Array of matching patients (limited to 50 results)
@@ -169,7 +173,11 @@ export class PatientRepository {
         query += ` ORDER BY surname ASC, name ASC LIMIT 50`;
 
         const rows = this.db.prepare(query).all(...params) as any[];
-        return rows.map(row => this.attachDuplicateMetadata(this.mapRow(row)));
+        return rows.map(row => ({
+            ...this.mapRow(row),
+            duplicate_count: 0,
+            duplicate_candidates: []
+        }));
     }
 
     findPotentialDuplicates(patient: Partial<Patient> & Pick<Patient, 'name' | 'surname'>, excludeIds: string[] = []): PatientDuplicateCandidate[] {
@@ -350,15 +358,6 @@ export class PatientRepository {
         }
 
         return finalPatient;
-    }
-
-    private attachDuplicateMetadata(patient: Patient): PatientSearchResult {
-        const candidates = this.findDuplicateCandidates(patient, [patient.id]);
-        return {
-            ...patient,
-            duplicate_count: candidates.length,
-            duplicate_candidates: candidates
-        };
     }
 
     private findDuplicateCandidates(patient: Partial<Patient> & Pick<Patient, 'name' | 'surname'>, excludeIds: string[] = []): PatientDuplicateCandidate[] {
