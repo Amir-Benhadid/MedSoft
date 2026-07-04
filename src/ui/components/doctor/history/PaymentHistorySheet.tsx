@@ -35,7 +35,7 @@ export function PaymentHistorySheet({
 
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
-            <SheetContent side="right" className="w-full sm:max-w-[600px] p-0 flex flex-col gap-0 shadow-2xl">
+            <SheetContent side="right" className="w-full sm:max-w-[600px] p-0 flex flex-col gap-0 shadow-2xl z-[150]" overlayClassName="z-[150]">
                 <SheetHeader className="px-5 py-3.5 border-b bg-white shrink-0">
                     <SheetTitle className="flex items-center gap-2 text-base text-slate-800">
                         <Wallet className="w-4 h-4 text-emerald-600" />

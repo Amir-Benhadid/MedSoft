@@ -106,10 +106,20 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
                     if (!isSharedRecordFlow) {
                         const today = getLocalTodayDate();
                         const { start, end } = getDayRangeEncoded(today);
+                        
+                        // Check if patient has an active appointment first
+                        const appointments = await orpcClient.appointments.list({ start, end });
+                        const activeAppt = appointments.find(a => a.patient_id === patientId && ['present', 'booked', 'in_consultation'].includes(a.state));
+                        
                         const waitlist = await orpcClient.waitlist.list({ start, end });
                         const entry = waitlist.find(w => w.patient_id === patientId);
 
-                        if (entry) {
+                        if (activeAppt) {
+                            await orpcClient.appointments.update({
+                                id: activeAppt.id,
+                                updates: { state: 'in_consultation' }
+                            });
+                        } else if (entry) {
                             await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
                         } else {
                             await orpcClient.waitlist.add({
@@ -184,9 +194,26 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
                 if (!isSharedRecordFlow) {
                     const today = getLocalTodayDate();
                     const { start, end } = getDayRangeEncoded(today);
+                    
+                    // Check if patient has an active appointment first
+                    const appointments = await orpcClient.appointments.list({ start, end });
+                    const activeAppt = appointments.find(a => a.patient_id === patientId && ['present', 'booked', 'in_consultation'].includes(a.state));
+                    
                     const waitlist = await orpcClient.waitlist.list({ start, end });
                     const entry = waitlist.find(w => w.patient_id === patientId);
-                    if (entry) {
+                    
+                    if (activeAppt) {
+                        await orpcClient.appointments.update({
+                            id: activeAppt.id,
+                            updates: { state: 'in_consultation' }
+                        });
+                        if (activeAppt.consultation_type_id) {
+                            const types = await orpcClient.consultationTypes.list();
+                            const cType = types.find(t => t.id === activeAppt.consultation_type_id);
+                            if (cType?.nature === 'radiography') detectedType = 'Radiography';
+                            else if (cType?.nature === 'normal') detectedType = 'Consultation';
+                        }
+                    } else if (entry) {
                         await orpcClient.waitlist.updateStatus({ id: entry.id, state: 'in_consultation' });
                         if (entry.consultation_type_id) {
                             const types = await orpcClient.consultationTypes.list();
