@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,6 +42,14 @@ export function CalendarAppointmentDialog({ isOpen, onClose, appointment, defaul
     const updateAppointment = useUpdateAppointment();
     const { data: consultationTypes = [] } = useConsultationTypes();
 
+    const standardConsultationId = useMemo(() => {
+        const standard = consultationTypes.find(t => 
+            t.label.toLowerCase() === 'consultation standard' || 
+            t.label.toLowerCase() === 'consulatation standard'
+        ) || consultationTypes[0];
+        return standard ? standard.id.toString() : '1';
+    }, [consultationTypes]);
+
     const { register, handleSubmit, reset, getValues, formState: { errors } } = useForm<AppointmentFormValues>({
         resolver: zodResolver(appointmentSchema),
         defaultValues: {
@@ -49,7 +57,7 @@ export function CalendarAppointmentDialog({ isOpen, onClose, appointment, defaul
             start_time: '',
             end_time: '',
             notes: '',
-            consultation_type_id: '1' // Default to standard
+            consultation_type_id: standardConsultationId
         }
     });
 
@@ -62,7 +70,7 @@ export function CalendarAppointmentDialog({ isOpen, onClose, appointment, defaul
                     start_time: formatDateTimeLocal(appointment.start_time),
                     end_time: formatDateTimeLocal(appointment.end_time),
                     notes: appointment.notes || '',
-                    consultation_type_id: appointment.consultation_type_id?.toString() || '1'
+                    consultation_type_id: appointment.consultation_type_id?.toString() || standardConsultationId
                 });
             } else if (defaultDate) {
                 // Create mode with default date
@@ -73,7 +81,8 @@ export function CalendarAppointmentDialog({ isOpen, onClose, appointment, defaul
                     title: '',
                     start_time: formatDateTimeLocal(start),
                     end_time: formatDateTimeLocal(end),
-                    notes: ''
+                    notes: '',
+                    consultation_type_id: standardConsultationId
                 });
             } else {
                 // Create mode default (now)
@@ -84,11 +93,12 @@ export function CalendarAppointmentDialog({ isOpen, onClose, appointment, defaul
                     title: '',
                     start_time: formatDateTimeLocal(start),
                     end_time: formatDateTimeLocal(end),
-                    notes: ''
+                    notes: '',
+                    consultation_type_id: standardConsultationId
                 });
             }
         }
-    }, [isOpen, appointment, defaultDate, reset]);
+    }, [isOpen, appointment, defaultDate, reset, standardConsultationId]);
 
     const onSubmit = async (data: AppointmentFormValues) => {
         try {

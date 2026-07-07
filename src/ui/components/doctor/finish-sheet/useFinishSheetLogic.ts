@@ -24,8 +24,12 @@ export function useFinishSheetLogic({
     onConfirm,
     onClose
 }: UseFinishSheetLogicProps) {
-    const defaultNextApptType = consultationTypes[0]?.label || '';
-    const [consultationTypeId, setConsultationTypeId] = useState<string>(consultationTypes[0]?.id.toString() || '1');
+    const standardType = consultationTypes.find(t => 
+        t.label.toLowerCase() === 'consultation standard' || 
+        t.label.toLowerCase() === 'consulatation standard'
+    ) || consultationTypes[0];
+    const defaultNextApptType = standardType?.label || '';
+    const [consultationTypeId, setConsultationTypeId] = useState<string>(standardType?.id.toString() || '1');
     const [amount, setAmount] = useState<number | ''>('');
     const [status, setStatus] = useState<string>('standard');
     const [isPriceModified, setIsPriceModified] = useState(false);
@@ -53,7 +57,7 @@ export function useFinishSheetLogic({
                 setIsPriceModified(false);
             } else if (!isPriceModified && consultationTypes.length > 0) {
                 const typeId = parseInt(consultationTypeId);
-                const type = consultationTypes.find(t => t.id === typeId) || consultationTypes[0];
+                const type = consultationTypes.find(t => t.id === typeId) || standardType;
                 if (type) {
                     setConsultationTypeId(type.id.toString());
                     setAmount(type.amount);

@@ -126,7 +126,7 @@ export function WaitlistEntrySheet({ isOpen, onClose }: WaitlistEntrySheetProps)
         const standard = consultationTypes.find(t => 
             t.label.toLowerCase() === 'consultation standard' || 
             t.label.toLowerCase() === 'consulatation standard'
-        );
+        ) || consultationTypes[0];
         return standard ? standard.id.toString() : '1';
     }, [consultationTypes]);
 

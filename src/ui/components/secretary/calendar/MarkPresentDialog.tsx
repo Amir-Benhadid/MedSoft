@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/components/ui/dialog";
 import { Button } from "@/ui/components/ui/button";
 import { Label } from "@/ui/components/ui/label";
@@ -49,7 +49,16 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
     const [genAnts, setGenAnts] = useState("");
     const [needsDilation, setNeedsDilation] = useState(false);
     const [dilationStatus, setDilationStatus] = useState<string>("");
-    const [consultationTypeId, setConsultationTypeId] = useState<string>("1");
+
+    const standardConsultationId = useMemo(() => {
+        const standard = consultationTypes.find(t => 
+            t.label.toLowerCase() === 'consultation standard' || 
+            t.label.toLowerCase() === 'consulatation standard'
+        ) || consultationTypes[0];
+        return standard ? standard.id.toString() : '1';
+    }, [consultationTypes]);
+
+    const [consultationTypeId, setConsultationTypeId] = useState<string>(standardConsultationId);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { openSheet, closeSheet, sheets } = useSheetStack();
@@ -127,9 +136,9 @@ export function MarkPresentDialog({ isOpen, onClose, appointment }: MarkPresentD
         if (isOpen && appointment) {
             setNeedsDilation(appointment.needs_dilation);
             setDilationStatus(appointment.dilation_status || "");
-            setConsultationTypeId(appointment.consultation_type_id ? appointment.consultation_type_id.toString() : "1");
+            setConsultationTypeId(appointment.consultation_type_id ? appointment.consultation_type_id.toString() : standardConsultationId);
         }
-    }, [isOpen, appointment]);
+    }, [isOpen, appointment, standardConsultationId]);
 
     const handleConfirm = async () => {
         if (!appointment || !patient) return;

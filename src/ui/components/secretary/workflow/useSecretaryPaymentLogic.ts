@@ -60,7 +60,10 @@ export function useSecretaryPaymentLogic({
             }
         } else if (consultationTypes.length > 0 && !amountToPay && !selectedTypeId) {
             // Default to first type if no invoice
-            const defaultType = consultationTypes[0];
+            const defaultType = consultationTypes.find(t => 
+                t.label.toLowerCase() === 'consultation standard' || 
+                t.label.toLowerCase() === 'consulatation standard'
+            ) || consultationTypes[0];
             setSelectedTypeId(defaultType.id.toString());
             setAmountToPay(defaultType.amount);
         }
