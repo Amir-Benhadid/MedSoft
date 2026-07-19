@@ -291,6 +291,9 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
         }
     }, [isHistoryLoading, isConsultationLoading, history, hasInitializedHistory, isSharedRecordFlow, consultationData]);
 
+    // Helper: Is active consultation Today?
+    const activeConsultation = (history.find(c => c.id === currentConsultationId) || consultationData) as any;
+
     // 4. Synchronization and URL Locking
     useEffect(() => {
         // Init with fetched data
@@ -363,7 +366,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
 
     // 3. Finalize/Save Mutation
     const saveMutation = useMutation({
-        mutationFn: async ({ paymentData, finish }: { paymentData?: any, finish: boolean }) => {
+        mutationFn: async ({ paymentData, finish, leave }: { paymentData?: any, finish: boolean, leave?: boolean }) => {
             if (!currentConsultationId) {
                 toast({ title: "Action impossible", description: "Veuillez d'abord créer une consultation pour ce patient.", variant: "destructive" });
                 throw new Error("No active consultation");
@@ -406,7 +409,7 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
             const title = variables.finish ? "Consultation terminée." : "Sauvegardée.";
             toast({ title: "Succès", description: title });
             useConsultationStore.setState({ isDirty: false });
-            const shouldExitDashboard = !!onBack && (variables.finish || activeConsultation?.status === 'completed');
+            const shouldExitDashboard = !!onBack && (variables.finish || variables.leave || activeConsultation?.status === 'completed');
 
             queryClient.invalidateQueries({ queryKey: ['consultations', 'active', patientId] });
             queryClient.invalidateQueries({ queryKey: ['consultations', 'list', patientId] });
@@ -424,9 +427,6 @@ export function useDoctorDashboardLogic({ patientId, consultationId, action, ent
             console.error('Failed to save consultation:', err);
         }
     });
-
-    // Helper: Is active consultation Today?
-    const activeConsultation = (history.find(c => c.id === currentConsultationId) || consultationData) as any;
 
     // Check if active consultation date is within Local Today range
     const isActiveConsultationToday = (() => {

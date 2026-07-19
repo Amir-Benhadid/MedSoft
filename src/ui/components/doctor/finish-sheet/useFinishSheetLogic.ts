@@ -6,6 +6,7 @@ import { orpcClient } from '@/ui/lib/orpc/client';
 interface UseFinishSheetLogicProps {
     isOpen: boolean;
     consultationId?: string;
+    consultationStatus?: string;
     consultationTypes: ConsultationType[];
     nextAppointmentData?: {
         date?: string;
@@ -19,6 +20,7 @@ interface UseFinishSheetLogicProps {
 export function useFinishSheetLogic({
     isOpen,
     consultationId,
+    consultationStatus,
     consultationTypes,
     nextAppointmentData,
     onConfirm,
@@ -31,37 +33,50 @@ export function useFinishSheetLogic({
     const defaultNextApptType = standardType?.label || '';
     const [consultationTypeId, setConsultationTypeId] = useState<string>(standardType?.id.toString() || '1');
     const [amount, setAmount] = useState<number | ''>('');
-    const [status, setStatus] = useState<string>('standard');
+    const [status, setStatus] = useState<string | null>(null);
     const [isPriceModified, setIsPriceModified] = useState(false);
+    const [hasInitialized, setHasInitialized] = useState(false);
 
     // Next Appointment State
     const [nextApptDate, setNextApptDate] = useState<string>('');
     const [nextApptType, setNextApptType] = useState<string>(defaultNextApptType);
     const [nextApptTimeframe, setNextApptTimeframe] = useState<string>('');
 
-    const { data: invoice } = useQuery({
+    const { data: invoice, isSuccess, isError } = useQuery({
         queryKey: ['invoice', consultationId],
         queryFn: () => orpcClient.invoices.getByConsultationId({ consultationId: consultationId! }),
         enabled: isOpen && !!consultationId,
     });
 
+    // Reset initialization guard when sheet is closed
+    useEffect(() => {
+        if (!isOpen) {
+            setHasInitialized(false);
+        }
+    }, [isOpen]);
+
     // Set initial values
     useEffect(() => {
-        if (isOpen) {
-            if (invoice) {
-                if (invoice.consultation_type_id) {
-                    setConsultationTypeId(invoice.consultation_type_id.toString());
+        if (isOpen && !hasInitialized) {
+            // We are ready to initialize if there is no consultation ID, or if the query has finished (success or error)
+            const queryFinished = !consultationId || isSuccess || isError;
+
+            if (queryFinished) {
+                if (invoice && consultationStatus === 'completed') {
+                    if (invoice.consultation_type_id) {
+                        setConsultationTypeId(invoice.consultation_type_id.toString());
+                    }
+                    setAmount(invoice.amount);
+                    setStatus(invoice.type === 'gratuit' || invoice.amount === 0 ? 'gratuit' : 'standard');
+                } else {
+                    setStatus(null);
+                    setAmount('');
+                    if (invoice && invoice.consultation_type_id) {
+                        setConsultationTypeId(invoice.consultation_type_id.toString());
+                    }
                 }
-                setAmount(invoice.amount);
-                setStatus(invoice.type === 'gratuit' || invoice.amount === 0 ? 'gratuit' : 'standard');
+                setHasInitialized(true);
                 setIsPriceModified(false);
-            } else if (!isPriceModified && consultationTypes.length > 0) {
-                const typeId = parseInt(consultationTypeId);
-                const type = consultationTypes.find(t => t.id === typeId) || standardType;
-                if (type) {
-                    setConsultationTypeId(type.id.toString());
-                    setAmount(type.amount);
-                }
             }
 
             if (nextAppointmentData) {
@@ -72,14 +87,19 @@ export function useFinishSheetLogic({
                 setNextApptType(defaultNextApptType);
             }
         }
-    }, [isOpen, consultationTypeId, consultationTypes, invoice, isPriceModified, nextAppointmentData, defaultNextApptType]);
+    }, [isOpen, invoice, isSuccess, isError, consultationId, consultationStatus, hasInitialized, nextAppointmentData, defaultNextApptType]);
 
     const handleTypeChange = (value: string) => {
         setConsultationTypeId(value);
         const type = consultationTypes.find(t => t.id === parseInt(value));
         if (type) {
-            setAmount(type.amount);
-            setIsPriceModified(false);
+            if (status === 'standard') {
+                setAmount(type.amount);
+                setIsPriceModified(false);
+            } else if (status === 'gratuit') {
+                setAmount(0);
+                setIsPriceModified(false);
+            }
         }
     };
 

@@ -30,6 +30,7 @@ interface FinishConsultationSheetProps {
     };
     patientId?: string;
     consultationId?: string;
+    consultationStatus?: string;
 }
 
 export function FinishConsultationSheet({
@@ -39,7 +40,8 @@ export function FinishConsultationSheet({
     consultationTypes,
     nextAppointmentData,
     patientId,
-    consultationId
+    consultationId,
+    consultationStatus
 }: FinishConsultationSheetProps) {
     const {
         consultationTypeId,
@@ -59,6 +61,7 @@ export function FinishConsultationSheet({
     } = useFinishSheetLogic({
         isOpen,
         consultationId,
+        consultationStatus,
         consultationTypes,
         nextAppointmentData,
         onConfirm,
@@ -114,7 +117,7 @@ export function FinishConsultationSheet({
                     <Button variant="outline" onClick={onClose} className="flex-1 h-9 text-slate-600 border-slate-200 hover:bg-slate-50 font-medium">
                         Annuler
                     </Button>
-                    <Button onClick={handleConfirm} className="flex-[2] h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all active:scale-[0.98]">
+                    <Button onClick={handleConfirm} disabled={!status} className="flex-[2] h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm transition-all active:scale-[0.98]">
                         <Check className="w-4 h-4 mr-2" />
                         Terminer la Consultation
                     </Button>

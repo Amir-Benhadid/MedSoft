@@ -50,7 +50,7 @@ interface DoctorHeaderProps {
 export default function DoctorHeader({ currentTab = 'patients', onTabChange }: DoctorHeaderProps) {
     const { goToLanding } = useNavigation();
     const { logoPath, businessName } = useConfig();
-    const { isCalling, toggleCall } = useDoctorCall();
+    const { isCalling, toggleCall } = useDoctorCall({ playSound: false });
 
     const tabs = [
         { id: 'patients', label: 'Patients', icon: Users },
@@ -67,12 +67,12 @@ export default function DoctorHeader({ currentTab = 'patients', onTabChange }: D
     const handlePatientSelect = (patientId: string) => {
         // Correctly reset search params when selecting a NEW patient from search bar
         // Set action: 'view' to inform dashboard to NOT auto-create consultation
-        navigate({ 
-            search: () => ({ 
-                patientId, 
+        navigate({
+            search: () => ({
+                patientId,
                 mode: 'normal',
                 action: 'view'
-            }) 
+            })
         });
     };
 

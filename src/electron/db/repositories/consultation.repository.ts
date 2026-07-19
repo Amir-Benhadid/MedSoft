@@ -175,19 +175,22 @@ export class ConsultationRepository {
 
     private syncSchedulingPaymentState(patientId: string, total: number, paid: number) {
         const now = getLocalISOString();
+        const today = now.split('T')[0];
         const nextState = paid >= total ? 'paid' : paid > 0 ? 'creance' : 'completed';
 
         this.db.prepare(`
             UPDATE appointments
             SET state = ?, updated_at = ?
             WHERE patient_id = ? AND state IN ('completed', 'paid', 'creance')
-        `).run(nextState, now, patientId);
+            AND start_time LIKE ?
+        `).run(nextState, now, patientId, `${today}%`);
 
         this.db.prepare(`
             UPDATE waitlist_entries
             SET state = ?, updated_at = ?
             WHERE patient_id = ? AND state IN ('completed', 'paid', 'creance')
-        `).run(nextState, now, patientId);
+            AND arrived_at LIKE ?
+        `).run(nextState, now, patientId, `${today}%`);
     }
 
     /**
@@ -471,15 +474,18 @@ export class ConsultationRepository {
 
                     if (data.status === 'completed' && !data.exclude_from_stats) {
                         const targetState = 'completed';
+                        const today = now.split('T')[0];
                         this.db.prepare(`
                             UPDATE appointments SET state = ?, updated_at = ?
                             WHERE patient_id = ? AND state IN ('in_consultation', 'arrived', 'confirmed', 'pending')
-                        `).run(targetState, now, data.patient_id);
+                            AND start_time LIKE ?
+                        `).run(targetState, now, data.patient_id, `${today}%`);
 
                         this.db.prepare(`
                             UPDATE waitlist_entries SET state = ?, updated_at = ?
                             WHERE patient_id = ? AND state IN ('in_consultation', 'waiting', 'in_progress')
-                        `).run(targetState, now, data.patient_id);
+                            AND arrived_at LIKE ?
+                        `).run(targetState, now, data.patient_id, `${today}%`);
                     }
 
                     if (!isSecretary) {
@@ -689,15 +695,18 @@ export class ConsultationRepository {
 
                     if (patientId) {
                         const targetState = 'completed';
+                        const today = now.split('T')[0];
                         this.db.prepare(`
                             UPDATE appointments SET state = ?, updated_at = ?
                             WHERE patient_id = ? AND state IN ('in_consultation', 'present', 'booked')
-                         `).run(targetState, now, patientId);
+                            AND start_time LIKE ?
+                         `).run(targetState, now, patientId, `${today}%`);
 
                         this.db.prepare(`
                             UPDATE waitlist_entries SET state = ?, updated_at = ?
                             WHERE patient_id = ? AND state IN ('in_consultation', 'waiting')
-                         `).run(targetState, now, patientId);
+                            AND arrived_at LIKE ?
+                         `).run(targetState, now, patientId, `${today}%`);
                     }
                 }
 

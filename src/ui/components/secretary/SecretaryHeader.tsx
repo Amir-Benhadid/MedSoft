@@ -48,7 +48,7 @@ interface SecretaryHeaderProps {
 export default function SecretaryHeader({ currentTab = 'agenda', onTabChange }: SecretaryHeaderProps) {
     const { goToLanding } = useNavigation();
     const { logoPath, businessName, appMode } = useConfig();
-    const { isCalling, cancelCall } = useDoctorCall();
+    const { isCalling, cancelCall } = useDoctorCall({ playSound: true });
 
     const tabs = [
         { id: 'agenda', label: 'Agenda', icon: Calendar },

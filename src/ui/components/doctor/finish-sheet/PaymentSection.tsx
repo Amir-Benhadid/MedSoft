@@ -85,22 +85,22 @@ export function PaymentSection({
 
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <Banknote className={cn("w-4 h-4 transition-colors", status === 'gratuit' ? "text-slate-300" : "text-slate-400 group-focus-within:text-blue-500")} />
+                                <Banknote className={cn("w-4 h-4 transition-colors", status !== 'standard' ? "text-slate-300" : "text-slate-400 group-focus-within:text-blue-500")} />
                             </div>
                             <PriceInput
                                 value={amount}
                                 onValueChange={setAmount}
-                                disabled={status === 'gratuit'}
+                                disabled={status !== 'standard'}
                                 className={cn(
                                     "pl-10 pr-12 h-11 text-xl font-bold tracking-tight border transition-all rounded-lg",
-                                    status === 'gratuit'
+                                    status !== 'standard'
                                         ? "bg-slate-50/80 border-slate-200/80 text-slate-400 opacity-80"
                                         : "bg-white border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-slate-800 shadow-sm"
                                 )}
                                 placeholder="0"
                             />
                             <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <span className={cn("text-xs font-bold", status === 'gratuit' ? "text-slate-300" : "text-slate-400")}>DZD</span>
+                                <span className={cn("text-xs font-bold", status !== 'standard' ? "text-slate-300" : "text-slate-400")}>DZD</span>
                             </div>
                         </div>
 
@@ -110,7 +110,7 @@ export function PaymentSection({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setAmount((prev) => Math.max(0, (prev === '' ? 0 : Number(prev)) - 500))}
-                                disabled={status === 'gratuit'}
+                                disabled={status !== 'standard'}
                                 className="h-8 text-[11px] font-medium text-slate-600 hover:text-red-700 hover:border-red-200 hover:bg-red-50 focus:ring-2 focus:ring-red-100 transition-colors shadow-sm"
                             >
                                 -500 DZD
@@ -120,7 +120,7 @@ export function PaymentSection({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setAmount((prev) => (prev === '' ? 0 : Number(prev)) + 500)}
-                                disabled={status === 'gratuit'}
+                                disabled={status !== 'standard'}
                                 className="h-8 text-[11px] font-medium text-slate-600 hover:text-emerald-700 hover:border-emerald-200 hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-100 transition-colors shadow-sm"
                             >
                                 +500 DZD
@@ -140,7 +140,11 @@ export function PaymentSection({
                         <div className="flex flex-col gap-2">
                             <button
                                 type="button"
-                                onClick={() => setStatus('standard')}
+                                onClick={() => {
+                                    setStatus('standard');
+                                    const type = consultationTypes.find(t => t.id.toString() === consultationTypeId);
+                                    if (type) setAmount(type.amount);
+                                }}
                                 className={cn(
                                     "flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all group",
                                     status === 'standard'

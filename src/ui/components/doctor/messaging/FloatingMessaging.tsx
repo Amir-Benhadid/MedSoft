@@ -9,16 +9,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/components/ui/tab
 import { Checkbox } from "@/ui/components/ui/checkbox";
 import { ScrollArea } from "@/ui/components/ui/scroll-area";
 import { Badge } from "@/ui/components/ui/badge";
+import { playBeep } from '@/ui/lib/sound';
 
 export function FloatingMessaging() {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('messages');
 
-    const { data: allMessages = [] } = useQuery({
+    const { data: allMessages = [], isSuccess } = useQuery({
         queryKey: ['messages', 'today'],
         queryFn: () => orpcClient.messages.list(),
         refetchInterval: 3000
     });
+
+    const hasLoadedRef = useRef(false);
+    const lastMessageIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        if (isSuccess) {
+            const newestMsg = allMessages[allMessages.length - 1];
+            if (!hasLoadedRef.current) {
+                if (newestMsg) {
+                    lastMessageIdRef.current = newestMsg.id;
+                }
+                hasLoadedRef.current = true;
+            } else {
+                if (newestMsg && newestMsg.id !== lastMessageIdRef.current) {
+                    lastMessageIdRef.current = newestMsg.id;
+                    if (newestMsg.sender === 'SECRETARY') {
+                        playBeep(660, 0.2);
+                    }
+                }
+            }
+        }
+    }, [allMessages, isSuccess]);
 
     const { data: todos = [] } = useQuery({
         queryKey: ['todos'],

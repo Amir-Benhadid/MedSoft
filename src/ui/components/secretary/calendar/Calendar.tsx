@@ -106,6 +106,12 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
     const { toast } = useToast();
 
     const handleDateClick = useCallback((arg: { date: Date }) => {
+        const calendarApi = calendarRef.current?.getApi();
+        if (calendarApi && calendarApi.view.type === 'dayGridMonth') {
+            calendarApi.changeView('timeGridDay', arg.date);
+            return;
+        }
+
         const now = new Date();
         const currentHourStart = new Date(now);
         currentHourStart.setMinutes(0, 0, 0);

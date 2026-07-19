@@ -8,6 +8,7 @@ import { cn } from "@/ui/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/components/ui/tabs";
 import { Checkbox } from "@/ui/components/ui/checkbox";
 import { ScrollArea } from "@/ui/components/ui/scroll-area";
+import { playBeep } from '@/ui/lib/sound';
 
 import { User, FolderOpen } from 'lucide-react';
 
@@ -16,11 +17,33 @@ export function SecretaryFloatingMessaging() {
     const [activeTab, setActiveTab] = useState('messages');
 
     // Queries for badges and opening logic
-    const { data: unreadMessages } = useQuery({
-        queryKey: ['messages', 'unread', 'doctor'],
-        queryFn: () => orpcClient.messages.countUnread({ sender: 'DOCTOR' }),
-        refetchInterval: 5000
+    const { data: messages = [], isSuccess } = useQuery({
+        queryKey: ['messages', 'today'],
+        queryFn: () => orpcClient.messages.list(),
+        refetchInterval: 3000
     });
+
+    const hasLoadedRef = useRef(false);
+    const lastMessageIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        if (isSuccess) {
+            const newestMsg = messages[messages.length - 1];
+            if (!hasLoadedRef.current) {
+                if (newestMsg) {
+                    lastMessageIdRef.current = newestMsg.id;
+                }
+                hasLoadedRef.current = true;
+            } else {
+                if (newestMsg && newestMsg.id !== lastMessageIdRef.current) {
+                    lastMessageIdRef.current = newestMsg.id;
+                    if (newestMsg.sender === 'DOCTOR') {
+                        playBeep(660, 0.2);
+                    }
+                }
+            }
+        }
+    }, [messages, isSuccess]);
 
     const { data: sharedRecords = [] } = useQuery({
         queryKey: ['sharedRecords', 'secretary'],
@@ -46,7 +69,8 @@ export function SecretaryFloatingMessaging() {
     const todaySharedRecords = sharedRecords.filter((rec: any) => isToday(rec.created_at));
     const todayTodos = todos.filter((t: any) => isToday(t.created_at));
 
-    const unreadCount = unreadMessages?.count || 0;
+    const chatMessages = messages.filter((msg: any) => msg.sender === 'SECRETARY' || msg.sender === 'DOCTOR');
+    const unreadCount = chatMessages.filter((msg: any) => msg.sender === 'DOCTOR' && !msg.is_read).length;
     const unreadFilesCount = todaySharedRecords.filter((rec: any) => rec.status === 'unread').length;
     const todoCount = todayTodos.filter((t: any) => !t.is_completed).length;
     const totalCount = unreadCount + unreadFilesCount + todoCount;
@@ -91,7 +115,7 @@ export function SecretaryFloatingMessaging() {
                     </div>
 
                     <div className="flex-1 overflow-hidden bg-white">
-                        {activeTab === 'messages' && <MessagesTab />}
+                        {activeTab === 'messages' && <MessagesTab messages={chatMessages} />}
                         {activeTab === 'dossiers' && <DossiersTab records={todaySharedRecords} />}
                         {activeTab === 'todos' && <TodosTab todos={todayTodos} />}
                     </div>
@@ -181,16 +205,10 @@ function DossierItem({ record }: { record: any }) {
     );
 }
 
-function MessagesTab() {
+function MessagesTab({ messages }: { messages: any[] }) {
     const [text, setText] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
     const queryClient = useQueryClient();
-
-    const { data: messages = [] } = useQuery({
-        queryKey: ['messages', 'today'],
-        queryFn: () => orpcClient.messages.list(),
-        refetchInterval: 3000
-    });
 
     const markAsReadMutation = useMutation({
         mutationFn: (ids: string[]) => orpcClient.messages.markAsRead({ ids }),

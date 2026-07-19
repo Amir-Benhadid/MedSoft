@@ -182,8 +182,9 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
             setView('selection');
             setSelectedPatient(null);
             const start = defaultDate ? new Date(defaultDate) : new Date();
+            start.setHours(8, 0, 0, 0);
             const end = new Date(start);
-            end.setHours(end.getHours() + 1);
+            end.setHours(18, 0, 0, 0);
 
             reset({
                 title: '',
@@ -210,30 +211,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
         }
     }, [patientData.data, appointment, selectedPatient, reset]);
 
-    // Enforce 00 minutes on start time and sync end time
-    const watchedStartTime = watch('start_time');
-    useEffect(() => {
-        if (!watchedStartTime) return;
 
-        const date = new Date(watchedStartTime);
-        if (isNaN(date.getTime())) return;
-
-        // Enforce minutes to 00
-        if (date.getMinutes() !== 0 || date.getSeconds() !== 0) {
-            date.setMinutes(0, 0, 0);
-            const cleanStart = getLocalISOString(date).slice(0, 16);
-            if (cleanStart !== watchedStartTime) {
-                setValue('start_time', cleanStart);
-                return; // Will re-run effect with clean time
-            }
-        }
-
-        // Sync end time (always 1 hour after start)
-        const endDate = new Date(date.getTime() + 60 * 60 * 1000);
-        const desiredEnd = getLocalISOString(endDate).slice(0, 16);
-        setValue('end_time', desiredEnd);
-
-    }, [watchedStartTime, setValue]);
 
     const handlePatientSelect = useCallback((patient: Patient) => {
         setSelectedPatient(patient);
@@ -462,7 +440,26 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                                 <Input
                                     type="datetime-local"
                                     step="3600"
-                                    {...register('start_time')}
+                                    {...register('start_time', {
+                                        onChange: (e) => {
+                                            const val = e.target.value;
+                                            if (!val) return;
+                                            const date = new Date(val);
+                                            if (isNaN(date.getTime())) return;
+
+                                            // Enforce minutes to 00
+                                            if (date.getMinutes() !== 0 || date.getSeconds() !== 0) {
+                                                date.setMinutes(0, 0, 0);
+                                                const cleanStart = getLocalISOString(date).slice(0, 16);
+                                                setValue('start_time', cleanStart);
+                                            }
+
+                                            // Sync end time (1 hour after start) when manually changed
+                                            const endDate = new Date(date.getTime() + 60 * 60 * 1000);
+                                            const desiredEnd = getLocalISOString(endDate).slice(0, 16);
+                                            setValue('end_time', desiredEnd);
+                                        }
+                                    })}
                                     className="h-9 text-sm"
                                 />
                                 {errors.start_time && <span className="text-destructive text-xs">{errors.start_time.message}</span>}

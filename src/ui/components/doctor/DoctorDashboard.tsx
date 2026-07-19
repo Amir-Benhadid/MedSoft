@@ -1,4 +1,4 @@
-import { Loader2, Eye } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import RefractionTab from './dashboard/RefractionTab';
 import TonometryTab from './dashboard/TonometryTab';
 import ClinicalExamTab from './dashboard/ClinicalExamTab';
@@ -7,13 +7,15 @@ import DocumentsContainer from './documents/DocumentsContainer';
 import { FinishConsultationSheet } from './FinishConsultationSheet';
 import { useDoctorDashboardLogic } from './dashboard/useDoctorDashboardLogic';
 import { DashboardHeader } from './dashboard/DashboardHeader';
-import { ClinicalExamHeader } from './dashboard/ClinicalExamHeader';
 import { useConsultationStore } from '@/ui/store/consultationStore';
 import { HistorySheet } from './history/HistorySheet';
 import { PaymentHistorySheet } from './history/PaymentHistorySheet';
 import { useState } from 'react';
 import { useDocumentSync } from '@/ui/hooks/useDocumentSync';
 import { useContactLensSync } from '@/ui/hooks/useContactLensSync';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/ui/components/ui/dialog';
+import { Button } from '@/ui/components/ui/button';
+
 interface DoctorDashboardProps {
     patientId: string;
     consultationId?: string;
@@ -46,6 +48,28 @@ export default function DoctorDashboard({ patientId, consultationId, action, ent
     } = useDoctorDashboardLogic({ patientId, onBack, consultationId, action, entrySource });
 
     const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+    const [showUnsavedPrompt, setShowUnsavedPrompt] = useState(false);
+    const isDirty = useConsultationStore(state => state.isDirty);
+
+    const handleBack = () => {
+        if (isDirty) {
+            setShowUnsavedPrompt(true);
+        } else {
+            onBack?.();
+        }
+    };
+
+    const handleSaveAndLeave = () => {
+        setShowUnsavedPrompt(false);
+        saveMutation.mutate({ finish: false, leave: true });
+    };
+
+    const handleDiscardAndLeave = () => {
+        setShowUnsavedPrompt(false);
+        useConsultationStore.setState({ isDirty: false });
+        onBack?.();
+    };
+
     const handleFinishConsultation = () => {
         if (entrySource === 'shared_record' || isExcludedFromStats) {
             saveMutation.mutate({ finish: true });
@@ -75,7 +99,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, ent
             {/* Top Header - Patient Info & Global Actions */}
             <DashboardHeader
                 patient={patient}
-                onBack={onBack}
+                onBack={handleBack}
                 saveMutation={saveMutation}
                 setIsFinishSheetOpen={setIsFinishSheetOpen}
                 onFinishConsultation={handleFinishConsultation}
@@ -136,6 +160,7 @@ export default function DoctorDashboard({ patientId, consultationId, action, ent
                 onConfirm={(data) => saveMutation.mutate({ paymentData: data, finish: true })}
                 patientId={patientId}
                 consultationId={currentConsultationId || undefined}
+                consultationStatus={currentConsultationStatus || undefined}
                 nextAppointmentData={nextAppointmentData}
                 consultationTypes={consultationTypes}
             />
@@ -156,8 +181,41 @@ export default function DoctorDashboard({ patientId, consultationId, action, ent
                 onOpenChange={setIsPaymentHistoryOpen}
                 patientId={patientId}
             />
+
+            {/* Unsaved Changes Confirmation Dialog */}
+            <Dialog open={showUnsavedPrompt} onOpenChange={setShowUnsavedPrompt}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Modifications non enregistrées</DialogTitle>
+                        <DialogDescription className="text-sm text-slate-500 mt-2">
+                            Voulez-vous enregistrer les modifications avant de quitter ?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-2 mt-4 w-full">
+                        <Button 
+                            onClick={handleSaveAndLeave}
+                            disabled={saveMutation.isPending}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                            {saveMutation.isPending ? "Enregistrement..." : "Enregistrer et quitter"}
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            onClick={handleDiscardAndLeave}
+                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Quitter sans enregistrer
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setShowUnsavedPrompt(false)}
+                            className="w-full"
+                        >
+                            Annuler
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
-
-
