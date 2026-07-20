@@ -92,12 +92,13 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
         onRangeChange?.({ start: arg.start, end: arg.end, view: arg.view.type });
     }, [onRangeChange]);
 
-    const openAppointmentSheet = useCallback((apt: Appointment | null, date?: Date) => {
+    const openAppointmentSheet = useCallback((apt: Appointment | null, date?: Date, endDate?: Date) => {
         openSheet(
             <CalendarAppointmentContent
                 onClose={() => closeSheet('appointment-sheet')}
                 appointment={apt}
                 defaultDate={date}
+                defaultEndDate={endDate}
             />,
             { id: 'appointment-sheet', width: 480 }
         );
@@ -105,10 +106,11 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
 
     const { toast } = useToast();
 
-    const handleDateClick = useCallback((arg: { date: Date }) => {
+    const handleSelect = useCallback((arg: { start: Date; end: Date }) => {
         const calendarApi = calendarRef.current?.getApi();
         if (calendarApi && calendarApi.view.type === 'dayGridMonth') {
-            calendarApi.changeView('timeGridDay', arg.date);
+            calendarApi.changeView('timeGridDay', arg.start);
+            calendarApi.unselect();
             return;
         }
 
@@ -116,19 +118,22 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
         const currentHourStart = new Date(now);
         currentHourStart.setMinutes(0, 0, 0);
 
-        if (arg.date.getTime() < currentHourStart.getTime()) {
+        if (arg.start.getTime() < currentHourStart.getTime()) {
             toast({
                 title: "Action impossible",
                 description: "Il n'est pas possible de créer un rendez-vous dans une tranche horaire passée.",
                 variant: "destructive",
             });
+            calendarApi?.unselect();
             return;
         }
 
-        setDefaultDate(arg.date);
+        setDefaultDate(arg.start);
         setSelectedAppointment(null);
-        openAppointmentSheet(null, arg.date);
-        onDateSelect?.(arg.date.toISOString());
+        openAppointmentSheet(null, arg.start, arg.end);
+        onDateSelect?.(arg.start.toISOString());
+
+        calendarApi?.unselect();
     }, [onDateSelect, openAppointmentSheet, toast]);
 
     const handleEventClick = useCallback((arg: EventClickArg) => {
@@ -646,7 +651,7 @@ export default function Calendar({ onDateSelect, onEventClick, onRangeChange }: 
                     dayMaxEvents={1}
                     weekends={true}
                     datesSet={handleDatesSet}
-                    dateClick={handleDateClick}
+                    select={handleSelect}
                     eventClick={handleEventClick}
                     eventDrop={handleEventDrop}
                     slotMinTime="08:00:00"

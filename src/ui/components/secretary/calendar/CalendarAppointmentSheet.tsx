@@ -54,6 +54,7 @@ interface CalendarAppointmentSheetProps {
     onClose: () => void;
     appointment?: Appointment | null;
     defaultDate?: Date;
+    defaultEndDate?: Date;
 }
 
 const formatDateTimeLocal = (dateString?: string | Date) => {
@@ -63,7 +64,7 @@ const formatDateTimeLocal = (dateString?: string | Date) => {
     return getLocalISOString(date).slice(0, 16);
 };
 
-export function CalendarAppointmentContent({ onClose, appointment, defaultDate }: Omit<CalendarAppointmentSheetProps, 'isOpen'>) {
+export function CalendarAppointmentContent({ onClose, appointment, defaultDate, defaultEndDate }: Omit<CalendarAppointmentSheetProps, 'isOpen'>) {
     const createAppointment = useCreateAppointment();
     const updateAppointment = useUpdateAppointment();
     const createPatient = useCreatePatient();
@@ -182,9 +183,21 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
             setView('selection');
             setSelectedPatient(null);
             const start = defaultDate ? new Date(defaultDate) : new Date();
-            start.setHours(8, 0, 0, 0);
-            const end = new Date(start);
-            end.setHours(18, 0, 0, 0);
+            if (!defaultDate) {
+                start.setHours(8, 0, 0, 0);
+            } else {
+                start.setMinutes(0, 0, 0);
+            }
+            const end = defaultEndDate ? new Date(defaultEndDate) : new Date(start);
+            if (!defaultEndDate) {
+                if (defaultDate) {
+                    end.setTime(start.getTime() + 60 * 60 * 1000);
+                } else {
+                    end.setHours(18, 0, 0, 0);
+                }
+            } else {
+                end.setMinutes(0, 0, 0);
+            }
 
             reset({
                 title: '',
@@ -198,7 +211,7 @@ export function CalendarAppointmentContent({ onClose, appointment, defaultDate }
                 consultation_type_id: standardConsultationId
             });
         }
-    }, [appointment, defaultDate, reset, standardConsultationId]);
+    }, [appointment, defaultDate, defaultEndDate, reset, standardConsultationId]);
 
     useEffect(() => {
         if (patientData.data && (appointment || selectedPatient)) {
